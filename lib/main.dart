@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Import the FontAwesome Flutter package
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Import the FontAwesome Flutter 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
