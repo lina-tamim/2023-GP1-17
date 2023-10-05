@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "966099478745",
+    "project_id": "techxcel11",
+    "storage_bucket": "techxcel11.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:966099478745:android:30ed654e9821268bb536c8",
+        "android_client_info": {
+          "package_name": "com.example.techxcel11"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnCr4kVg-dlw2Y8CSx4NlKnJaIE7WLidg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
