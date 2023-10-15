@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 0.1.0
 
 environment:
-  sdk: '>=3.1.0 <4.0.0'
+  sdk: '>=3.0.6 <4.0.0'
 dependencies:
   flutter:
     sdk: flutter
@@ -26,6 +26,7 @@ dependencies:
   google_fonts: ^4.0.4
   url_launcher: ^6.1.14
   hash: ^1.0.4
+  keyboard_dismisser: ^3.0.0
 
 dev_dependencies:
   flutter_test:

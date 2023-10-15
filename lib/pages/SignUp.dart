@@ -985,7 +985,11 @@ String hashPassword(String password) {
   var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
   return digest.toString(); // Convert the hash to a string
 } */
-
+String hashPassword(String password) {
+  var bytes = utf8.encode(password); // Encode the password as bytes
+  var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
+  return digest.toString(); // Convert the hash to a string
+}
   void allValid(BuildContext context) async {
  Future<bool> iscreateAccount1 = _createAccount1() ;
     if ( (await iscreateAccount1) as bool == true) {
@@ -1003,7 +1007,7 @@ String hashPassword(String password) {
       state: _selectedState,
       city: _selectedCity,
       email: _email.text.trim().toLowerCase(),
-      password: _password.text.trim(),
+      password: hashPassword(_password.text.trim()),
       GithubLink: _GitHublink.text.trim(),
       interests: _selectedInterests,
       skills: _selectedSkills,
@@ -1032,10 +1036,11 @@ String hashPassword(String password) {
           builder: (context) => const Login(),
         ),
       );
-    });
-  }
-    }
+});
 }
+}
+}
+
   // validation function
 
   // validation 1

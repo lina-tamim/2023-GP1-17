@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:techxcel11/pages/UserProfilePage.dart';
+import 'package:techxcel11/pages/homePage.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:techxcel11/pages/home.dart';
 import 'package:techxcel11/pages/SignUp.dart';
@@ -12,7 +13,9 @@ import 'package:techxcel11/pages/Admin_home.dart';
 //import 'package:techxcel11/pages/UserProfilePage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:get/get.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -255,30 +258,35 @@ class _Login extends State<Login> {
     );
   }
 
-/*
+
+
 String hashPassword(String password) {
   var bytes = utf8.encode(password); // Encode the password as bytes
   var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
-  return digest.toString(); // Convert the hash to a string
-}*/
-
-
+  return digest.toString(); // Convert the hash to a string
+}
 void _login() async {
-    final String email = _email.text.toLowerCase();
-    final String password = _password.text;
+  final String email = _email.text.toLowerCase();
+  final String password = _password.text.trim();
+  
 
-    // Query the Firestore collection to check if the email and password match a user
-    final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
-        .collection('users')
-        .where('email', isEqualTo: email)
-        .where('password', isEqualTo: password)
-        .limit(1)
-        .get();
+  // Fetch the user document from Firestore based on the email
+  final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+      .collection('users')
+      .where('email', isEqualTo: email)
+      .limit(1)
+      .get();
 
-   
-      // Email and password match a user in the```dart
-    if (snapshot.docs.isNotEmpty) {
-      // Email and password match a user in the database
+   if (snapshot.docs.isNotEmpty) {
+    final userDoc = snapshot.docs.first;
+    final storedHashedPassword = userDoc['password']; // Fetch the hashed password from the document
+
+    // Hash the entered password
+    final enteredHashedPassword = hashPassword(password);
+
+    // Compare the hashed passwords
+    if (storedHashedPassword == enteredHashedPassword) {
+            // Email and password match a user in the database
       final user = snapshot.docs[0].data();
 
       // Save the user's email in shared preferences
@@ -287,25 +295,22 @@ void _login() async {
       _showSnackBar("Welcome Back!");
 
       //if admin move to admin
-if (user['userType'] == 'Admin') {
+    if (user['userType'] == 'Admin') {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => AdminHome()),
       );
-    } else {
+     } else {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => UserProfilePage()),
+        MaterialPageRoute(builder: (context) => FHomePage()),
       );
-    }
-  }
-
-      // Navigate to the user profile page
-     
-     else {
-      _showSnackBar("Login failed, please enter correct credentials");
-    }
-  }
+     }
+    } else {
+     _showSnackBar("Login failed, please enter correct credentials");
+}
+}
+}
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
