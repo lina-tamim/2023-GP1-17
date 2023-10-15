@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Import the FontAwesome Flutter 
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Import the FontAwesome Flutter 
+import 'package:techxcel11/pages/start.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,16 +13,33 @@ void main() async {
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
-
-  @override
+@override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
+    return MaterialApp(
+      title: 'TechXcel',
+      theme: ThemeData(
+        scaffoldBackgroundColor: Color(0xFFEEF1F8),
+        primarySwatch: Colors.deepPurple,
+        fontFamily: "Intel",
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          errorStyle: TextStyle(height: 0),
+          border: defaultInputBorder,
+          enabledBorder: defaultInputBorder,
+          focusedBorder: defaultInputBorder,
+          errorBorder: defaultInputBorder,
         ),
       ),
+      home: const OnboardingScreen(),
     );
   }
 }
 
+const defaultInputBorder = OutlineInputBorder(
+  borderRadius: BorderRadius.all(Radius.circular(16)),
+  borderSide: BorderSide(
+    color: Color(0xFFDEE3F2),
+    width: 1,
+  ),
+);
