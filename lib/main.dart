@@ -18,7 +18,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'TechXcel',
       theme: ThemeData(
-        scaffoldBackgroundColor: Color(0xFFEEF1F8),
+        scaffoldBackgroundColor:const Color.fromARGB(255, 255, 255, 255),
         primarySwatch: Colors.deepPurple,
         fontFamily: "Intel",
         inputDecorationTheme: InputDecorationTheme(
@@ -39,7 +39,7 @@ class MainApp extends StatelessWidget {
 const defaultInputBorder = OutlineInputBorder(
   borderRadius: BorderRadius.all(Radius.circular(16)),
   borderSide: BorderSide(
-    color: Color(0xFFDEE3F2),
+    color: Color.fromARGB(255, 238, 240, 246),
     width: 1,
   ),
 );

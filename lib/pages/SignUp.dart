@@ -1,12 +1,13 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:techxcel11/user_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:techxcel11/pages/reuse.dart';
-import 'package:techxcel11/pages/home.dart';
+import 'package:techxcel11/pages/Fhome.dart';
 import 'package:lottie/lottie.dart';
 import 'package:techxcel11/pages/start.dart';
 import 'package:techxcel11/pages/Login.dart';
@@ -17,8 +18,6 @@ import 'dart:async';
 import 'package:image_picker/image_picker.dart'; //+
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:techxcel11/repository/userRepository.dart';
-import 'package:techxcel11/UserModel.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 
@@ -43,14 +42,14 @@ class ValidationAnimation extends StatelessWidget {
 
 // the class for skills
 
-class SignUp extends StatefulWidget {
-  const SignUp({Key? key}) : super(key: key);
+class Signup extends StatefulWidget {
+  const Signup({Key? key}) : super(key: key);
 
   @override
-  State<SignUp> createState() => _SignUp();
+  State<Signup> createState() => _Signup();
 }
 
-class _SignUp extends State<SignUp> {
+class _Signup extends State<Signup> {
   TextEditingController _password = TextEditingController();
   TextEditingController _email = TextEditingController();
   TextEditingController _userName = TextEditingController();
@@ -68,6 +67,65 @@ class _SignUp extends State<SignUp> {
 
   List<String> _selectedSkills = [];
   List<String> _selectedInterests = [];
+
+
+@override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+
+Future<void> signUserUp() async {
+  try {
+    UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: _email.text.trim(),
+      password: _password.text.trim(),
+    );
+
+    String uid = userCredential.user!.uid;
+
+    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+      'userName': _userName.text.trim().toLowerCase(),
+      'userType': _selectedUser,
+      'attendancePreference': _selectedPreference,
+      'country': _selectedCountry,
+      'state': _selectedState,
+      'city': _selectedCity,
+      'email': _email.text.trim().toLowerCase(),
+      'password': hashPassword(_password.text.trim()),
+      'GithubLink': _GitHublink.text.trim(),
+      'interests': _selectedInterests,
+      'skills': _selectedSkills,
+    });
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: ValidationAnimation(),
+        );
+      },
+    );
+
+    // Delay the navigation to the login page using a Timer
+    Timer(const Duration(seconds: 6), () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Login(),
+        ),
+      );
+    });
+  } catch (e) {
+    // Handle sign-up errors here
+    print('Sign-up error: $e');
+  }
+}
 
   void _showMultiSelectSkills() async {
     final Map<String, List<String>> skillGroups = {
@@ -349,6 +407,14 @@ class _SignUp extends State<SignUp> {
       });
     }
   }
+
+Future signUp() async{
+  await FirebaseAuth.instance.createUserWithEmailAndPassword(
+    email: _email.text.trim(),
+   password: _password.text.trim());
+
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -800,7 +866,7 @@ class _SignUp extends State<SignUp> {
                                   style: TextStyle(color: Colors.red),
                                 ),
                               SizedBox(
-                                width: 252,
+                                width: 257,
                               ),
                               const Tooltip(
                                 child: Icon(
@@ -934,7 +1000,7 @@ class _SignUp extends State<SignUp> {
                             Future<bool> isStep1Valid = _createAccount1() ;
                              bool isStep2Valid = _createAccount2();
                             if (await isStep1Valid && isStep2Valid ) {
-                                   allValid(context);
+                                  signUserUp() ;
                             }
                          
                           //bool isvalid = _createAccount1();
@@ -979,13 +1045,13 @@ class _SignUp extends State<SignUp> {
       ),
     );
   }
-/*
+
 String hashPassword(String password) {
   var bytes = utf8.encode(password); // Encode the password as bytes
   var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
   return digest.toString(); // Convert the hash to a string
-} */
-
+} 
+/*
   void allValid(BuildContext context) async {
  Future<bool> iscreateAccount1 = _createAccount1() ;
     if ( (await iscreateAccount1) as bool == true) {
@@ -1003,7 +1069,7 @@ String hashPassword(String password) {
       state: _selectedState,
       city: _selectedCity,
       email: _email.text.trim().toLowerCase(),
-      password: _password.text.trim(),
+      password: hashPassword(_password.text.trim()),
       GithubLink: _GitHublink.text.trim(),
       interests: _selectedInterests,
       skills: _selectedSkills,
@@ -1035,7 +1101,7 @@ String hashPassword(String password) {
     });
   }
     }
-}
+}*/
   // validation function
 
   // validation 1

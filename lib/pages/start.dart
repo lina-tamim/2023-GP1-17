@@ -1,9 +1,7 @@
 import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
-import 'package:techxcel11/pages/reuse.dart';
 import 'package:techxcel11/pages/Login.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -14,6 +12,9 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  final String txlLogo = 'assets/Backgrounds/Xlogo.png'; 
+  final String txlLogo2 = 'assets/Backgrounds/TXLogo.png'; 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,6 +39,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           SafeArea(
             child: Stack(
               children: [
+                Positioned(
+                  top: 20,
+                  left: 300,
+                  child: Image.asset(
+                    txlLogo,
+                    width: 250, // Adjust the width of the logo as desired
+                    height: 250, // Adjust the height of the logo as desired
+                  ),
+                ),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 25, vertical: 30),
                   child: Column(
@@ -62,9 +72,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 fontStyle: FontStyle.italic,
                                 color: Color.fromARGB(255, 27, 27, 26)),
                           ),
+                          
                         ],
+                        
                       ),
+                      
                     ],
+                    
+                  ),
+                  
+                ),
+                    Positioned(
+                  top: 377,
+                  left: 20,
+                  child: Image.asset(
+                    txlLogo2,
+                    width: 230, // Adjust the width of the logo as desired
+                    height: 230, // Adjust the height of the logo as desired
                   ),
                 ),
                 Positioned(
@@ -73,7 +97,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   right: 150,
                   child: Container(
                     height: 64,
-//width: 100,
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(

@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:techxcel11/pages/CalendarPage.dart';
-import 'package:techxcel11/pages/Fhome.dart';
-import 'package:techxcel11/pages/UserProfilePage.dart';
-import 'package:techxcel11/pages/aboutus.dart';
 import 'package:techxcel11/pages/reuse.dart';
-import 'package:techxcel11/pages/user_posts_page.dart';
 
-class BookmarkPage extends StatelessWidget {
-  const BookmarkPage({Key? key}) : super(key: key);
+class ChatPage extends StatefulWidget {
+  const ChatPage({super.key});
 
   @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: NavBarUser(),
       appBar: AppBar(
-        title: Text('Bookmark'),
+        title: Text('Chat'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -27,7 +26,7 @@ class BookmarkPage extends StatelessWidget {
               // Display application name in big font
               Text(
                 'TechXcel',
-                style: TextStyle(
+                style: GoogleFonts.orbitron(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -43,6 +42,8 @@ class BookmarkPage extends StatelessWidget {
           ),
         ),
       ),
+         ///   bottomNavigationBar:NavBarBottom2(),
+
     );
   }
 }

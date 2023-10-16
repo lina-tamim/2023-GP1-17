@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:techxcel11/pages/BlankPage.dart';
 import 'package:techxcel11/pages/reuse.dart';
+import 'package:techxcel11/pages/login.dart';
+
 
 class AdminHome extends StatefulWidget {
   const AdminHome({Key? key}) : super(key: key);
@@ -104,8 +106,48 @@ class _AdminHome extends State<AdminHome> {
                   ),
                 ],
               ),
+              
             ),
-          )
+            
+          ),
+          InkWell(
+  onTap: showLogoutConfirmationDialog,
+  child: ListTile(
+    leading: Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(100),
+        color: Colors.red,
+      ),
+      child: Icon(
+        Icons.logout,
+        color: Colors.white,
+      ),
+    ),
+    title: Text(
+      'Logout',
+      style: Theme.of(context).textTheme.bodyText1?.apply(
+            color: Colors.black87,
+            fontWeightDelta: 2,
+          ),
+    ),
+    trailing: Container(
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(100),
+        color: Colors.grey.withOpacity(0.1),
+      ),
+      child: Icon(
+        Icons.arrow_forward_ios_rounded,
+        size: 18.0,
+        color: Colors.grey,
+      ),
+    ),
+  ),
+            
+)
         ],
       ),
     );
@@ -144,4 +186,32 @@ class _AdminHome extends State<AdminHome> {
           ],
         ),
       );
-}
+
+void showLogoutConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Logout'),
+          content: Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Login()),
+                    );
+              },
+              child: Text('Yes'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('No'),
+            ),
+          ],
+        );
+      },
+    );
+  }}

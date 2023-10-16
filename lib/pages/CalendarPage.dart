@@ -1,22 +1,18 @@
-import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:techxcel11/pages/CalendarPage.dart';
-import 'package:techxcel11/pages/Fhome.dart';
-import 'package:techxcel11/pages/UserProfilePage.dart';
-import 'package:techxcel11/pages/aboutus.dart';
 import 'package:techxcel11/pages/reuse.dart';
-import 'package:techxcel11/pages/user_posts_page.dart';
 
-class BookmarkPage extends StatelessWidget {
-  const BookmarkPage({Key? key}) : super(key: key);
+
+class CalendarPage extends StatelessWidget {
+  const CalendarPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: NavBarUser(),
       appBar: AppBar(
-        title: Text('Bookmark'),
+        title: Text('Calendar'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -43,6 +39,7 @@ class BookmarkPage extends StatelessWidget {
           ),
         ),
       ),
+    //  bottomNavigationBar:NavBarBottom2(),
     );
   }
 }

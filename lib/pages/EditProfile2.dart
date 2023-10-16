@@ -1,15 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:techxcel11/UserModel.dart';
 import 'package:techxcel11/pages/UserProfilePage.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import "package:csc_picker/csc_picker.dart";
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:techxcel11/pages/start.dart'; // Import the FontAwesome Flutter package
-
-
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
 
 
 class EditProfile2 extends StatefulWidget {
@@ -35,6 +35,9 @@ class _EditProfile2State extends State<EditProfile2> {
   bool showSkills = false;
   bool showInterests = false;
   bool isModified = false;
+
+
+
 
 /////////// MODIFIED BY USER:
 String newUsername=''; //used later when comparison if values have
@@ -62,297 +65,6 @@ String newGithubLink='';
     super.initState();
     fetchUserData();
   }
-
-void _showMultiSelectInterests() async {
-  final Map<String, List<String>> interestGroups = {
-  'Data Science': [
-    'Python',
-    'R',
-    'Tableau',
-    'Machine learning and artificial intelligence',
-    'Big data technologies (Hadoop, Apache Spark)',
-    'Data science',
-    'Statistical analysis',
-    'Natural language processing (NLP)',
-    'Robotic process automation (RPA)',
-  ],
-  'Database Management': [
-    'Database management SQL',
-    'Database management NoSQL',
-    'Database management NewSQL',
-  ],
-  'Programming Languages': [
-    'Java',
-    'Node.js',
-    'React',
-    'C#',
-    'C++',
-  ],
-  'Web Development': [
-    'Web development (HTML)',
-    'Web development (CSS)',
-    'Web development (JavaScript)',
-    'Web development (PHP)',
-  ],
-  'Mobile App Development': [
-    'Mobile app development (iOS, Android)',
-    'UI/UX design',
-    'Swift',
-    'Ruby',
-    'Flutter and Dart',
-  ],
-  'Other Interests': [
-    'Agile and Scrum methodologies',
-    'Virtual reality (VR)',
-    'Augmented reality (AR)',
-    'Cloud computing',
-    'Cybersecurity',
-    'Network',
-    'Blockchain',
-    'Internet of Things (IoT)',
-  ],
-  'Soft Skills': [
-    'Critical thinking',
-    'Problem-solving',
-    'Communication skills',
-    'Collaboration',
-    'Attention to detail',
-    'Logical reasoning',
-    'Creativity',
-    'Time management',
-    'Adaptability',
-    'Leadership',
-    'Teamwork',
-    'Presentation skills',
-  ],
-};
-
-  final List<String> items = interestGroups.keys.toList();
-
-  final List<String> selectedInterests = List<String>.from(loggedInInterests); // Store the selected interests outside of the dialog
-
-  final List<String>? result = await showDialog<List<String>>(
-    context: context,
-    builder: (BuildContext context) {
-      final List<String> chosenInterests = List<String>.from(selectedInterests);
-
-      return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          return AlertDialog(
-            title: const Text('Select Interests'),
-            content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  for (String group in items)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          group,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        ...interestGroups[group]!.map((String interest) {
-                          return CheckboxListTile(
-                            title: Text(interest),
-                            value: chosenInterests.contains(interest),
-                            onChanged: (bool? value) {
-                              setState(() {
-                                if (value == true) {
-                                  chosenInterests.add(interest);
-                                } else {
-                                  chosenInterests.remove(interest);
-                                }
-                              });
-                            },
-                          );
-                        }),
-                        const SizedBox(height: 16),
-                      ],
-                    ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(chosenInterests);
-                },
-                child: const Text('Done'),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
-
-  if (result != null) {
-    setState(() {
-      newUserInterests = result;
-    });
-  }
-}
-
-
-
-
-void _showMultiSelectSkills() async {
-  final Map<String, List<String>> skillGroups ={
-  'Data Science': [
-    'Python',
-    'R',
-    'Tableau',
-    'Machine learning and artificial intelligence',
-    'Big data technologies (Hadoop, Apache Spark)',
-    'Data science',
-    'Statistical analysis',
-    'Natural language processing (NLP)',
-    'Robotic process automation (RPA)',
-  ],
-  'Database Management': [
-    'Database management SQL',
-    'Database management NoSQL',
-    'Database management NewSQL',
-  ],
-  'Programming Languages': [
-    'Java',
-    'Node.js',
-    'React',
-    'C#',
-    'C++',
-  ],
-  'Web Development': [
-    'Web development (HTML)',
-    'Web development (CSS)',
-    'Web development (JavaScript)',
-    'Web development (PHP)',
-  ],
-  'Mobile App Development': [
-    'Mobile app development (iOS, Android)',
-    'UI/UX design',
-    'Swift',
-    'Ruby',
-    'Flutter and Dart',
-  ],
-  'Other Skills': [
-    'Agile and Scrum methodologies',
-    'Virtual reality (VR)',
-    'Augmented reality (AR)',
-    'Cloud computing',
-    'Cybersecurity',
-    'Network',
-    'Blockchain',
-    'Internet of Things (IoT)',
-  ],
-  'Soft Skills': [
-    'Critical thinking',
-    'Problem-solving',
-    'Communication skills',
-    'Collaboration',
-    'Attention to detail',
-    'Logical reasoning',
-    'Creativity',
-    'Time management',
-    'Adaptability',
-    'Leadership',
-    'Teamwork',
-    'Presentation skills',
-  ],
-};
-
-  final List<String> items = skillGroups.keys.toList();
-
-  final List<String> selectedSkills = List<String>.from(loggedInSkills); // Store the selected skills outside of the dialog
-
-  final List<String>? result = await showDialog<List<String>>(
-    context: context,
-    builder: (BuildContext context) {
-      final List<String> chosenSkills = List<String>.from(selectedSkills);
-
-      return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          return AlertDialog(
-            title: const Text('Select Skills'),
-            content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  for (String group in items)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          group,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        ...skillGroups[group]!.map((String skill) {
-                          return CheckboxListTile(
-                            title: Text(skill),
-                            value: chosenSkills.contains(skill),
-                            onChanged: (bool? value) {
-                              setState(() {
-                                if (value == true) {
-                                  chosenSkills.add(skill);
-                                } else {
-                                  chosenSkills.remove(skill);
-                                }
-                              });
-                            },
-                          );
-                        }),
-                        const SizedBox(height: 16),
-                      ],
-                    ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(chosenSkills);
-                },
-                child: const Text('Done'),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
-
-  if (result != null) {
-    setState(() {
-      newUserSkills = result;
-    });
-  }
-}
-
-
-
-
-
-
-
-
-
-
 
   Future<void> fetchUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -967,8 +679,8 @@ SizedBox(height: 2), // Add spacing between the button sets
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
             colors: [
-              Color.fromARGB(255, 43, 0, 89),
-              Colors.purple.shade100,
+              Color.fromARGB(255, 240, 240, 240),
+              const Color.fromARGB(255, 223, 223, 223),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -982,7 +694,7 @@ SizedBox(height: 2), // Add spacing between the button sets
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w800,
-                color: Colors.white,
+                color: Colors.deepPurple,
               ),
             ),
             SizedBox(height: 8),
@@ -1049,7 +761,292 @@ navigateToStartPage();
       ),
     ),
   );
+
+
+
 }
+void _showMultiSelectInterests() async {
+  final Map<String, List<String>> interestGroups = {
+  'Data Science': [
+    'Python',
+    'R',
+    'Tableau',
+    'Machine learning and artificial intelligence',
+    'Big data technologies (Hadoop, Apache Spark)',
+    'Data science',
+    'Statistical analysis',
+    'Natural language processing (NLP)',
+    'Robotic process automation (RPA)',
+  ],
+  'Database Management': [
+    'Database management SQL',
+    'Database management NoSQL',
+    'Database management NewSQL',
+  ],
+  'Programming Languages': [
+    'Java',
+    'Node.js',
+    'React',
+    'C#',
+    'C++',
+  ],
+  'Web Development': [
+    'Web development (HTML)',
+    'Web development (CSS)',
+    'Web development (JavaScript)',
+    'Web development (PHP)',
+  ],
+  'Mobile App Development': [
+    'Mobile app development (iOS, Android)',
+    'UI/UX design',
+    'Swift',
+    'Ruby',
+    'Flutter and Dart',
+  ],
+  'Other Interests': [
+    'Agile and Scrum methodologies',
+    'Virtual reality (VR)',
+    'Augmented reality (AR)',
+    'Cloud computing',
+    'Cybersecurity',
+    'Network',
+    'Blockchain',
+    'Internet of Things (IoT)',
+  ],
+  'Soft Skills': [
+    'Critical thinking',
+    'Problem-solving',
+    'Communication skills',
+    'Collaboration',
+    'Attention to detail',
+    'Logical reasoning',
+    'Creativity',
+    'Time management',
+    'Adaptability',
+    'Leadership',
+    'Teamwork',
+    'Presentation skills',
+  ],
+};
+
+  final List<String> items = interestGroups.keys.toList();
+
+  final List<String> selectedInterests = List<String>.from(loggedInInterests); // Store the selected interests outside of the dialog
+
+  final List<String>? result = await showDialog<List<String>>(
+    context: context,
+    builder: (BuildContext context) {
+      final List<String> chosenInterests = List<String>.from(selectedInterests);
+
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: const Text('Select Interests'),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  for (String group in items)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          group,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        ...interestGroups[group]!.map((String interest) {
+                          return CheckboxListTile(
+                            title: Text(interest),
+                            value: chosenInterests.contains(interest),
+                            onChanged: (bool? value) {
+                              setState(() {
+                                if (value == true) {
+                                  chosenInterests.add(interest);
+                                } else {
+                                  chosenInterests.remove(interest);
+                                }
+                              });
+                            },
+                          );
+                        }),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(chosenInterests);
+                },
+                child: const Text('Done'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+
+  if (result != null) {
+    setState(() {
+      newUserInterests = result;
+    });
+  }
+}
+
+
+
+
+void _showMultiSelectSkills() async {
+  final Map<String, List<String>> skillGroups ={
+  'Data Science': [
+    'Python',
+    'R',
+    'Tableau',
+    'Machine learning and artificial intelligence',
+    'Big data technologies (Hadoop, Apache Spark)',
+    'Data science',
+    'Statistical analysis',
+    'Natural language processing (NLP)',
+    'Robotic process automation (RPA)',
+  ],
+  'Database Management': [
+    'Database management SQL',
+    'Database management NoSQL',
+    'Database management NewSQL',
+  ],
+  'Programming Languages': [
+    'Java',
+    'Node.js',
+    'React',
+    'C#',
+    'C++',
+  ],
+  'Web Development': [
+    'Web development (HTML)',
+    'Web development (CSS)',
+    'Web development (JavaScript)',
+    'Web development (PHP)',
+  ],
+  'Mobile App Development': [
+    'Mobile app development (iOS, Android)',
+    'UI/UX design',
+    'Swift',
+    'Ruby',
+    'Flutter and Dart',
+  ],
+  'Other Skills': [
+    'Agile and Scrum methodologies',
+    'Virtual reality (VR)',
+    'Augmented reality (AR)',
+    'Cloud computing',
+    'Cybersecurity',
+    'Network',
+    'Blockchain',
+    'Internet of Things (IoT)',
+  ],
+  'Soft Skills': [
+    'Critical thinking',
+    'Problem-solving',
+    'Communication skills',
+    'Collaboration',
+    'Attention to detail',
+    'Logical reasoning',
+    'Creativity',
+    'Time management',
+    'Adaptability',
+    'Leadership',
+    'Teamwork',
+    'Presentation skills',
+  ],
+};
+
+  final List<String> items = skillGroups.keys.toList();
+
+  final List<String> selectedSkills = List<String>.from(loggedInSkills); // Store the selected skills outside of the dialog
+
+  final List<String>? result = await showDialog<List<String>>(
+    context: context,
+    builder: (BuildContext context) {
+      final List<String> chosenSkills = List<String>.from(selectedSkills);
+
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: const Text('Select Skills'),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  for (String group in items)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          group,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        ...skillGroups[group]!.map((String skill) {
+                          return CheckboxListTile(
+                            title: Text(skill),
+                            value: chosenSkills.contains(skill),
+                            onChanged: (bool? value) {
+                              setState(() {
+                                if (value == true) {
+                                  chosenSkills.add(skill);
+                                } else {
+                                  chosenSkills.remove(skill);
+                                }
+                              });
+                            },
+                          );
+                        }),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(chosenSkills);
+                },
+                child: const Text('Done'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+
+  if (result != null) {
+    setState(() {
+      newUserSkills = result;
+    });
+  }
+}
+
+
 
 // Function to validate and save the username
 Future<bool> validateUsername() async {
@@ -1108,54 +1105,76 @@ Future<bool> updateUsernameByEmail() async {
        return true;
 
 }
-
-
 Future<bool> validatePassword() async {
   // Check if the new password is equal to the existing password
-  if (newPassword == loggedInPassword) {
-    return true;
-  }else
+  if (hashPassword(newPassword) == loggedInPassword) {
+    return true; // Nothing changed (user doesn't want to modify)
+  }
+
   // Check password length
   if (newPassword.length < 8) {
-  _showSnackBar( 'Password should be more than 8 characters.');
+    _showSnackBar('Password should not be less than 8 characters.');
     return false;
-  }else
+  }
+
   // Check for white spaces in the password
   if (newPassword.contains(' ')) {
-     _showSnackBar('Password should not contain spaces.');
+    _showSnackBar('Password should not contain spaces.');
     return false;
-  }else
-   if (! newPassword.contains(RegExp(r'[A-Z]'))) {
-      _showSnackBar('Password should have at least one capital letter.');
+  }
+
+  // Check for at least one capital letter in the password
+  if (!newPassword.contains(RegExp(r'[A-Z]'))) {
+    _showSnackBar('Password should have at least one capital letter.');
     return false;
-  }else
-if ( await updatePasswordByEmail() )
-return true;
-return false;
+  }
+
+  // Update the password in the database and Firebase Authentication
+  if (await updatePasswordByEmail()) {
+    return true;
+  }
+
+  return false;
 }
 
 Future<bool> updatePasswordByEmail() async {
-  final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .where('email', isEqualTo: loggedInEmail)
-      .limit(1)
-      .get();
+  final QuerySnapshot<Map<String, dynamic>> snapshot =
+      await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: loggedInEmail)
+          .limit(1)
+          .get();
 
   if (snapshot.docs.isNotEmpty) {
     final DocumentSnapshot<Map<String, dynamic>> userDoc = snapshot.docs.first;
     final String userId = userDoc.id;
+    final String hashedPassword = hashPassword(newPassword); // Hash the new password
 
-    await FirebaseFirestore.instance.collection('users').doc(userId).update({
-      'password': newPassword,
-    });
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .update({'password': hashedPassword});
+
+    // Update password in Firebase Authentication
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        await user.updatePassword(hashedPassword);
+        return true;
+      } catch (e) {
+        print('Failed to update password in Firebase Authentication: $e');
+      }
+    }
   }
-      isModified = true;
-    //   _showSnackBar('Your information has been changed successfullyPASS');
-       return true;
 
+  return false;
 }
 
-
+String hashPassword(String password) {
+  var bytes = utf8.encode(password); // Encode the password as bytes
+  var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
+  return digest.toString(); // Convert the hash to a string
+}
 
 Future<bool> validateCSC() async {
   // Check if the new password is equal to the existing password
@@ -1382,12 +1401,20 @@ Future<bool> isDeleted() async {
     final DocumentSnapshot<Map<String, dynamic>> userDoc = snapshot.docs.first;
     final String userId = userDoc.id;
 
+    // Delete user document from Firestore
     await FirebaseFirestore.instance.collection('users').doc(userId).delete();
-    return true;
-}
-_showSnackBar('An error occured while trying to delete your account');
-return false;
 
+    // Delete user from Firebase Authentication
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await user.delete();
+    }
+
+    return true;
+  }
+
+  _showSnackBar('An error occurred while trying to delete your account');
+  return false;
 }
 
 void navigateToStartPage() async {

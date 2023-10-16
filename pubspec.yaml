@@ -26,6 +26,8 @@ dependencies:
   google_fonts: ^4.0.4
   url_launcher: ^6.1.14
   hash: ^1.0.4
+  crypto: ^3.0.3
+  keyboard_dismisser: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -55,7 +57,6 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/avaters/
     - assets/Backgrounds/
     - assets/icons/
     - assets/RiveAssets/

@@ -1,17 +1,20 @@
 import 'dart:ui';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:techxcel11/pages/UserProfilePage.dart';
 import 'package:techxcel11/pages/reuse.dart';
-import 'package:techxcel11/pages/home.dart';
-import 'package:techxcel11/pages/SignUp.dart';
+import 'package:techxcel11/pages/Fhome.dart';
 import 'package:lottie/lottie.dart';
 import 'package:techxcel11/pages/start.dart';
+import 'package:techxcel11/pages/ForgetPassword.dart';
 import 'package:techxcel11/pages/Admin_home.dart';
-//import 'package:techxcel11/pages/UserProfilePage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
+import 'package:techxcel11/pages/Signup.dart';
+
 
 
 class Login extends StatefulWidget {
@@ -26,6 +29,62 @@ class _Login extends State<Login> {
   TextEditingController _email = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+@override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+void logUserIn() async {
+  final String email = _email.text.toLowerCase();
+  final String password = _password.text.trim();
+
+  try {
+    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    // Email and password match a user in the database
+    final uid = userCredential.user!.uid;
+
+    // Fetch the user document from Firestore based on the uid
+    final DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get();
+
+    if (snapshot.exists) {
+      final user = snapshot.data()!;
+
+      // Save the user's email in shared preferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('loggedInEmail', email);
+      _showSnackBar("Welcome Back!");
+
+      // Redirect the user based on the user type
+      if (user['userType'] == 'Admin') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AdminHome()),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FHomePage()),
+        );
+      }
+    } else {
+      _showSnackBar("Login failed, please enter correct credentials");
+    }
+  } catch (e) {
+    // Handle login errors here
+    print('Login error: $e');
+    _showSnackBar("Login failed, please enter correct credentials");
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -150,10 +209,17 @@ class _Login extends State<Login> {
                               children: [
                                 reusableTextField("Please Enter Your Password",
                                     Icons.password, true, _password, true),
-                                TextButton(
+                          TextButton(
                                   // FORGET PASSWORD
                                   onPressed: () {
-                                    // Handle forgot password logic here
+                                    // Navigate to ForgetPassword page
+                                    Navigator.push(
+                                      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ForgetPassword()),
+                                    );
                                   },
                                   child: const Text(
                                     'Forgot Password?',
@@ -174,23 +240,18 @@ class _Login extends State<Login> {
                       ),
                     ),
                     signUpOption(), // Add the signUpOption widget here
-  ElevatedButton(
-              onPressed: _login,
-              child: const Text('Login'),
-            ),
-                    /*GestureDetector(
-                      onTap: () {
-                        _login;
-                      },
+  
+                    GestureDetector(
+                      onTap: 
+                        logUserIn,
                       child: Container(
-                        height: 170,
-                        //width: 500,
+                        height: 174,
                         child: Lottie.network(
                           'https://lottie.host/702b54d8-e453-4d3b-93c5-f7ebf587554a/bS3nChV9sx.json', // Replace with the actual path to your Lottie animation file
                           fit: BoxFit.contain,
                         ),
                       ),
-                    ),*/
+                    ),
 
                     Padding(
                       padding: const EdgeInsets.symmetric(
@@ -240,7 +301,7 @@ class _Login extends State<Login> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SignUp()),
+              MaterialPageRoute(builder: (context) => Signup()),
             );
           },
           child: const Text(
@@ -255,57 +316,13 @@ class _Login extends State<Login> {
     );
   }
 
-/*
+
+
 String hashPassword(String password) {
   var bytes = utf8.encode(password); // Encode the password as bytes
   var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
   return digest.toString(); // Convert the hash to a string
-}*/
-
-
-void _login() async {
-    final String email = _email.text.toLowerCase();
-    final String password = _password.text;
-
-    // Query the Firestore collection to check if the email and password match a user
-    final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
-        .collection('users')
-        .where('email', isEqualTo: email)
-        .where('password', isEqualTo: password)
-        .limit(1)
-        .get();
-
-   
-      // Email and password match a user in the```dart
-    if (snapshot.docs.isNotEmpty) {
-      // Email and password match a user in the database
-      final user = snapshot.docs[0].data();
-
-      // Save the user's email in shared preferences
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('loggedInEmail', email);
-      _showSnackBar("Welcome Back!");
-
-      //if admin move to admin
-if (user['userType'] == 'Admin') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => AdminHome()),
-      );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => UserProfilePage()),
-      );
-    }
-  }
-
-      // Navigate to the user profile page
-     
-     else {
-      _showSnackBar("Login failed, please enter correct credentials");
-    }
-  }
+} 
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(

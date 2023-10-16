@@ -1,4 +1,266 @@
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:techxcel11/pages/AdminProfilePage.dart';
+import 'package:techxcel11/pages/Admin_home.dart';
+import 'package:techxcel11/pages/ChatPage.dart';
+import 'package:techxcel11/pages/CoursesAndEventsPage.dart';
+import 'package:techxcel11/pages/Fhome.dart';
+import 'package:techxcel11/pages/FreelancerPage.dart';
+import 'package:techxcel11/pages/UserProfilePage.dart';
+import 'package:techxcel11/pages/aboutus.dart';
+import 'package:techxcel11/pages/bookmark.dart';
+import 'package:techxcel11/pages/CalendarPage.dart';
+import 'package:techxcel11/pages/user_posts_page.dart';
+
+class NavBarUser extends StatefulWidget {
+  @override
+  _NavBarUserState createState() => _NavBarUserState();
+}
+
+class _NavBarUserState extends State<NavBarUser> {
+  String loggedInUsername = '';
+  String loggedInEmail = '';
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('loggedInEmail') ?? '';
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final userData = snapshot.docs[0].data();
+
+      final username = userData['userName'] ?? '';
+
+      setState(() {
+        loggedInUsername = username;
+        loggedInEmail = email;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero, // top
+        children: [
+          UserAccountsDrawerHeader(
+            // +++++++++++++modify
+
+            accountName: Text(loggedInUsername),
+            accountEmail: Text(
+              loggedInEmail,
+            ),
+            currentAccountPicture: CircleAvatar(
+              child: ClipOval(
+                child: Image.network(
+                  'https://img.freepik.com/free-icon/user_318-563642.jpg',
+                  width: 90,
+                  height: 90,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            decoration: BoxDecoration(
+              color: Color.fromARGB(117, 230, 227, 236), // if img not show up
+              image: DecorationImage(
+                image: NetworkImage(
+                    'https://4kwallpapers.com/images/walls/thumbs_2t/7898.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+
+          // profile
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text('Profile'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => UserProfilePage()),
+            ), 
+          ),
+          Divider(),
+
+          // my Post
+          ListTile(
+            leading: Icon(Icons.post_add),
+            title: Text('My Interactions'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => UserPostsPage()),
+            ), 
+          ),
+          Divider(),
+
+          // Bookmarke
+          ListTile(
+            leading: Icon(Icons.bookmark),
+            title: Text('Bookmarke'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => BookmarkPage()),
+            ), 
+          ),
+          Divider(),
+
+          // calendar
+          ListTile(
+            leading: Icon(Icons.calendar_month),
+            title: Text('Calendar'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CalendarPage()),
+            ), 
+          ),
+
+          // about us 
+          ListTile(
+            leading: Icon(Icons.groups_2_rounded),
+            title: Text('About Us'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AboutUsPage()),
+            ),
+          ),
+SizedBox(height: 80),
+Divider(),
+               ListTile(
+            leading: Icon(Icons.home),
+            title: Text('Home'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => FHomePage()),
+            ),
+          ),
+/*logout will be from user profile, ADMIN AS WELL ?
+          ListTile(
+            leading: Icon(Icons.logout),
+            title: Text('Logout'),
+            onTap: () => Login(), // change it to page name +++++++++++++++++
+          ), */
+        ],
+      ),
+    );
+  }
+}
+
+// admin NAVBAR
+class NavBarAdmin extends StatefulWidget {
+  @override
+  _NavBarAdminState createState() => _NavBarAdminState();
+}
+
+class _NavBarAdminState extends State<NavBarAdmin> {
+  String loggedInUsername = '';
+  String loggedInEmail = '';
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('loggedInEmail') ?? '';
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final userData = snapshot.docs[0].data();
+
+      final username = userData['userName'] ?? '';
+
+      setState(() {
+        loggedInUsername = username;
+        loggedInEmail = email;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero, // top
+        children: [
+          UserAccountsDrawerHeader(
+            accountName: Text(loggedInUsername),
+            accountEmail: Text(
+              loggedInEmail,
+            ),
+            currentAccountPicture: CircleAvatar(
+              child: ClipOval(
+                child: Image.network(
+                  'https://img.freepik.com/free-icon/user_318-563642.jpg',
+                  width: 90,
+                  height: 90,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            decoration: BoxDecoration(
+              color: Color.fromARGB(117, 230, 227, 236), // if img not show up
+              image: DecorationImage(
+                image: NetworkImage(
+                    'https://4kwallpapers.com/images/walls/thumbs_2t/7898.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+
+          // profile
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text('Profile'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AdminProfile()),
+            ), // change it to page name +++++++++++++++++
+          ),
+
+          // about us - contact us
+          ListTile(
+            leading: Icon(Icons.groups_2_rounded),
+            title: Text('Dashboard'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AdminHome()),
+            ),
+          ),
+          
+/*logout will be from user profile, ADMIN AS WELL ?
+          ListTile(
+            leading: Icon(Icons.logout),
+            title: Text('Logout'),
+            onTap: () => Login(), // change it to page name +++++++++++++++++
+          ), */
+        ],
+      ),
+    );
+  }
+}
+
 
 TextField reusableTextField(String text, IconData icon, bool isPasswordType,
     TextEditingController controller, bool modifiable) {
@@ -37,135 +299,6 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
   );
 }
 
-Widget NavBarAdmin() {
-  return Drawer(
-    child: ListView(
-      padding: EdgeInsets.zero, // top
-      children: [
-        UserAccountsDrawerHeader(
-          // +++++++++++++modify
-
-          accountName: Text('Lina-tamim'),
-          accountEmail: Text('Linatamim@hotmail.com'),
-          currentAccountPicture: CircleAvatar(
-            child: ClipOval(
-              child: Image.network(
-                'https://img.freepik.com/free-icon/user_318-563642.jpg',
-                width: 90,
-                height: 90,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          decoration: BoxDecoration(
-            color: Color.fromARGB(255, 218, 200, 255), // if img not show up
-            image: DecorationImage(
-              image: NetworkImage(
-                  'https://4kwallpapers.com/images/walls/thumbs_2t/7898.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        // profile
-        ListTile(
-          leading: Icon(Icons.person),
-          title: Text('Profile'),
-          onTap: () => null, // change it to page name +++++++++++++++++
-        ),
-
-        // about us - contact us
-        ListTile(
-          leading: Icon(Icons.groups_2_rounded),
-          title: Text('About Us'),
-          onTap: () => null, // change it to page name +++++++++++++++++
-        ),
-        /*logout
-        ListTile(
-          leading: Icon(Icons.logout),
-          title: Text('Logout'),
-          onTap: () => null, // change it to page name +++++++++++++++++
-        ), */ //logout will be from user profile
-      ],
-    ),
-  );
-}
-
-Widget NavBarUser() {
-  return Drawer(
-    child: ListView(
-      padding: EdgeInsets.zero, // top
-      children: [
-        UserAccountsDrawerHeader(
-          // +++++++++++++modify
-
-          accountName: Text('Lina-tamim'),
-          accountEmail: Text('Linatamim@hotmail.com'),
-          currentAccountPicture: CircleAvatar(
-            child: ClipOval(
-              child: Image.network(
-                'https://img.freepik.com/free-icon/user_318-563642.jpg',
-                width: 90,
-                height: 90,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          decoration: BoxDecoration(
-            color: Color.fromARGB(255, 218, 200, 255), // if img not show up
-            image: DecorationImage(
-              image: NetworkImage(
-                  'https://4kwallpapers.com/images/walls/thumbs_2t/7898.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        // profile
-        ListTile(
-          leading: Icon(Icons.person),
-          title: Text('Profile'),
-          onTap: () => null, // change it to page name +++++++++++++++++
-        ),
-        Divider(),
-        // my Post
-        ListTile(
-          leading: Icon(Icons.post_add),
-          title: Text('My Post'),
-          onTap: () => null, // change it to page name +++++++++++++++++
-        ),
-        Divider(),
-
-        // Bookmarke
-        ListTile(
-          leading: Icon(Icons.bookmark),
-          title: Text('Bookmarke'),
-          onTap: () => null, // change it to page name +++++++++++++++++
-        ),
-        Divider(),
-
-        // calendar
-        ListTile(
-          leading: Icon(Icons.calendar_month),
-          title: Text('Calendar'),
-          onTap: () => null, // change it to page name +++++++++++++++++
-        ),
-
-        // about us - contact us
-        ListTile(
-          leading: Icon(Icons.groups_2_rounded),
-          title: Text('About Us'),
-          onTap: () => null, // change it to page name +++++++++++++++++
-        ),
-        //logout
-        ListTile(
-          leading: Icon(Icons.logout),
-          title: Text('Logout'),
-          onTap: () => null, // change it to page name +++++++++++++++++
-        ),
-      ],
-    ),
-  );
-}
-
 AppBar buildAppBar(String titleText) {
   return AppBar(
     iconTheme: IconThemeData(color: const Color.fromARGB(255, 255, 255, 255)),
@@ -188,3 +321,51 @@ AppBar buildAppBar(String titleText) {
     ),
   );
 }
+
+
+/*
+class NavBarBottom2 extends StatefulWidget {
+  final Function(int) onIconPressed;
+
+  NavBarBottom2({required this.onIconPressed});
+
+  @override
+  _NavBarBottom2State createState() => _NavBarBottom2State();
+}
+
+class _NavBarBottom2State extends State<NavBarBottom2> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(), // Replace with your page content
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: widget.onIconPressed,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.handshake_outlined),
+            label: 'Freelancers',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat_outlined),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.explore_outlined),
+            label: 'Explore',
+          ),
+        ],
+        backgroundColor: const Color.fromARGB(255, 219, 219, 219),
+        selectedItemColor: Color.fromARGB(255, 40, 0, 57),
+        unselectedItemColor: Colors.grey,
+        iconSize: 20,
+        selectedFontSize: 10,
+        unselectedFontSize: 10,
+        type: BottomNavigationBarType.fixed,
+      ),
+    );
+  }
+}*/
