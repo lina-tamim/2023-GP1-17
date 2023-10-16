@@ -1,8 +1,8 @@
 //import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:techxcel11/pages/NavBar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Import the FontAwesome Flutter package
 import 'package:google_fonts/google_fonts.dart';
+import 'package:techxcel11/pages/reuse.dart';
 
 
 
@@ -17,7 +17,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: NavBar(),
+      drawer: NavBarUser(),
       appBar: AppBar(
         title: Text('About TechXcel'),
       ),
@@ -31,21 +31,41 @@ class _AboutUsPageState extends State<AboutUsPage> {
               Text(
                 'TechXcel',
                 style: GoogleFonts.orbitron ( // chakraPetch blackOpsOne orbitron
-    fontSize: 60,
+    fontSize: 40,
     fontWeight: FontWeight.bold,
     color: Colors.black87,
   ),
               ),
 
               // Display application logo
-              Image.asset('assets/logo.png'),
-              SizedBox(height: 60),
+              Image.asset('assets/Backgrounds/XlogoSmall.png'),
+              SizedBox(height: 30),
 
               // Brief description of the platform
-              Text(
-                'TechXcel is a platform that combines features from multiple platforms like StackOverflow, Upwork, and Coursera. It is a one-stop shop for all things tech, where you can ask questions, find freelancers, and learn new skills.',
+
+
+
+
+  Text(
+  "TechXcel, the all-in-one destination for tech ",
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 13,
+                ),
+              ),
+
+
+Text(
+'enthusiasts, professionals, and lifelong learners.',
+  style: GoogleFonts.satisfy ( // chakraPetch blackOpsOne orbitron
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+    color: const Color.fromARGB(221, 62, 17, 17),
+  ),),
+SizedBox(height:20),
+              Text(
+                "At TechXcel, we're passionate about technology and its endless possibilities. Our platform serves as a hub where you can ignite your tech journey, connect with like-minded individuals, and unlock new opportunities.",
+                style: TextStyle(
+                  fontSize: 13,
                 ),
               ),
 
@@ -80,7 +100,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                 children: [
                   Icon(
                     FontAwesomeIcons.twitter,
-                    size: 18,
+                    size: 20,
                     color: Colors.grey[700],
                   ),
                   SizedBox(width: 10),
@@ -110,42 +130,3 @@ class _AboutUsPageState extends State<AboutUsPage> {
 
 
 
-
-
-
-
-/*
-
-
-
-class AboutusPage extends StatefulWidget{
-  const AboutusPage({Key? key}) : super(key: key);
-
-  @override
-  State<AboutusPage> createState() => _AboutusPageState();
-}
-  
-class _AboutusPageState extends State<AboutusPage>{
-  @override
-  Widget build (BuildContext context){
-     return Scaffold(
-      backgroundColor: const Color.fromRGBO(248, 241, 243, 1),
-      bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: const Color.fromRGBO(248, 241, 243, 1),
-        color: const Color.fromARGB(255, 237, 212, 242),
-        animationDuration: const Duration (milliseconds: 300),
-        onTap: (index){
-          //use it to navigate to different pages
-
-        },
-        items: const [
-        Icon(Icons.home),
-        Icon(Icons.work),
-        Icon(Icons.book),
-        Icon(Icons.chat_bubble),
-
-      ],
-      ) ,
-    );
-  }
-}*/

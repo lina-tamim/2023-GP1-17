@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Import the FontAwesome Flutter package
 import 'package:techxcel11/pages/EditProfile2.dart';
 import 'package:techxcel11/pages/Login.dart';
-import 'package:techxcel11/pages/NavBar.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,6 +19,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   String loggedInUsername = '';
   String loggedInCountry = '';
   String loggedInCity = '';
+  String loggedInUserType = '';
   String loggedInGithub = '';
   List<String> userSkills = [];
   List<String> userInterests = [];
@@ -52,6 +52,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       final github = userData['GithubLink'] ?? '';
       final skills = List<String>.from(userData['skills'] ?? []);
       final interests = List<String>.from(userData['interests'] ?? []);
+      final userType = userData['userType'] ?? '';
 
       setState(() {
         loggedInUsername = username;
@@ -60,6 +61,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         loggedInGithub = github;
         userSkills = skills;
         userInterests = interests;
+        loggedInUserType = userType;
       });
     }
   }
@@ -118,7 +120,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: NavBar(),
+      drawer: NavBarUser(),
       appBar: AppBar(
         title: Text('My Profile'),
       ),
@@ -138,7 +140,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Color.fromARGB(255, 49, 0, 70),
+                    primary: Color.fromARGB(255, 10, 1, 95),
                     onPrimary: Colors.white,
                     side: BorderSide.none ,
                     shape: StadiumBorder(),
@@ -157,15 +159,26 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 ),
               // Username
               SizedBox(height: 16),
-          Text(
-  loggedInUsername,
-  style: GoogleFonts.orbitron ( // chakraPetch blackOpsOne orbitron
-    fontSize: 24,
-    fontWeight: FontWeight.bold,
-    color: Colors.black87,
-  ),
-                textAlign: TextAlign.center,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                  Text(
+                  loggedInUsername + ' ',
+                  style: GoogleFonts.orbitron(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                     if (loggedInUserType == "Freelancer") // Replace "userType" with the actual variable representing the user type
+                    Icon(
+                      Icons.verified ,
+                      color: Color.fromARGB(255, 0, 91, 228),
+                      size: 25, // Adjust the size of the star icon as desired
+                  ),
+              ],
+            ),
               // Country and City
               SizedBox(height: 15),
               Row(
