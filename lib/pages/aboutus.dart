@@ -30,7 +30,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
               // Display application name in big font
               Text(
                 'TechXcel',
-                style: GoogleFonts.orbitron ( // chakraPetch blackOpsOne orbitron
+                style: GoogleFonts.orbitron ( 
     fontSize: 40,
     fontWeight: FontWeight.bold,
     color: Colors.black87,

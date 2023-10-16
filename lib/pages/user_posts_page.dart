@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/pages/cardFandT.dart';
 import 'package:techxcel11/pages/cardQuestion.dart';
@@ -329,7 +328,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-        backgroundColor: Color.fromARGB(255, 251, 246, 247),
+        backgroundColor: const Color.fromRGBO(248, 241, 243, 1),
         appBar: AppBar(
           automaticallyImplyLeading: false,
           iconTheme:
@@ -413,7 +412,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
           onPressed: () async {
             _toggleFormVisibility();
           },
-          backgroundColor: Color.fromARGB(255, 0, 5, 109),
+          backgroundColor: Colors.purple,
           child: const Icon(Icons.add),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

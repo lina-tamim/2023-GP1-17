@@ -84,8 +84,6 @@ class _NavBarUserState extends State<NavBarUser> {
               ),
             ),
           ),
-
-          // profile
           ListTile(
             leading: Icon(Icons.person),
             title: Text('Profile'),
@@ -95,8 +93,6 @@ class _NavBarUserState extends State<NavBarUser> {
             ), 
           ),
           Divider(),
-
-          // my Post
           ListTile(
             leading: Icon(Icons.post_add),
             title: Text('My Interactions'),
@@ -106,19 +102,15 @@ class _NavBarUserState extends State<NavBarUser> {
             ), 
           ),
           Divider(),
-
-          // Bookmarke
           ListTile(
             leading: Icon(Icons.bookmark),
-            title: Text('Bookmarke'),
+            title: Text('Bookmark'),
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => BookmarkPage()),
             ), 
           ),
           Divider(),
-
-          // calendar
           ListTile(
             leading: Icon(Icons.calendar_month),
             title: Text('Calendar'),
@@ -127,8 +119,6 @@ class _NavBarUserState extends State<NavBarUser> {
               MaterialPageRoute(builder: (context) => CalendarPage()),
             ), 
           ),
-
-          // about us 
           ListTile(
             leading: Icon(Icons.groups_2_rounded),
             title: Text('About Us'),
@@ -321,6 +311,8 @@ AppBar buildAppBar(String titleText) {
     ),
   );
 }
+
+
 
 
 /*

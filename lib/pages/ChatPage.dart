@@ -23,7 +23,6 @@ class _ChatPageState extends State<ChatPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Display application name in big font
               Text(
                 'TechXcel',
                 style: GoogleFonts.orbitron(
@@ -37,7 +36,6 @@ class _ChatPageState extends State<ChatPage> {
               Image.asset('assets/Backgrounds/XlogoSmall.png'),
               SizedBox(height: 30),
 
-              // Brief description of the platform
             ],
           ),
         ),

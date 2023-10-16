@@ -1115,12 +1115,12 @@ String hashPassword(String password) {
         _selectedState == '' ||
         _selectedPreference == null ||
         _selectedUser == null) {
-      _showSnackBar('Please fill in all fields');
+      _showSnackBar('Please fill in all the required fields');
       return false;
     }
 
 
-    //                                   *** username validation ***
+    //                          *** username validation ***
     // Check username validity (>6 + no WS)
     if (_userName.text.length < 6) {
       _showSnackBar('Username should be at least 6 characters long');

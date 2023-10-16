@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
-import 'package:techxcel11/pages/UserProfilePage.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:techxcel11/pages/Fhome.dart';
 import 'package:lottie/lottie.dart';

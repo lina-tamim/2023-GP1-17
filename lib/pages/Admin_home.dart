@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:techxcel11/pages/BlankPage.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:techxcel11/pages/login.dart';
 
@@ -26,7 +25,7 @@ class _AdminHome extends State<AdminHome> {
               padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(topLeft: Radius.circular(0)),
-              ),
+              ), 
               child: GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -39,7 +38,7 @@ class _AdminHome extends State<AdminHome> {
                       // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => BlankPage()),
+                        MaterialPageRoute(builder: (context) => AdminHome()), // will be changed in sprint2
                       );
                     },
                     child: itemDashborde(
@@ -53,7 +52,7 @@ class _AdminHome extends State<AdminHome> {
                       // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => BlankPage()),
+                        MaterialPageRoute(builder: (context) => AdminHome()),
                       );
                     },
                     child: itemDashborde(
@@ -67,7 +66,7 @@ class _AdminHome extends State<AdminHome> {
                       // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => BlankPage()),
+                        MaterialPageRoute(builder: (context) => AdminHome()),
                       );
                     },
                     child: itemDashborde(
@@ -81,7 +80,7 @@ class _AdminHome extends State<AdminHome> {
                       // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => BlankPage()),
+                        MaterialPageRoute(builder: (context) => AdminHome()),
                       );
                     },
                     child: itemDashborde(
@@ -95,7 +94,7 @@ class _AdminHome extends State<AdminHome> {
                       // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => BlankPage()),
+                        MaterialPageRoute(builder: (context) => AdminHome()),
                       );
                     },
                     child: itemDashborde(

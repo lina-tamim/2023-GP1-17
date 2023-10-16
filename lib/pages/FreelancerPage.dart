@@ -33,11 +33,9 @@ class _FreelancerPageState extends State<FreelancerPage> {
                 ),
               ),
 
-              // Display application logo
               Image.asset('assets/Backgrounds/XlogoSmall.png'),
               SizedBox(height: 30),
 
-              // Brief description of the platform
             ],
           ),
         ),

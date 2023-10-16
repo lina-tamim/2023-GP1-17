@@ -21,13 +21,13 @@ class CalendarPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Display application name in big font
-              Text(
+                   Text(
                 'TechXcel',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
+                style: GoogleFonts.orbitron ( // chakraPetch blackOpsOne orbitron
+    fontSize: 40,
+    fontWeight: FontWeight.bold,
+    color: Colors.black87,
+  ),
               ),
 
               // Display application logo
