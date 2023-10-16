@@ -1,10 +1,10 @@
 
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/pages/cardQuestion.dart';
 import 'package:techxcel11/pages/cardanswer.dart';
+
 
 class AnswerPage extends StatefulWidget {
   final int questionId;
@@ -144,7 +144,6 @@ class _AnswerPageState extends State<AnswerPage> {
     ),
   );
 
-
   Widget buildAnswerCard(CardAnswer answer) {
     int upvoteCount = answer.upvoteCount ?? 0;
     bool isUpvoted = false; // Track the upvote state
@@ -213,7 +212,7 @@ class _AnswerPageState extends State<AnswerPage> {
                             // Increment the upvote count
                             upvoteCount++;
 
-                            // Update the upvote count in Firestore
+                            // Update the upvote count in Firestore DB
                             FirebaseFirestore.instance
                                 .collection('answers')
                                 .doc(answer.answerId)

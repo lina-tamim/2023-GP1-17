@@ -373,7 +373,6 @@ class __FHomePageState extends State<FHomePage> {
         ),
 
         drawer: NavBarUser(
-            // Drawer content here
             ),
 
        /* bottomNavigationBar: CurvedNavigationBar(
