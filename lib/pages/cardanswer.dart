@@ -5,6 +5,7 @@ class CardAnswer {
   String docId;
   String answerText;
   int upvoteCount;
+  String username;
 
   CardAnswer({
     required this.answerId,
@@ -13,6 +14,7 @@ class CardAnswer {
     required this.docId,
     required this.answerText,
     required this.upvoteCount,
+    required this.username,
   });
 
   Map<String, dynamic> toJson() => {
@@ -22,6 +24,7 @@ class CardAnswer {
         'docId': docId,
         'answerText': answerText,
         'upvoteCount': upvoteCount,
+        'username':''
       };
 
   factory CardAnswer.fromJson(Map<String, dynamic> json) {
@@ -32,7 +35,8 @@ class CardAnswer {
       docId: json['docId'] ?? '',
       answerText: json['answerText'] as String,
       upvoteCount:
-          json['upvoteCount'] as int, // Parse the value as an int directly
+          json['upvoteCount'] as int, 
+          username: json['username'] ?? ''// Parse the value as an int directly
     );
   }
 }

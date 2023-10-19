@@ -24,8 +24,8 @@ class Login extends StatefulWidget {
 }
 
 class _Login extends State<Login> {
-  TextEditingController _password = TextEditingController();
-  TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final TextEditingController _email = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -67,21 +67,20 @@ void logUserIn() async {
       if (user['userType'] == 'Admin') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => AdminHome()),
+          MaterialPageRoute(builder: (context) => const AdminHome()),
         );
       } else {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => FHomePage()),
+          MaterialPageRoute(builder: (context) => const FHomePage()),
         );
       }
     } else {
       _showSnackBar("Login failed, please enter correct credentials");
     }
   } catch (e) {
-    // Handle login errors here
-    print('Login error: $e');
-    _showSnackBar("Login failed, please enter correct credentials");
+    print('$e');
+      _showSnackBar("Login failed, please enter correct credentials");
   }
 }
 
@@ -155,10 +154,10 @@ void logUserIn() async {
                       ),
                     ),
 
-                    Container(
+                    const SizedBox(
                       width: 300, // Adjust the width as needed
                       child: Divider(
-                        color: const Color.fromARGB(255, 211, 211, 211),
+                        color: Color.fromARGB(255, 211, 211, 211),
                         thickness: 1,
                       ),
                     ),
@@ -204,20 +203,17 @@ void logUserIn() async {
                           Align(
                             alignment: Alignment.centerRight,
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 reusableTextField("Please Enter Your Password",
-                                    Icons.password, true, _password, true),
+                                    Icons.lock, true, _password, true),
                           TextButton(
-                                  // FORGET PASSWORD
                                   onPressed: () {
-                                    // Navigate to ForgetPassword page
                                     Navigator.push(
-                                      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              ForgetPassword()),
+                                              const ForgetPassword()),
                                     );
                                   },
                                   child: const Text(
@@ -238,17 +234,15 @@ void logUserIn() async {
                         ],
                       ),
                     ),
-                    signUpOption(), // Add the signUpOption widget here
+                    signUpOption(), 
   
                     GestureDetector(
                       onTap: 
                         logUserIn,
-                      child: Container(
-                        height: 174,
-                        child: Lottie.network(
-                          'https://lottie.host/702b54d8-e453-4d3b-93c5-f7ebf587554a/bS3nChV9sx.json', // Replace with the actual path to your Lottie animation file
-                          fit: BoxFit.contain,
-                        ),
+                      child: SizedBox(
+                      height: 174,
+                      child: Image.asset('assets/Backgrounds/XlogoSmall.png'),
+
                       ),
                     ),
 
@@ -266,11 +260,11 @@ void logUserIn() async {
                         child: Container(
                           width: 70,
                           height: 50,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             shape: BoxShape.circle,
-                            color: const Color.fromARGB(255, 182, 184, 185),
+                            color: Color.fromARGB(255, 182, 184, 185),
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.highlight_remove_sharp,
                             color: Colors.white,
                             size: 50,
@@ -300,7 +294,7 @@ void logUserIn() async {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Signup()),
+              MaterialPageRoute(builder: (context) => const Signup()),
             );
           },
           child: const Text(
@@ -323,9 +317,23 @@ String hashPassword(String password) {
   return digest.toString(); // Convert the hash to a string
 } 
 
-  void _showSnackBar(String message) {
+
+   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.height - 80,
+          right: 20,
+          left: 20,
+        ),
+        backgroundColor:
+            Color.fromARGB(255, 63, 12, 118), // Customize the background color
+      ),
     );
   }
 }

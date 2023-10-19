@@ -10,6 +10,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:math' as math;
 
 class UserProfilePage extends StatefulWidget {
+  const UserProfilePage({super.key});
+
   @override
   _UserProfilePageState createState() => _UserProfilePageState();
 }
@@ -24,6 +26,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
   List<String> userInterests = [];
   bool showSkills = false;
   bool showInterests = false;
+  String url='';
+  int _currentIndex = 0;
+
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -91,23 +96,23 @@ class _UserProfilePageState extends State<UserProfilePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Logout'),
-          content: Text('Are you sure you want to logout?'),
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to logout?'),
           actions: [
             TextButton(
               onPressed: () {
                       Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Login()),
+                      MaterialPageRoute(builder: (context) => const Login()),
                     );
               },
-              child: Text('Yes'),
+              child: const Text('Yes'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('No'),
+              child: const Text('No'),
             ),
           ],
         );
@@ -119,10 +124,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: NavBarUser(),
-      appBar: AppBar(
-        title: Text('My Profile'),
-      ),
+      drawer: const NavBarUser(),
+      appBar: buildAppBar ('My Profile'),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(20),
@@ -135,14 +138,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => EditProfile2()),
+                      MaterialPageRoute(builder: (context) => const EditProfile2()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Color.fromARGB(255, 10, 1, 95),
-                    onPrimary: Colors.white,
+                    foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 10, 1, 95),
                     side: BorderSide.none ,
-                    shape: StadiumBorder(),
+                    shape: const StadiumBorder(),
                   ),
                   child: const Text('Edit Profile', style: TextStyle(color: Color.fromARGB(255, 254, 254, 254))),
                 ),
@@ -157,12 +159,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   fit: BoxFit.cover,
                 ),
               // Username
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                   Text(
-                  loggedInUsername + ' ',
+                  '$loggedInUsername ',
                   style: GoogleFonts.orbitron(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -171,7 +173,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   textAlign: TextAlign.center,
                 ),
                      if (loggedInUserType == "Freelancer") // Replace "userType" with the actual variable representing the user type
-                    Icon(
+                    const Icon(
                       Icons.verified ,
                       color: Color.fromARGB(255, 0, 91, 228),
                       size: 25, // Adjust the size of the star icon as desired
@@ -179,14 +181,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ],
             ),
               // Country and City
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(width: 4),
+                  const SizedBox(width: 4),
                   Text(
-                    loggedInCity == 'null' ? '$loggedInCountry' : '$loggedInCountry, $loggedInCity',
-                    style: TextStyle(
+                    loggedInCity == 'null' ? loggedInCountry : '$loggedInCountry, $loggedInCity',
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Colors.black,
                     ),
@@ -194,20 +196,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 ],
               ),
               // Github
-              SizedBox(height: 4), 
+              const SizedBox(height: 4), 
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                   SizedBox(width: 5),
+                   const SizedBox(width: 5),
                   Icon(
                     FontAwesomeIcons.github,
                     size: 18,
                     color: Colors.grey[700],
                   ),
-                  SizedBox(width: 4),
+                  const SizedBox(width: 4),
                   GestureDetector(
                     onTap: () {
-                      final url = ' https://github.com';
+                       url = loggedInGithub ;
                       launchURL(url);
                     },
                     child: Text(
@@ -223,20 +225,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 ],
               ),
               const Divider(),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 InkWell(
           onTap: toggleInterests,
           child: Row(
             children: [
               Transform.rotate(
                 angle: showInterests ? math.pi / 2 : 0,
-                child: Icon(
+                child: const Icon(
                   Icons.arrow_right ,
                   color: Colors.black,
                 ),
               ),
-              SizedBox(width: 5),
-              Text(
+              const SizedBox(width: 5),
+              const Text(
                 'Interests',
                 style: TextStyle(
                   fontSize: 18,
@@ -255,7 +257,7 @@ InkWell(
               );
             }).toList(),
           ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               const Divider(),
                InkWell(
           onTap: toggleSkills,
@@ -263,13 +265,13 @@ InkWell(
             children: [
               Transform.rotate(
                 angle: showSkills ? math.pi / 2 : 0,
-                child: Icon(
+                child: const Icon(
                   Icons.arrow_right,
                   color: Colors.black,
                 ),
               ),
-              SizedBox(width: 5),
-              Text(
+              const SizedBox(width: 5),
+              const Text(
                 'Skills',
                 style: TextStyle(
                   fontSize: 18,
@@ -283,8 +285,8 @@ InkWell(
           Column(
             children: [
               if (userSkills.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 5),
                   child: Text("You haven't added any skills yet!"),
                 )
               else
@@ -296,7 +298,7 @@ InkWell(
                 }).toList(),
             ],
           ),
-              SizedBox(height: 80),
+              const SizedBox(height: 80),
 InkWell(
   onTap: showLogoutConfirmationDialog,
   child: ListTile(
@@ -307,14 +309,14 @@ InkWell(
         borderRadius: BorderRadius.circular(100),
         color: Colors.red,
       ),
-      child: Icon(
+      child: const Icon(
         Icons.logout,
         color: Colors.white,
       ),
     ),
     title: Text(
       'Logout',
-      style: Theme.of(context).textTheme.bodyText1?.apply(
+      style: Theme.of(context).textTheme.bodyLarge?.apply(
             color: Colors.black87,
             fontWeightDelta: 2,
           ),
@@ -326,7 +328,7 @@ InkWell(
         borderRadius: BorderRadius.circular(100),
         color: Colors.grey.withOpacity(0.1),
       ),
-      child: Icon(
+      child: const Icon(
         Icons.arrow_forward_ios_rounded,
         size: 18.0,
         color: Colors.grey,
@@ -336,7 +338,17 @@ InkWell(
 )
             ],
           ),
+          
         ),
+        
+      ),
+         bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
       ),
     );
   }

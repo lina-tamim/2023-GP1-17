@@ -4,19 +4,21 @@ import 'package:techxcel11/pages/reuse.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
+  
 
   @override
   State<ChatPage> createState() => _ChatPageState();
+
 }
+int _currentIndex = 0;
 
 class _ChatPageState extends State<ChatPage> {
  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: NavBarUser(),
-      appBar: AppBar(
-        title: Text('Chat'),
-      ),
+      drawer: const NavBarUser(),
+            appBar: buildAppBar ('Chat'),
+
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Center(
@@ -34,14 +36,20 @@ class _ChatPageState extends State<ChatPage> {
 
               // Display application logo
               Image.asset('assets/Backgrounds/XlogoSmall.png'),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
             ],
           ),
         ),
       ),
-         ///   bottomNavigationBar:NavBarBottom2(),
-
+    bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
     );
   }
 }

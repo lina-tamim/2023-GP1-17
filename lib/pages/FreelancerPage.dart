@@ -8,15 +8,15 @@ class FreelancerPage extends StatefulWidget {
   @override
   State<FreelancerPage> createState() => _FreelancerPageState();
 }
+int _currentIndex = 0;
 
 class _FreelancerPageState extends State<FreelancerPage> {
  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: NavBarUser(),
-      appBar: AppBar(
-        title: Text('Freelancers'),
-      ),
+      drawer: const NavBarUser(),
+           appBar: buildAppBar ('Freelancers'),
+
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Center(
@@ -34,14 +34,20 @@ class _FreelancerPageState extends State<FreelancerPage> {
               ),
 
               Image.asset('assets/Backgrounds/XlogoSmall.png'),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
             ],
           ),
         ),
       ),
-      //      bottomNavigationBar:NavBarBottom2(),
-
+    bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
     );
   }
 }

@@ -34,7 +34,7 @@ class _UserImagePickerState extends State<UserImagePicker> {
       children: [
         CircleAvatar(
           radius: 40,
-          backgroundImage: NetworkImage(
+          backgroundImage: const NetworkImage(
               'https://img.freepik.com/free-icon/user_318-563642.jpg'),
           foregroundImage:
               _pickedImageFile != null ? FileImage(_pickedImageFile!) : null,
@@ -42,7 +42,7 @@ class _UserImagePickerState extends State<UserImagePicker> {
         TextButton.icon(
           onPressed: _pickImage,
           icon: const Icon(Icons.add_a_photo),
-          label: Text(
+          label: const Text(
             "Add image",
             style: TextStyle(color: Colors.black),
           ),

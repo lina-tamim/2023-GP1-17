@@ -15,15 +15,15 @@ class _AdminHome extends State<AdminHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: NavBarAdmin(),
+      drawer: const NavBarAdmin(),
       appBar: buildAppBar('Welcome Admin'),
       body: ListView(
         padding: EdgeInsets.zero,
         children: [
           Container(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+              decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(topLeft: Radius.circular(0)),
               ), 
               child: GridView.count(
@@ -38,13 +38,13 @@ class _AdminHome extends State<AdminHome> {
                       // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => AdminHome()), // will be changed in sprint2
+                        MaterialPageRoute(builder: (context) => const AdminHome()), // will be changed in sprint2
                       );
                     },
                     child: itemDashborde(
                       "Reported Posts",
                       CupertinoIcons.flag_fill,
-                      Color.fromARGB(255, 194, 0, 0),
+                      const Color.fromARGB(255, 194, 0, 0),
                     ),
                   ),
                   GestureDetector(
@@ -52,13 +52,13 @@ class _AdminHome extends State<AdminHome> {
                       // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => AdminHome()),
+                        MaterialPageRoute(builder: (context) => const AdminHome()),
                       );
                     },
                     child: itemDashborde(
                       "Reported Accounts",
                       CupertinoIcons.flag_fill,
-                      Color.fromARGB(255, 34, 115, 255),
+                      const Color.fromARGB(255, 34, 115, 255),
                     ),
                   ),
                   GestureDetector(
@@ -66,13 +66,13 @@ class _AdminHome extends State<AdminHome> {
                       // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => AdminHome()),
+                        MaterialPageRoute(builder: (context) => const AdminHome()),
                       );
                     },
                     child: itemDashborde(
                       "Admin Course and Event Management",
                       CupertinoIcons.square_stack_3d_up_fill,
-                      Color.fromARGB(255, 0, 194, 49),
+                      const Color.fromARGB(255, 0, 194, 49),
                     ),
                   ),
                   GestureDetector(
@@ -80,13 +80,13 @@ class _AdminHome extends State<AdminHome> {
                       // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => AdminHome()),
+                        MaterialPageRoute(builder: (context) => const AdminHome()),
                       );
                     },
                     child: itemDashborde(
                       "Admin Pathways Management",
                       CupertinoIcons.arrow_down_doc_fill,
-                      Color.fromARGB(255, 228, 211, 25),
+                      const Color.fromARGB(255, 228, 211, 25),
                     ),
                   ),
                   GestureDetector(
@@ -94,13 +94,13 @@ class _AdminHome extends State<AdminHome> {
                       // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => AdminHome()),
+                        MaterialPageRoute(builder: (context) => const AdminHome()),
                       );
                     },
                     child: itemDashborde(
                       "User Course or Event Addition Request",
                       CupertinoIcons.add_circled,
-                      Color.fromARGB(255, 228, 27, 168),
+                      const Color.fromARGB(255, 228, 27, 168),
                     ),
                   ),
                 ],
@@ -119,14 +119,14 @@ class _AdminHome extends State<AdminHome> {
         borderRadius: BorderRadius.circular(100),
         color: Colors.red,
       ),
-      child: Icon(
+      child: const Icon(
         Icons.logout,
         color: Colors.white,
       ),
     ),
     title: Text(
       'Logout',
-      style: Theme.of(context).textTheme.bodyText1?.apply(
+      style: Theme.of(context).textTheme.bodyLarge?.apply(
             color: Colors.black87,
             fontWeightDelta: 2,
           ),
@@ -138,7 +138,7 @@ class _AdminHome extends State<AdminHome> {
         borderRadius: BorderRadius.circular(100),
         color: Colors.grey.withOpacity(0.1),
       ),
-      child: Icon(
+      child: const Icon(
         Icons.arrow_forward_ios_rounded,
         size: 18.0,
         color: Colors.grey,
@@ -156,9 +156,9 @@ class _AdminHome extends State<AdminHome> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
-              offset: const Offset(0, 5),
+              offset: Offset(0, 5),
               color: Color.fromARGB(255, 169, 157, 156),
               spreadRadius: 2,
               blurRadius: 5,
@@ -191,23 +191,23 @@ void showLogoutConfirmationDialog() {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Logout'),
-          content: Text('Are you sure you want to logout?'),
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to logout?'),
           actions: [
             TextButton(
               onPressed: () {
                       Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Login()),
+                      MaterialPageRoute(builder: (context) => const Login()),
                     );
               },
-              child: Text('Yes'),
+              child: const Text('Yes'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('No'),
+              child: const Text('No'),
             ),
           ],
         );

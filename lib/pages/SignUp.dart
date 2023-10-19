@@ -21,7 +21,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 
-
 // lotti class
 class ValidationAnimation extends StatelessWidget {
   @override
@@ -61,71 +60,70 @@ class _Signup extends State<Signup> {
   List<String> typeOfPreference = ['Online', 'In Place'];
   String _selectedPreference = 'Online';
 
-   String _selectedCountry='';
-   String _selectedCity='';
-   String _selectedState='';
+  String _selectedCountry = '';
+  String _selectedCity = '';
+  String _selectedState = '';
 
   List<String> _selectedSkills = [];
   List<String> _selectedInterests = [];
 
-
-@override
+  @override
   void dispose() {
     _email.dispose();
     _password.dispose();
     super.dispose();
   }
 
-
-Future<void> signUserUp() async {
-  try {
-    UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: _email.text.trim(),
-      password: _password.text.trim(),
-    );
-
-    String uid = userCredential.user!.uid;
-
-    await FirebaseFirestore.instance.collection('users').doc(uid).set({
-      'userName': _userName.text.trim().toLowerCase(),
-      'userType': _selectedUser,
-      'attendancePreference': _selectedPreference,
-      'country': _selectedCountry,
-      'state': _selectedState,
-      'city': _selectedCity,
-      'email': _email.text.trim().toLowerCase(),
-      'password': hashPassword(_password.text.trim()),
-      'GithubLink': _GitHublink.text.trim(),
-      'interests': _selectedInterests,
-      'skills': _selectedSkills,
-    });
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          child: ValidationAnimation(),
-        );
-      },
-    );
-
-    // Delay the navigation to the login page using a Timer
-    Timer(const Duration(seconds: 6), () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const Login(),
-        ),
+  Future<void> signUserUp() async {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _email.text.trim(),
+        password: _password.text.trim(),
       );
-    });
-  } catch (e) {
-    // Handle sign-up errors here
-    print('Sign-up error: $e');
+
+      String uid = userCredential.user!.uid;
+
+      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'userName': _userName.text.trim().toLowerCase(),
+        'userType': _selectedUser,
+        'attendancePreference': _selectedPreference,
+        'country': _selectedCountry,
+        'state': _selectedState,
+        'city': _selectedCity,
+        'email': _email.text.trim().toLowerCase(),
+        'password': hashPassword(_password.text.trim()),
+        'GithubLink': _GitHublink.text.trim(),
+        'interests': _selectedInterests,
+        'skills': _selectedSkills,
+      });
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Dialog(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            child: ValidationAnimation(),
+          );
+        },
+      );
+
+      // Delay the navigation to the login page using a Timer
+      Timer(const Duration(seconds: 6), () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const Login(),
+          ),
+        );
+      });
+    } catch (e) {
+      // Handle sign-up errors here
+      print('Sign-up error: $e');
+    }
   }
-}
 
   void _showMultiSelectSkills() async {
     final Map<String, List<String>> skillGroups = {
@@ -408,13 +406,10 @@ Future<void> signUserUp() async {
     }
   }
 
-Future signUp() async{
-  await FirebaseAuth.instance.createUserWithEmailAndPassword(
-    email: _email.text.trim(),
-   password: _password.text.trim());
-
-}
-
+  Future signUp() async {
+    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _email.text.trim(), password: _password.text.trim());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -550,7 +545,7 @@ Future signUp() async{
                                 style: TextStyle(color: Colors.red),
                               ),
                               SizedBox(
-                                width: 200,
+                                width: 5,
                               ),
                               Tooltip(
                                 child: Icon(
@@ -597,23 +592,13 @@ Future signUp() async{
                                 '*',
                                 style: TextStyle(color: Colors.red),
                               ),
-                              SizedBox(
-                                width: 176,
-                              ),
-                              Tooltip(
-                                child: Icon(
-                                  Icons.warning_rounded,
-                                  size: 18,
-                                  color: Color.fromARGB(255, 195, 0, 0),
-                                ),
-                                message:
-                                    'Note:\nEnsure that you provide a valid email address as it cannot be changed after account creation',
-                                padding: EdgeInsets.all(20),
-                                showDuration: Duration(seconds: 4),
-                                textStyle: TextStyle(color: Colors.white),
-                                preferBelow: false,
-                              ),
                             ],
+                          ),
+                          Text(
+                            'Ensure that you provide a valid email address as it cannot be changed after account creation',
+                            style: TextStyle(
+                                fontSize: 13,
+                                color: Color.fromARGB(255, 205, 34, 21)),
                           ),
                           const SizedBox(height: 8),
                           reusableTextField(
@@ -650,7 +635,7 @@ Future signUp() async{
                                 style: TextStyle(color: Colors.red),
                               ),
                               SizedBox(
-                                width: 212,
+                                width: 5,
                               ),
                               Tooltip(
                                 child: Icon(
@@ -753,7 +738,7 @@ Future signUp() async{
                                 style: TextStyle(color: Colors.red),
                               ),
                               SizedBox(
-                                width: 190,
+                                width: 5,
                               ),
                               Tooltip(
                                 child: Icon(
@@ -807,7 +792,7 @@ Future signUp() async{
                                 style: TextStyle(color: Colors.red),
                               ),
                               SizedBox(
-                                width: 92,
+                                width: 5,
                               ),
                               Tooltip(
                                 child: Icon(
@@ -866,7 +851,7 @@ Future signUp() async{
                                   style: TextStyle(color: Colors.red),
                                 ),
                               SizedBox(
-                                width: 257,
+                                width: 5,
                               ),
                               const Tooltip(
                                 child: Icon(
@@ -927,7 +912,7 @@ Future signUp() async{
                                 style: TextStyle(color: Colors.red),
                               ),
                               SizedBox(
-                                width: 225,
+                                width: 5,
                               ),
                               const Tooltip(
                                 child: Icon(
@@ -981,7 +966,7 @@ Future signUp() async{
                           const SizedBox(height: 10),
                           reusableTextField(
                             "Please Enter Your GitHub Link",
-            FontAwesomeIcons.github,
+                            FontAwesomeIcons.github,
                             false,
                             _GitHublink,
                             true,
@@ -995,14 +980,14 @@ Future signUp() async{
                       width: 200,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () async { 
-     // Validation Step 1
-                            Future<bool> isStep1Valid = _createAccount1() ;
-                             bool isStep2Valid = _createAccount2();
-                            if (await isStep1Valid && isStep2Valid ) {
-                                  signUserUp() ;
-                            }
-                         
+                        onPressed: () async {
+                          // Validation Step 1
+                          Future<bool> isStep1Valid = _createAccount1();
+                          bool isStep2Valid = _createAccount2();
+                          if (await isStep1Valid && isStep2Valid) {
+                            signUserUp();
+                          }
+
                           //bool isvalid = _createAccount1();
                           // Check the validity of the input
 
@@ -1046,11 +1031,11 @@ Future signUp() async{
     );
   }
 
-String hashPassword(String password) {
-  var bytes = utf8.encode(password); // Encode the password as bytes
-  var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
-  return digest.toString(); // Convert the hash to a string
-} 
+  String hashPassword(String password) {
+    var bytes = utf8.encode(password); // Encode the password as bytes
+    var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
+    return digest.toString(); // Convert the hash to a string
+  }
 /*
   void allValid(BuildContext context) async {
  Future<bool> iscreateAccount1 = _createAccount1() ;
@@ -1119,8 +1104,7 @@ String hashPassword(String password) {
       return false;
     }
 
-
-    //                          *** username validation ***
+    //                                   *** username validation ***
     // Check username validity (>6 + no WS)
     if (_userName.text.length < 6) {
       _showSnackBar('Username should be at least 6 characters long');
@@ -1129,16 +1113,14 @@ String hashPassword(String password) {
       _showSnackBar('Username should not contain whitespace');
       return false;
     }
-     if ( await checkAvailableUsername(_userName.text.trim()) == false)
-    {
-    _showSnackBar('This username is already in use. Please try a different username');
-   return false;
+    if (await checkAvailableUsername(_userName.text.trim()) == false) {
+      _showSnackBar(
+          'This username is already in use. Please try a different username');
+      return false;
     }
-  
 
-
-  //                                   *** email validation ***
-  // Check email validity
+    //                                   *** email validation ***
+    // Check email validity
 
     bool containsValidCharacters(String email) {
       // Specify the valid characters allowed in the email username
@@ -1161,46 +1143,36 @@ String hashPassword(String password) {
       return false;
     }
 
-    if ( await checkAvailableEmail(email) == false)
-    {
-   _showSnackBar('This email is already in use. Please try a different email');
-   return false;
+    if (await checkAvailableEmail(email) == false) {
+      _showSnackBar(
+          'This email is already in use. Please try a different email');
+      return false;
     }
 
-
-     //                                   *** password validation ***
+    //                                   *** password validation ***
     // Check password validity (>8 + no WS)
-    if (_password.text.length < 8) {
+    if (_password.text.length < 6) {
       _showSnackBar('Password should be at least 8 characters');
       return false;
-    } else if (!_password.text.contains(RegExp(r'[A-Z]'))) {
+    } /*else if (!_password.text.contains(RegExp(r'[A-Z]'))) {
       _showSnackBar('Password should contain at least 1 capital letter');
       return false;
     } else if (_password.text.contains(RegExp(r'\s'))) {
       _showSnackBar('Password should not contain whitespace');
       return false;
-    }
-  return true;
-
-  
-  }// end _createAccount1()
+    }*/
+    return true;
+  } // end _createAccount1()
 
   bool _createAccount2() {
-     //                                   *** skills validation ***
+    //                                   *** skills validation ***
 
     if (_selectedUser == "Freelancer" && _selectedSkills.isEmpty) {
       _showSnackBar('Skills field is required for Freelancer user type');
       return false;
     }
-    // Interest
-    if ( _selectedInterests.isEmpty) {
-        _showSnackBar('Interest field is required');
 
-      return false;
-    }
-    
-    
-     //                                   *** Github link validation ***
+    //                                   *** Github link validation ***
     final github = _GitHublink.text;
 
     if (github.isNotEmpty && !github.startsWith("https://github.com/")) {
@@ -1211,34 +1183,52 @@ String hashPassword(String password) {
     return true;
   }
 
-
- // Check email existence
-   Future<bool> checkAvailableEmail(String email) async {
-  CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
-  QuerySnapshot querySnapshot = await usersCollection.where('email', isEqualTo: email.toLowerCase()).get();
-  if (querySnapshot.docs.isNotEmpty) {
-    //_showSnackBar('This email is already in use. Please try a different email');
-    return false; // Email already exists
-  } else {
-    return true; // Email is available
+  // Check email existence
+  Future<bool> checkAvailableEmail(String email) async {
+    CollectionReference usersCollection =
+        FirebaseFirestore.instance.collection('users');
+    QuerySnapshot querySnapshot = await usersCollection
+        .where('email', isEqualTo: email.toLowerCase())
+        .get();
+    if (querySnapshot.docs.isNotEmpty) {
+      //_showSnackBar('This email is already in use. Please try a different email');
+      return false; // Email already exists
+    } else {
+      return true; // Email is available
+    }
   }
-}
 
   // Check username existence
-     Future<bool> checkAvailableUsername(String userName) async {
-  CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
-  QuerySnapshot querySnapshot = await usersCollection.where('userName', isEqualTo: userName.toLowerCase()).get();
-  if (querySnapshot.docs.isNotEmpty) {
-   // _showSnackBar('This username is already in use. Please try a different username');
-    return false; // Username already exists
-  } else {
-    return true; // Username is available
+  Future<bool> checkAvailableUsername(String userName) async {
+    CollectionReference usersCollection =
+        FirebaseFirestore.instance.collection('users');
+    QuerySnapshot querySnapshot = await usersCollection
+        .where('userName', isEqualTo: userName.toLowerCase())
+        .get();
+    if (querySnapshot.docs.isNotEmpty) {
+      // _showSnackBar('This username is already in use. Please try a different username');
+      return false; // Username already exists
+    } else {
+      return true; // Username is available
+    }
   }
-}
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.height - 80,
+          right: 20,
+          left: 20,
+        ),
+        backgroundColor:
+            Color.fromARGB(255, 63, 12, 118), // Customize the background color
+      ),
     );
   }
 }

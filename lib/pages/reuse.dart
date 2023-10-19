@@ -15,6 +15,8 @@ import 'package:techxcel11/pages/CalendarPage.dart';
 import 'package:techxcel11/pages/user_posts_page.dart';
 
 class NavBarUser extends StatefulWidget {
+  const NavBarUser({super.key});
+
   @override
   _NavBarUserState createState() => _NavBarUserState();
 }
@@ -56,11 +58,9 @@ class _NavBarUserState extends State<NavBarUser> {
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.zero, // top
+        padding: EdgeInsets.zero, 
         children: [
           UserAccountsDrawerHeader(
-            // +++++++++++++modify
-
             accountName: Text(loggedInUsername),
             accountEmail: Text(
               loggedInEmail,
@@ -75,66 +75,64 @@ class _NavBarUserState extends State<NavBarUser> {
                 ),
               ),
             ),
-            decoration: BoxDecoration(
-              color: Color.fromARGB(117, 230, 227, 236), // if img not show up
-              image: DecorationImage(
-                image: NetworkImage(
-                    'https://4kwallpapers.com/images/walls/thumbs_2t/7898.png'),
-                fit: BoxFit.cover,
-              ),
+       decoration: BoxDecoration(
+  image: DecorationImage(
+    image: AssetImage('assets/Backgrounds/navbarbg2.png'),
+    fit: BoxFit.cover,
+  ),
+),
+          ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('Profile'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const UserProfilePage()),
+            ), 
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.post_add),
+            title: const Text('My Interactions'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const UserProfilePage()),
+            ), 
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.bookmark),
+            title: const Text('Bookmark'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const BookmarkPage()),
+            ), 
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.calendar_month),
+            title: const Text('Calendar'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CalendarPage()),
+            ), 
+          ),
+          ListTile(
+            leading: const Icon(Icons.groups_2_rounded),
+            title: const Text('About Us'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AboutUsPage()),
             ),
           ),
-          ListTile(
-            leading: Icon(Icons.person),
-            title: Text('Profile'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => UserProfilePage()),
-            ), 
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.post_add),
-            title: Text('My Interactions'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => UserPostsPage()),
-            ), 
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.bookmark),
-            title: Text('Bookmark'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => BookmarkPage()),
-            ), 
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.calendar_month),
-            title: Text('Calendar'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CalendarPage()),
-            ), 
-          ),
-          ListTile(
-            leading: Icon(Icons.groups_2_rounded),
-            title: Text('About Us'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AboutUsPage()),
-            ),
-          ),
-SizedBox(height: 80),
-Divider(),
+const SizedBox(height: 80),
+const Divider(),
                ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Home'),
+            leading: const Icon(Icons.home),
+            title: const Text('Home'),
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => FHomePage()),
+              MaterialPageRoute(builder: (context) => const FHomePage()),
             ),
           ),
 /*logout will be from user profile, ADMIN AS WELL ?
@@ -151,6 +149,8 @@ Divider(),
 
 // admin NAVBAR
 class NavBarAdmin extends StatefulWidget {
+  const NavBarAdmin({super.key});
+
   @override
   _NavBarAdminState createState() => _NavBarAdminState();
 }
@@ -209,7 +209,7 @@ class _NavBarAdminState extends State<NavBarAdmin> {
                 ),
               ),
             ),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Color.fromARGB(117, 230, 227, 236), // if img not show up
               image: DecorationImage(
                 image: NetworkImage(
@@ -221,21 +221,21 @@ class _NavBarAdminState extends State<NavBarAdmin> {
 
           // profile
           ListTile(
-            leading: Icon(Icons.person),
-            title: Text('Profile'),
+            leading: const Icon(Icons.person),
+            title: const Text('Profile'),
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AdminProfile()),
+              MaterialPageRoute(builder: (context) => const AdminProfile()),
             ), // change it to page name +++++++++++++++++
           ),
 
           // about us - contact us
           ListTile(
-            leading: Icon(Icons.groups_2_rounded),
-            title: Text('Dashboard'),
+            leading: const Icon(Icons.groups_2_rounded),
+            title: const Text('Dashboard'),
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AdminHome()),
+              MaterialPageRoute(builder: (context) => const AdminHome()),
             ),
           ),
           
@@ -255,8 +255,8 @@ class _NavBarAdminState extends State<NavBarAdmin> {
 TextField reusableTextField(String text, IconData icon, bool isPasswordType,
     TextEditingController controller, bool modifiable) {
   Color boxColor = modifiable
-      ? Color.fromARGB(255, 200, 176, 185).withOpacity(0.3)
-      : Color.fromARGB(255, 165, 165, 165);
+      ? const Color.fromARGB(255, 200, 176, 185).withOpacity(0.3)
+      : const Color.fromARGB(255, 165, 165, 165);
 
   return TextField(
     enabled: modifiable,
@@ -291,11 +291,11 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
 
 AppBar buildAppBar(String titleText) {
   return AppBar(
-    iconTheme: IconThemeData(color: const Color.fromARGB(255, 255, 255, 255)),
-    backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
+    iconTheme: const IconThemeData(color: Color.fromARGB(255, 255, 255, 255)),
+    backgroundColor: const Color.fromRGBO(37, 6, 81, 0.898),
     toolbarHeight: 100, // Adjust the height of the AppBar
     elevation: 0, // Adjust the position of the AppBar
-    shape: ContinuousRectangleBorder(
+    shape: const ContinuousRectangleBorder(
       borderRadius: BorderRadius.only(
         bottomLeft: Radius.circular(130),
         bottomRight: Radius.circular(130),
@@ -303,7 +303,7 @@ AppBar buildAppBar(String titleText) {
     ),
     title: Text(
       titleText,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 18, // Adjust the font size
         fontFamily: "Poppins",
         color: Colors.white,
@@ -313,51 +313,86 @@ AppBar buildAppBar(String titleText) {
 }
 
 
+class BottomNavBar extends StatelessWidget {
+  final int currentIndex;
+  final Function(int) onTap;
 
+  const BottomNavBar({
+    required this.currentIndex,
+    required this.onTap,
+  });
 
-/*
-class NavBarBottom2 extends StatefulWidget {
-  final Function(int) onIconPressed;
+  void _navigateToPage(BuildContext context, int index) {
+    Widget page;
+    switch (index) {
+      case 0:
+        page = ChatPage();
+        break;
+      case 1:
+        page = FreelancerPage();
+        break;
+      case 2:
+        page = FHomePage();
+        break;
+      case 3:
+        page = CoursesAndEventsPage();
+        break;
+      default:
+        page = FHomePage();
+        break;
+    }
 
-  NavBarBottom2({required this.onIconPressed});
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => page),
+    );
+  }
 
-  @override
-  _NavBarBottom2State createState() => _NavBarBottom2State();
-}
-
-class _NavBarBottom2State extends State<NavBarBottom2> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(), // Replace with your page content
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: widget.onIconPressed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.handshake_outlined),
-            label: 'Freelancers',
+    return Container(
+      height: 60,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          GestureDetector(
+            onTap: () {
+              onTap(0);
+            },
+            child: Icon(
+              Icons.chat,
+              color: currentIndex == 0 ? Colors.blue : Colors.grey,
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Home',
+          GestureDetector(
+            onTap: () {
+              onTap(1);
+            },
+            child: Icon(
+              Icons.handshake,
+              color: currentIndex == 1 ? Colors.blue : Colors.grey,
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_outlined),
-            label: 'Chat',
+          GestureDetector(
+            onTap: () {
+              onTap(2);
+            },
+            child: Icon(
+              Icons.home,
+              color: currentIndex == 2 ? Colors.blue : Colors.grey,
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.explore_outlined),
-            label: 'Explore',
+          GestureDetector(
+            onTap: () {
+              onTap(3);
+            },
+            child: Icon(
+              Icons.explore,
+              color: currentIndex == 3 ? Colors.blue : Colors.grey,
+            ),
           ),
         ],
-        backgroundColor: const Color.fromARGB(255, 219, 219, 219),
-        selectedItemColor: Color.fromARGB(255, 40, 0, 57),
-        unselectedItemColor: Colors.grey,
-        iconSize: 20,
-        selectedFontSize: 10,
-        unselectedFontSize: 10,
-        type: BottomNavigationBarType.fixed,
       ),
     );
   }
-}*/
+}

@@ -21,7 +21,7 @@ class MainApp extends StatelessWidget {
         scaffoldBackgroundColor:const Color.fromARGB(255, 255, 255, 255),
         primarySwatch: Colors.deepPurple,
         fontFamily: "Intel",
-        inputDecorationTheme: InputDecorationTheme(
+        inputDecorationTheme: const InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
           errorStyle: TextStyle(height: 0),

@@ -1,19 +1,24 @@
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:techxcel11/pages/reuse.dart';
 
-
-class CoursesAndEventsPage extends StatelessWidget {
-  const CoursesAndEventsPage({Key? key}) : super(key: key);
+class CoursesAndEventsPage extends StatefulWidget {
+  const CoursesAndEventsPage({super.key});
+  
 
   @override
+  State<CoursesAndEventsPage> createState() => _CoursesAndEventsPageState();
+
+}
+int _currentIndex = 0;
+
+class _CoursesAndEventsPageState extends State<CoursesAndEventsPage> {
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: NavBarUser(),
-      appBar: AppBar(
-        title: Text('Courses and Events'),
-      ),
+      drawer: const NavBarUser(),
+           appBar: buildAppBar ('Courses and Events'),
+
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Center(
@@ -22,21 +27,29 @@ class CoursesAndEventsPage extends StatelessWidget {
             children: [
               Text(
                 'TechXcel',
-                style: TextStyle(
+                style: GoogleFonts.orbitron(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
               ),
 
+              // Display application logo
               Image.asset('assets/Backgrounds/XlogoSmall.png'),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
             ],
           ),
         ),
       ),
-   //   bottomNavigationBar:NavBarBottom2(),
+    bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
     );
   }
 }

@@ -12,7 +12,7 @@ class _AdminProfile extends State<AdminProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: NavBarAdmin(),
+      drawer: const NavBarAdmin(),
       appBar: AppBar(
         title: const Text('My Profile'),
       ),

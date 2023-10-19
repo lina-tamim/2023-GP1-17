@@ -26,7 +26,6 @@ dependencies:
   google_fonts: ^4.0.4
   url_launcher: ^6.1.14
   hash: ^1.0.4
-  crypto: ^3.0.3
   keyboard_dismisser: ^3.0.0
   intl: ^0.18.1
 

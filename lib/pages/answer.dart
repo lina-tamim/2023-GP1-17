@@ -1,10 +1,10 @@
-
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/pages/cardQuestion.dart';
+import 'package:techxcel11/pages/answer.dart';
 import 'package:techxcel11/pages/cardanswer.dart';
-
 
 class AnswerPage extends StatefulWidget {
   final int questionId;
@@ -16,258 +16,239 @@ class AnswerPage extends StatefulWidget {
 }
 
 class _AnswerPageState extends State<AnswerPage> {
-  Future <String> fetchusername() async{
-    SharedPreferences prefs= await SharedPreferences.getInstance();
-    final username = prefs.getString('username') ??'';
-    return username;
+   Future <String> fetchuseremail() async{
+SharedPreferences prefs= await SharedPreferences.getInstance();
+  final email = prefs.getString('loggedInEmail') ??'';
+  return email;
   }
+
+
+
   late List<CardQuestion> questions = [];
+final _questionStreamController = StreamController<List<CardQuestion>>.broadcast();
 
-  FocusNode focusNode = FocusNode();
-
+Stream<List<CardQuestion>> get questionStream => _questionStreamController.stream;
   @override
   void initState() {
     super.initState();
-    fetchQuestion();
+    fetchQuestionData();
+ 
   }
+  void fetchQuestionData() async {
+  final List<CardQuestion> questionList = await readQuestion();
+  _questionStreamController.add(questionList);
+}
 
-  Future<void> fetchQuestion() async {
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('posts')
-        .where('id', isEqualTo: widget.questionId)
-        .limit(1)
-        .get();
-    final documents = querySnapshot.docs;
+Future<List<CardQuestion>> readQuestion() async {
+  final snapshot = await FirebaseFirestore.instance
+      .collection('posts')
+      .where('dropdownValue', isEqualTo: 'Question')
+      .where('id', isEqualTo: widget.questionId)
+      .limit(1)
+      .get();
 
-    if (documents.isNotEmpty) {
-      setState(() {
-        questions = documents
-            .map((doc) {
-          Map<String, dynamic> data = doc.data();
-          data['docId'] = doc.id;
-          return CardQuestion.fromJson(data);
-            })
-            .toList();
-      });
-    }
-  }
+  final questions = snapshot.docs.map((doc) => CardQuestion.fromJson(doc.data())).toList();
+  final userIds = questions.map((question) => question.userId).toList();
+  final userDocs = await FirebaseFirestore.instance.collection('users').where('email', whereIn: userIds).get();
 
-  Stream<List<CardAnswer>> readAnswer() => FirebaseFirestore.instance
-      .collection('answers')
-      .where('questionId', isEqualTo: widget.questionId)
-      .snapshots()
-      .map((snapshot) =>
-      snapshot.docs.map((doc) => CardAnswer.fromJson(doc.data())).toList());
+  final userMap = Map<String, String>.fromEntries(userDocs.docs.map((doc) =>
+      MapEntry(doc.data()['email'] as String, doc.data()['userName'] as String)));
+
+  questions.forEach((question) {
+    final username = userMap[question.userId] ?? '';
+    question.username = username;
+  });
+
+  return questions;
+}
 
   Widget buildQuestionCard(CardQuestion question) => Card(
-    child: FutureBuilder<String>(
-      future: fetchusername(),
-      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          final username = snapshot.data ?? '';
-          return Column(
-            children: [
-              Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: CircleAvatar(
-                      //backgroundImage: NetworkImage(question.userPhotoUrl),
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-
-                        Text(
-                          username,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              ListTile(
-                title: Text(question.title),
-                subtitle: Text(question.description),
-              ),
-              Wrap(
-                spacing: 4.0,
-                runSpacing: 2.0,
-                children: question.topics
-                    .map(
-                      (topic) => Chip(
-                    label: Text(
-                      topic,
-                      style: TextStyle(fontSize: 12.0),
-                    ),
-                  ),
-                )
-                    .toList(),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.chat),
-                    onPressed: () {
-                      focusNode.requestFocus();
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.bookmark),
-                    onPressed: () {
-
-                    },
-                  ),
-
-                  IconButton(
-                    icon: Icon(Icons.report),
-                    onPressed: () {
-
-                    },
-                  ),
-                ],
-              ),
-            ],
-          );
-        }
-      },
+  child: ListTile(
+    leading: CircleAvatar(
+      //backgroundImage: NetworkImage(question.userPhotoUrl),
     ),
-  );
-
-  Widget buildAnswerCard(CardAnswer answer) {
-    int upvoteCount = answer.upvoteCount ?? 0;
-    bool isUpvoted = false; // Track the upvote state
-
-    return Card(
-      child: FutureBuilder<String>(
-        future: fetchusername(),
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else {
-            final username = snapshot.data ?? '';
-            return  Column(
-              children: [
-                Row(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: CircleAvatar(),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            username,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+    title: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 5),
+        Text(
+          question.username, // Display the username
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.deepPurple
+          ),
+        ),
+        SizedBox(height: 5),
+        Text(
+          question.title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 5),
+        Text(question.description),
+      ],
+    ),
+    subtitle: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 4.0,
+          runSpacing: 2.0,
+          children: question.topics
+              .map(
+                (topic) => Chip(
+                  label: Text(
+                    topic,
+                    style: TextStyle(fontSize: 12.0),
+                  ),
                 ),
-                ListTile(
-                  title: Text(answer.answerText),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text('$upvoteCount'),
+              )
+              .toList(),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+              icon: Icon(Icons.bookmark),
+              onPressed: () {
+                // Add your functionality for the button here
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.comment),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AnswerPage(questionId: question.id)),
+                );
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.report),
+              onPressed: () {
+                // Add your functionality for the button here
+              },
+            ),
+          ],
+        ),
+      ],
+    ),
+  ),
+);
 
-                    IconButton(
-                      icon: Icon(isUpvoted ? Icons.arrow_downward : Icons.arrow_upward),
-                      onPressed: () {
-                        setState(() {
-                          if (isUpvoted) {
-                            // Decrement the upvote count
-                            upvoteCount--;
+Widget buildAnswerCard(CardAnswer answer) {
+  int upvoteCount = answer.upvoteCount ?? 0;
+  bool isUpvoted = false;
+  //answer.upvotedUserIds.contains(currentUserId);
+  return Card(
+  child: ListTile(
+    leading: CircleAvatar(
+      //backgroundImage: NetworkImage(question.userPhotoUrl),
+    ),
+    title: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 5),
+        Text(
+          answer.username, // Display the username
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.deepPurple
+          ),
+        ),
+        SizedBox(height: 5),
+        ListTile(
+          title: Text(answer.answerText),
+        ),
+      ],
+    ),
+    subtitle: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+       
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+        IconButton(
+              //icon: Icon(isUpvoted ? Icons.arrow_downward : Icons.arrow_circle_up),
+               icon: Icon(Icons.arrow_circle_up),
+              onPressed: () {
+                setState(() {
+                  if (isUpvoted) {
+                    // Undo the upvote
+                    upvoteCount--;
+                    //answer.upvotedUserIds.remove(currentUserId);
+                  } else {
+                    // Perform the upvote
+                    upvoteCount++;
+                    //answer.upvotedUserIds.add(currentUserId);
+                  }
 
-                            // Update the upvote count in Firestore
-                            FirebaseFirestore.instance
-                                .collection('answers')
-                                .doc(answer.answerId)
-                                .update({'upvoteCount': FieldValue.increment(-1)})
-                                .then((_) {
-                              print('Upvote count decremented successfully');
-                            }).catchError((error) {
-                              print('Failed to decrement upvote count: $error');
-                              // Handle error if the update fails
-                            });
-                          } else {
-                            // Increment the upvote count
-                            upvoteCount++;
-
-                            // Update the upvote count in Firestore DB
-                            FirebaseFirestore.instance
-                                .collection('answers')
-                                .doc(answer.answerId)
-                                .update({'upvoteCount': FieldValue.increment(1)})
-                                .then((_) {
-                              print('Upvote count incremented successfully');
-                            }).catchError((error) {
-                              print('Failed to increment upvote count: $error');
-                              // Handle error if the update fails
-                            });
-                          }
-
-                          // Toggle the upvote state
-                          isUpvoted = !isUpvoted;
-                        });
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.report),
-                      onPressed: () {
-
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            );
-          }
-        },
-      ),
-    );
-
-  }
+                  // Update the upvote count and upvoted user IDs in Firestore
+                  FirebaseFirestore.instance
+                      .collection('answers')
+                      .doc(answer.answerId)
+                      .update({'upvoteCount': upvoteCount, })
+                      //'upvotedUserIds': answer.upvotedUserIds
+                      .then((_) {
+                    print('Upvote count updated successfully');
+                  }).catchError((error) {
+                    print('Failed to update upvote count: $error');
+                    // Handle error if the update fails
+                  });
+                });
+              },
+            ),
+            Text('Upvotes: $upvoteCount'),
+          ],
+        ),
+      ],
+    ),
+  ),
+);}
+ 
+ 
   final TextEditingController _answerController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  Future<void> _submitAnswer(String email) async {
-    if (_formKey.currentState!.validate()) {
-      final String answerText = _answerController.text;
+ Future<void> _submitAnswer(String email) async {
+  if (_formKey.currentState!.validate()) {
+    final String answerText = _answerController.text;
 
-      final formCollection = FirebaseFirestore.instance.collection('answers');
+    final formCollection = FirebaseFirestore.instance.collection('answers');
 
-      final newFormDoc = formCollection.doc();
-      await newFormDoc.set({
-        'answerId': newFormDoc.id,
-        'questionId': widget.questionId,
-        'userId': email,
-        'answerText': answerText,
-        'upvoteCount': 0,
+    final newFormDoc = formCollection.doc();
+    await newFormDoc.set({
+      'answerId': newFormDoc.id,
+      'questionId': widget.questionId,
+      'userId': email,
+      'answerText': answerText,
+      'upvoteCount': 0, 
+    });
+
+    _answerController.clear();
+  }
+}
+Stream<List<CardAnswer>> readAnswer() => FirebaseFirestore.instance
+    .collection('answers')
+    .where('questionId', isEqualTo: widget.questionId)
+    .snapshots()
+    .asyncMap((snapshot) async {
+      final project = snapshot.docs.map((doc) => CardAnswer.fromJson(doc.data())).toList();
+      final userIds = project.map((project) => project.userId).toList();
+      final userDocs = await FirebaseFirestore.instance.collection('users').where('email', whereIn: userIds).get();
+
+      final userMap = Map<String, String>.fromEntries(userDocs.docs.map((doc) =>
+          MapEntry(doc.data()['email'] as String, doc.data()['userName'] as String)));
+
+      project.forEach((project) {
+        final username = userMap[project.userId] ?? '';
+        project.username = username;
       });
 
-      _answerController.clear();
-    }
-  }
-
+      return project;
+    });
   @override
   void dispose() {
     _answerController.dispose();
@@ -276,18 +257,32 @@ class _AnswerPageState extends State<AnswerPage> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         title: Text('Answers'),
       ),
+      
       body: Column(
         children:[
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: questions != null && questions.isNotEmpty
-                ? buildQuestionCard(questions[0])
-                : CircularProgressIndicator(),
+          padding: const EdgeInsets.all(8.0),
+          child: StreamBuilder<List<CardQuestion>>(
+            stream: questionStream, // Use the questionStream from _questionStreamController
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator(); // Display a loading indicator while waiting for data
+              }
+
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Text('No questions available.'); // Display a message if there are no questions
+              }
+
+              final questions = snapshot.data!;
+              return buildQuestionCard(questions[0]); // Display the first question
+            },
           ),
+        ),
           Expanded(
             child: StreamBuilder<List<CardAnswer>>(
               stream: readAnswer(),
@@ -296,13 +291,13 @@ class _AnswerPageState extends State<AnswerPage> {
                   return Text('Error: ${snapshot.error}');
                 }
 
-                if (!snapshot.hasData) {
+               if (!snapshot.hasData) {
                   return CircularProgressIndicator();
                 }
 
                 final answers = snapshot.data!;
                 return ListView(
-                  children: answers.map(buildAnswerCard).toList(),
+                  children: answers.map((answer) => buildAnswerCard(answer)).toList(),
                 );
               },
             ),
@@ -315,7 +310,6 @@ class _AnswerPageState extends State<AnswerPage> {
                 children: [
                   Expanded(
                     child: TextFormField(
-                      focusNode: focusNode,
                       controller: _answerController,
                       decoration: InputDecoration(
                         labelText: 'Enter your answer',
@@ -325,8 +319,8 @@ class _AnswerPageState extends State<AnswerPage> {
                           return 'Please enter an answer';
                         }
                         if (value.length > 1024) {
-                          return 'Maximum character limit exceeded (1024 characters).';
-                        }
+      return 'Maximum character limit exceeded (1024 characters).';
+    }
                         return null;
                       },
                     ),

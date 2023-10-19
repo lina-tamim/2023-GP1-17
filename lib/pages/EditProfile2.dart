@@ -1,26 +1,26 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:techxcel11/pages/UserProfilePage.dart';
-import 'package:techxcel11/pages/reuse.dart';
 import "package:csc_picker/csc_picker.dart";
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:techxcel11/pages/reuse.dart';
 import 'package:techxcel11/pages/start.dart'; // Import the FontAwesome Flutter package
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 
 
 class EditProfile2 extends StatefulWidget {
+  const EditProfile2({super.key});
+
   @override
   _EditProfile2State createState() => _EditProfile2State();
 }
 
 class _EditProfile2State extends State<EditProfile2> {
-  
-/////////// RETRIVED FROM DATABASE:
 
+/////////// RETRIVED FROM DATABASE:
   String loggedInUsername = '';
   String loggedInPassword = '';
   String loggedInEmail = '';
@@ -35,9 +35,7 @@ class _EditProfile2State extends State<EditProfile2> {
   bool showSkills = false;
   bool showInterests = false;
   bool isModified = false;
-
-
-
+  bool isPasswordchange = false;
 
 /////////// MODIFIED BY USER:
 String newUsername=''; //used later when comparison if values have
@@ -56,10 +54,7 @@ List<String> newUserInterests =[];
 List<String> newUserSkills =[];
 String newGithubLink='';
 
-
-
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   @override
   void initState() {
     super.initState();
@@ -77,7 +72,6 @@ String newGithubLink='';
 
     if (snapshot.docs.isNotEmpty) {
       final userData = snapshot.docs[0].data();
-
       final username = userData['userName'] ?? '';
       final country = userData['country'] ?? '';
       final state = userData['state'] ?? '';
@@ -90,6 +84,8 @@ String newGithubLink='';
       final password = userData['password'] ?? ''; 
       newUsername = username;
       newPassword = password;
+      isPasswordchange = false;
+
       newCountry=country;
       newState=state;
       newCity=city;
@@ -100,9 +96,6 @@ String newGithubLink='';
       newUserInterests = interests;
       newUserSkills = skills;
       newGithubLink = github;
-
-
-
 
       setState(() {
         loggedInUsername = username;
@@ -117,18 +110,15 @@ String newGithubLink='';
         loggedInEmail = email;
         loggedInPassword = password;
         loggedInGithub = github;
-        
-
       });
     }
   }
 
  @override
- 
 Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
-      title: Text('Edit Profile'),
+      title: const Text('Edit Profile'),
     ),
     body: SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -137,23 +127,17 @@ Widget build(BuildContext context) {
         children: [
           const SizedBox(height: 10),
           // Username
-          Row(
+          const Row(
             children: [
-              
-              const SizedBox(width: 30),
+              SizedBox(width: 30),
               Text(
                 'Username',
                 style: TextStyle(
                   fontSize: 16,
                 ),
               ),
-              const SizedBox(width: 5),
+              SizedBox(width: 5),
               Tooltip(
-                child: Icon(
-                  Icons.live_help_rounded,
-                  size: 18,
-                  color: Color.fromARGB(255, 178, 178, 178),
-                ),
                 message: 'Username must meet the following criteria:\n'
                     '- At least 6 characters long\n'
                     '- No whitespace allowed',
@@ -161,6 +145,11 @@ Widget build(BuildContext context) {
                 showDuration: Duration(seconds: 3),
                 textStyle: TextStyle(color: Colors.white),
                 preferBelow: false,
+                child: Icon(
+                  Icons.live_help_rounded,
+                  size: 18,
+                  color: Color.fromARGB(255, 178, 178, 178),
+                ),
               ),
             ],
           ),
@@ -170,7 +159,7 @@ Widget build(BuildContext context) {
               Expanded(
                 child: TextField(
   decoration: InputDecoration(
-    prefixIcon: Icon(Icons.person, color: Color.fromARGB(255, 0, 0, 0)),
+    prefixIcon: const Icon(Icons.person, color: Color.fromARGB(255, 0, 0, 0)),
     labelStyle: const TextStyle(
       color: Colors.black54,
     ),
@@ -194,27 +183,27 @@ Widget build(BuildContext context) {
           ),
           const SizedBox(height: 20),
           // Email
-          Row(
+          const Row(
             children: [
-              const SizedBox(width: 30),
+              SizedBox(width: 30),
               Text(
                 'Email',
                 style: TextStyle(
                   fontSize: 16,
                 ),
               ),
-              const SizedBox(width: 5),
+              SizedBox(width: 5),
               Tooltip(
-                child: Icon(
-                  Icons.warning_rounded,
-                  size: 18,
-                  color: Color.fromARGB(255, 195, 0, 0),
-                ),
                 message: 'Email address as it cannot be changed after account creation',
                 padding: EdgeInsets.all(20),
                 showDuration: Duration(seconds: 4),
                 textStyle: TextStyle(color: Colors.white),
                 preferBelow: false,
+                child: Icon(
+                  Icons.warning_rounded,
+                  size: 18,
+                  color: Color.fromARGB(255, 195, 0, 0),
+                ),
               ),
             ],
           ),
@@ -224,15 +213,15 @@ Widget build(BuildContext context) {
               Expanded(
                 child: TextField(
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.email_outlined, color: Color.fromARGB(255, 0, 0, 0)),
+                    prefixIcon: const Icon(Icons.email, color: Color.fromARGB(255, 0, 0, 0)),
                     labelStyle: const TextStyle(
                       color: Colors.black54,
                     ),
                     filled: true,
                     floatingLabelBehavior: FloatingLabelBehavior.never,
-                    fillColor: Color.fromARGB(255, 119, 119, 119).withOpacity(0.3),
+                    fillColor: const Color.fromARGB(255, 119, 119, 119).withOpacity(0.3),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   enabled: false,
@@ -244,27 +233,18 @@ Widget build(BuildContext context) {
             ],
           ),
           const SizedBox(height: 20),
-
-
-
-
           // Password
-          Row(
+          const Row(
             children: [
-              const SizedBox(width: 30),
+              SizedBox(width: 30),
               Text(
                 'Password',
                 style: TextStyle(
                   fontSize: 16,
                 ),
               ),
-              const SizedBox(width: 5),
+              SizedBox(width: 5),
               Tooltip(
-                child: Icon(
-                  Icons.live_help_rounded,
-                  size: 18,
-                  color: Color.fromARGB(255, 178, 178, 178),
-                ),
                 message: 'Password must meet the following criteria:\n'
                     '- At least 8 characters long\n'
                     '- At least 1 capital letter\n'
@@ -273,6 +253,11 @@ Widget build(BuildContext context) {
                 showDuration: Duration(seconds: 3),
                 textStyle: TextStyle(color: Colors.white),
                 preferBelow: false,
+                child: Icon(
+                  Icons.live_help_rounded,
+                  size: 18,
+                  color: Color.fromARGB(255, 178, 178, 178),
+                ),
               ),
             ],
           ),
@@ -282,13 +267,13 @@ Widget build(BuildContext context) {
               Expanded(
                 child: TextField(
   decoration: InputDecoration(
-    prefixIcon: Icon(Icons.lock, color: Color.fromARGB(255, 0, 0, 0)),
+    prefixIcon: const Icon(Icons.lock, color: Color.fromARGB(255, 0, 0, 0)),
     labelStyle: const TextStyle(
       color: Colors.black54,
     ),
     filled: true,
-    floatingLabelBehavior: FloatingLabelBehavior.never,
-    fillColor: Color.fromARGB(255, 228, 228, 228).withOpacity(0.3),
+    floatingLabelBehavior: FloatingLabelBehavior.auto,
+    fillColor: const Color.fromARGB(255, 228, 228, 228).withOpacity(0.3),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(32),
     ),
@@ -303,10 +288,10 @@ Widget build(BuildContext context) {
   ),
   enabled: true,
   readOnly: false,
-  controller: TextEditingController(text: newPassword),
   obscureText: !showPassword, // Set obscureText based on the toggle state
   onChanged: (value) {
-    newPassword = value; // Update newPassword when the value changes
+    newPassword = value;
+   // isPasswordchange = true; // Update newPassword when the value changes
   },
 ),
               ),
@@ -317,17 +302,23 @@ Widget build(BuildContext context) {
           const Divider(),
           const SizedBox(height: 10),
 // COUNTRY CITY AND STATE
-Row(
+const Row(
         children: [
-          Text(
-            'Country, State, and City',
-            style: TextStyle(
-              fontSize: 16,
-            ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 8),
+                 Text(
+                                'Country',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Text(
+                            'State and City',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
       CSCPicker(
         onCountryChanged: (value) {
           setState(() {
@@ -363,17 +354,17 @@ Row(
                             width: 5,
                           ),
                           Tooltip(
-                            child: Icon(
-                              Icons.warning_rounded,
-                              size: 18,
-                              color: Color.fromARGB(255, 195, 0, 0),
-                            ),
                             message:
                                 'Note:\nSelecting the freelancer option unlocks additional features such as:\nJoin the dedicated freelancer page.\nTake on diverse projects, including paid opportunities.',
                             padding: EdgeInsets.all(20),
                             showDuration: Duration(seconds: 4),
                             textStyle: TextStyle(color: Colors.white),
                             preferBelow: false,
+                            child: Icon(
+                              Icons.live_help_rounded,
+                              size: 18,
+                              color: Color.fromARGB(255, 178, 178, 178),
+                            ),
                           ),
                         ],
                       ),
@@ -397,7 +388,7 @@ Row(
                       ),
 // User ATTENDANCE PREFERENCE
 
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
       const Row(
                         children: [
                           Text(
@@ -410,11 +401,6 @@ Row(
                             width: 5,
                           ),
                               Tooltip(
-                                child: Icon(
-                                  Icons.live_help_rounded,
-                                  size: 18,
-                                  color: Color.fromARGB(255, 178, 178, 178),
-                                ),
                                 message:
                                     'Find the best option for courses and events that suits your preference:\n'
                                     '- In Place for physical attendance\n'
@@ -423,6 +409,11 @@ Row(
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
                                 preferBelow: false,
+                                child: Icon(
+                                  Icons.live_help_rounded,
+                                  size: 18,
+                                  color: Color.fromARGB(255, 178, 178, 178),
+                                ),
                               )
                       
                         ],
@@ -450,9 +441,9 @@ Row(
           const Divider(),
           const SizedBox(height: 10),
 //Interests
-Row(
+const Row(
                       children: [
-                         const Text(
+                         Text(
                           'Interests',
                           style: TextStyle(
                             fontSize: 16,
@@ -462,22 +453,19 @@ Row(
                             width: 5,
                           ),
                          Tooltip(
-                child: Icon(
-                  Icons.live_help_rounded,
-                  size: 18,
-                  color: Color.fromARGB(255, 178, 178, 178),
-                ),
                 message: 'We are asking for your interests to get to know you\nbetter and recommend relevant content to you',
                 padding: EdgeInsets.all(20),
                 showDuration: Duration(seconds: 3),
                 textStyle: TextStyle(color: Colors.white),
                 preferBelow: false,
+                child: Icon(
+                  Icons.live_help_rounded,
+                  size: 18,
+                  color: Color.fromARGB(255, 178, 178, 178),
+                ),
               ),
                       ],
                     ),
-
-
-
                     ElevatedButton(
                       onPressed:
                           _showMultiSelectInterests, // Corrected method name
@@ -511,20 +499,20 @@ Row(
                             '  *',
                             style: TextStyle(color: Colors.red),
                           ),
-                                        SizedBox(
+                                        const SizedBox(
                             width: 5,
                           ),
-                         Tooltip(
-                child: Icon(
-                  Icons.live_help_rounded,
-                  size: 18,
-                  color: Color.fromARGB(255, 178, 178, 178),
-                ),
+                         const Tooltip(
                 message: 'Entering your skills will help you to build a strong profile\nand make you more visible to potential clients.',
                 padding: EdgeInsets.all(20),
                 showDuration: Duration(seconds: 3),
                 textStyle: TextStyle(color: Colors.white),
                 preferBelow: false,
+                child: Icon(
+                  Icons.live_help_rounded,
+                  size: 18,
+                  color: Color.fromARGB(255, 178, 178, 178),
+                ),
               ),
                       ],
                     ),
@@ -547,7 +535,7 @@ Row(
           const SizedBox(height: 10),
 
 //Github
-              Text(
+              const Text(
                 'Github',
                 style: TextStyle(
                   fontSize: 16,
@@ -562,7 +550,7 @@ Row(
           prefixIcon: Icon(
             FontAwesomeIcons.github,
             size: 18,
-            color: Colors.grey[700],
+            color: const Color.fromARGB(255, 0, 0, 0),
           ),
           labelStyle: const TextStyle(
             color: Colors.black54,
@@ -597,38 +585,39 @@ Row(
      && await validateUserType() && await validateUserPreference() && 
      await validateInterests() && await validateSkills() && await validateGithubLink())
     {
-      if ( isModified == true )
-      _showSnackBar("Your information has been changed successfully");
+      if ( isModified == true ) {
+        _showSnackBar("Your information has been changed successfully");
+      }
 
                       Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => UserProfilePage()),
+                      MaterialPageRoute(builder: (context) => const UserProfilePage()),
                     );
   }
   },
           style: ElevatedButton.styleFrom(
-            primary: Color.fromARGB(255, 6, 107, 10), // Set the button's background color to green
-            padding: EdgeInsets.symmetric(horizontal: 35), // Add padding for visual spacing
+            backgroundColor: const Color.fromARGB(255, 6, 107, 10), // Set the button's background color to green
+            padding: const EdgeInsets.symmetric(horizontal: 35), // Add padding for visual spacing
             alignment: Alignment.centerLeft, // Align the button's contents to the left
           ),
-          child: Text('Save'),
+          child: const Text('Save'),
         ),
-        SizedBox(width: 13), // Add some spacing between the buttons
+        const SizedBox(width: 13), // Add some spacing between the buttons
         ElevatedButton(
           onPressed: () {
             // Handle Cancel button press
             Navigator.pop(context); // Redirect back to UserProfilePage.dart
           },
           style: ElevatedButton.styleFrom(
-            primary: Colors.grey, // Set the button's background color to grey
-            padding: EdgeInsets.symmetric(horizontal: 35), // Add padding for visual spacing
+            backgroundColor: Colors.grey, // Set the button's background color to grey
+            padding: const EdgeInsets.symmetric(horizontal: 35), // Add padding for visual spacing
             alignment: Alignment.centerLeft, // Align the button's contents to the left
           ),
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
         ),
       ],
     ),
-SizedBox(height: 2), // Add spacing between the button sets
+const SizedBox(height: 2), // Add spacing between the button sets
     ElevatedButton(
   onPressed: () {
     // Show confirmation dialog
@@ -636,7 +625,7 @@ SizedBox(height: 2), // Add spacing between the button sets
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(
+          title: const Text(
             "There's no Ctrl+Z to bring it back!",
             style: TextStyle(
               color: Color.fromARGB(255, 70, 0, 83),
@@ -648,14 +637,14 @@ SizedBox(height: 2), // Add spacing between the button sets
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              const Text(
                 'Are you sure you want to delete your account?',
                 style: TextStyle(
                   color: Color.fromARGB(255, 0, 0, 0),
                   fontSize: 16,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -674,19 +663,19 @@ SizedBox(height: 2), // Add spacing between the button sets
         borderRadius: BorderRadius.circular(16),
       ),
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
+          gradient: const LinearGradient(
             colors: [
               Color.fromARGB(255, 240, 240, 240),
-              const Color.fromARGB(255, 223, 223, 223),
+              Color.fromARGB(255, 223, 223, 223),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
-        child: Column(
+        child: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
@@ -715,18 +704,18 @@ SizedBox(height: 2), // Add spacing between the button sets
 
 navigateToStartPage();
 
-                    };
+                    }
       },
-                    icon: Icon(Icons.delete, size: 24),
-                    label: Text(
+                    icon: const Icon(Icons.delete, size: 24),
+                    label: const Text(
                       'Delete',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      primary: Color.fromARGB(255, 184, 13, 1),
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      backgroundColor: const Color.fromARGB(255, 184, 13, 1),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                     ),
                   ),
                   ElevatedButton(
@@ -734,10 +723,10 @@ navigateToStartPage();
                       Navigator.pop(context); // Close the dialog
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.grey,
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      backgroundColor: Colors.grey,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                     ),
-                    child: Text('Cancel'),
+                    child: const Text('Cancel'),
                   ),
                 ],
               ),
@@ -746,25 +735,26 @@ navigateToStartPage();
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-         backgroundColor: Color.fromARGB(255, 244, 242, 242),
+         backgroundColor: const Color.fromARGB(255, 244, 242, 242),
             );
           },
         );
       },
       style: ElevatedButton.styleFrom(
-        primary: Color.fromARGB(255, 193, 34, 23), // Set the button's background color to red
-        padding: EdgeInsets.symmetric(horizontal: 120),
+        backgroundColor: const Color.fromARGB(255, 193, 34, 23), // Set the button's background color to red
+        padding: const EdgeInsets.symmetric(horizontal: 120),
       ),
-      child: Text('Delete My Account'),
+      child: const Text('Delete My Account'),
     ),
         ],
+   
       ),
+      
     ),
   );
-
-
-
 }
+
+
 void _showMultiSelectInterests() async {
   final Map<String, List<String>> interestGroups = {
   'Data Science': [
@@ -903,8 +893,6 @@ void _showMultiSelectInterests() async {
     });
   }
 }
-
-
 
 
 void _showMultiSelectSkills() async {
@@ -1050,9 +1038,9 @@ void _showMultiSelectSkills() async {
 
 // Function to validate and save the username
 Future<bool> validateUsername() async {
-  if (  newUsername == loggedInUsername) 
-  return true;
-  else if (newUsername.length < 6 ) {
+  if (  newUsername == loggedInUsername) {
+    return true;
+  } else if (newUsername.length < 6 ) {
     _showSnackBar('Username should be at least 6 characters long.');
   } else if (newUsername.contains(' ')) {
     _showSnackBar('Username should not contain spaces.');
@@ -1063,14 +1051,12 @@ Future<bool> validateUsername() async {
       _showSnackBar('Username is already taken. Please choose a different one.');
     } else {
       // Username is valid and not already taken, perform the save operation
-      if ( await updateUsernameByEmail())
-      return true;
+      if ( await updateUsernameByEmail()) {
+        return true;
+      }
       
     }
   } else {
-    
-    // Username is not modified, perform the save operation
-   // saveUsername();
   }
   return false;
 }
@@ -1078,7 +1064,7 @@ Future<bool> validateUsername() async {
 Future<bool> checkUsernameExists(String username) async {
   final querySnapshot = await FirebaseFirestore.instance
     .collection('users')
-    .where('username', isEqualTo: username.toLowerCase())
+    .where('userName', isEqualTo: username.toLowerCase())
     .limit(1)
     .get();
 
@@ -1107,25 +1093,19 @@ Future<bool> updateUsernameByEmail() async {
 }
 Future<bool> validatePassword() async {
   // Check if the new password is equal to the existing password
-  if (hashPassword(newPassword) == loggedInPassword) {
+  if (newPassword =='' || hashPassword(newPassword) == loggedInPassword ) {
     return true; // Nothing changed (user doesn't want to modify)
   }
 
   // Check password length
-  if (newPassword.length < 8) {
-    _showSnackBar('Password should not be less than 8 characters.');
+  if (newPassword.length < 6) {
+    _showSnackBar('Password should not be less than 6 characters.');
     return false;
   }
 
   // Check for white spaces in the password
   if (newPassword.contains(' ')) {
     _showSnackBar('Password should not contain spaces.');
-    return false;
-  }
-
-  // Check for at least one capital letter in the password
-  if (!newPassword.contains(RegExp(r'[A-Z]'))) {
-    _showSnackBar('Password should have at least one capital letter.');
     return false;
   }
 
@@ -1159,7 +1139,8 @@ Future<bool> updatePasswordByEmail() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        await user.updatePassword(hashedPassword);
+        await user.updatePassword(newPassword);
+         isModified = true;
         return true;
       } catch (e) {
         print('Failed to update password in Firebase Authentication: $e');
@@ -1190,7 +1171,7 @@ if ( await updateCSC() )
 return true;
 return false;
 }
-// 
+
 Future<bool> updateCSC() async {
   final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
       .collection('users')
@@ -1207,10 +1188,8 @@ Future<bool> updateCSC() async {
     });
   }
        isModified = true;
-     //  _showSnackBar('Your information has been changed successfullyCSC');
        return true;
 }
-
 
 Future<bool> validateUserType() async {
   if (newUserType == loggedInUserType ) {
@@ -1242,7 +1221,6 @@ Future<bool> updateUserType() async {
     });
   }
       isModified = true;
-      // _showSnackBar('Your information has been changed successfullyTYPE');
        return true;
 }
 
@@ -1272,7 +1250,6 @@ Future<bool> updateUserPreference()  async {
     });
   }
       isModified = true;
-     //  _showSnackBar('Your information has been changed successfullyPREF');
        return true;
 }
 
@@ -1287,8 +1264,9 @@ Future<bool> validateInterests() async {
     _showSnackBar('Please enter your interests');
     return false;
   }
-if ( await updateInterests() )
-return true;
+if ( await updateInterests() ) {
+  return true;
+}
 return false;
 }
 
@@ -1309,10 +1287,8 @@ Future<bool> updateInterests()  async {
     });
   }
         isModified = true;
-     //  _showSnackBar('Your information has been changed successfullyINTERESTS');
        return true;
 }
-
 
 Future<bool> validateSkills() async {
   if (newUserSkills == loggedInSkills ) {
@@ -1352,21 +1328,20 @@ Future<bool> updateSkills()  async {
 
 
 Future<bool> validateGithubLink() async {
-  if (  newGithubLink == loggedInGithub) 
-  return true;
-   else if (newGithubLink.isNotEmpty && !newGithubLink.startsWith("https://github.com/")) {
+  if (  newGithubLink == loggedInGithub) {
+    return true;
+  } else if (newGithubLink.isNotEmpty && !newGithubLink.startsWith("https://github.com/")) {
       _showSnackBar('Invalid GitHub link');
       return false;
     }
      else {
-      if ( await updateGithubLink())
-      return true;
+      if ( await updateGithubLink()) {
+        return true;
+      }
       return false;
       
     }
 }
-
-
 
 Future<bool> updateGithubLink() async {
   final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
@@ -1384,11 +1359,9 @@ Future<bool> updateGithubLink() async {
     });
   }
      isModified = true;
-     //  _showSnackBar('Your information has been changed successfully-GITHUB');
        return true;
 
 }
-
 
 Future<bool> isDeleted() async {
   final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
@@ -1409,7 +1382,6 @@ Future<bool> isDeleted() async {
     if (user != null) {
       await user.delete();
     }
-
     return true;
   }
 
@@ -1427,13 +1399,26 @@ void navigateToStartPage() async {
   );
 }
 
-// Function to show an error dialog with a title and message
-
- void _showSnackBar(String message) {
+  void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.height - 80,
+          right: 20,
+          left: 20,
+        ),
+        backgroundColor:
+            Color.fromARGB(255, 63, 12, 118), // Customize the background color
+      ),
     );
   }
+
+
 
 
 }// end page
