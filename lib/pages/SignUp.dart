@@ -658,7 +658,7 @@ class _Signup extends State<Signup> {
                           const SizedBox(height: 8),
                           reusableTextField(
                             "Please Enter Your Password",
-                            Icons.password,
+                            Icons.lock,
                             true,
                             _password,
                             true,
