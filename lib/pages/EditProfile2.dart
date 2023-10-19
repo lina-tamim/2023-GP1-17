@@ -341,7 +341,6 @@ const Row(
           const SizedBox(height: 10),
 
 //USER TYPE
-
       const Row(
                         children: [
                           Text(
@@ -387,7 +386,6 @@ const Row(
                         }).toList(),
                       ),
 // User ATTENDANCE PREFERENCE
-
         const SizedBox(height: 5),
       const Row(
                         children: [
@@ -575,7 +573,6 @@ const Row(
   ],
 ),
 const SizedBox(height: 20),
-
 // Save button
 Row(
       children: [
@@ -596,17 +593,16 @@ Row(
   }
   },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromARGB(255, 6, 107, 10), // Set the button's background color to green
-            padding: const EdgeInsets.symmetric(horizontal: 35), // Add padding for visual spacing
-            alignment: Alignment.centerLeft, // Align the button's contents to the left
+            backgroundColor: const Color.fromARGB(255, 6, 107, 10), 
+            padding: const EdgeInsets.symmetric(horizontal: 35), 
+            alignment: Alignment.centerLeft, 
           ),
           child: const Text('Save'),
         ),
-        const SizedBox(width: 13), // Add some spacing between the buttons
+        const SizedBox(width: 13), 
         ElevatedButton(
           onPressed: () {
-            // Handle Cancel button press
-            Navigator.pop(context); // Redirect back to UserProfilePage.dart
+            Navigator.pop(context); 
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.grey, // Set the button's background color to grey

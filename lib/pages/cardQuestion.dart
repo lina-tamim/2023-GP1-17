@@ -1,5 +1,5 @@
 import 'dart:core';
-
+//
 class CardQuestion {
   final int id;
   final String postType;

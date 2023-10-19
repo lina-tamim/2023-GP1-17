@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rive/rive.dart';
 import 'dart:ui';
 import 'package:techxcel11/pages/Login.dart';
-
 class ForgetPassword extends StatefulWidget {
   const ForgetPassword({Key? key}) : super(key: key);
 

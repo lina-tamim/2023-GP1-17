@@ -1,7 +1,7 @@
 import 'dart:core';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+//
 class CardFT {
   final String postType;
   final String title;

@@ -33,8 +33,6 @@ class _CoursesAndEventsPageState extends State<CoursesAndEventsPage> {
                   color: Colors.black87,
                 ),
               ),
-
-              // Display application logo
               Image.asset('assets/Backgrounds/XlogoSmall.png'),
               const SizedBox(height: 30),
 

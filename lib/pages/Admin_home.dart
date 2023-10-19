@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:techxcel11/pages/reuse.dart';
-import 'package:techxcel11/pages/login.dart';
+import 'package:techxcel11/pages/login.dart';//
 
 
 class AdminHome extends StatefulWidget {

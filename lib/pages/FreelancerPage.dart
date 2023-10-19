@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:techxcel11/pages/reuse.dart';
-
 class FreelancerPage extends StatefulWidget {
   const FreelancerPage({super.key});
 
@@ -23,7 +22,6 @@ class _FreelancerPageState extends State<FreelancerPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Display application name in big font
               Text(
                 'TechXcel',
                 style: GoogleFonts.orbitron(
@@ -32,10 +30,8 @@ class _FreelancerPageState extends State<FreelancerPage> {
                   color: Colors.black87,
                 ),
               ),
-
               Image.asset('assets/Backgrounds/XlogoSmall.png'),
               const SizedBox(height: 30),
-
             ],
           ),
         ),

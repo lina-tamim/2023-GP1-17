@@ -131,10 +131,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              const SizedBox(height: 2),
+              
               SizedBox(
                 width: 150,
                 child: ElevatedButton(
+                  
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -147,11 +148,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     shape: const StadiumBorder(),
                   ),
                   child: const Text('Edit Profile', style: TextStyle(color: Color.fromARGB(255, 254, 254, 254))),
+                  
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 5),
               const Divider(),
-              const SizedBox(height: 10),
+              const SizedBox(height: 5),
              Image.network(
                   'https://img.freepik.com/free-icon/user_318-563642.jpg',
                   width: 110,
@@ -159,7 +161,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   fit: BoxFit.cover,
                 ),
               // Username
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -298,18 +300,19 @@ InkWell(
                 }).toList(),
             ],
           ),
-              const SizedBox(height: 80),
+              const SizedBox(height: 26),
 InkWell(
   onTap: showLogoutConfirmationDialog,
   child: ListTile(
     leading: Container(
-      width: 40,
-      height: 40,
+      width: 35,
+      height: 35,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(100),
         color: Colors.red,
       ),
       child: const Icon(
+          size: 20,
         Icons.logout,
         color: Colors.white,
       ),
@@ -322,8 +325,8 @@ InkWell(
           ),
     ),
     trailing: Container(
-      width: 30,
-      height: 30,
+      width: 20,
+      height: 20,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(100),
         color: Colors.grey.withOpacity(0.1),

@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/pages/cardQuestion.dart';
-import 'package:techxcel11/pages/answer.dart';
 import 'package:techxcel11/pages/cardanswer.dart';
 
 class AnswerPage extends StatefulWidget {

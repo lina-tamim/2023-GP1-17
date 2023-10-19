@@ -12,7 +12,7 @@ import 'package:techxcel11/pages/UserProfilePage.dart';
 import 'package:techxcel11/pages/aboutus.dart';
 import 'package:techxcel11/pages/bookmark.dart';
 import 'package:techxcel11/pages/CalendarPage.dart';
-import 'package:techxcel11/pages/user_posts_page.dart';
+import 'package:techxcel11/pages/user_posts_page.dart'; //
 
 class NavBarUser extends StatefulWidget {
   const NavBarUser({super.key});
@@ -125,16 +125,7 @@ class _NavBarUserState extends State<NavBarUser> {
               MaterialPageRoute(builder: (context) => const AboutUsPage()),
             ),
           ),
-const SizedBox(height: 80),
-const Divider(),
-               ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text('Home'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const FHomePage()),
-            ),
-          ),
+
 /*logout will be from user profile, ADMIN AS WELL ?
           ListTile(
             leading: Icon(Icons.logout),
@@ -313,7 +304,7 @@ AppBar buildAppBar(String titleText) {
 }
 
 
-class BottomNavBar extends StatelessWidget {
+class BottomNavBar extends StatefulWidget {
   final int currentIndex;
   final Function(int) onTap;
 
@@ -322,30 +313,48 @@ class BottomNavBar extends StatelessWidget {
     required this.onTap,
   });
 
+  @override
+  _BottomNavBarState createState() => _BottomNavBarState();
+}
+
+class _BottomNavBarState extends State<BottomNavBar> {
+  int _currentTappedIndex = -1;
+
   void _navigateToPage(BuildContext context, int index) {
-    Widget page;
     switch (index) {
       case 0:
-        page = ChatPage();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ChatPage()),
+        );
         break;
       case 1:
-        page = FreelancerPage();
+         Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const FreelancerPage()),
+        ); 
         break;
       case 2:
-        page = FHomePage();
+          Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const FHomePage()),
+        ); 
         break;
       case 3:
-        page = CoursesAndEventsPage();
+          Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CoursesAndEventsPage()),
+        );  
         break;
       default:
-        page = FHomePage();
+       Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const FHomePage()),
+        ); 
         break;
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => page),
-    );
+  
   }
 
   @override
@@ -355,42 +364,74 @@ class BottomNavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          GestureDetector(
-            onTap: () {
-              onTap(0);
-            },
-            child: Icon(
-              Icons.chat,
-              color: currentIndex == 0 ? Colors.blue : Colors.grey,
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              onTap(1);
-            },
-            child: Icon(
-              Icons.handshake,
-              color: currentIndex == 1 ? Colors.blue : Colors.grey,
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              onTap(2);
-            },
-            child: Icon(
-              Icons.home,
-              color: currentIndex == 2 ? Colors.blue : Colors.grey,
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              onTap(3);
-            },
-            child: Icon(
-              Icons.explore,
-              color: currentIndex == 3 ? Colors.blue : Colors.grey,
-            ),
-          ),
+        GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ChatPage()),
+    );
+  },
+  child: Icon(
+    Icons.chat,
+    color: _currentTappedIndex == 0
+        ? Colors.purple
+        : widget.currentIndex == 0
+            ? Colors.black
+            : Colors.black,
+  ),
+),
+
+ GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const FreelancerPage()),
+    );
+  },
+  child: Icon(
+    Icons.handshake_outlined,
+    color: _currentTappedIndex == 0
+        ? Colors.purple
+        : widget.currentIndex == 0
+            ? Colors.black
+            : Colors.black,
+  ),
+),
+
+
+     GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const FHomePage()),
+    );
+  },
+  child: Icon(
+    Icons.home,
+    color: _currentTappedIndex == 0
+        ? Colors.purple
+        : widget.currentIndex == 0
+            ? Colors.black
+            : Colors.black,
+  ),
+),
+
+      GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const CoursesAndEventsPage()),
+    );
+  },
+  child: Icon(
+    Icons.explore,
+    color: _currentTappedIndex == 0
+        ? Colors.purple
+        : widget.currentIndex == 0
+            ? Colors.black
+            : Colors.black,
+  ),
+),
         ],
       ),
     );

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
+import 'package:techxcel11/pages/UserProfilePage.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:techxcel11/pages/Fhome.dart';
 import 'package:lottie/lottie.dart';
@@ -13,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:techxcel11/pages/Signup.dart';
-
+//
 
 
 class Login extends StatefulWidget {
@@ -72,7 +73,7 @@ void logUserIn() async {
       } else {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const FHomePage()),
+          MaterialPageRoute(builder: (context) => const UserProfilePage()),
         );
       }
     } else {
