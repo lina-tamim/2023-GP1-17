@@ -8,7 +8,7 @@ class CardFT {
   final DateTime date;
   final List<String> topics;
   final String userId;
-  final String docId;
+  //final String docId;
   String username;
 
   CardFT({
@@ -18,7 +18,7 @@ class CardFT {
     required this.date,
     required this.topics,
     required this.userId,
-    required this.docId,
+    //required this.docId,
     required this.username,
   });
 
@@ -29,7 +29,7 @@ class CardFT {
         'selectedDate': date,
         'selectedInterests': topics,
         'userId': userId,
-        'docId': docId,
+        //'docId': docId,
         'username': '',
       };
 
@@ -41,5 +41,8 @@ class CardFT {
       date: (json['selectedDate'] as Timestamp).toDate(),
       userId: json['userId'],
       username: json['username'] ?? '',
-      docId: json['docId']);
+      //docId: json['docId']
+      );
 }
+
+//TECHXCEL

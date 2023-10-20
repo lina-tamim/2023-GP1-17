@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techxcel11/pages/cardQuestion.dart';
-import 'package:techxcel11/pages/cardanswer.dart';
+import 'package:techxcel11/models/cardQuestion.dart';
+import 'package:techxcel11/models/cardanswer.dart';
 
 class AnswerPage extends StatefulWidget {
   final int questionId;
@@ -135,9 +135,17 @@ Future<List<CardQuestion>> readQuestion() async {
 );
 
 Widget buildAnswerCard(CardAnswer answer) {
+  String currentEmail = '';
+
+  Future<String> getCurrentUserEmail() async {
+    return await fetchuseremail();
+  }
+  //print("***************$currentEmail***********");
   int upvoteCount = answer.upvoteCount ?? 0;
-  bool isUpvoted = false;
-  //answer.upvotedUserIds.contains(currentUserId);
+  List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
+
+  //bool isUpvoted = answer.upvotedUserIds.contains(currentEmail);
+  
   return Card(
   child: ListTile(
     leading: CircleAvatar(
@@ -167,43 +175,61 @@ Widget buildAnswerCard(CardAnswer answer) {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-        IconButton(
-              //icon: Icon(isUpvoted ? Icons.arrow_downward : Icons.arrow_circle_up),
-               icon: Icon(Icons.arrow_circle_up),
-              onPressed: () {
-                setState(() {
-                  if (isUpvoted) {
-                    // Undo the upvote
-                    upvoteCount--;
-                    //answer.upvotedUserIds.remove(currentUserId);
-                  } else {
-                    // Perform the upvote
-                    upvoteCount++;
-                    //answer.upvotedUserIds.add(currentUserId);
-                  }
+      FutureBuilder<String>(
+            future: getCurrentUserEmail(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator(); // Show a loading indicator while retrieving the email
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}'); // Show an error message if email retrieval fails
+              } else {
+                currentEmail = snapshot.data!;
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      icon: Icon(upvotedUserIds.contains(currentEmail) ? Icons.arrow_circle_down : Icons.arrow_circle_up),
+                      onPressed: () {
+                        setState(() {
+                          if (upvotedUserIds.contains(currentEmail)) {
+                            // Undo the upvote
+                            upvotedUserIds.remove(currentEmail);
+                            upvoteCount--;
+                          } else {
+                            // Perform the upvote
+                            upvotedUserIds.add(currentEmail);
+                            upvoteCount++;
+                          }
 
-                  // Update the upvote count and upvoted user IDs in Firestore
-                  FirebaseFirestore.instance
-                      .collection('answers')
-                      .doc(answer.answerId)
-                      .update({'upvoteCount': upvoteCount, })
-                      //'upvotedUserIds': answer.upvotedUserIds
-                      .then((_) {
-                    print('Upvote count updated successfully');
-                  }).catchError((error) {
-                    print('Failed to update upvote count: $error');
-                    // Handle error if the update fails
-                  });
-                });
-              },
-            ),
-            Text('Upvotes: $upvoteCount'),
-          ],
-        ),
-      ],
-    ),
-  ),
-);}
+                          // Update the upvote count and upvoted user IDs in Firestore
+                          FirebaseFirestore.instance
+                            .collection('answers')
+                            .doc(answer.answerId)
+                            .update({
+                              'upvoteCount': upvoteCount,
+                              'upvotedUserIds': upvotedUserIds,
+                            })
+                            .then((_) {
+                              print('Upvote count updated successfully');
+                            })
+                            .catchError((error) {
+                              print('Failed to update upvote count: $error');
+                              // Handle error if the update fails
+                            });
+                        });
+                      },
+                    ),
+                    Text('Upvotes: $upvoteCount'),
+                  ],
+                );
+              }
+            },
+          ),
+        ],
+      ),
+   ], ),
+  ),);
+}
  
  
   final TextEditingController _answerController = TextEditingController();
@@ -341,3 +367,5 @@ Stream<List<CardAnswer>> readAnswer() => FirebaseFirestore.instance
     );
   }
 }
+
+//TECHXCEL

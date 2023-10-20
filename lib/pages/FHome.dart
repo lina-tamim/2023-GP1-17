@@ -2,8 +2,8 @@
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techxcel11/pages/cardFandT.dart';
-import 'package:techxcel11/pages/cardQuestion.dart';
+import 'package:techxcel11/models/cardFandT.dart';
+import 'package:techxcel11/models/cardQuestion.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:techxcel11/pages/answer.dart';
@@ -31,7 +31,7 @@ class __FHomePageState extends State<FHomePage> {
 Stream<List<CardQuestion>> readQuestion() => FirebaseFirestore.instance
     .collection('posts')
     .where('dropdownValue', isEqualTo: 'Question')
-   // .orderBy('postedDate', descending: true)
+    .orderBy('postedDate', descending: true)
     .snapshots()
     .asyncMap((snapshot) async {
       final questions = snapshot.docs.map((doc) => CardQuestion.fromJson(doc.data())).toList();
@@ -53,6 +53,7 @@ Stream<List<CardQuestion>> readQuestion() => FirebaseFirestore.instance
 Stream<List<CardFT>> readTeam() => FirebaseFirestore.instance
     .collection('posts')
     .where('dropdownValue', isEqualTo: 'Team Collaberation')
+    .orderBy('postedDate', descending: true)
     .snapshots()
     .asyncMap((snapshot) async {
       final team = snapshot.docs.map((doc) => CardFT.fromJson(doc.data())).toList();
@@ -73,6 +74,7 @@ Stream<List<CardFT>> readTeam() => FirebaseFirestore.instance
     Stream<List<CardFT>> readProjects() => FirebaseFirestore.instance
     .collection('posts')
     .where('dropdownValue', isEqualTo: 'Project')
+    .orderBy('postedDate', descending: true)
     .snapshots()
     .asyncMap((snapshot) async {
       final project = snapshot.docs.map((doc) => CardFT.fromJson(doc.data())).toList();
@@ -276,6 +278,7 @@ Widget buildTeamCard(CardFT team) {
                       child: Scaffold(
                         backgroundColor: const Color.fromRGBO(248, 241, 243, 1),
                         appBar: AppBar(
+                          
                           automaticallyImplyLeading: false,
     iconTheme: IconThemeData(color: const Color.fromARGB(255, 255, 255, 255)),
     backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
@@ -299,7 +302,7 @@ Widget buildTeamCard(CardFT team) {
       indicator: BoxDecoration(),
                             tabs: [
                               Tab(text: 'Question'),
-                              Tab(text: 'Team Build'),
+                              Tab(text: 'Build Team'),
                               Tab(text: 'Projects'),
                             ],
                           ),
@@ -333,13 +336,20 @@ Widget buildTeamCard(CardFT team) {
                               builder: (context, snapshot){
                                 if(snapshot.hasData){
                                   final q= snapshot.data!;
-                                  return ListView(
+                                  
+                                   if (q.isEmpty) {
+                      return Center(
+                        child: Text('No Posts Yet'),
+                      );
+                    }
+                    return ListView(
                                     children: q.map(buildQuestionCard).toList(),
                                   );
                                 }
+                                
                                else if (snapshot.hasError) {
                                   return Center(
-                                    child: Text('Error: ${snapshot.error}'),
+                                    child: Text('No Posts Yet '),
                                   );
                                 }
                 
@@ -348,9 +358,7 @@ Widget buildTeamCard(CardFT team) {
                                     child: CircularProgressIndicator(),
                                   );
                                 }
-                               
-                               
-                
+                         
                                 
                               },
                             ),
@@ -360,14 +368,20 @@ Widget buildTeamCard(CardFT team) {
   builder: (context, snapshot) {
     if (snapshot.hasData) {
       final t = snapshot.data!;
-      return ListView(
-        children: t.map(buildTeamCard).toList(),
-      );
-    } /*else if (snapshot.hasError) {
+       if (t.isEmpty) {
+                      return Center(
+                        child: Text('No posts yet'),
+                      );
+                    }
+                    return ListView(
+                                    children: t.map(buildTeamCard).toList(),
+                                  );
+      
+    } else if (snapshot.hasError) {
       return Center(
-        child: Text('Error: ${snapshot.error}'),
+        child: Text('No Posts Yet '),
       );
-    } */else {
+    } else {
       return Center(
         child: CircularProgressIndicator(),
       );
@@ -380,14 +394,19 @@ Widget buildTeamCard(CardFT team) {
   builder: (context, snapshot) {
     if (snapshot.hasData) {
       final p = snapshot.data!;
-      return ListView(
-        children: p.map(buildTeamCard).toList(),
-      );
-    } /*else if (snapshot.hasError) {
+      if (p.isEmpty) {
+                      return Center(
+                        child: Text('No posts yet'),
+                      );
+                    }
+                    return ListView(
+                                    children: p.map(buildTeamCard).toList(),
+                                  );
+    } else if (snapshot.hasError) {
       return Center(
-        child: Text('Error: ${snapshot.error}'),
+        child: Text('No Posts Yet '),
       );
-    }*/ else {
+    } else {
       return Center(
         child: CircularProgressIndicator(),
       );
@@ -404,4 +423,4 @@ Widget buildTeamCard(CardFT team) {
                   }
                 }
 
-
+//TECHXCEL

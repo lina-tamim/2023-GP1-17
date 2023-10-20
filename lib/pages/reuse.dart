@@ -108,10 +108,14 @@ class _NavBarUserState extends State<NavBarUser> {
             leading: const Icon(Icons.post_add),
             iconColor: Colors.black,
             title: const Text('My Interactions'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const UserProfilePage()),
-            ), 
+            onTap: () async {
+    await fetchUserData(); // Fetch user data and assign the value to 'loggedInEmail'
+    print("**************$loggedInEmail");
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => UserPostsPage()),
+    );
+  },
           ),
           const Divider(),
           ListTile(
@@ -443,3 +447,5 @@ size: 22,
     );
   }
 }
+
+//TECHXCEL

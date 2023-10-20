@@ -449,9 +449,7 @@ const SizedBox(height: 16),
 ),
 
              
- Container(
-  width: double.infinity, // Set width to occupy the full width of the parent
-  child: ElevatedButton(
+ ElevatedButton(
     onPressed: () async {
       _showMultiSelectTopics();
       final List<String>? selected = await _selectedTopicCompleter.future;
@@ -463,7 +461,20 @@ const SizedBox(height: 16),
     },
     child: Text('${postTypeTopics[_selectedPostType]}'),
   ),
-) ,             
+  const Divider(
+                            height: 10,
+                            //_selectedPreference
+                          ),
+                          // Display the selected items
+                          Wrap(
+                            children:
+                                _selectedTopics 
+                                    .map((e) => Chip(
+                                          label: Text(e),
+                                        ))
+                                    .toList(),
+                          ),
+             
                
 
            
@@ -534,15 +545,33 @@ const SizedBox(height: 16),
 
             
             SizedBox(height: 16.0),
-           Container(
-  width: double.infinity,
-  child: ElevatedButton(
-    onPressed: () async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final email = prefs.getString('loggedInEmail') ?? '';
-      _submitForm(email);
-    },
-    child: Text('Submit'),
+           Center(
+  child: SizedBox(
+    width: 200,
+    height: 50,
+    child: ElevatedButton(
+      onPressed: () async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        final email = prefs.getString('loggedInEmail') ?? '';
+        _submitForm(email);
+      },
+      style: ElevatedButton.styleFrom(
+        primary: Color.fromARGB(255, 198, 180, 247),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(25),
+        ),
+        elevation: 10,
+        shadowColor: Color.fromARGB(255, 0, 0, 0).withOpacity(1),
+      ),
+      child: Text(
+        'Submit',
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+        ),
+      ),
+    ),
   ),
 ),
           ],
@@ -644,3 +673,5 @@ if (snapshot.docs.isEmpty) {
   );
   }}
 }
+
+//TECHXCEL
