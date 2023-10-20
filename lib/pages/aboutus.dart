@@ -73,8 +73,6 @@ const SizedBox(height:20),
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
-              // Email address
               const Row(
                 children: [
                   Icon(Icons.email),
@@ -87,8 +85,6 @@ const SizedBox(height:20),
                   ),
                 ],
               ),
-
-              // Twitter account
               const Row(
                 children: [
                   Icon(

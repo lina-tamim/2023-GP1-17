@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:techxcel11/pages/Signup.dart';
-//
+
 
 
 class Login extends StatefulWidget {
@@ -49,6 +49,10 @@ void logUserIn() async {
 
     // Email and password match a user in the database
     final uid = userCredential.user!.uid;
+   if (userCredential.user!.emailVerified) {
+
+
+
 
     // Fetch the user document from Firestore based on the uid
     final DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
@@ -62,7 +66,6 @@ void logUserIn() async {
       // Save the user's email in shared preferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('loggedInEmail', email);
-      _showSnackBar("Welcome Back!");
 
       // Redirect the user based on the user type
       if (user['userType'] == 'Admin') {
@@ -78,6 +81,9 @@ void logUserIn() async {
       }
     } else {
       _showSnackBar("Login failed, please enter correct credentials");
+    }
+    }else {
+      _showSnackBar("Please verify your email before logging in.");
     }
   } catch (e) {
     print('$e');
@@ -115,8 +121,6 @@ void logUserIn() async {
             ),
           ),
 
-          // Add your signup content here
-          // White square with content...
           Positioned(
             left: MediaQuery.of(context).size.width * 0.05,
             right: MediaQuery.of(context).size.width * 0.05,
@@ -125,9 +129,6 @@ void logUserIn() async {
             child: SingleChildScrollView(
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.7,
-                //height: MediaQuery.of(context).size.height * 1,
-
-                ///++++
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(30),
@@ -135,7 +136,6 @@ void logUserIn() async {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    // Title
                     const Padding(
                       padding: EdgeInsets.only(top: 10),
                       child: Text(
@@ -154,16 +154,13 @@ void logUserIn() async {
                         textAlign: TextAlign.center,
                       ),
                     ),
-
                     const SizedBox(
-                      width: 300, // Adjust the width as needed
+                      width: 300, 
                       child: Divider(
                         color: Color.fromARGB(255, 211, 211, 211),
                         thickness: 1,
                       ),
                     ),
-
-                    // Email
                     Padding(
                       padding:
                           const EdgeInsets.only(top: 20, left: 15, right: 15),
@@ -184,8 +181,6 @@ void logUserIn() async {
                         ],
                       ),
                     ),
-
-                    //password
                     Padding(
                       padding:
                           const EdgeInsets.only(top: 20, left: 15, right: 15),
@@ -237,13 +232,16 @@ void logUserIn() async {
                     ),
                     signUpOption(), 
   
+
                     GestureDetector(
                       onTap: 
                         logUserIn,
                       child: SizedBox(
-                      height: 174,
-                      child: Image.asset('assets/Backgrounds/XlogoSmall.png'),
-
+                        height: 174,
+                        child: Lottie.network(
+                          'https://lottie.host/702b54d8-e453-4d3b-93c5-f7ebf587554a/bS3nChV9sx.json', // Replace with the actual path to your Lottie animation file
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
 
@@ -282,7 +280,6 @@ void logUserIn() async {
       ),
     );
   }
-
   Row signUpOption() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -309,9 +306,6 @@ void logUserIn() async {
       ],
     );
   }
-
-
-
 String hashPassword(String password) {
   var bytes = utf8.encode(password); // Encode the password as bytes
   var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
@@ -333,7 +327,7 @@ String hashPassword(String password) {
           left: 20,
         ),
         backgroundColor:
-            Color.fromARGB(255, 63, 12, 118), // Customize the background color
+            Color.fromARGB(255, 63, 12, 118), 
       ),
     );
   }

@@ -15,15 +15,14 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-         appBar: buildAppBar ('Calendar'),
-
+    drawer: const NavBarUser(),
+    appBar: buildAppBar ('Calendar'),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Display application name in big font
               Text(
                 'TechXcel',
                 style: GoogleFonts.orbitron(
@@ -32,12 +31,8 @@ class _CalendarPageState extends State<CalendarPage> {
                   color: Colors.black87,
                 ),
               ),
-
-              // Display application logo
               Image.asset('assets/Backgrounds/XlogoSmall.png'),
               const SizedBox(height: 30),
-
-              // Brief description of the platform
             ],
           ),
         ),

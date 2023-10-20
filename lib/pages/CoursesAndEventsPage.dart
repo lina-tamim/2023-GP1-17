@@ -17,7 +17,7 @@ class _CoursesAndEventsPageState extends State<CoursesAndEventsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavBarUser(),
-           appBar: buildAppBar ('Courses and Events'),
+      appBar: buildAppBar ('Courses and Events'),
 
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -35,7 +35,6 @@ class _CoursesAndEventsPageState extends State<CoursesAndEventsPage> {
               ),
               Image.asset('assets/Backgrounds/XlogoSmall.png'),
               const SizedBox(height: 30),
-
             ],
           ),
         ),

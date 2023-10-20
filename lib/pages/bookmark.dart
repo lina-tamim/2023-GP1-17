@@ -16,6 +16,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+    drawer: const NavBarUser(),
     appBar: buildAppBar ('Bookmark'),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -23,7 +24,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Display application name in big font
               Text(
                 'TechXcel',
                 style: GoogleFonts.orbitron(
@@ -32,12 +32,8 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   color: Colors.black87,
                 ),
               ),
-
-              // Display application logo
               Image.asset('assets/Backgrounds/XlogoSmall.png'),
               const SizedBox(height: 30),
-
-              // Brief description of the platform
             ],
           ),
         ),

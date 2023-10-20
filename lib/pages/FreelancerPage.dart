@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:techxcel11/pages/reuse.dart';
 class FreelancerPage extends StatefulWidget {
-  const FreelancerPage({super.key});
+   const FreelancerPage({super.key});
 
   @override
   State<FreelancerPage> createState() => _FreelancerPageState();
@@ -14,7 +14,7 @@ class _FreelancerPageState extends State<FreelancerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavBarUser(),
-           appBar: buildAppBar ('Freelancers'),
+       appBar: buildAppBar ('Freelancers'),
 
       body: Padding(
         padding: const EdgeInsets.all(20),

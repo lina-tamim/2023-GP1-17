@@ -1,12 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Import the FontAwesome Flutter package
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'; 
 import 'package:techxcel11/pages/EditProfile2.dart';
 import 'package:techxcel11/pages/Login.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:google_fonts/google_fonts.dart';//
 import 'dart:math' as math;
 
 class UserProfilePage extends StatefulWidget {
@@ -101,10 +102,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
           actions: [
             TextButton(
               onPressed: () {
-                      Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Login()),
-                    );
+                logUserOut();
               },
               child: const Text('Yes'),
             ),
@@ -120,6 +118,45 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 
+void logUserOut() async {
+  try {
+    await FirebaseAuth.instance.signOut();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('loggedInEmail');
+    _showSnackBar("Logged out successfully");
+       Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Login()),
+                    );
+  } catch (e) {
+    print('$e');
+    _showSnackBar("Logout failed");
+  }
+}
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.height - 80,
+          right: 20,
+          left: 20,
+        ),
+        backgroundColor:
+            Color.fromARGB(255, 63, 12, 118), // Customize the background color
+      ),
+    );
+  }
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -127,8 +164,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
       drawer: const NavBarUser(),
       appBar: buildAppBar ('My Profile'),
       body: SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
         child: Container(
-          padding: const EdgeInsets.all(20),
           child: Column(
             children: [
               
@@ -228,7 +265,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ),
               const Divider(),
               const SizedBox(height: 20),
-InkWell(
+          InkWell(
           onTap: toggleInterests,
           child: Row(
             children: [
@@ -249,7 +286,7 @@ InkWell(
               ),
             ],
           ),
-        ),
+          ),
         if (showInterests)
           Column(
             children: userInterests.map((interest) {

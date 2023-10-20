@@ -6,9 +6,9 @@ import 'package:techxcel11/pages/UserProfilePage.dart';
 import "package:csc_picker/csc_picker.dart";
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:techxcel11/pages/reuse.dart';
-import 'package:techxcel11/pages/start.dart'; // Import the FontAwesome Flutter package
+import 'package:techxcel11/pages/start.dart'; 
 import 'package:crypto/crypto.dart';
-import 'dart:convert';
+import 'dart:convert';//m
 
 
 class EditProfile2 extends StatefulWidget {
@@ -117,9 +117,7 @@ final FirebaseFirestore _firestore = FirebaseFirestore.instance;
  @override
 Widget build(BuildContext context) {
   return Scaffold(
-    appBar: AppBar(
-      title: const Text('Edit Profile'),
-    ),
+    appBar: buildAppBar('Edit Profile'), 
     body: SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -138,9 +136,8 @@ Widget build(BuildContext context) {
               ),
               SizedBox(width: 5),
               Tooltip(
-                message: 'Username must meet the following criteria:\n'
-                    '- At least 6 characters long\n'
-                    '- No whitespace allowed',
+                message: 'Username should be at least 6 characters long\nand No white spaces are allawed',
+
                 padding: EdgeInsets.all(20),
                 showDuration: Duration(seconds: 3),
                 textStyle: TextStyle(color: Colors.white),
@@ -194,7 +191,7 @@ Widget build(BuildContext context) {
               ),
               SizedBox(width: 5),
               Tooltip(
-                message: 'Email address as it cannot be changed after account creation',
+                message: 'Email address cannot be changed after account creation',
                 padding: EdgeInsets.all(20),
                 showDuration: Duration(seconds: 4),
                 textStyle: TextStyle(color: Colors.white),
@@ -245,10 +242,7 @@ Widget build(BuildContext context) {
               ),
               SizedBox(width: 5),
               Tooltip(
-                message: 'Password must meet the following criteria:\n'
-                    '- At least 8 characters long\n'
-                    '- At least 1 capital letter\n'
-                    '- No whitespace allowed',
+                message: 'Password must meet be at least 6 characters long\nand No white spaces are allowed', 
                 padding: EdgeInsets.all(20),
                 showDuration: Duration(seconds: 3),
                 textStyle: TextStyle(color: Colors.white),
@@ -400,9 +394,9 @@ const Row(
                           ),
                               Tooltip(
                                 message:
-                                    'Find the best option for courses and events that suits your preference:\n'
-                                    '- In Place for physical attendance\n'
-                                    '- Online for remote participation\n',
+                                  'Find the best option for courses and events that suits your preference:\n'
+                                    '- Physical attendance available for on-site experiences\n'
+                                    '- Remote participation offered through online platforms\n',
                                 padding: EdgeInsets.all(20),
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
@@ -451,7 +445,8 @@ const Row(
                             width: 5,
                           ),
                          Tooltip(
-                message: 'We are asking for your interests to get to know you\nbetter and recommend relevant content to you',
+                message: 
+              'Share your passions with us, and we will ensure you receive the finest content recommendations!',// 'Choose What are you passionate about so we can recommend you the best content!'
                 padding: EdgeInsets.all(20),
                 showDuration: Duration(seconds: 3),
                 textStyle: TextStyle(color: Colors.white),
@@ -501,7 +496,7 @@ const Row(
                             width: 5,
                           ),
                          const Tooltip(
-                message: 'Entering your skills will help you to build a strong profile\nand make you more visible to potential clients.',
+                message: 'Showcase what you can do based on your acquired abilities and experience.',
                 padding: EdgeInsets.all(20),
                 showDuration: Duration(seconds: 3),
                 textStyle: TextStyle(color: Colors.white),
@@ -583,7 +578,7 @@ Row(
      await validateInterests() && await validateSkills() && await validateGithubLink())
     {
       if ( isModified == true ) {
-        _showSnackBar("Your information has been changed successfully");
+        _showSnackBar2("Your information has been changed successfully");
       }
 
                       Navigator.push(
@@ -1414,7 +1409,25 @@ void navigateToStartPage() async {
     );
   }
 
+void _showSnackBar2(String message) {
+  double snackBarHeight = 510; // Customize the height of the snackbar
 
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
+      margin: EdgeInsets.only(
+        bottom: snackBarHeight + 20, // Add the snackbar height and some additional margin
+        right: 20,
+        left: 20,
+      ),
+      backgroundColor: Color.fromARGB(255, 12, 118, 51), // Customize the background color
+    ),
+  );
+}
 
 
 }// end page

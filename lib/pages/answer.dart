@@ -21,8 +21,6 @@ SharedPreferences prefs= await SharedPreferences.getInstance();
   return email;
   }
 
-
-
   late List<CardQuestion> questions = [];
 final _questionStreamController = StreamController<List<CardQuestion>>.broadcast();
 

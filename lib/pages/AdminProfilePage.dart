@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:techxcel11/pages/reuse.dart';//
+import 'package:techxcel11/pages/reuse.dart';
 
 class AdminProfile extends StatefulWidget {
   const AdminProfile({Key? key}) : super(key: key);

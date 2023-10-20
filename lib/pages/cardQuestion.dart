@@ -1,5 +1,5 @@
 import 'dart:core';
-//
+
 class CardQuestion {
   final int id;
   final String postType;
@@ -10,7 +10,6 @@ class CardQuestion {
   final String docId;
   String username;
 
-  //final int anwersNo;
 
   CardQuestion({
     required this.id,

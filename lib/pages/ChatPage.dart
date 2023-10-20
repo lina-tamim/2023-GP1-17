@@ -17,7 +17,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavBarUser(),
-            appBar: buildAppBar ('Chat'),
+      appBar: buildAppBar ('Chat'),
 
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -33,11 +33,8 @@ class _ChatPageState extends State<ChatPage> {
                   color: Colors.black87,
                 ),
               ),
-
-              // Display application logo
               Image.asset('assets/Backgrounds/XlogoSmall.png'),
               const SizedBox(height: 30),
-
             ],
           ),
         ),

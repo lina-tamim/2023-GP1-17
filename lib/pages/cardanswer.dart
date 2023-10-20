@@ -15,7 +15,7 @@ class CardAnswer {
     required this.answerText,
     required this.upvoteCount,
     required this.username,
-  });//
+  });
 
   Map<String, dynamic> toJson() => {
         'answerId': answerId,

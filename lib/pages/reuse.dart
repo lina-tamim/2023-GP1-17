@@ -12,7 +12,9 @@ import 'package:techxcel11/pages/UserProfilePage.dart';
 import 'package:techxcel11/pages/aboutus.dart';
 import 'package:techxcel11/pages/bookmark.dart';
 import 'package:techxcel11/pages/CalendarPage.dart';
-import 'package:techxcel11/pages/user_posts_page.dart'; //
+import 'package:techxcel11/pages/user_posts_page.dart'; //m
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 
 class NavBarUser extends StatefulWidget {
   const NavBarUser({super.key});
@@ -60,30 +62,41 @@ class _NavBarUserState extends State<NavBarUser> {
       child: ListView(
         padding: EdgeInsets.zero, 
         children: [
-          UserAccountsDrawerHeader(
-            accountName: Text(loggedInUsername),
-            accountEmail: Text(
-              loggedInEmail,
-            ),
-            currentAccountPicture: CircleAvatar(
-              child: ClipOval(
-                child: Image.network(
-                  'https://img.freepik.com/free-icon/user_318-563642.jpg',
-                  width: 90,
-                  height: 90,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-       decoration: BoxDecoration(
-  image: DecorationImage(
-    image: AssetImage('assets/Backgrounds/navbarbg2.png'),
-    fit: BoxFit.cover,
+        UserAccountsDrawerHeader(
+  accountName: Text(
+    loggedInUsername,
+    style: TextStyle(
+      color: Colors.black,
+      fontWeight: FontWeight.w800,
+
+    ),
+  ),
+  accountEmail: Text(
+    loggedInEmail,
+    style: TextStyle(
+      color: Colors.black,
+    ),
+  ),
+  currentAccountPicture: CircleAvatar(
+    child: ClipOval(
+      child: Image.network(
+        'https://img.freepik.com/free-icon/user_318-563642.jpg',
+        width: 90,
+        height: 90,
+        fit: BoxFit.cover,
+      ),
+    ),
+  ),
+  decoration: BoxDecoration(
+    image: DecorationImage(
+      image: AssetImage('assets/Backgrounds/bg11.png'),
+      fit: BoxFit.cover,
+    ),
   ),
 ),
-          ),
           ListTile(
             leading: const Icon(Icons.person),
+            iconColor: Colors.black,
             title: const Text('Profile'),
             onTap: () => Navigator.push(
               context,
@@ -93,6 +106,7 @@ class _NavBarUserState extends State<NavBarUser> {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.post_add),
+            iconColor: Colors.black,
             title: const Text('My Interactions'),
             onTap: () => Navigator.push(
               context,
@@ -102,6 +116,7 @@ class _NavBarUserState extends State<NavBarUser> {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.bookmark),
+            iconColor: Colors.black,
             title: const Text('Bookmark'),
             onTap: () => Navigator.push(
               context,
@@ -111,6 +126,7 @@ class _NavBarUserState extends State<NavBarUser> {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.calendar_month),
+             iconColor: Colors.black,
             title: const Text('Calendar'),
             onTap: () => Navigator.push(
               context,
@@ -119,6 +135,7 @@ class _NavBarUserState extends State<NavBarUser> {
           ),
           ListTile(
             leading: const Icon(Icons.groups_2_rounded),
+            iconColor: Colors.black,
             title: const Text('About Us'),
             onTap: () => Navigator.push(
               context,
@@ -372,12 +389,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
     );
   },
   child: Icon(
-    Icons.chat,
-    color: _currentTappedIndex == 0
-        ? Colors.purple
-        : widget.currentIndex == 0
-            ? Colors.black
-            : Colors.black,
+ FontAwesomeIcons.solidMessage ,
+  size: 22,
+    color:  Colors.black,
   ),
 ),
 
@@ -389,12 +403,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
     );
   },
   child: Icon(
-    Icons.handshake_outlined,
-    color: _currentTappedIndex == 0
-        ? Colors.purple
-        : widget.currentIndex == 0
-            ? Colors.black
-            : Colors.black,
+ FontAwesomeIcons.handshakeSimple ,
+    size:22,
+    color: Colors.black,
   ),
 ),
 
@@ -407,12 +418,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
     );
   },
   child: Icon(
-    Icons.home,
-    color: _currentTappedIndex == 0
-        ? Colors.purple
-        : widget.currentIndex == 0
-            ? Colors.black
-            : Colors.black,
+      FontAwesomeIcons.home ,
+size: 22,
+    color: Colors.black,
   ),
 ),
 
@@ -424,12 +432,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
     );
   },
   child: Icon(
-    Icons.explore,
-    color: _currentTappedIndex == 0
-        ? Colors.purple
-        : widget.currentIndex == 0
-            ? Colors.black
-            : Colors.black,
+
+   Icons.explore,
+   size:28,
+    color: Colors.black,
   ),
 ),
         ],
