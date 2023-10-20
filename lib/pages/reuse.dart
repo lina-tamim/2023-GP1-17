@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,7 +13,8 @@ import 'package:techxcel11/pages/bookmark.dart';
 import 'package:techxcel11/pages/CalendarPage.dart';
 import 'package:techxcel11/pages/user_posts_page.dart'; //m
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
+import 'package:techxcel11/pages/start.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class NavBarUser extends StatefulWidget {
   const NavBarUser({super.key});
@@ -26,6 +26,7 @@ class NavBarUser extends StatefulWidget {
 class _NavBarUserState extends State<NavBarUser> {
   String loggedInUsername = '';
   String loggedInEmail = '';
+  String loggedImage = '';
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -48,10 +49,12 @@ class _NavBarUserState extends State<NavBarUser> {
       final userData = snapshot.docs[0].data();
 
       final username = userData['userName'] ?? '';
+      final imageUrl = userData['imageUrl'] ?? '';
 
       setState(() {
         loggedInUsername = username;
         loggedInEmail = email;
+        loggedImage = imageUrl;
       });
     }
   }
@@ -60,40 +63,41 @@ class _NavBarUserState extends State<NavBarUser> {
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.zero, 
+        padding: EdgeInsets.zero,
         children: [
-        UserAccountsDrawerHeader(
-  accountName: Text(
-    loggedInUsername,
-    style: TextStyle(
-      color: Colors.black,
-      fontWeight: FontWeight.w800,
+          UserAccountsDrawerHeader(
+            accountName: Text(
+              loggedInUsername,
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            accountEmail: Text(
+              loggedInEmail,
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+            currentAccountPicture: CircleAvatar(
+              child: ClipOval(
+                child: Image.network(
+                  loggedImage,
+                  width: 90,
+                  height: 90,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            decoration: BoxDecoration(
+              color: Colors.blue, // Set the desired background color here
 
-    ),
-  ),
-  accountEmail: Text(
-    loggedInEmail,
-    style: TextStyle(
-      color: Colors.black,
-    ),
-  ),
-  currentAccountPicture: CircleAvatar(
-    child: ClipOval(
-      child: Image.network(
-        'https://img.freepik.com/free-icon/user_318-563642.jpg',
-        width: 90,
-        height: 90,
-        fit: BoxFit.cover,
-      ),
-    ),
-  ),
-  decoration: BoxDecoration(
-    image: DecorationImage(
-      image: AssetImage('assets/Backgrounds/bg11.png'),
-      fit: BoxFit.cover,
-    ),
-  ),
-),
+              image: DecorationImage(
+                image: AssetImage('assets/Backgrounds/bg11.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
           ListTile(
             leading: const Icon(Icons.person),
             iconColor: Colors.black,
@@ -101,23 +105,21 @@ class _NavBarUserState extends State<NavBarUser> {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const UserProfilePage()),
-            ), 
+            ),
           ),
-          const Divider(),
           ListTile(
             leading: const Icon(Icons.post_add),
             iconColor: Colors.black,
             title: const Text('My Interactions'),
             onTap: () async {
-    await fetchUserData(); // Fetch user data and assign the value to 'loggedInEmail'
-    print("**************$loggedInEmail");
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => UserPostsPage()),
-    );
-  },
+              await fetchUserData(); // Fetch user data and assign the value to 'loggedInEmail'
+              print("**************$loggedInEmail");
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UserPostsPage()),
+              );
+            },
           ),
-          const Divider(),
           ListTile(
             leading: const Icon(Icons.bookmark),
             iconColor: Colors.black,
@@ -125,17 +127,16 @@ class _NavBarUserState extends State<NavBarUser> {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const BookmarkPage()),
-            ), 
+            ),
           ),
-          const Divider(),
           ListTile(
             leading: const Icon(Icons.calendar_month),
-             iconColor: Colors.black,
+            iconColor: Colors.black,
             title: const Text('Calendar'),
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const CalendarPage()),
-            ), 
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.groups_2_rounded),
@@ -146,13 +147,14 @@ class _NavBarUserState extends State<NavBarUser> {
               MaterialPageRoute(builder: (context) => const AboutUsPage()),
             ),
           ),
-
-/*logout will be from user profile, ADMIN AS WELL ?
           ListTile(
             leading: Icon(Icons.logout),
-            title: Text('Logout'),
-            onTap: () => Login(), // change it to page name +++++++++++++++++
-          ), */
+            iconColor: Colors.black,
+            title: const Text('Logout'),
+            onTap: () {
+              showLogoutConfirmationDialog(context);
+            },
+          ),
         ],
       ),
     );
@@ -170,6 +172,7 @@ class NavBarAdmin extends StatefulWidget {
 class _NavBarAdminState extends State<NavBarAdmin> {
   String loggedInUsername = '';
   String loggedInEmail = '';
+  String loggedImage = '';
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -192,10 +195,12 @@ class _NavBarAdminState extends State<NavBarAdmin> {
       final userData = snapshot.docs[0].data();
 
       final username = userData['userName'] ?? '';
+      final imageUrl = userData['imageUrl'] ?? '';
 
       setState(() {
         loggedInUsername = username;
         loggedInEmail = email;
+        loggedImage = imageUrl;
       });
     }
   }
@@ -214,7 +219,7 @@ class _NavBarAdminState extends State<NavBarAdmin> {
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
                 child: Image.network(
-                  'https://img.freepik.com/free-icon/user_318-563642.jpg',
+                  loggedImage,
                   width: 90,
                   height: 90,
                   fit: BoxFit.cover,
@@ -250,19 +255,19 @@ class _NavBarAdminState extends State<NavBarAdmin> {
               MaterialPageRoute(builder: (context) => const AdminHome()),
             ),
           ),
-          
-/*logout will be from user profile, ADMIN AS WELL ?
           ListTile(
             leading: Icon(Icons.logout),
-            title: Text('Logout'),
-            onTap: () => Login(), // change it to page name +++++++++++++++++
-          ), */
+            iconColor: Colors.black,
+            title: const Text('Logout'),
+            onTap: () {
+              showLogoutConfirmationDialog(context);
+            },
+          ),
         ],
       ),
     );
   }
 }
-
 
 TextField reusableTextField(String text, IconData icon, bool isPasswordType,
     TextEditingController controller, bool modifiable) {
@@ -324,7 +329,6 @@ AppBar buildAppBar(String titleText) {
   );
 }
 
-
 class BottomNavBar extends StatefulWidget {
   final int currentIndex;
   final Function(int) onTap;
@@ -350,32 +354,30 @@ class _BottomNavBarState extends State<BottomNavBar> {
         );
         break;
       case 1:
-         Navigator.push(
+        Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const FreelancerPage()),
-        ); 
+        );
         break;
       case 2:
-          Navigator.push(
+        Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const FHomePage()),
-        ); 
+        );
         break;
       case 3:
-          Navigator.push(
+        Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const CoursesAndEventsPage()),
-        );  
+        );
         break;
       default:
-       Navigator.push(
+        Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const FHomePage()),
-        ); 
+        );
         break;
     }
-
-  
   }
 
   @override
@@ -385,67 +387,123 @@ class _BottomNavBarState extends State<BottomNavBar> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-        GestureDetector(
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ChatPage()),
-    );
-  },
-  child: Icon(
- FontAwesomeIcons.solidMessage ,
-  size: 22,
-    color:  Colors.black,
-  ),
-),
-
- GestureDetector(
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const FreelancerPage()),
-    );
-  },
-  child: Icon(
- FontAwesomeIcons.handshakeSimple ,
-    size:22,
-    color: Colors.black,
-  ),
-),
-
-
-     GestureDetector(
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const FHomePage()),
-    );
-  },
-  child: Icon(
-      FontAwesomeIcons.home ,
-size: 22,
-    color: Colors.black,
-  ),
-),
-
-      GestureDetector(
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const CoursesAndEventsPage()),
-    );
-  },
-  child: Icon(
-
-   Icons.explore,
-   size:28,
-    color: Colors.black,
-  ),
-),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ChatPage()),
+              );
+            },
+            child: Icon(
+              FontAwesomeIcons.solidMessage,
+              size: 22,
+              color: Colors.black,
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FreelancerPage()),
+              );
+            },
+            child: Icon(
+              FontAwesomeIcons.handshakeSimple,
+              size: 22,
+              color: Colors.black,
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FHomePage()),
+              );
+            },
+            child: Icon(
+              FontAwesomeIcons.home,
+              size: 22,
+              color: Colors.black,
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const CoursesAndEventsPage()),
+              );
+            },
+            child: Icon(
+              Icons.explore,
+              size: 28,
+              color: Colors.black,
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-//TECHXCEL
+void showLogoutConfirmationDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              logUserOut(context);
+            },
+            child: const Text('Yes'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('No'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+void logUserOut(BuildContext context) async {
+  try {
+    await FirebaseAuth.instance.signOut();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('loggedInEmail');
+    _showSnackBar(context, "Logged out successfully");
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+    );
+  } catch (e) {
+    print('$e');
+    _showSnackBar(context, "Logout failed");
+  }
+}
+
+void _showSnackBar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
+      margin: EdgeInsets.only(
+        bottom: MediaQuery.of(context).size.height - 80,
+        right: 20,
+        left: 20,
+      ),
+      backgroundColor:
+          Color.fromARGB(255, 63, 12, 118), // Customize the background color
+    ),
+  );
+}
+//TECHXCEL-LINA

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';//m
+import 'dart:io';
+
 class UserImagePicker extends StatefulWidget {
-  const UserImagePicker({super.key});
+  const UserImagePicker({Key? key, required this.onPickImage})
+      : super(key: key);
+
+  final void Function(File pickedImage) onPickImage;
 
   @override
   State<UserImagePicker> createState() {
@@ -12,10 +16,12 @@ class UserImagePicker extends StatefulWidget {
 
 class _UserImagePickerState extends State<UserImagePicker> {
   File? _pickedImageFile;
+  final String defaultPhotoUrl =
+      'https://img.freepik.com/free-icon/user_318-563642.jpg';
 
   void _pickImage() async {
     final pickedImage = await ImagePicker().pickImage(
-      source: ImageSource.camera,
+      source: ImageSource.gallery,
       imageQuality: 50,
       maxWidth: 150,
     );
@@ -26,6 +32,8 @@ class _UserImagePickerState extends State<UserImagePicker> {
     setState(() {
       _pickedImageFile = File(pickedImage.path);
     });
+
+    widget.onPickImage(_pickedImageFile!);
   }
 
   @override
@@ -34,8 +42,7 @@ class _UserImagePickerState extends State<UserImagePicker> {
       children: [
         CircleAvatar(
           radius: 40,
-          backgroundImage: const NetworkImage(
-              'https://img.freepik.com/free-icon/user_318-563642.jpg'),
+          backgroundImage: NetworkImage(defaultPhotoUrl),
           foregroundImage:
               _pickedImageFile != null ? FileImage(_pickedImageFile!) : null,
         ),
@@ -51,6 +58,3 @@ class _UserImagePickerState extends State<UserImagePicker> {
     );
   }
 }
-
-//TECHXCEL
-

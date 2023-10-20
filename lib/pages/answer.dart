@@ -72,7 +72,7 @@ Future<List<CardQuestion>> readQuestion() async {
           question.username, // Display the username
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.deepPurple
+            color: Color.fromARGB(255, 39, 103, 29)
           ),
         ),
         SizedBox(height: 5),
@@ -368,4 +368,4 @@ Stream<List<CardAnswer>> readAnswer() => FirebaseFirestore.instance
   }
 }
 
-//TECHXCEL
+//TECHXCEL-LINA

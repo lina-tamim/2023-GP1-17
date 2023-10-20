@@ -33,6 +33,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
     });
     super.initState();
   }
+
   Future<String> fetchusername() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final username = prefs.getString('username') ?? '';
@@ -146,7 +147,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
                           );
                         },
                       ),
-                      
                       PostDeleteButton(docId: question.docId)
                     ],
                   ),
@@ -177,7 +177,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
       .collection('posts')
       .where('userId', isEqualTo: email)
       .where('dropdownValue', isEqualTo: 'Freelancer')
-      
       .snapshots()
       .map((snapshot) => snapshot.docs.map((doc) {
             Map<String, dynamic> data = doc.data();
@@ -265,7 +264,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
                           // Add your functionality for the button here
                         },
                       ),
-                     
                       IconButton(
                         icon: Icon(Icons.chat_bubble),
                         // Replace `icon4` with the desired icon
@@ -345,19 +343,45 @@ class _UserPostsPageState extends State<UserPostsPage> {
                       color: Colors.white,
                     ),
                   ),
-                  
                 ],
               ),
-              
             ],
           ),
           bottom: const TabBar(
             indicator: BoxDecoration(),
             tabs: [
-              Tab(text: 'Question'),
-              Tab(text: 'Answers'),
-              Tab(text: 'Build Team'),
-              Tab(text: 'Projects'),
+              Tab(
+                child: Text(
+                  'Question',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 245, 227, 255),
+                  ),
+                ),
+              ),
+              Tab(
+                child: Text(
+                  'Answers',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 245, 227, 255),
+                  ),
+                ),
+              ),
+              Tab(
+                child: Text(
+                  'Build Team',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 245, 227, 255),
+                  ),
+                ),
+              ),
+              Tab(
+                child: Text(
+                  'Projects',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 245, 227, 255),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -368,7 +392,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
           onPressed: () async {
             _toggleFormVisibility();
           },
-          backgroundColor: Colors.purple,
+          backgroundColor: Color.fromARGB(255, 156, 147, 176),
           child: const Icon(Icons.add),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -663,4 +687,5 @@ class PostDeleteButton extends StatelessWidget {
     );
   }
 }
-//TECHXCEL
+//TECHXCEL-LINA
+

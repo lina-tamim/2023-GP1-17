@@ -1,17 +1,21 @@
-
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:techxcel11/user_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:techxcel11/pages/reuse.dart';
+import 'package:techxcel11/pages/Fhome.dart';
 import 'package:lottie/lottie.dart';
 import 'package:techxcel11/pages/start.dart';
 import 'package:techxcel11/pages/Login.dart';
 import "package:csc_picker/csc_picker.dart"; // city
 import 'package:email_validator/email_validator.dart'; // email
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'dart:async';
-//+
+import 'package:image_picker/image_picker.dart'; //+
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
@@ -58,6 +62,7 @@ class _Signup extends State<Signup> {
   String _selectedCountry = '';
   String _selectedCity = '';
   String _selectedState = '';
+  File? _selectedImage;
 
   List<String> _selectedSkills = [];
   List<String> _selectedInterests = [];
@@ -76,6 +81,15 @@ class _Signup extends State<Signup> {
         email: _email.text.trim(),
         password: _password.text.trim(),
       );
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('user_images')
+          .child('${userCredential.user!.uid}jpg');
+
+      await storageRef.putFile(_selectedImage!);
+      final imageURL = await storageRef
+          .getDownloadURL(); // give us a URL that can be used later to dispaly image
+      print(imageURL);
 
       String uid = userCredential.user!.uid;
 
@@ -91,16 +105,8 @@ class _Signup extends State<Signup> {
         'GithubLink': _GitHublink.text.trim(),
         'interests': _selectedInterests,
         'skills': _selectedSkills,
+        'imageUrl': imageURL,
       });
-
-
- // Send email verification to the user
-    await userCredential.user?.sendEmailVerification();
-
-    // Display a success message to the user
-    _showSnackBar("Please check your email for verification.");
-
-    // Redirect the user to a new screen, such as a login screen
 
       showDialog(
         context: context,
@@ -526,6 +532,11 @@ class _Signup extends State<Signup> {
                     SizedBox(
                       height: 10,
                     ),
+                    UserImagePicker(
+                      onPickImage: (pickedImage) {
+                        _selectedImage = pickedImage;
+                      },
+                    ),
                     // User Name
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -557,9 +568,9 @@ class _Signup extends State<Signup> {
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
                                 message:
-                                    'Username should be at least 6 characters long\nand No white spaces are allawed',
-                                   // '- At least 6 characters long\n'
-                                  //  '- No whitespace allowed',
+                                    'Username must meet the following criteria:\n'
+                                    '- At least 6 characters long\n'
+                                    '- No whitespace allowed',
                                 padding: EdgeInsets.all(20),
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
@@ -600,7 +611,7 @@ class _Signup extends State<Signup> {
                           Text(
                             'Ensure that you provide a valid email address as it cannot be changed after account creation',
                             style: TextStyle(
-                                fontSize: 10,
+                                fontSize: 13,
                                 color: Color.fromARGB(255, 205, 34, 21)),
                           ),
                           const SizedBox(height: 8),
@@ -647,10 +658,10 @@ class _Signup extends State<Signup> {
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
                                 message:
-                                    'Password must meet be at least 6 characters long\nand No white spaces are allowed', 
-                              //      '- At least 8 characters long\n'
-                                //    '- At least 1 capital letter\n'
-                                  //  '- No whitespace allowed',
+                                    'Password must meet the following criteria:\n'
+                                    '- At least 8 characters long\n'
+                                    '- At least 1 capital letter\n'
+                                    '- No whitespace allowed',
                                 padding: EdgeInsets.all(20),
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
@@ -743,19 +754,19 @@ class _Signup extends State<Signup> {
                               SizedBox(
                                 width: 5,
                               ),
-                          Tooltip(
-                            child: Icon(
-                              Icons.warning_rounded,
-                              size: 18,
-                              color: Color.fromARGB(255, 195, 0, 0),
-                            ),
-                            message:
-                                'Note:\nSelecting the freelancer option unlocks additional features such as:\nJoin the dedicated freelancer page.\nTake on diverse projects, including paid opportunities.',
-                            padding: EdgeInsets.all(20),
-                            showDuration: Duration(seconds: 4),
-                            textStyle: TextStyle(color: Colors.white),
-                            preferBelow: false,
-                          ),
+                              Tooltip(
+                                child: Icon(
+                                  Icons.warning_rounded,
+                                  size: 18,
+                                  color: Color.fromARGB(255, 195, 0, 0),
+                                ),
+                                message:
+                                    'Note:\nSelecting the freelancer option unlocks additional features such as:\nJoin the dedicated freelancer page.\nTake on diverse projects, including paid opportunities.',
+                                padding: EdgeInsets.all(20),
+                                showDuration: Duration(seconds: 4),
+                                textStyle: TextStyle(color: Colors.white),
+                                preferBelow: false,
+                              ),
                             ],
                           ),
                           const SizedBox(height: 2),
@@ -805,10 +816,8 @@ class _Signup extends State<Signup> {
                                 ),
                                 message:
                                     'Find the best option for courses and events that suits your preference:\n'
-                                    '- Physical attendance available for on-site experiences\n'
-                                    '- Remote participation offered through online platforms\n',
-                                  //  '- In Place for physical attendance\n'
-                                  //  '- Online for remote participation\n',
+                                    '- In Place for physical attendance\n'
+                                    '- Online for remote participation\n',
                                 padding: EdgeInsets.all(20),
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
@@ -865,8 +874,7 @@ class _Signup extends State<Signup> {
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
                                 message:
-                                'Showcase what you can do based on your acquired abilities and experience.',
-                                  //  'Skills:\nWhat you can do based on your acquired abilities and experience.',
+                                    'Skills:\nWhat you can do based on your acquired abilities and experience.',
                                 padding: EdgeInsets.all(20),
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
@@ -927,8 +935,7 @@ class _Signup extends State<Signup> {
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
                                 message:
-                               'Share your passions with us, and we will ensure you receive the finest content recommendations!',// 'Choose What are you passionate about so we can recommend you the best content!'
-                                   // 'Interests:\nWhat you enjoy or are passionate about.',
+                                    'Interests:\nWhat you enjoy or are passionate about.',
                                 padding: EdgeInsets.all(20),
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
@@ -938,7 +945,7 @@ class _Signup extends State<Signup> {
                           ),
                           ElevatedButton(
                             onPressed:
-                                _showMultiSelectInterests, 
+                                _showMultiSelectInterests, // Corrected method name
                             child: const Text('Select Interests'),
                           ),
                           const Divider(
@@ -948,7 +955,7 @@ class _Signup extends State<Signup> {
                           // Display the selected items
                           Wrap(
                             children:
-                                _selectedInterests 
+                                _selectedInterests // Updated variable name
                                     .map((e) => Chip(
                                           label: Text(e),
                                         ))
@@ -995,7 +1002,17 @@ class _Signup extends State<Signup> {
                             signUserUp();
                           }
 
-      
+                          //bool isvalid = _createAccount1();
+                          // Check the validity of the input
+
+                          // If the input is valid, navigate to the login page
+                          /*bool isValid = _createAccount1() as bool;
+                            if (!isValid) {
+                            // Validation failed, do not proceed to Step 2
+                            return;
+                          } else {
+                            allValid(context);
+                          }*/
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Color.fromARGB(255, 198, 180, 247),
@@ -1033,7 +1050,61 @@ class _Signup extends State<Signup> {
     var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
     return digest.toString(); // Convert the hash to a string
   }
+/*
+  void allValid(BuildContext context) async {
+ Future<bool> iscreateAccount1 = _createAccount1() ;
+    if ( (await iscreateAccount1) as bool == true) {
+                            
+ //bool iscreateAccount1 = _createAccount1() as bool;
+  if ( _createAccount2()) {
+   //hash the password
+   
 
+    final user = UserModel(
+      userName: _userName.text.trim().toLowerCase(),
+      userType: _selectedUser,
+      attendancePreference: _selectedPreference,
+      country: _selectedCountry,
+      state: _selectedState,
+      city: _selectedCity,
+      email: _email.text.trim().toLowerCase(),
+      password: hashPassword(_password.text.trim()),
+      GithubLink: _GitHublink.text.trim(),
+      interests: _selectedInterests,
+      skills: _selectedSkills,
+    );
+    UserRepository userRep = UserRepository();
+
+    userRep.createUser(user);
+   
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: ValidationAnimation(),
+        );
+      },
+    );
+
+    // Delay the navigation to the login page using a Timer
+    Timer(const Duration(seconds: 6), () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Login(),
+        ),
+      );
+    });
+  }
+    }
+}*/
+  // validation function
+
+  // validation 1
+  // validation of empty fields
   Future<bool> _createAccount1() async {
     if (_userName.text.isEmpty ||
         _email.text.isEmpty ||
@@ -1175,4 +1246,3 @@ class _Signup extends State<Signup> {
     );
   }
 }
-//TECHXCEL

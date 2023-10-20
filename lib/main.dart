@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:techxcel11/pages/start.dart';//m
+import 'package:techxcel11/pages/start.dart'; //m
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-  options: DefaultFirebaseOptions.currentPlatform,
-);
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MainApp());
 }
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
-@override
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'TechXcel',
       theme: ThemeData(
-        scaffoldBackgroundColor:const Color.fromARGB(255, 255, 255, 255),
-        primarySwatch: Colors.deepPurple,
+        scaffoldBackgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        primarySwatch: Colors.green,
         fontFamily: "Intel",
         inputDecorationTheme: const InputDecorationTheme(
           filled: true,
-          fillColor: Colors.white,
+          fillColor: Color.fromARGB(255, 119, 52, 52),
           errorStyle: TextStyle(height: 0),
           border: defaultInputBorder,
           enabledBorder: defaultInputBorder,
