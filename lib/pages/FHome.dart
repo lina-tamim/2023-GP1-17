@@ -112,8 +112,6 @@ Stream<List<CardFT>> readProjects() => FirebaseFirestore.instance
       return questions;
     });
 
-
-
   Widget buildQuestionCard(CardQuestion question) => Card(
         child: ListTile(
             leading: CircleAvatar(

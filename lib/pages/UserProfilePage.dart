@@ -210,8 +210,6 @@ Container(
     ),
   ),
 ),
-            
-              // Username
               const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

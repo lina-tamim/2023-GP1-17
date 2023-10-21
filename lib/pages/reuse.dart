@@ -90,7 +90,7 @@ class _NavBarUserState extends State<NavBarUser> {
               ),
             ),
             decoration: BoxDecoration(
-              color: Colors.blue, // Set the desired background color here
+              color: Color.fromARGB(255, 62, 0, 61), // Set the desired background color here
 
               image: DecorationImage(
                 image: AssetImage('assets/Backgrounds/bg11.png'),
@@ -218,41 +218,38 @@ class _NavBarAdminState extends State<NavBarAdmin> {
             ),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
-                child: Image.network(
-                  loggedImage,
-                  width: 90,
-                  height: 90,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(117, 230, 227, 236), // if img not show up
-              image: DecorationImage(
-                image: NetworkImage(
-                    'https://4kwallpapers.com/images/walls/thumbs_2t/7898.png'),
+                child: Image.asset(
+                'assets/Backgrounds/defaultUserPic2.png',
+                width: 110,
+                height: 110,
                 fit: BoxFit.cover,
               ),
+              ),
+            ),
+                decoration: BoxDecoration(
+              color: Color.fromARGB(255, 39, 0, 73),
             ),
           ),
           ListTile(
             leading: const Icon(Icons.person),
+            iconColor: Colors.black,
             title: const Text('Profile'),
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const AdminProfile()),
-            ), // change it to page name +++++++++++++++++
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.groups_2_rounded),
+            iconColor: Colors.black,
             title: const Text('Dashboard'),
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const AdminHome()),
             ),
           ),
+          SizedBox(height: 280),
           Divider(),
-          SizedBox(height: 130),
           ListTile(
             leading: Icon(Icons.logout),
             iconColor: Colors.black,
@@ -327,6 +324,7 @@ AppBar buildAppBar(String titleText) {
   );
 }
 
+
 class BottomNavBar extends StatefulWidget {
   final int currentIndex;
   final Function(int) onTap;
@@ -377,61 +375,101 @@ class _BottomNavBarState extends State<BottomNavBar> {
         break;
     }
   }
-  Widget buildNavItem(IconData icon, String text, int index) {
-    final isSelected = index == widget.currentIndex;
 
-    return GestureDetector(
-      onTap: () {
-        widget.onTap(index);
-        _navigateToPage(context, index);
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 22,
-            color: Colors.grey,
-          ),
-          SizedBox(height: 4), // Adjust the spacing between the icon and text
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 12,
-              color:  Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-   @override
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: 60,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          buildNavItem(
-            FontAwesomeIcons.solidMessage,
-            'Chat',
-            0,
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _currentTappedIndex = 0;
+              });
+              _navigateToPage(context, 0);
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  FontAwesomeIcons.solidMessage,
+                  size: 18.5,
+                  color: Colors.black,
+                ),
+                Text(
+                  'Chat',
+                  style: TextStyle(fontSize: 10),
+                ),
+              ],
+            ),
           ),
-          buildNavItem(
-            FontAwesomeIcons.handshakeSimple,
-            'Freelancer',
-            1,
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _currentTappedIndex = 1;
+              });
+              _navigateToPage(context, 1);
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  FontAwesomeIcons.handshakeSimple,
+                  size: 20,
+                  color: Colors.black,
+                ),
+                Text(
+                  'Freelancer',
+                  style: TextStyle(fontSize: 10),
+                ),
+              ],
+            ),
           ),
-          buildNavItem(
-            FontAwesomeIcons.home,
-            'Home',
-            2,
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _currentTappedIndex = 2;
+              });
+              _navigateToPage(context, 2);
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  FontAwesomeIcons.home,
+                  size: 20,
+                  color: Colors.black,
+                ),
+                Text(
+                  ' Home',
+                  style: TextStyle(fontSize: 10),
+                ),
+              ],
+            ),
           ),
-          buildNavItem(
-            Icons.explore,
-            'Explore',
-            3,
-            
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _currentTappedIndex = 3;
+              });
+              _navigateToPage(context, 3);
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.explore,
+                  size: 22.5,
+                  color: Colors.black,
+                ),
+                Text(
+                  'Explore',
+                  style: TextStyle(fontSize: 10),
+                ),
+              ],
+            ),
           ),
         ],
       ),

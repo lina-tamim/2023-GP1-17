@@ -145,12 +145,9 @@ Widget buildAnswerCard(CardAnswer answer) {
   Future<String> getCurrentUserEmail() async {
     return await fetchuseremail();
   }
-  //print("***************$currentEmail***********");
   int upvoteCount = answer.upvoteCount ?? 0;
   List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
 
-  //bool isUpvoted = answer.upvotedUserIds.contains(currentEmail);
-  
   return Card(
   child: ListTile(
      leading: CircleAvatar(

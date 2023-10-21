@@ -574,9 +574,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                             onPressed: () {
                               setState(() {
                                 if (isUpvoted) {
-                                  // Decrement the upvote count
                                   upvoteCount--;
-
                                   // Update the upvote count in Firestore
                                   FirebaseFirestore.instance
                                       .collection('answers')

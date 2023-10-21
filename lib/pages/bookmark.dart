@@ -11,7 +11,6 @@ class BookmarkPage extends StatefulWidget {
 
 class _BookmarkPageState extends State<BookmarkPage> {
   int _currentIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,5 +47,3 @@ class _BookmarkPageState extends State<BookmarkPage> {
     );
   }
 }
-
-//TECHXCEL-LINA

@@ -10,7 +10,6 @@ class CoursesAndEventsPage extends StatefulWidget {
 
 }
 int _currentIndex = 0;
-
 class _CoursesAndEventsPageState extends State<CoursesAndEventsPage> {
  @override
   Widget build(BuildContext context) {

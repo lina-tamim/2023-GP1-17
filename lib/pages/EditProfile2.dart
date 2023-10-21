@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +11,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:techxcel11/pages/start.dart'; 
 import 'package:crypto/crypto.dart';
-import 'dart:convert';//m
+import 'dart:convert';
+
+import 'package:techxcel11/user_image.dart';//m
 
 
 class EditProfile2 extends StatefulWidget {
@@ -21,6 +26,7 @@ class EditProfile2 extends StatefulWidget {
 class _EditProfile2State extends State<EditProfile2> {
 
 /////////// RETRIVED FROM DATABASE:
+  String loggedInUID = '';
   String loggedInUsername = '';
   String loggedInPassword = '';
   String loggedInEmail = '';
@@ -32,6 +38,8 @@ class _EditProfile2State extends State<EditProfile2> {
   String loggedInGithub = '';
   List<String> loggedInInterests= [];
   List<String> loggedInSkills= [];
+  
+  String loggedInimageUrl='';
   bool showSkills = false;
   bool showInterests = false;
   bool isModified = false;
@@ -53,6 +61,8 @@ String selectedPreference = '';
 List<String> newUserInterests =[];
 List<String> newUserSkills =[];
 String newGithubLink='';
+File? newProfilePicture;
+
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   @override
@@ -82,6 +92,7 @@ final FirebaseFirestore _firestore = FirebaseFirestore.instance;
       final skills = List<String>.from(userData['skills'] ?? []);
       final interests = List<String>.from(userData['interests'] ?? []); 
       final password = userData['password'] ?? ''; 
+      final imageUrl = userData['imageUrl'] ?? '';
       newUsername = username;
       newPassword = '';
       isPasswordchange = false;
@@ -96,7 +107,9 @@ final FirebaseFirestore _firestore = FirebaseFirestore.instance;
       newUserSkills = skills;
       newGithubLink = github;
 
+
       setState(() {
+        loggedInUID = snapshot.docs[0].id;
         loggedInUsername = username;
         loggedInCountry = country;
         loggedInState = state;
@@ -109,6 +122,7 @@ final FirebaseFirestore _firestore = FirebaseFirestore.instance;
         loggedInEmail = email;
         loggedInPassword = password;
         loggedInGithub = github;
+        loggedInimageUrl = imageUrl;
       });
     }
   }
@@ -122,8 +136,14 @@ Widget build(BuildContext context) {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 10),
-          // Username
+          const SizedBox(height: 20),
+             Center(
+                child: UserImagePicker(
+                  onPickImage: (pickedImage) {
+                    newProfilePicture = pickedImage;
+                  },
+                ),
+              ),
           const Row(
             children: [
               SizedBox(width: 30),
@@ -572,7 +592,7 @@ Row(
            onPressed: () async {
     if (await validateUsername() && await validatePassword() && await validateCSC()
      && await validateUserType() && await validateUserPreference() && 
-     await validateInterests() && await validateSkills() && await validateGithubLink())
+     await validateInterests() && await validateSkills() && await validateGithubLink() && await validateUserPic())
     {
       if ( isModified == true ) {
         _showSnackBar2("Your information has been changed successfully");
@@ -1359,6 +1379,51 @@ Future<bool> updateGithubLink() async {
 
 }
 
+
+
+
+
+Future<bool> validateUserPic() async {
+  if (newProfilePicture == null) {
+    return true;
+  } else {
+    return await updateProfilePicture(loggedInUID);
+  }
+}
+
+
+
+
+Future<bool> updateProfilePicture(String userId) async {
+  try {
+    // Upload the new profile picture to Firebase Storage
+    final Reference storageRef = FirebaseStorage.instance.ref().child('user_images/$userId.jpg');
+    final UploadTask uploadTask = storageRef.putFile(newProfilePicture!);
+    final TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
+    final String downloadURL = await taskSnapshot.ref.getDownloadURL();
+
+    // Update the imageUrl field in Firebase Firestore
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      'imageUrl': downloadURL,
+    });
+
+    // Update the local user object
+    loggedInimageUrl = downloadURL;
+    isModified = true;
+
+    return true;
+  } catch (e) {
+    _showSnackBar('An error occurred while trying to change your picture');
+    return false;
+  }
+}
+
+
+
+
+
+
+
 Future<bool> isDeleted() async {
   final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
       .collection('users')
@@ -1380,7 +1445,6 @@ Future<bool> isDeleted() async {
     }
     return true;
   }
-
   _showSnackBar('An error occurred while trying to delete your account');
   return false;
 }

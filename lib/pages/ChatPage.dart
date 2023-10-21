@@ -6,7 +6,6 @@ class ChatPage extends StatefulWidget {
 
   @override
   State<ChatPage> createState() => _ChatPageState();
-
 }
 int _currentIndex = 0;
 
@@ -48,5 +47,3 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 }
-
-//TECHXCEL-LINA

@@ -10,7 +10,6 @@ const OnboardingScreen({Key? key}) : super(key: key);
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
 }
-
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final String txlLogo = 'assets/Backgrounds/Xlogo.png'; 
   final String txlLogo2 = 'assets/Backgrounds/TXLogo.png'; 

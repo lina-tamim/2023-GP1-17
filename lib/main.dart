@@ -19,11 +19,11 @@ class MainApp extends StatelessWidget {
       title: 'TechXcel',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        primarySwatch: Colors.purple,
+        primarySwatch: Colors.deepPurple,
         fontFamily: "Intel",
         inputDecorationTheme: const InputDecorationTheme(
           filled: true,
-          fillColor: Color.fromARGB(255, 119, 52, 52),
+          fillColor:  Colors.white,
           errorStyle: TextStyle(height: 0),
           border: defaultInputBorder,
           enabledBorder: defaultInputBorder,
@@ -44,5 +44,4 @@ const defaultInputBorder = OutlineInputBorder(
   ),
 );
 
-//TECHXCEL
 

@@ -159,7 +159,6 @@ class _ForgetPasswordState extends State<ForgetPassword> {
 
   Future<void> resetPassword(BuildContext context) async {
   String email = emailController.text.trim();
-
   if (await doesEmailExists(email) == false) {
     showDialog(
       context: context,

@@ -120,7 +120,6 @@ Future<void> signUserUp() async {
       await storageRef.putFile(_selectedImage!);
     
     }
-print('#####################');
 
     // Get the download URL of the uploaded image
     final imageURL = await storageRef.getDownloadURL();
@@ -174,77 +173,6 @@ print('000000))))))))))))))))))))/');
   }
 }
 
-
-
-  /* Future<void> signUserUp() async {
-    try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _email.text.trim(),
-        password: _password.text.trim(),
-      );
-      final storageRef = FirebaseStorage.instance
-          .ref()
-          .child('user_images')
-          .child('${userCredential.user!.uid}jpg');
-          
-
-   // Send email verification to the user
-    await userCredential.user?.sendEmailVerification();
-
-
-      await storageRef.putFile(_selectedImage!);
-      final imageURL = await storageRef
-          .getDownloadURL(); // give us a URL that can be used later to dispaly image
-      print(imageURL);
-
-      String uid = userCredential.user!.uid;
-
-      await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        'userName': _userName.text.trim().toLowerCase(),
-        'userType': _selectedUser,
-        'attendancePreference': _selectedPreference,
-        'country': _selectedCountry,
-        'state': _selectedState,
-        'city': _selectedCity,
-        'email': _email.text.trim().toLowerCase(),
-        'password': hashPassword(_password.text.trim()),
-        'GithubLink': _GitHublink.text.trim(),
-        'interests': _selectedInterests,
-        'skills': _selectedSkills,
-        'imageUrl': imageURL,
-      });
-
-
-    // Display a success message to the user
-    _showSnackBar("Please check your email for verification.");
-
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return Dialog(
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            child: ValidationAnimation(),
-          );
-        },
-      );
-
-      // Delay the navigation to the login page using a Timer
-      Timer(const Duration(seconds: 6), () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const Login(),
-          ),
-        );
-      });
-    } catch (e) {
-      // Handle sign-up errors here
-      print('Sign-up error: $e');
-    }
-  } */
 
   void _showMultiSelectSkills() async {
     final Map<String, List<String>> skillGroups = {
