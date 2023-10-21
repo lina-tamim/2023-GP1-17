@@ -26,99 +26,107 @@ class __FHomePageState extends State<FHomePage> {
     );
   }
 
-Stream<List<CardQuestion>> readQuestion() => FirebaseFirestore.instance
-    .collection('posts')
-    .where('dropdownValue', isEqualTo: 'Question')
-    .orderBy('postedDate', descending: true)
-    .snapshots()
-    .asyncMap((snapshot) async {
-      final questions = snapshot.docs
-          .map((doc) => CardQuestion.fromJson(doc.data() as Map<String, dynamic>))
-          .toList();
-      final userIds = questions.map((question) => question.userId).toList();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('users')
-          .where('email', whereIn: userIds)
-          .get();
+  bool showSearchBar = false;
 
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(userDocs.docs.map(
-          (doc) => MapEntry(doc.data()['email'] as String, doc.data() as Map<String, dynamic>)));
+  TextEditingController searchController = TextEditingController();
 
-      questions.forEach((question) {
-        final userDoc = userMap[question.userId];
-        final username = userDoc?['userName'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-        question.username = username;
-        question.userPhotoUrl = userPhotoUrl;
+  Stream<List<CardQuestion>> readQuestion() => FirebaseFirestore.instance
+          .collection('posts')
+          .where('dropdownValue', isEqualTo: 'Question')
+          .orderBy('postedDate', descending: true)
+          .snapshots()
+          .asyncMap((snapshot) async {
+        final questions = snapshot.docs
+            .map((doc) =>
+                CardQuestion.fromJson(doc.data() as Map<String, dynamic>))
+            .toList();
+        final userIds = questions.map((question) => question.userId).toList();
+        final userDocs = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', whereIn: userIds)
+            .get();
+
+        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+            userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+                doc.data() as Map<String, dynamic>)));
+
+        questions.forEach((question) {
+          final userDoc = userMap[question.userId];
+          final username = userDoc?['userName'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+          question.username = username;
+          question.userPhotoUrl = userPhotoUrl;
+        });
+
+        return questions;
+      });
+  Stream<List<CardFT>> readTeam() => FirebaseFirestore.instance
+          .collection('posts')
+          .where('dropdownValue', isEqualTo: 'Team Collaberation')
+          .orderBy('postedDate', descending: true)
+          .snapshots()
+          .asyncMap((snapshot) async {
+        final questions = snapshot.docs
+            .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
+            .toList();
+        final userIds = questions.map((question) => question.userId).toList();
+        final userDocs = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', whereIn: userIds)
+            .get();
+
+        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+            userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+                doc.data() as Map<String, dynamic>)));
+
+        questions.forEach((question) {
+          final userDoc = userMap[question.userId];
+          final username = userDoc?['userName'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+          question.username = username;
+          question.userPhotoUrl = userPhotoUrl;
+        });
+
+        return questions;
       });
 
-      return questions;
-    });
-Stream<List<CardFT>> readTeam() => FirebaseFirestore.instance
-    .collection('posts')
-    .where('dropdownValue', isEqualTo: 'Team Collaberation')
-    .orderBy('postedDate', descending: true)
-    .snapshots()
-    .asyncMap((snapshot) async {
-      final questions = snapshot.docs
-          .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
-          .toList();
-      final userIds = questions.map((question) => question.userId).toList();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('users')
-          .where('email', whereIn: userIds)
-          .get();
+  Stream<List<CardFT>> readProjects() => FirebaseFirestore.instance
+          .collection('posts')
+          .where('dropdownValue', isEqualTo: 'Project')
+          .orderBy('postedDate', descending: true)
+          .snapshots()
+          .asyncMap((snapshot) async {
+        final questions = snapshot.docs
+            .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
+            .toList();
+        final userIds = questions.map((question) => question.userId).toList();
+        final userDocs = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', whereIn: userIds)
+            .get();
 
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(userDocs.docs.map(
-          (doc) => MapEntry(doc.data()['email'] as String, doc.data() as Map<String, dynamic>)));
+        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+            userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+                doc.data() as Map<String, dynamic>)));
 
-      questions.forEach((question) {
-        final userDoc = userMap[question.userId];
-        final username = userDoc?['userName'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-        question.username = username;
-        question.userPhotoUrl = userPhotoUrl;
+        questions.forEach((question) {
+          final userDoc = userMap[question.userId];
+          final username = userDoc?['f'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+          question.username = username;
+          question.userPhotoUrl = userPhotoUrl;
+        });
+
+        return questions;
       });
-
-      return questions;
-    });
-    
-Stream<List<CardFT>> readProjects() => FirebaseFirestore.instance
-    .collection('posts')
-    .where('dropdownValue', isEqualTo: 'Project')
-    .orderBy('postedDate', descending: true)
-    .snapshots()
-    .asyncMap((snapshot) async {
-      final questions = snapshot.docs
-          .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
-          .toList();
-      final userIds = questions.map((question) => question.userId).toList();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('users')
-          .where('email', whereIn: userIds)
-          .get();
-
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(userDocs.docs.map(
-          (doc) => MapEntry(doc.data()['email'] as String, doc.data() as Map<String, dynamic>)));
-
-      questions.forEach((question) {
-        final userDoc = userMap[question.userId];
-        final username = userDoc?['userName'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-        question.username = username;
-        question.userPhotoUrl = userPhotoUrl;
-      });
-
-      return questions;
-    });
 
   Widget buildQuestionCard(CardQuestion question) => Card(
         child: ListTile(
-            leading: CircleAvatar(
-          backgroundImage: question.userPhotoUrl != null
-              ? NetworkImage(question.userPhotoUrl!)
-              : null, // Handle null value
-        ),
+          leading: CircleAvatar(
+            backgroundImage: question.userPhotoUrl != null
+                ? NetworkImage(question.userPhotoUrl!)
+                : null, // Handle null value
+          ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -197,10 +205,10 @@ Stream<List<CardFT>> readProjects() => FirebaseFirestore.instance
         children: [
           ListTile(
             leading: CircleAvatar(
-          backgroundImage: team.userPhotoUrl != null
-              ? NetworkImage(team.userPhotoUrl!)
-              : null, // Handle null value
-        ),
+              backgroundImage: team.userPhotoUrl != null
+                  ? NetworkImage(team.userPhotoUrl!)
+                  : null, // Handle null value
+            ),
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -296,16 +304,16 @@ Stream<List<CardFT>> readProjects() => FirebaseFirestore.instance
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
-       child: Scaffold(
-         drawer: const NavBarUser(),
-             bottomNavigationBar: BottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
+      child: Scaffold(
+        drawer: const NavBarUser(),
+        bottomNavigationBar: BottomNavBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        ),
         appBar: AppBar(
           automaticallyImplyLeading: false,
           iconTheme:
@@ -331,7 +339,7 @@ Stream<List<CardFT>> readProjects() => FirebaseFirestore.instance
                         },
                         icon: Icon(Icons.menu));
                   }),
-                  Text(
+                  const Text(
                     'Homepage ',
                     style: TextStyle(
                       fontSize: 18, // Adjust the font size
@@ -339,8 +347,36 @@ Stream<List<CardFT>> readProjects() => FirebaseFirestore.instance
                       color: Colors.white,
                     ),
                   ),
+                  const Spacer(),
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          showSearchBar = !showSearchBar;
+                        });
+                      },
+                      icon:
+                          Icon(showSearchBar ? Icons.search_off : Icons.search))
                 ],
               ),
+              const SizedBox(
+                height: 0,
+              ),
+              if (showSearchBar)
+                TextField(
+                  controller: searchController,
+                  decoration: const InputDecoration(
+                    hintText: 'Search...',
+                    prefixIcon: Icon(Icons.search),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 0,
+                    ),
+                    isDense: true,
+                  ),
+                  onChanged: (text) {
+                    setState(() {});
+                    // Handle search input changes
+                  },
+                ),
             ],
           ),
           bottom: const TabBar(
@@ -376,8 +412,6 @@ Stream<List<CardFT>> readProjects() => FirebaseFirestore.instance
             ],
           ),
         ),
-
-        
 
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
@@ -474,4 +508,20 @@ Stream<List<CardFT>> readProjects() => FirebaseFirestore.instance
   }
 }
 
-//TECHXCEL-Lina 
+void _showSnackBar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
+      margin: EdgeInsets.only(
+        bottom: MediaQuery.of(context).size.height - 80,
+        right: 20,
+        left: 20,
+      ),
+      backgroundColor: Color.fromARGB(255, 63, 12, 118),
+    ),
+  );
+}

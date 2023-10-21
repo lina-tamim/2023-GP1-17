@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/models/cardFTview.dart';
 import 'package:techxcel11/models/cardQview.dart';
@@ -7,10 +8,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:techxcel11/models/cardAview.dart';
 import 'package:techxcel11/pages/answer.dart';
 import 'package:techxcel11/pages/reuse.dart';
+import '../models/cardFandT.dart';
+import '../models/cardQuestion.dart';
 import 'form.dart';
 
 class UserPostsPage extends StatefulWidget {
-const UserPostsPage({Key? key}) : super(key: key);
+  const UserPostsPage({Key? key}) : super(key: key);
 
   @override
   _UserPostsPageState createState() => _UserPostsPageState();
@@ -55,126 +58,102 @@ class _UserPostsPageState extends State<UserPostsPage> {
     );
   }
 
-  Stream<List<CardQview>> readQuestion() {
-    return FirebaseFirestore.instance
-        .collection('posts')
-        .where('userId', isEqualTo: email)
-        .where('dropdownValue', isEqualTo: 'Question')
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) {
-              Map<String, dynamic> data = doc.data();
-              data['docId'] = doc.id;
-              return CardQview.fromJson(data);
-            }).toList());
-  }
+  Stream<List<CardQuestion>> readQuestion() => FirebaseFirestore.instance
+          .collection('posts')
+          .where('userId', isEqualTo: email)
+          .where('dropdownValue', isEqualTo: 'Question')
+          .orderBy('postedDate', descending: true)
+          .snapshots()
+          .asyncMap((snapshot) async {
+        final questions = snapshot.docs.map((doc) {
+          Map<String, dynamic> data = doc.data();
+          data['docId'] = doc.id;
+          return CardQuestion.fromJson(data);
+        }).toList();
+        final userIds = questions.map((question) => question.userId).toList();
+        final userDocs = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', whereIn: userIds)
+            .get();
 
-  Widget buildQuestionCard(CardQview question) => Card(
-        child: FutureBuilder<String>(
-          future: fetchusername(),
-          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-              final username = snapshot.data ?? '';
-              return Column(
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: CircleAvatar(
-                            //backgroundImage: NetworkImage(question.userPhotoUrl),
-                            ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              username,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  ListTile(
-                    title: Text(question.title),
-                    subtitle: Text(question.description),
-                  ),
-                  Wrap(
-                    spacing: 4.0,
-                    runSpacing: 2.0,
-                    children: question.topics
-                        .map(
-                          (topic) => Chip(
-                            label: Text(
-                              topic,
-                              style: TextStyle(fontSize: 12.0),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.bookmark),
-                        // Replace `icon1` with the desired icon
-                        onPressed: () {
-                          // Add your functionality for the button here
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.comment),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    AnswerPage(questionId: question.id)),
-                          );
-                        },
-                      ),
-                      PostDeleteButton(docId: question.docId)
-                    ],
-                  ),
-                ],
-              );
-            }
-          },
-        ),
-      );
+        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+            userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+                doc.data() as Map<String, dynamic>)));
 
-//team collab
+        questions.forEach((question) {
+          final userDoc = userMap[question.userId];
+          final username = userDoc?['userName'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+          question.username = username;
+          question.userPhotoUrl = userPhotoUrl;
+        });
 
-  Stream<List<CardFTview>> readTeam() => FirebaseFirestore.instance
-      .collection('posts')
-      .where('userId', isEqualTo: email)
-      .where('dropdownValue', isEqualTo: 'Team Collab')
-      .snapshots()
-      .map((snapshot) => snapshot.docs.map((doc) {
-            Map<String, dynamic> data = doc.data();
-            data['docId'] = doc.id;
-            return CardFTview.fromJson(data);
-          }).toList());
+        return questions;
+      });
+  Stream<List<CardFT>> readTeam() => FirebaseFirestore.instance
+          .collection('posts')
+          .where('userId', isEqualTo: email)
+          .where('dropdownValue', isEqualTo: 'Team Collaberation')
+          .orderBy('postedDate', descending: true)
+          .snapshots()
+          .asyncMap((snapshot) async {
+        final questions = snapshot.docs.map((doc) {
+          Map<String, dynamic> data = doc.data();
+          data['docId'] = doc.id;
+          return CardFT.fromJson(data);
+        }).toList();
+        final userIds = questions.map((question) => question.userId).toList();
+        final userDocs = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', whereIn: userIds)
+            .get();
 
-  Stream<List<CardFTview>> readProject() => FirebaseFirestore.instance
-      .collection('posts')
-      .where('userId', isEqualTo: email)
-      .where('dropdownValue', isEqualTo: 'Freelancer')
-      .snapshots()
-      .map((snapshot) => snapshot.docs.map((doc) {
-            Map<String, dynamic> data = doc.data();
-            data['docId'] = doc.id;
-            return CardFTview.fromJson(data);
-          }).toList());
+        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+            userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+                doc.data() as Map<String, dynamic>)));
+
+        questions.forEach((question) {
+          final userDoc = userMap[question.userId];
+          final username = userDoc?['userName'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+          question.username = username;
+          question.userPhotoUrl = userPhotoUrl;
+        });
+
+        return questions;
+      });
+
+  Stream<List<CardFT>> readProjects() => FirebaseFirestore.instance
+          .collection('posts')
+          .where('userId', isEqualTo: email)
+          .where('dropdownValue', isEqualTo: 'Freelancer')
+          .snapshots()
+          .asyncMap((snapshot) async {
+        final questions = snapshot.docs.map((doc) {
+          Map<String, dynamic> data = doc.data();
+          data['docId'] = doc.id;
+          return CardFT.fromJson(data);
+        }).toList();
+        final userIds = questions.map((question) => question.userId).toList();
+        final userDocs = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', whereIn: userIds)
+            .get();
+
+        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+            userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+                doc.data() as Map<String, dynamic>)));
+
+        questions.forEach((question) {
+          final userDoc = userMap[question.userId];
+          final username = userDoc?['f'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+          question.username = username;
+          question.userPhotoUrl = userPhotoUrl;
+        });
+
+        return questions;
+      });
 
   Stream<List<CardAview>> myAnswers() => FirebaseFirestore.instance
       .collection('answers')
@@ -186,128 +165,199 @@ class _UserPostsPageState extends State<UserPostsPage> {
             return CardAview.fromJson(data);
           }).toList());
 
-  Widget buildTeamCard(CardFTview fandT) => Card(
-        child: FutureBuilder<String>(
-          future: fetchusername(),
-          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-              final username = snapshot.data ?? '';
-              return Column(
+  Widget buildQuestionCard(CardQuestion question) => Card(
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundImage: question.userPhotoUrl != null
+                ? NetworkImage(question.userPhotoUrl!)
+                : null, // Handle null value
+          ),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 5),
+              Text(
+                question.username ?? '', // Display the username
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.deepPurple),
+              ),
+              SizedBox(height: 5),
+              Text(
+                question.title,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 5),
+              Text(question.description),
+            ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: 4.0,
+                runSpacing: 2.0,
+                children: question.topics
+                    .map(
+                      (topic) => Chip(
+                        label: Text(
+                          topic,
+                          style: TextStyle(fontSize: 12.0),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: CircleAvatar(
-                            //backgroundImage: NetworkImage(question.userPhotoUrl),
-                            ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              username,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  IconButton(
+                    icon: Icon(Icons.bookmark),
+                    onPressed: () {
+                      // Add your functionality for the button here
+                    },
                   ),
-                  ListTile(
-                    title: Text(fandT.title),
-                    subtitle: Text(fandT.description),
+                  IconButton(
+                    icon: Icon(Icons.comment),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                AnswerPage(questionId: question.id)),
+                      );
+                    },
                   ),
-                  Wrap(
-                    spacing: 4.0,
-                    runSpacing: 2.0,
-                    children: fandT.topics
-                        .map(
-                          (topic) => Chip(
-                            label: Text(
-                              topic,
-                              style: TextStyle(fontSize: 12.0),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.bookmark),
-                        // Replace `icon1` with the desired icon
-                        onPressed: () {
-                          // Add your functionality for the button here
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.comment),
-                        // Replace `icon2` with the desired icon
-                        onPressed: () {
-                          // Add your functionality for the button here
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.chat_bubble),
-                        // Replace `icon4` with the desired icon
-                        onPressed: () {
-                          // Add your functionality for the button here
-                        },
-                      ),
-                      PostDeleteButton(docId: fandT.docId),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 4.0, horizontal: 8.0),
-                            decoration: BoxDecoration(
-                              color: Colors.purple.shade200,
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: Text(
-                              'Deadline: ${fandT.date}',
-                              // Replace with the actual deadline date
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12.0,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  IconButton(
+                    icon: Icon(Icons.report),
+                    onPressed: () {
+                      // Add your functionality for the button here
+                    },
                   ),
                 ],
-              );
-            }
-          },
+              ),
+            ],
+          ),
         ),
       );
+  Widget buildTeamCard(CardFT team) {
+    final formattedDate =
+        DateFormat.yMMMMd().format(team.date); // Format the date
+
+    return Card(
+      child: Column(
+        children: [
+          ListTile(
+            leading: CircleAvatar(
+              backgroundImage: team.userPhotoUrl != null
+                  ? NetworkImage(team.userPhotoUrl!)
+                  : null, // Handle null value
+            ),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  team.username ?? '', // Display the username
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurple,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  team.title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text(team.description),
+              ],
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: 4.0,
+                  runSpacing: 2.0,
+                  children: team.topics
+                      .map(
+                        (topic) => Chip(
+                          label: Text(
+                            topic,
+                            style: TextStyle(fontSize: 12.0),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ],
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                icon: Icon(Icons.bookmark),
+                onPressed: () {
+                  // Add your functionality for the button here
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.comment),
+                onPressed: () {
+                  // Add your functionality for the button here
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.report),
+                onPressed: () {
+                  // Add your functionality for the button here
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.chat_rounded),
+                onPressed: () {
+                  // Add your functionality for the button here
+                },
+              ),
+            ],
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+            decoration: BoxDecoration(
+              color: Colors.purple.shade200,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Text(
+              'Deadline: $formattedDate', // Use the formatted date
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12.0,
+              ),
+            ),
+          ),
+          SizedBox(height: 5),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-         drawer: const NavBarUser(),
-             bottomNavigationBar: BottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
+        drawer: const NavBarUser(),
+        bottomNavigationBar: BottomNavBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        ),
         appBar: AppBar(
           automaticallyImplyLeading: false,
           iconTheme:
@@ -402,7 +452,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
               SizedBox()
             else
               // Display Question Cards
-              StreamBuilder<List<CardQview>>(
+              StreamBuilder<List<CardQuestion>>(
                 stream: readQuestion(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
@@ -456,7 +506,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
             if (email == null || email == '')
               SizedBox()
             else
-              StreamBuilder<List<CardFTview>>(
+              StreamBuilder<List<CardFT>>(
                 stream: readTeam(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
@@ -483,8 +533,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
             if (email == null || email == '')
               SizedBox()
             else
-              StreamBuilder<List<CardFTview>>(
-                stream: readProject(),
+              StreamBuilder<List<CardFT>>(
+                stream: readProjects(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final p = snapshot.data!;
@@ -574,7 +624,9 @@ class _UserPostsPageState extends State<UserPostsPage> {
                             onPressed: () {
                               setState(() {
                                 if (isUpvoted) {
+                                  // Decrement the upvote count
                                   upvoteCount--;
+
                                   // Update the upvote count in Firestore
                                   FirebaseFirestore.instance
                                       .collection('answers')
@@ -684,3 +736,20 @@ class PostDeleteButton extends StatelessWidget {
   }
 }
 
+void _showSnackBar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
+      margin: EdgeInsets.only(
+        bottom: MediaQuery.of(context).size.height - 80,
+        right: 20,
+        left: 20,
+      ),
+      backgroundColor: Color.fromARGB(255, 63, 12, 118),
+    ),
+  );
+}
