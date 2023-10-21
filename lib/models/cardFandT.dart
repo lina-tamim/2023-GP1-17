@@ -8,22 +8,20 @@ class CardFT {
   final DateTime date;
   final List<String> topics;
   final String userId;
-  //final String docId;
+  final String? docId;
   String? username;
-    String? userPhotoUrl;
+  String? userPhotoUrl;
 
-
-  CardFT({
-    required this.postType,
-    required this.title,
-    required this.description,
-    required this.date,
-    required this.topics,
-    required this.userId,
-    //required this.docId,
-    required this.username,
-    required this.userPhotoUrl
-  });
+  CardFT(
+      {required this.postType,
+      required this.title,
+      required this.description,
+      required this.date,
+      required this.topics,
+      required this.userId,
+      this.docId = '',
+      required this.username,
+      required this.userPhotoUrl});
 
   Map<String, dynamic> toJson() => {
         'dropdownValue': postType,
@@ -32,7 +30,7 @@ class CardFT {
         'selectedDate': date,
         'selectedInterests': topics,
         'userId': userId,
-        //'docId': docId,
+        'docId': docId,
         'username': '',
         'userPhotoUrl': userPhotoUrl,
       };
@@ -45,9 +43,8 @@ class CardFT {
       date: (json['selectedDate'] as Timestamp).toDate(),
       userId: json['userId'],
       username: json['username'] ?? '',
-      userPhotoUrl :json['userPhotoUrl'] as String?,
-      //docId: json['docId']
-      );
+      userPhotoUrl: json['userPhotoUrl'] as String?,
+      docId: json['docId'] ?? '');
 }
 
 //TECHXCEL

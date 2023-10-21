@@ -41,8 +41,7 @@ class CardFTview {
       date: (json['selectedDate'] as Timestamp).toDate(),
       userId: json['userId'],
       username: json['username'] ?? '',
-      docId: json['docId']
-      );
+      docId: json['docId']);
 }
 
 //TECHXCEL

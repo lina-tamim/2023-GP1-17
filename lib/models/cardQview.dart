@@ -20,7 +20,7 @@ class CardQview {
     required this.topics,
     required this.userId,
     required this.docId,
-     this.username ='',
+    this.username = '',
     //required this.anwersNo,
   });
 

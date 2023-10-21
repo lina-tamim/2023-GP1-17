@@ -9,9 +9,8 @@ class CardQuestion {
   final String userId;
   String? userPhotoUrl;
 
-  //final String docId;
+  final String? docId;
   String? username;
-
 
   CardQuestion({
     required this.id,
@@ -20,7 +19,7 @@ class CardQuestion {
     required this.description,
     required this.topics,
     required this.userId,
-    //required this.docId,
+    this.docId = '',
     required this.username,
     required this.userPhotoUrl,
     //required this.anwersNo,
@@ -33,7 +32,7 @@ class CardQuestion {
         'largeTextFieldValue': description,
         'selectedInterests': topics,
         'userId': userId,
-        //'docId': docId,
+        'docId': docId,
         'username': '',
         'userPhotoUrl': userPhotoUrl,
         //'anwersNo':anwersNo,
@@ -46,9 +45,9 @@ class CardQuestion {
         description: json['largeTextFieldValue'],
         topics: List<String>.from(json['selectedInterests']),
         userId: json['userId'],
-        //docId: json['docId'],
+        docId: json['docId'] ?? '',
         username: json['username'] ?? '',
-          userPhotoUrl :json['userPhotoUrl'] as String?,
+        userPhotoUrl: json['userPhotoUrl'] as String?,
         //anwersNo:json['anwersNo']
       );
 }
