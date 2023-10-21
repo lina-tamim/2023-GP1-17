@@ -83,9 +83,8 @@ final FirebaseFirestore _firestore = FirebaseFirestore.instance;
       final interests = List<String>.from(userData['interests'] ?? []); 
       final password = userData['password'] ?? ''; 
       newUsername = username;
-      newPassword = password;
+      newPassword = '';
       isPasswordchange = false;
-
       newCountry=country;
       newState=state;
       newCity=city;
@@ -285,7 +284,6 @@ Widget build(BuildContext context) {
   obscureText: !showPassword, // Set obscureText based on the toggle state
   onChanged: (value) {
     newPassword = value;
-   // isPasswordchange = true; // Update newPassword when the value changes
   },
 ),
               ),
@@ -295,7 +293,6 @@ Widget build(BuildContext context) {
           const SizedBox(height: 10),
           const Divider(),
           const SizedBox(height: 10),
-// COUNTRY CITY AND STATE
 const Row(
         children: [
                  Text(
@@ -579,12 +576,19 @@ Row(
     {
       if ( isModified == true ) {
         _showSnackBar2("Your information has been changed successfully");
-      }
-
-                      Navigator.push(
+          Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const UserProfilePage()),
                     );
+      }
+      else{
+          Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const UserProfilePage()),
+                    );
+      }
+
+                    
   }
   },
           style: ElevatedButton.styleFrom(
@@ -1033,22 +1037,24 @@ Future<bool> validateUsername() async {
     return true;
   } else if (newUsername.length < 6 ) {
     _showSnackBar('Username should be at least 6 characters long.');
+      return false;
+
   } else if (newUsername.contains(' ')) {
     _showSnackBar('Username should not contain spaces.');
+      return false;
+
   } else if (newUsername != loggedInUsername) {
     bool usernameExists = await checkUsernameExists(newUsername);
-
     if (usernameExists) {
       _showSnackBar('Username is already taken. Please choose a different one.');
+        return false;
     } else {
       // Username is valid and not already taken, perform the save operation
       if ( await updateUsernameByEmail()) {
         return true;
       }
-      
     }
-  } else {
-  }
+  } 
   return false;
 }
 
@@ -1078,7 +1084,6 @@ Future<bool> updateUsernameByEmail() async {
     });
   }
       isModified = true;
-    //   _showSnackBar('Your information has been changed successfullyUSERNAME');
        return true;
 
 }
@@ -1087,19 +1092,19 @@ Future<bool> validatePassword() async {
   if (newPassword =='' || hashPassword(newPassword) == loggedInPassword ) {
     return true; // Nothing changed (user doesn't want to modify)
   }
-
+else
   // Check password length
   if (newPassword.length < 6) {
     _showSnackBar('Password should not be less than 6 characters.');
     return false;
   }
-
+else
   // Check for white spaces in the password
   if (newPassword.contains(' ')) {
     _showSnackBar('Password should not contain spaces.');
     return false;
   }
-
+else
   // Update the password in the database and Firebase Authentication
   if (await updatePasswordByEmail()) {
     return true;
@@ -1211,6 +1216,7 @@ Future<bool> updateUserType() async {
       'userType': newUserType, 
     });
   }
+
       isModified = true;
        return true;
 }
@@ -1312,7 +1318,6 @@ Future<bool> updateSkills()  async {
     });
   }
       isModified = true;
-     // _showSnackBar('Your information has been changed successfullySKILLS');
        return true;
 }
 
@@ -1429,9 +1434,9 @@ void _showSnackBar2(String message) {
   );
 }
 
-
 }// end page
 
 
 
-//TECHXCEL-LINA
+
+  

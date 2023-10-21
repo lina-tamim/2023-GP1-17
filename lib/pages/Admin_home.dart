@@ -9,7 +9,6 @@ class AdminHome extends StatefulWidget {
   @override
   State<AdminHome> createState() => _AdminHome();
 }
-
 class _AdminHome extends State<AdminHome> {
   @override
   Widget build(BuildContext context) {
@@ -213,5 +212,3 @@ void showLogoutConfirmationDialog() {
       },
     );
   }}
-
-//TECHXCEL-LINA

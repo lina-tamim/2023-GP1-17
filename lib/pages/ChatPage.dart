@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:techxcel11/pages/reuse.dart';
-//
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
-  
 
   @override
   State<ChatPage> createState() => _ChatPageState();

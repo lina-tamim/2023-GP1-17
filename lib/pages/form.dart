@@ -286,8 +286,7 @@ void _showMultiSelectTopics() async {
   ],
 ),
                       
-                      const SizedBox(height: 8),
-                     
+                      const SizedBox(height: 8),        
                     DropdownButtonFormField<String>(
   value: _selectedPostType,
  onChanged: (String? newValue) {

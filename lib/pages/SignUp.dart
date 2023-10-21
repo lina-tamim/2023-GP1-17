@@ -19,6 +19,9 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 // lotti class
 class ValidationAnimation extends StatelessWidget {
@@ -63,10 +66,12 @@ class _Signup extends State<Signup> {
   String _selectedCity = '';
   String _selectedState = '';
   File? _selectedImage;
+  String defaultImagePath = 'assets/Backgrounds/defaultUserPic2.png';
+
 
   List<String> _selectedSkills = [];
   List<String> _selectedInterests = [];
-
+  
   @override
   void dispose() {
     _email.dispose();
@@ -74,7 +79,104 @@ class _Signup extends State<Signup> {
     super.dispose();
   }
 
-  Future<void> signUserUp() async {
+
+
+
+// ...
+
+Future<void> signUserUp() async {
+  try {
+    UserCredential userCredential =
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: _email.text.trim(),
+      password: _password.text.trim(),
+    );
+
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child('user_images')
+        .child('${userCredential.user!.uid}jpg');
+
+    // Send email verification to the user
+    await userCredential.user?.sendEmailVerification();
+
+ if (_selectedImage == null) {
+  // Load the default image from assets
+   final defaultImagePath = 'assets/Backgrounds/defaultUserPic2.png';
+
+      // Load the default image from assets
+      final byteData = await rootBundle.load(defaultImagePath);
+      final bytes = byteData.buffer.asUint8List();
+
+      // Save the default image to a temporary file
+      final tempDir = await getTemporaryDirectory();
+      final tempPath = path.join(tempDir.path, 'default_image.png');
+      await File(tempPath).writeAsBytes(bytes);
+
+      // Upload the default image to storage
+      await storageRef.putFile(File(tempPath));
+    } else {
+      // Upload the selected image to storage
+      await storageRef.putFile(_selectedImage!);
+    
+    }
+print('#####################');
+
+    // Get the download URL of the uploaded image
+    final imageURL = await storageRef.getDownloadURL();
+    print(imageURL);
+
+    String uid = userCredential.user!.uid;
+
+    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'userName': _userName.text.trim().toLowerCase(),
+        'userType': _selectedUser,
+        'attendancePreference': _selectedPreference,
+        'country': _selectedCountry,
+        'state': _selectedState,
+        'city': _selectedCity,
+        'email': _email.text.trim().toLowerCase(),
+        'password': hashPassword(_password.text.trim()),
+        'GithubLink': _GitHublink.text.trim(),
+        'interests': _selectedInterests,
+        'skills': _selectedSkills,
+        'imageUrl': imageURL,
+    });
+
+    // Display a success message to the user
+    _showSnackBar("Please check your email for verification.");
+print('/////////////////////');
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: ValidationAnimation(),
+        );
+      },
+    );
+print('000000))))))))))))))))))))/');
+
+    // Delay the navigation to the login page using a Timer
+    Timer(const Duration(seconds: 6), () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Login(),
+        ),
+      );
+    });
+  } catch (e) {
+    // Handle sign-up errors here
+    print('Sign-up error: $e');
+  }
+}
+
+
+
+  /* Future<void> signUserUp() async {
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -85,6 +187,11 @@ class _Signup extends State<Signup> {
           .ref()
           .child('user_images')
           .child('${userCredential.user!.uid}jpg');
+          
+
+   // Send email verification to the user
+    await userCredential.user?.sendEmailVerification();
+
 
       await storageRef.putFile(_selectedImage!);
       final imageURL = await storageRef
@@ -107,6 +214,10 @@ class _Signup extends State<Signup> {
         'skills': _selectedSkills,
         'imageUrl': imageURL,
       });
+
+
+    // Display a success message to the user
+    _showSnackBar("Please check your email for verification.");
 
       showDialog(
         context: context,
@@ -133,7 +244,7 @@ class _Signup extends State<Signup> {
       // Handle sign-up errors here
       print('Sign-up error: $e');
     }
-  }
+  } */
 
   void _showMultiSelectSkills() async {
     final Map<String, List<String>> skillGroups = {
@@ -568,9 +679,7 @@ class _Signup extends State<Signup> {
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
                                 message:
-                                    'Username must meet the following criteria:\n'
-                                    '- At least 6 characters long\n'
-                                    '- No whitespace allowed',
+                              'Username should be at least 6 characters long\nand No white spaces are allowed',
                                 padding: EdgeInsets.all(20),
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
@@ -658,10 +767,8 @@ class _Signup extends State<Signup> {
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
                                 message:
-                                    'Password must meet the following criteria:\n'
-                                    '- At least 8 characters long\n'
-                                    '- At least 1 capital letter\n'
-                                    '- No whitespace allowed',
+                        'Password must be at least 6 characters long\nand No white spaces are allowed', 
+
                                 padding: EdgeInsets.all(20),
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
@@ -815,9 +922,9 @@ class _Signup extends State<Signup> {
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
                                 message:
-                                    'Find the best option for courses and events that suits your preference:\n'
-                                    '- In Place for physical attendance\n'
-                                    '- Online for remote participation\n',
+                                 'Find the best option for courses and events that suits your preference:\n'
+                                    '- Physical attendance available for on-site experiences\n'
+                                    '- Remote participation offered through online platforms\n',
                                 padding: EdgeInsets.all(20),
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
@@ -874,7 +981,7 @@ class _Signup extends State<Signup> {
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
                                 message:
-                                    'Skills:\nWhat you can do based on your acquired abilities and experience.',
+                                'Showcase what you can do based on your acquired abilities and experience.',
                                 padding: EdgeInsets.all(20),
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
@@ -935,7 +1042,7 @@ class _Signup extends State<Signup> {
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
                                 message:
-                                    'Interests:\nWhat you enjoy or are passionate about.',
+                               'Share your passions with us, and we will ensure you receive the finest content recommendations!',
                                 padding: EdgeInsets.all(20),
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
@@ -1113,7 +1220,8 @@ class _Signup extends State<Signup> {
         _selectedCountry == '' ||
         _selectedState == '' ||
         _selectedPreference == null ||
-        _selectedUser == null) {
+        _selectedUser == null
+        || _selectedInterests.isEmpty ) {
       _showSnackBar('Please fill in all the required fields');
       return false;
     }

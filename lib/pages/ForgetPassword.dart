@@ -207,9 +207,4 @@ Future<bool> doesEmailExists(String email) async {
     return false; // Email does not exist
   }
 }
-
-
-
-
 }
-//TECHXCEL-LINA

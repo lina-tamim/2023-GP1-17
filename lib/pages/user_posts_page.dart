@@ -1,25 +1,24 @@
 import 'dart:developer';
-
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/models/cardFTview.dart';
 import 'package:techxcel11/models/cardQview.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:techxcel11/models/cardAview.dart';
-//import 'package:techxcel11/pages/NavBar.dart';
 import 'package:techxcel11/pages/answer.dart';
+import 'package:techxcel11/pages/reuse.dart';
 import 'form.dart';
-//import 'package:intl/intl.dart';
 
 class UserPostsPage extends StatefulWidget {
-  const UserPostsPage({Key? key}) : super(key: key);
+const UserPostsPage({Key? key}) : super(key: key);
 
   @override
   _UserPostsPageState createState() => _UserPostsPageState();
 }
 
 class _UserPostsPageState extends State<UserPostsPage> {
+  int _currentIndex = 0;
+
   String? email;
   @override
   void initState() {
@@ -61,10 +60,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
         .collection('posts')
         .where('userId', isEqualTo: email)
         .where('dropdownValue', isEqualTo: 'Question')
-        // .where('largeTextFieldValue',
-        //     isGreaterThanOrEqualTo: searchController.text)
-        // .where('largeTextFieldValue',
-        //     isLessThanOrEqualTo: searchController.text + '\uf8ff')
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) {
               Map<String, dynamic> data = doc.data();
@@ -163,9 +158,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
       .collection('posts')
       .where('userId', isEqualTo: email)
       .where('dropdownValue', isEqualTo: 'Team Collab')
-      // .where('textFieldValue', isGreaterThanOrEqualTo: searchController.text)
-      // .where('textFieldValue',
-      //     isLessThanOrEqualTo: searchController.text + '\uf8ff')
       .snapshots()
       .map((snapshot) => snapshot.docs.map((doc) {
             Map<String, dynamic> data = doc.data();
@@ -307,16 +299,22 @@ class _UserPostsPageState extends State<UserPostsPage> {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-        backgroundColor: const Color.fromRGBO(248, 241, 243, 1),
+         drawer: const NavBarUser(),
+             bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
         appBar: AppBar(
           automaticallyImplyLeading: false,
           iconTheme:
               IconThemeData(color: const Color.fromARGB(255, 255, 255, 255)),
           backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
           toolbarHeight: 100,
-          // Adjust the height of the AppBar
           elevation: 0,
-          // Adjust the position of the AppBar
           shape: ContinuousRectangleBorder(
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(130),
@@ -687,5 +685,4 @@ class PostDeleteButton extends StatelessWidget {
     );
   }
 }
-//TECHXCEL-LINA
 

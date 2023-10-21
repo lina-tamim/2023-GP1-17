@@ -4,7 +4,6 @@ import 'package:techxcel11/pages/reuse.dart';
 
 class CoursesAndEventsPage extends StatefulWidget {
   const CoursesAndEventsPage({super.key});
-  
 
   @override
   State<CoursesAndEventsPage> createState() => _CoursesAndEventsPageState();

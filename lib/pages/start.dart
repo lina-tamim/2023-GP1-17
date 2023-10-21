@@ -5,7 +5,7 @@ import 'package:rive/rive.dart';
 import 'package:techxcel11/pages/Login.dart';//m
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({Key? key}) : super(key: key);
+const OnboardingScreen({Key? key}) : super(key: key);
 
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();

@@ -286,9 +286,7 @@ class __FHomePageState extends State<FHomePage> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        drawer: const NavBarUser(),
-
-        backgroundColor: const Color.fromRGBO(248, 241, 243, 1),
+      drawer: const NavBarUser(),
         appBar: AppBar(
           automaticallyImplyLeading: false,
           iconTheme:

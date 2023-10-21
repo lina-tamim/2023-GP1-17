@@ -367,5 +367,3 @@ Stream<List<CardAnswer>> readAnswer() => FirebaseFirestore.instance
     );
   }
 }
-
-//TECHXCEL-LINA

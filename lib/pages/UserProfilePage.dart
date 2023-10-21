@@ -25,6 +25,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   String loggedInGithub = '';
   List<String> userSkills = [];
   List<String> userInterests = [];
+  String loggedInImage = '';
   bool showSkills = false;
   bool showInterests = false;
   String url='';
@@ -58,6 +59,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
       final skills = List<String>.from(userData['skills'] ?? []);
       final interests = List<String>.from(userData['interests'] ?? []);
       final userType = userData['userType'] ?? '';
+      final imageUrl = userData['imageUrl'] ?? '';
+
 
       setState(() {
         loggedInUsername = username;
@@ -67,6 +70,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         userSkills = skills;
         userInterests = interests;
         loggedInUserType = userType;
+        loggedInImage = imageUrl;
       });
     }
   }
@@ -188,15 +192,25 @@ void logUserOut() async {
                   
                 ),
               ),
-              const SizedBox(height: 5),
-              const Divider(),
-              const SizedBox(height: 5),
-             Image.network(
-                  'https://img.freepik.com/free-icon/user_318-563642.jpg',
-                  width: 110,
-                  height: 110,
-                  fit: BoxFit.cover,
-                ),
+
+const SizedBox(height: 5),
+const Divider(),
+const SizedBox(height: 5),
+Container(
+  width: 110,
+  height: 110,
+  child: CircleAvatar(
+    child: ClipOval(
+      child: Image.network(
+        loggedInImage ,
+         width: 110,
+      height: 110,
+        fit: BoxFit.cover,
+      ),
+    ),
+  ),
+),
+            
               // Username
               const SizedBox(height: 10),
             Row(
@@ -338,44 +352,6 @@ void logUserOut() async {
             ],
           ),
               const SizedBox(height: 26),
-InkWell(
-  onTap: showLogoutConfirmationDialog,
-  child: ListTile(
-    leading: Container(
-      width: 35,
-      height: 35,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100),
-        color: Colors.red,
-      ),
-      child: const Icon(
-          size: 20,
-        Icons.logout,
-        color: Colors.white,
-      ),
-    ),
-    title: Text(
-      'Logout',
-      style: Theme.of(context).textTheme.bodyLarge?.apply(
-            color: Colors.black87,
-            fontWeightDelta: 2,
-          ),
-    ),
-    trailing: Container(
-      width: 20,
-      height: 20,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100),
-        color: Colors.grey.withOpacity(0.1),
-      ),
-      child: const Icon(
-        Icons.arrow_forward_ios_rounded,
-        size: 18.0,
-        color: Colors.grey,
-      ),
-    ),
-  ),
-)
             ],
           ),
           

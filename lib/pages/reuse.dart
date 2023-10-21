@@ -147,6 +147,8 @@ class _NavBarUserState extends State<NavBarUser> {
               MaterialPageRoute(builder: (context) => const AboutUsPage()),
             ),
           ),
+          SizedBox(height: 110),
+           Divider(),
           ListTile(
             leading: Icon(Icons.logout),
             iconColor: Colors.black,
@@ -175,7 +177,6 @@ class _NavBarAdminState extends State<NavBarAdmin> {
   String loggedImage = '';
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
   @override
   void initState() {
     super.initState();
@@ -193,7 +194,6 @@ class _NavBarAdminState extends State<NavBarAdmin> {
 
     if (snapshot.docs.isNotEmpty) {
       final userData = snapshot.docs[0].data();
-
       final username = userData['userName'] ?? '';
       final imageUrl = userData['imageUrl'] ?? '';
 
@@ -209,7 +209,7 @@ class _NavBarAdminState extends State<NavBarAdmin> {
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.zero, // top
+        padding: EdgeInsets.zero, 
         children: [
           UserAccountsDrawerHeader(
             accountName: Text(loggedInUsername),
@@ -235,8 +235,6 @@ class _NavBarAdminState extends State<NavBarAdmin> {
               ),
             ),
           ),
-
-          // profile
           ListTile(
             leading: const Icon(Icons.person),
             title: const Text('Profile'),
@@ -245,8 +243,6 @@ class _NavBarAdminState extends State<NavBarAdmin> {
               MaterialPageRoute(builder: (context) => const AdminProfile()),
             ), // change it to page name +++++++++++++++++
           ),
-
-          // about us - contact us
           ListTile(
             leading: const Icon(Icons.groups_2_rounded),
             title: const Text('Dashboard'),
@@ -255,6 +251,8 @@ class _NavBarAdminState extends State<NavBarAdmin> {
               MaterialPageRoute(builder: (context) => const AdminHome()),
             ),
           ),
+          Divider(),
+          SizedBox(height: 130),
           ListTile(
             leading: Icon(Icons.logout),
             iconColor: Colors.black,
@@ -502,8 +500,7 @@ void _showSnackBar(BuildContext context, String message) {
         left: 20,
       ),
       backgroundColor:
-          Color.fromARGB(255, 63, 12, 118), // Customize the background color
+          Color.fromARGB(255, 63, 12, 118), 
     ),
   );
 }
-//TECHXCEL-LINA
