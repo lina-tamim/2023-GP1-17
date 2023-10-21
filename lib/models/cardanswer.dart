@@ -5,8 +5,10 @@ class CardAnswer {
   String userId;
   String answerText;
   int upvoteCount;
-  String username;
+  String? username;
   List<String> upvotedUserIds;
+    String? userPhotoUrl;
+
 
   CardAnswer({
     required this.answerId,
@@ -16,6 +18,7 @@ class CardAnswer {
     required this.upvoteCount,
     required this.username,
    this.upvotedUserIds = const [],
+   required this.userPhotoUrl,
   });
 
   Map<String, dynamic> toJson() =>{
@@ -27,6 +30,7 @@ class CardAnswer {
       'upvoteCount': upvoteCount,
       'username':'',
       'upvotedUserIds': upvotedUserIds,
+      'userPhotoUrl': userPhotoUrl,
 };
   
 
@@ -39,6 +43,7 @@ factory CardAnswer.fromJson(Map<String, dynamic> json) {
      upvoteCount: json['upvoteCount'] as int, 
      username: json['username'] ?? '',// Parse the value as an int directly
      upvotedUserIds: List<String>.from(json['upvotedUserIds'] ?? []),
+     userPhotoUrl :json['userPhotoUrl'] as String?,
   );
 }
 

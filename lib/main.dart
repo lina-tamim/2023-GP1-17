@@ -19,7 +19,7 @@ class MainApp extends StatelessWidget {
       title: 'TechXcel',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.purple,
         fontFamily: "Intel",
         inputDecorationTheme: const InputDecorationTheme(
           filled: true,

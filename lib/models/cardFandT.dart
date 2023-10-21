@@ -9,7 +9,9 @@ class CardFT {
   final List<String> topics;
   final String userId;
   //final String docId;
-  String username;
+  String? username;
+    String? userPhotoUrl;
+
 
   CardFT({
     required this.postType,
@@ -20,6 +22,7 @@ class CardFT {
     required this.userId,
     //required this.docId,
     required this.username,
+    required this.userPhotoUrl
   });
 
   Map<String, dynamic> toJson() => {
@@ -31,6 +34,7 @@ class CardFT {
         'userId': userId,
         //'docId': docId,
         'username': '',
+        'userPhotoUrl': userPhotoUrl,
       };
 
   static CardFT fromJson(Map<String, dynamic> json) => CardFT(
@@ -41,6 +45,7 @@ class CardFT {
       date: (json['selectedDate'] as Timestamp).toDate(),
       userId: json['userId'],
       username: json['username'] ?? '',
+      userPhotoUrl :json['userPhotoUrl'] as String?,
       //docId: json['docId']
       );
 }

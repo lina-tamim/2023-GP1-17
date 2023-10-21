@@ -377,66 +377,61 @@ class _BottomNavBarState extends State<BottomNavBar> {
         break;
     }
   }
+  Widget buildNavItem(IconData icon, String text, int index) {
+    final isSelected = index == widget.currentIndex;
 
-  @override
+    return GestureDetector(
+      onTap: () {
+        widget.onTap(index);
+        _navigateToPage(context, index);
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 22,
+            color: Colors.grey,
+          ),
+          SizedBox(height: 4), // Adjust the spacing between the icon and text
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 12,
+              color:  Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+   @override
   Widget build(BuildContext context) {
     return Container(
       height: 60,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ChatPage()),
-              );
-            },
-            child: Icon(
-              FontAwesomeIcons.solidMessage,
-              size: 22,
-              color: Colors.black,
-            ),
+          buildNavItem(
+            FontAwesomeIcons.solidMessage,
+            'Chat',
+            0,
           ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const FreelancerPage()),
-              );
-            },
-            child: Icon(
-              FontAwesomeIcons.handshakeSimple,
-              size: 22,
-              color: Colors.black,
-            ),
+          buildNavItem(
+            FontAwesomeIcons.handshakeSimple,
+            'Freelancer',
+            1,
           ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const FHomePage()),
-              );
-            },
-            child: Icon(
-              FontAwesomeIcons.home,
-              size: 22,
-              color: Colors.black,
-            ),
+          buildNavItem(
+            FontAwesomeIcons.home,
+            'Home',
+            2,
           ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const CoursesAndEventsPage()),
-              );
-            },
-            child: Icon(
-              Icons.explore,
-              size: 28,
-              color: Colors.black,
-            ),
+          buildNavItem(
+            Icons.explore,
+            'Explore',
+            3,
+            
           ),
         ],
       ),

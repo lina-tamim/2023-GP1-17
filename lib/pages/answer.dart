@@ -48,12 +48,15 @@ Future<List<CardQuestion>> readQuestion() async {
   final userIds = questions.map((question) => question.userId).toList();
   final userDocs = await FirebaseFirestore.instance.collection('users').where('email', whereIn: userIds).get();
 
-  final userMap = Map<String, String>.fromEntries(userDocs.docs.map((doc) =>
-      MapEntry(doc.data()['email'] as String, doc.data()['userName'] as String)));
+  final userMap = Map<String, Map<String, dynamic>>.fromEntries(userDocs.docs.map(
+      (doc) => MapEntry(doc.data()['email'] as String, doc.data() as Map<String, dynamic>)));
 
   questions.forEach((question) {
-    final username = userMap[question.userId] ?? '';
+    final userDoc = userMap[question.userId];
+    final username = userDoc?['userName'] as String? ?? '';
+    final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
     question.username = username;
+    question.userPhotoUrl = userPhotoUrl;
   });
 
   return questions;
@@ -62,14 +65,16 @@ Future<List<CardQuestion>> readQuestion() async {
   Widget buildQuestionCard(CardQuestion question) => Card(
   child: ListTile(
     leading: CircleAvatar(
-      //backgroundImage: NetworkImage(question.userPhotoUrl),
-    ),
+          backgroundImage: question.userPhotoUrl != null
+              ? NetworkImage(question.userPhotoUrl!)
+              : null, // Handle null value
+        ),
     title: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 5),
         Text(
-          question.username, // Display the username
+          question.username ?? '', // Display the username
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Color.fromARGB(255, 39, 103, 29)
@@ -148,15 +153,17 @@ Widget buildAnswerCard(CardAnswer answer) {
   
   return Card(
   child: ListTile(
-    leading: CircleAvatar(
-      //backgroundImage: NetworkImage(question.userPhotoUrl),
-    ),
+     leading: CircleAvatar(
+          backgroundImage: answer.userPhotoUrl != null
+              ? NetworkImage(answer.userPhotoUrl!)
+              : null, // Handle null value
+        ),
     title: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 5),
         Text(
-          answer.username, // Display the username
+          answer.username ?? '', // Display the username
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.deepPurple
@@ -258,19 +265,22 @@ Stream<List<CardAnswer>> readAnswer() => FirebaseFirestore.instance
     .where('questionId', isEqualTo: widget.questionId)
     .snapshots()
     .asyncMap((snapshot) async {
-      final project = snapshot.docs.map((doc) => CardAnswer.fromJson(doc.data())).toList();
-      final userIds = project.map((project) => project.userId).toList();
+      final answers = snapshot.docs.map((doc) => CardAnswer.fromJson(doc.data())).toList();
+      final userIds = answers.map((answer) => answer.userId).toList();
       final userDocs = await FirebaseFirestore.instance.collection('users').where('email', whereIn: userIds).get();
 
-      final userMap = Map<String, String>.fromEntries(userDocs.docs.map((doc) =>
-          MapEntry(doc.data()['email'] as String, doc.data()['userName'] as String)));
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(userDocs.docs.map(
+          (doc) => MapEntry(doc.data()['email'] as String, doc.data() as Map<String, dynamic>)));
 
-      project.forEach((project) {
-        final username = userMap[project.userId] ?? '';
-        project.username = username;
+      answers.forEach((answer) {
+        final userDoc = userMap[answer.userId];
+        final username = userDoc?['userName'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        answer.username = username;
+        answer.userPhotoUrl = userPhotoUrl;
       });
 
-      return project;
+      return answers;
     });
   @override
   void dispose() {

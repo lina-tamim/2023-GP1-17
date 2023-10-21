@@ -7,8 +7,10 @@ class CardQuestion {
   final String description;
   final List<String> topics;
   final String userId;
+  String? userPhotoUrl;
+
   //final String docId;
-  String username;
+  String? username;
 
 
   CardQuestion({
@@ -20,6 +22,7 @@ class CardQuestion {
     required this.userId,
     //required this.docId,
     required this.username,
+    required this.userPhotoUrl,
     //required this.anwersNo,
   });
 
@@ -32,6 +35,7 @@ class CardQuestion {
         'userId': userId,
         //'docId': docId,
         'username': '',
+        'userPhotoUrl': userPhotoUrl,
         //'anwersNo':anwersNo,
       };
 
@@ -44,6 +48,7 @@ class CardQuestion {
         userId: json['userId'],
         //docId: json['docId'],
         username: json['username'] ?? '',
+          userPhotoUrl :json['userPhotoUrl'] as String?,
         //anwersNo:json['anwersNo']
       );
 }

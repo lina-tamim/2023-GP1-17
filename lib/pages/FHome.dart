@@ -26,96 +26,107 @@ class __FHomePageState extends State<FHomePage> {
     );
   }
 
-  Stream<List<CardQuestion>> readQuestion() => FirebaseFirestore.instance
-          .collection('posts')
-          .where('dropdownValue', isEqualTo: 'Question')
-          .orderBy('postedDate', descending: true)
-          .snapshots()
-          .asyncMap((snapshot) async {
-        final questions = snapshot.docs
-            .map((doc) => CardQuestion.fromJson(doc.data()))
-            .toList();
-        final userIds = questions.map((question) => question.userId).toList();
-        final userDocs = await FirebaseFirestore.instance
-            .collection('users')
-            .where('email', whereIn: userIds)
-            .get();
+Stream<List<CardQuestion>> readQuestion() => FirebaseFirestore.instance
+    .collection('posts')
+    .where('dropdownValue', isEqualTo: 'Question')
+    .orderBy('postedDate', descending: true)
+    .snapshots()
+    .asyncMap((snapshot) async {
+      final questions = snapshot.docs
+          .map((doc) => CardQuestion.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+      final userIds = questions.map((question) => question.userId).toList();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', whereIn: userIds)
+          .get();
 
-        final userMap = Map<String, String>.fromEntries(userDocs.docs.map(
-            (doc) => MapEntry(doc.data()['email'] as String,
-                doc.data()['userName'] as String)));
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(userDocs.docs.map(
+          (doc) => MapEntry(doc.data()['email'] as String, doc.data() as Map<String, dynamic>)));
 
-        questions.forEach((question) {
-          final username = userMap[question.userId] ?? '';
-          question.username = username;
-        });
-
-        return questions;
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['userName'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
       });
 
-  Stream<List<CardFT>> readTeam() => FirebaseFirestore.instance
-          .collection('posts')
-          .where('dropdownValue', isEqualTo: 'Team Collaberation')
-          .orderBy('postedDate', descending: true)
-          .snapshots()
-          .asyncMap((snapshot) async {
-        final team =
-            snapshot.docs.map((doc) => CardFT.fromJson(doc.data())).toList();
-        final userIds = team.map((team) => team.userId).toList();
-        final userDocs = await FirebaseFirestore.instance
-            .collection('users')
-            .where('email', whereIn: userIds)
-            .get();
+      return questions;
+    });
+Stream<List<CardFT>> readTeam() => FirebaseFirestore.instance
+    .collection('posts')
+    .where('dropdownValue', isEqualTo: 'Team Collaberation')
+    .orderBy('postedDate', descending: true)
+    .snapshots()
+    .asyncMap((snapshot) async {
+      final questions = snapshot.docs
+          .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+      final userIds = questions.map((question) => question.userId).toList();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', whereIn: userIds)
+          .get();
 
-        final userMap = Map<String, String>.fromEntries(userDocs.docs.map(
-            (doc) => MapEntry(doc.data()['email'] as String,
-                doc.data()['userName'] as String)));
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(userDocs.docs.map(
+          (doc) => MapEntry(doc.data()['email'] as String, doc.data() as Map<String, dynamic>)));
 
-        team.forEach((team) {
-          final username = userMap[team.userId] ?? '';
-          team.username = username;
-        });
-
-        return team;
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['userName'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
       });
 
-  Stream<List<CardFT>> readProjects() => FirebaseFirestore.instance
-          .collection('posts')
-          .where('dropdownValue', isEqualTo: 'Project')
-          .orderBy('postedDate', descending: true)
-          .snapshots()
-          .asyncMap((snapshot) async {
-        final project =
-            snapshot.docs.map((doc) => CardFT.fromJson(doc.data())).toList();
-        final userIds = project.map((project) => project.userId).toList();
-        final userDocs = await FirebaseFirestore.instance
-            .collection('users')
-            .where('email', whereIn: userIds)
-            .get();
+      return questions;
+    });
+    
+Stream<List<CardFT>> readProjects() => FirebaseFirestore.instance
+    .collection('posts')
+    .where('dropdownValue', isEqualTo: 'Project')
+    .orderBy('postedDate', descending: true)
+    .snapshots()
+    .asyncMap((snapshot) async {
+      final questions = snapshot.docs
+          .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+      final userIds = questions.map((question) => question.userId).toList();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', whereIn: userIds)
+          .get();
 
-        final userMap = Map<String, String>.fromEntries(userDocs.docs.map(
-            (doc) => MapEntry(doc.data()['email'] as String,
-                doc.data()['userName'] as String)));
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(userDocs.docs.map(
+          (doc) => MapEntry(doc.data()['email'] as String, doc.data() as Map<String, dynamic>)));
 
-        project.forEach((project) {
-          final username = userMap[project.userId] ?? '';
-          project.username = username;
-        });
-
-        return project;
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['userName'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
       });
+
+      return questions;
+    });
+
+
 
   Widget buildQuestionCard(CardQuestion question) => Card(
         child: ListTile(
-          leading: CircleAvatar(
-              //backgroundImage: NetworkImage(question.userPhotoUrl),
-              ),
+            leading: CircleAvatar(
+          backgroundImage: question.userPhotoUrl != null
+              ? NetworkImage(question.userPhotoUrl!)
+              : null, // Handle null value
+        ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
               Text(
-                question.username, // Display the username
+                question.username ?? '', // Display the username
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.deepPurple),
               ),
@@ -188,13 +199,15 @@ class __FHomePageState extends State<FHomePage> {
         children: [
           ListTile(
             leading: CircleAvatar(
-                //backgroundImage: NetworkImage(question.userPhotoUrl),
-                ),
+          backgroundImage: team.userPhotoUrl != null
+              ? NetworkImage(team.userPhotoUrl!)
+              : null, // Handle null value
+        ),
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  team.username, // Display the username
+                  team.username ?? '', // Display the username
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.deepPurple,
@@ -285,8 +298,16 @@ class __FHomePageState extends State<FHomePage> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
-      child: Scaffold(
-      drawer: const NavBarUser(),
+       child: Scaffold(
+         drawer: const NavBarUser(),
+             bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
         appBar: AppBar(
           automaticallyImplyLeading: false,
           iconTheme:
@@ -300,13 +321,29 @@ class __FHomePageState extends State<FHomePage> {
               bottomRight: Radius.circular(130),
             ),
           ),
-          title: Text(
-            'Homepage',
-            style: TextStyle(
-              fontSize: 18, // Adjust the font size
-              fontFamily: "Poppins",
-              color: Colors.white,
-            ),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Builder(builder: (context) {
+                    return IconButton(
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                        icon: Icon(Icons.menu));
+                  }),
+                  Text(
+                    'Homepage ',
+                    style: TextStyle(
+                      fontSize: 18, // Adjust the font size
+                      fontFamily: "Poppins",
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
           bottom: const TabBar(
             indicator: BoxDecoration(),
@@ -342,14 +379,7 @@ class __FHomePageState extends State<FHomePage> {
           ),
         ),
 
-        bottomNavigationBar: BottomNavBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-        ),
+        
 
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
@@ -380,7 +410,7 @@ class __FHomePageState extends State<FHomePage> {
                   );
                 } else if (snapshot.hasError) {
                   return Center(
-                    child: Text('No Posts Yet '),
+                    child: Text('Error:${snapshot.error}'),
                   );
                 } else {
                   return Center(
