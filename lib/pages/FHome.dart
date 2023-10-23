@@ -30,95 +30,132 @@ class __FHomePageState extends State<FHomePage> {
 
   TextEditingController searchController = TextEditingController();
 
-  Stream<List<CardQuestion>> readQuestion() => FirebaseFirestore.instance
-          .collection('posts')
-          .where('dropdownValue', isEqualTo: 'Question')
-          .orderBy('postedDate', descending: true)
-          .snapshots()
-          .asyncMap((snapshot) async {
-        final questions = snapshot.docs
-            .map((doc) =>
-                CardQuestion.fromJson(doc.data() as Map<String, dynamic>))
-            .toList();
-        final userIds = questions.map((question) => question.userId).toList();
-        final userDocs = await FirebaseFirestore.instance
-            .collection('users')
-            .where('email', whereIn: userIds)
-            .get();
+  Stream<List<CardQuestion>> readQuestion() {
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+        .collection('posts')
+        .where('dropdownValue', isEqualTo: 'Question');
 
-        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-            userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-                doc.data() as Map<String, dynamic>)));
+    if (searchController.text.isNotEmpty) {
+      query = query
+          .where('largeTextFieldValue',
+              isGreaterThanOrEqualTo: searchController.text)
+          .where('largeTextFieldValue',
+              isLessThanOrEqualTo: searchController.text + '\uf8ff');
+    } else {
+      query = query.orderBy('postedDate', descending: true);
+    }
 
-        questions.forEach((question) {
-          final userDoc = userMap[question.userId];
-          final username = userDoc?['userName'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-          question.username = username;
-          question.userPhotoUrl = userPhotoUrl;
-        });
+    return query.snapshots().asyncMap((snapshot) async {
+      final questions = snapshot.docs
+          .map((doc) =>
+              CardQuestion.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+      if (questions.isEmpty) return [];
+      final userIds = questions.map((question) => question.userId).toList();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', whereIn: userIds)
+          .get();
 
-        return questions;
-      });
-  Stream<List<CardFT>> readTeam() => FirebaseFirestore.instance
-          .collection('posts')
-          .where('dropdownValue', isEqualTo: 'Team Collaberation')
-          .orderBy('postedDate', descending: true)
-          .snapshots()
-          .asyncMap((snapshot) async {
-        final questions = snapshot.docs
-            .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
-            .toList();
-        final userIds = questions.map((question) => question.userId).toList();
-        final userDocs = await FirebaseFirestore.instance
-            .collection('users')
-            .where('email', whereIn: userIds)
-            .get();
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+              doc.data() as Map<String, dynamic>)));
 
-        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-            userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-                doc.data() as Map<String, dynamic>)));
-
-        questions.forEach((question) {
-          final userDoc = userMap[question.userId];
-          final username = userDoc?['userName'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-          question.username = username;
-          question.userPhotoUrl = userPhotoUrl;
-        });
-
-        return questions;
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['userName'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
       });
 
-  Stream<List<CardFT>> readProjects() => FirebaseFirestore.instance
-          .collection('posts')
-          .where('dropdownValue', isEqualTo: 'Project')
-          .orderBy('postedDate', descending: true)
-          .snapshots()
-          .asyncMap((snapshot) async {
-        final questions = snapshot.docs
-            .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
-            .toList();
-        final userIds = questions.map((question) => question.userId).toList();
-        final userDocs = await FirebaseFirestore.instance
-            .collection('users')
-            .where('email', whereIn: userIds)
-            .get();
+      return questions;
+    });
+  }
 
-        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-            userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-                doc.data() as Map<String, dynamic>)));
+  Stream<List<CardFT>> readTeam() {
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+        .collection('posts')
+        .where('dropdownValue', isEqualTo: 'Team Collaberation');
 
-        questions.forEach((question) {
-          final userDoc = userMap[question.userId];
-          final username = userDoc?['f'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-          question.username = username;
-          question.userPhotoUrl = userPhotoUrl;
-        });
+    if (searchController.text.isNotEmpty) {
+      query = query
+          .where('textFieldValue',
+              isGreaterThanOrEqualTo: searchController.text)
+          .where('textFieldValue',
+              isLessThanOrEqualTo: searchController.text + '\uf8ff');
+    } else {
+      query = query.orderBy('postedDate', descending: true);
+    }
 
-        return questions;
+    return query.snapshots().asyncMap((snapshot) async {
+      final questions = snapshot.docs
+          .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+      if (questions.isEmpty) return [];
+      final userIds = questions.map((question) => question.userId).toList();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', whereIn: userIds)
+          .get();
+
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+              doc.data() as Map<String, dynamic>)));
+
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['userName'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
       });
+
+      return questions;
+    });
+  }
+
+  Stream<List<CardFT>> readProjects() {
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+        .collection('posts')
+        .where('dropdownValue', isEqualTo: 'Project');
+
+    if (searchController.text.isNotEmpty) {
+      query = query
+          .where('textFieldValue',
+              isGreaterThanOrEqualTo: searchController.text)
+          .where('textFieldValue',
+              isLessThanOrEqualTo: searchController.text + '\uf8ff');
+    } else {
+      query = query.orderBy('postedDate', descending: true);
+    }
+
+    return query.snapshots().asyncMap((snapshot) async {
+      final questions = snapshot.docs
+          .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+      if (questions.isEmpty) return [];
+      final userIds = questions.map((question) => question.userId).toList();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', whereIn: userIds)
+          .get();
+
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+              doc.data() as Map<String, dynamic>)));
+
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['f'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
+      });
+
+      return questions;
+    });
+  }
 
   Widget buildQuestionCard(CardQuestion question) => Card(
         child: ListTile(

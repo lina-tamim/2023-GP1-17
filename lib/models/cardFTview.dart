@@ -22,7 +22,6 @@ class CardFTview {
     this.docId = '',
     required this.username,
     required this.userPhotoUrl,
-
   });
 
   Map<String, dynamic> toJson() => {
@@ -35,21 +34,18 @@ class CardFTview {
         'docId': docId,
         'username': '',
         'userPhotoUrl': userPhotoUrl, // Update property name to userPhotoUrl
-
       };
 
   static CardFTview fromJson(Map<String, dynamic> json) => CardFTview(
-      postType: json['dropdownValue'],
-      title: json['textFieldValue'],
-      description: json['largeTextFieldValue'],
-      topics: List<String>.from(json['selectedInterests']),
-      date: (json['selectedDate'] as Timestamp).toDate(),
-      userId: json['userId'],
-      username: json['username'] ?? '',
-      docId: json['docId'],
-      userPhotoUrl: json['userPhotoUrl'] as String?, 
-      
-      
+        postType: json['dropdownValue'],
+        title: json['textFieldValue'],
+        description: json['largeTextFieldValue'],
+        topics: List<String>.from(json['selectedInterests']),
+        date: (json['selectedDate'] as Timestamp).toDate(),
+        userId: json['userId'],
+        username: json['username'] ?? '',
+        docId: json['docId'],
+        userPhotoUrl: json['userPhotoUrl'] as String?,
       );
 }
 

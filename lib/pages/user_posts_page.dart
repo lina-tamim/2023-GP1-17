@@ -10,7 +10,7 @@ import 'package:techxcel11/pages/reuse.dart';
 import 'form.dart';
 
 class UserPostsPage extends StatefulWidget {
-const UserPostsPage({Key? key}) : super(key: key);
+  const UserPostsPage({Key? key}) : super(key: key);
 
   @override
   _UserPostsPageState createState() => _UserPostsPageState();
@@ -18,13 +18,15 @@ const UserPostsPage({Key? key}) : super(key: key);
 
 class _UserPostsPageState extends State<UserPostsPage> {
   int _currentIndex = 0;
-   Future <String> fetchuseremail() async{
-SharedPreferences prefs= await SharedPreferences.getInstance();
-  final emaill = prefs.getString('loggedInEmail') ??'';
-  return emaill;
+
+  Future<String> fetchuseremail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final emaill = prefs.getString('loggedInEmail') ?? '';
+    return emaill;
   }
 
   String? email;
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
@@ -59,48 +61,50 @@ SharedPreferences prefs= await SharedPreferences.getInstance();
       MaterialPageRoute(builder: (context) => FormWidget()),
     );
   }
-Stream<List<CardQview>> readQuestion() {
-  return FirebaseFirestore.instance
-      .collection('posts')
-      .where('dropdownValue', isEqualTo: 'Question')
-    .where('userId', isEqualTo: email)
-      .snapshots()
-      .asyncMap((snapshot) async {
-    final questions = snapshot.docs
-        .map((doc) => CardQview.fromJson(doc.data() as Map<String, dynamic>))
-        .toList();
-   final userIds = questions.map((question) => question.userId).toList();
-        final userDocs = await FirebaseFirestore.instance
-            .collection('users')
-            .where('email', whereIn: userIds)
-            .get();
 
-        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-            userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-                doc.data() as Map<String, dynamic>)));
+  Stream<List<CardQview>> readQuestion() {
+    return FirebaseFirestore.instance
+        .collection('posts')
+        .where('dropdownValue', isEqualTo: 'Question')
+        .where('userId', isEqualTo: email)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      final questions = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        data['docId'] = doc.id;
+        return CardQview.fromJson(data);
+      }).toList();
+      if (questions.isEmpty) return [];
+      final userIds = questions.map((question) => question.userId).toList();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', whereIn: userIds)
+          .get();
 
-        questions.forEach((question) {
-          final userDoc = userMap[question.userId];
-          final username = userDoc?['userName'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-          question.username = username;
-          question.userPhotoUrl = userPhotoUrl;
-        });
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+              doc.data() as Map<String, dynamic>)));
 
-    return questions;
-  });
-}
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['userName'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
+      });
 
-
+      return questions;
+    });
+  }
 
   Widget buildQuestionCard(CardQview question) => Card(
         child: ListTile(
-           leading: CircleAvatar(
-       // ignore: unnecessary_null_comparison
-       backgroundImage: question.userPhotoUrl != null
+          leading: CircleAvatar(
+            // ignore: unnecessary_null_comparison
+            backgroundImage: question.userPhotoUrl != null
                 ? NetworkImage(question.userPhotoUrl!)
                 : null,
-    ),
+          ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -173,102 +177,116 @@ Stream<List<CardQview>> readQuestion() {
       );
 
 //team collab
-Stream<List<CardFTview>> readTeam() {
-  return FirebaseFirestore.instance
-      .collection('posts')
-      .where('dropdownValue', isEqualTo: 'Team Collaberation')
-    .where('userId', isEqualTo: email)
-      .snapshots()
-      .asyncMap((snapshot) async {
-    final questions = snapshot.docs
-        .map((doc) => CardFTview.fromJson(doc.data() as Map<String, dynamic>))
-        .toList();
-   final userIds = questions.map((question) => question.userId).toList();
-        final userDocs = await FirebaseFirestore.instance
-            .collection('users')
-            .where('email', whereIn: userIds)
-            .get();
+  Stream<List<CardFTview>> readTeam() {
+    return FirebaseFirestore.instance
+        .collection('posts')
+        .where('dropdownValue', isEqualTo: 'Team Collaberation')
+        .where('userId', isEqualTo: email)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      final questions = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        data['docId'] = doc.id;
+        return CardFTview.fromJson(data);
+      }).toList();
+      if (questions.isEmpty) return [];
+      final userIds = questions.map((question) => question.userId).toList();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', whereIn: userIds)
+          .get();
 
-        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-            userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-                doc.data() as Map<String, dynamic>)));
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+              doc.data() as Map<String, dynamic>)));
 
-        questions.forEach((question) {
-          final userDoc = userMap[question.userId];
-          final username = userDoc?['userName'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-          question.username = username;
-          question.userPhotoUrl = userPhotoUrl;
-        });
-
-    return questions;
-  });
-}
-  
-  Stream<List<CardFTview>> readProject() {
-  return FirebaseFirestore.instance
-      .collection('posts')
-      .where('dropdownValue', isEqualTo: 'Project')
-    .where('userId', isEqualTo: email)
-      .snapshots()
-      .asyncMap((snapshot) async {
-    final questions = snapshot.docs
-        .map((doc) => CardFTview.fromJson(doc.data() as Map<String, dynamic>))
-        .toList();
-   final userIds = questions.map((question) => question.userId).toList();
-        final userDocs = await FirebaseFirestore.instance
-            .collection('users')
-            .where('email', whereIn: userIds)
-            .get();
-
-        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-            userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-                doc.data() as Map<String, dynamic>)));
-
-        questions.forEach((question) {
-          final userDoc = userMap[question.userId];
-          final username = userDoc?['userName'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-          question.username = username;
-          question.userPhotoUrl = userPhotoUrl;
-        });
-
-    return questions;
-  });
-}
-
-Stream<List<CardAview>> readAnswer() => FirebaseFirestore.instance
-    .collection('answers')
-    .where('userId', isEqualTo: email)
-    .snapshots()
-    .asyncMap((snapshot) async {
-      final answers = snapshot.docs.map((doc) => CardAview.fromJson(doc.data())).toList();
-      final userIds = answers.map((answer) => answer.userId).toList();
-      final userDocs = await FirebaseFirestore.instance.collection('users').where('email', whereIn: userIds).get();
-
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(userDocs.docs.map(
-          (doc) => MapEntry(doc.data()['email'] as String, doc.data() as Map<String, dynamic>)));
-
-      answers.forEach((answer) {
-        final userDoc = userMap[answer.userId];
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
         final username = userDoc?['userName'] as String? ?? '';
         final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-        answer.username = username;
-        answer.userPhotoUrl = userPhotoUrl;
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
       });
 
-      return answers;
+      return questions;
     });
- 
+  }
 
-          Widget buildTeamCard(CardFTview fandT) => Card(
+  Stream<List<CardFTview>> readProject() {
+    return FirebaseFirestore.instance
+        .collection('posts')
+        .where('dropdownValue', isEqualTo: 'Project')
+        .where('userId', isEqualTo: email)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      final questions = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        data['docId'] = doc.id;
+        return CardFTview.fromJson(data);
+      }).toList();
+      if (questions.isEmpty) return [];
+      final userIds = questions.map((question) => question.userId).toList();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', whereIn: userIds)
+          .get();
+
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+              doc.data() as Map<String, dynamic>)));
+
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['userName'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
+      });
+
+      return questions;
+    });
+  }
+
+  Stream<List<CardAview>> readAnswer() => FirebaseFirestore.instance
+          .collection('answers')
+          .where('userId', isEqualTo: email)
+          .snapshots()
+          .asyncMap((snapshot) async {
+        final answers = snapshot.docs.map((doc) {
+          Map<String, dynamic> data = doc.data();
+          data['docId'] = doc.id;
+          return CardAview.fromJson(data);
+        }).toList();
+        if (answers.isEmpty) return [];
+        final userIds = answers.map((answer) => answer.userId).toList();
+        final userDocs = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', whereIn: userIds)
+            .get();
+
+        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+            userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+                doc.data() as Map<String, dynamic>)));
+
+        answers.forEach((answer) {
+          final userDoc = userMap[answer.userId];
+          final username = userDoc?['userName'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+          answer.username = username;
+          answer.userPhotoUrl = userPhotoUrl;
+        });
+
+        return answers;
+      });
+
+  Widget buildTeamCard(CardFTview fandT) => Card(
         child: ListTile(
-           leading: CircleAvatar(
-       // ignore: unnecessary_null_comparison
-       backgroundImage: fandT.userPhotoUrl != null
+          leading: CircleAvatar(
+            // ignore: unnecessary_null_comparison
+            backgroundImage: fandT.userPhotoUrl != null
                 ? NetworkImage(fandT.userPhotoUrl!)
                 : null,
-    ),
+          ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -315,14 +333,13 @@ Stream<List<CardAview>> readAnswer() => FirebaseFirestore.instance
                       // Add your functionality for the button here
                     },
                   ),
-                 
                   IconButton(
                     icon: Icon(Icons.report),
                     onPressed: () {
                       // Add your functionality for the button here
                     },
                   ),
-                   IconButton(
+                  IconButton(
                     icon: Icon(Icons.chat_bubble),
                     onPressed: () {
                       // Add your functionality for the button here
@@ -330,26 +347,26 @@ Stream<List<CardAview>> readAnswer() => FirebaseFirestore.instance
                   ),
                   PostDeleteButton(docId: fandT.docId),
                   Expanded(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 4.0, horizontal: 8.0),
-                            decoration: BoxDecoration(
-                              color: Colors.purple.shade200,
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: Text(
-                              'Deadline: ${fandT.date}',
-                              // Replace with the actual deadline date
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12.0,
-                              ),
-                            ),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 4.0, horizontal: 8.0),
+                        decoration: BoxDecoration(
+                          color: Colors.purple.shade200,
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Text(
+                          'Deadline: ${fandT.date}',
+                          // Replace with the actual deadline date
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12.0,
                           ),
                         ),
                       ),
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -357,22 +374,20 @@ Stream<List<CardAview>> readAnswer() => FirebaseFirestore.instance
         ),
       );
 
-
-  
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-         drawer: const NavBarUser(),
-             bottomNavigationBar: BottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
+        drawer: const NavBarUser(),
+        bottomNavigationBar: BottomNavBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        ),
         appBar: AppBar(
           automaticallyImplyLeading: false,
           iconTheme:
@@ -577,102 +592,104 @@ Stream<List<CardAview>> readAnswer() => FirebaseFirestore.instance
       ),
     );
   }
-Widget buildAnswerCard(CardAview answer) {
-  String currentEmail = '';
 
-  Future<String> getCurrentUserEmail() async {
-    return await fetchuseremail();
-  }
-  int upvoteCount = answer.upvoteCount ?? 0;
-  List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
+  Widget buildAnswerCard(CardAview answer) {
+    String currentEmail = '';
 
-  return Card(
-  child: ListTile(
-     leading: CircleAvatar(
+    Future<String> getCurrentUserEmail() async {
+      return await fetchuseremail();
+    }
+
+    int upvoteCount = answer.upvoteCount ?? 0;
+    List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
+
+    return Card(
+      child: ListTile(
+        leading: CircleAvatar(
           backgroundImage: answer.userPhotoUrl != null
               ? NetworkImage(answer.userPhotoUrl!)
               : null, // Handle null value
         ),
-    title: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: 5),
-        Text(
-          answer.username ?? '', // Display the username
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.deepPurple
-          ),
-        ),
-        SizedBox(height: 5),
-        ListTile(
-          title: Text(answer.answerText),
-        ),
-      ],
-    ),
-    subtitle: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-       
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-      FutureBuilder<String>(
-            future: getCurrentUserEmail(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator(); // Show a loading indicator while retrieving the email
-              } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}'); // Show an error message if email retrieval fails
-              } else {
-                currentEmail = snapshot.data!;
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    IconButton(
-                      icon: Icon(upvotedUserIds.contains(currentEmail) ? Icons.arrow_circle_down : Icons.arrow_circle_up),
-                      onPressed: () {
-                        setState(() {
-                          if (upvotedUserIds.contains(currentEmail)) {
-                            // Undo the upvote
-                            upvotedUserIds.remove(currentEmail);
-                            upvoteCount--;
-                          } else {
-                            // Perform the upvote
-                            upvotedUserIds.add(currentEmail);
-                            upvoteCount++;
-                          }
+            SizedBox(height: 5),
+            Text(
+              answer.username ?? '', // Display the username
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.deepPurple),
+            ),
+            SizedBox(height: 5),
+            ListTile(
+              title: Text(answer.answerText),
+            ),
+          ],
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                FutureBuilder<String>(
+                  future: getCurrentUserEmail(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator(); // Show a loading indicator while retrieving the email
+                    } else if (snapshot.hasError) {
+                      return Text(
+                          'Error: ${snapshot.error}'); // Show an error message if email retrieval fails
+                    } else {
+                      currentEmail = snapshot.data!;
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          IconButton(
+                            icon: Icon(upvotedUserIds.contains(currentEmail)
+                                ? Icons.arrow_circle_down
+                                : Icons.arrow_circle_up),
+                            onPressed: () {
+                              setState(() {
+                                if (upvotedUserIds.contains(currentEmail)) {
+                                  // Undo the upvote
+                                  upvotedUserIds.remove(currentEmail);
+                                  upvoteCount--;
+                                } else {
+                                  // Perform the upvote
+                                  upvotedUserIds.add(currentEmail);
+                                  upvoteCount++;
+                                }
 
-                          // Update the upvote count and upvoted user IDs in Firestore
-                          FirebaseFirestore.instance
-                            .collection('answers')
-                            .doc(answer.answerId)
-                            .update({
-                              'upvoteCount': upvoteCount,
-                              'upvotedUserIds': upvotedUserIds,
-                            })
-                            .then((_) {
-                              print('Upvote count updated successfully');
-                            })
-                            .catchError((error) {
-                              print('Failed to update upvote count: $error');
-                              // Handle error if the update fails
-                            });
-                        });
-                      },
-                    ),
-                    Text('Upvotes: $upvoteCount'),
-                  ],
-                );
-              }
-            },
-          ),
-        ],
+                                // Update the upvote count and upvoted user IDs in Firestore
+                                FirebaseFirestore.instance
+                                    .collection('answers')
+                                    .doc(answer.answerId)
+                                    .update({
+                                  'upvoteCount': upvoteCount,
+                                  'upvotedUserIds': upvotedUserIds,
+                                }).then((_) {
+                                  print('Upvote count updated successfully');
+                                }).catchError((error) {
+                                  print(
+                                      'Failed to update upvote count: $error');
+                                  // Handle error if the update fails
+                                });
+                              });
+                            },
+                          ),
+                          Text('Upvotes: $upvoteCount'),
+                        ],
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
-   ], ),
-  ),);
-}
-  
+    );
+  }
 }
 
 class PostDeleteButton extends StatelessWidget {
@@ -687,39 +704,43 @@ class PostDeleteButton extends StatelessWidget {
       color: Colors.red,
       icon: Icon(Icons.delete),
       onPressed: () {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Confirm Deletion'),
-              content: Text('Are you sure you want to delete this $type?'),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: Text(
-                    'Delete',
-                    style: TextStyle(color: Colors.red),
+        if (docId == null || docId == '') {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Unable to delete this $type')));
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Confirm Deletion'),
+                content: Text('Are you sure you want to delete this $type?'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
                   ),
-                  onPressed: () async {
-                    // Delete the document here
-                    await FirebaseFirestore.instance
-                        .collection(type == 'answer' ? 'answers' : 'posts')
-                        .doc(docId)
-                        .delete();
-                    Navigator.of(context).pop(); // Close the dialog
-                  },
-                ),
-              ],
-            );
-          },
-        );
+                  TextButton(
+                    child: Text(
+                      'Delete',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onPressed: () async {
+                      // Delete the document here
+                      await FirebaseFirestore.instance
+                          .collection(type == 'answer' ? 'answers' : 'posts')
+                          .doc(docId)
+                          .delete();
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
       },
     );
   }
 }
-

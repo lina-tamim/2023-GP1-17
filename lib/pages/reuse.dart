@@ -79,18 +79,21 @@ class _NavBarUserState extends State<NavBarUser> {
                 color: Colors.black,
               ),
             ),
-            currentAccountPicture: CircleAvatar(
-              child: ClipOval(
-                child: Image.network(
-                  loggedImage,
-                  width: 90,
-                  height: 90,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+            currentAccountPicture: loggedImage.isNotEmpty
+                ? CircleAvatar(
+                    child: ClipOval(
+                      child: Image.network(
+                        loggedImage,
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  )
+                : SizedBox(),
             decoration: BoxDecoration(
-              color: Color.fromARGB(255, 62, 0, 61), // Set the desired background color here
+              color: Color.fromARGB(
+                  255, 62, 0, 61), // Set the desired background color here
 
               image: DecorationImage(
                 image: AssetImage('assets/Backgrounds/bg11.png'),
@@ -148,7 +151,7 @@ class _NavBarUserState extends State<NavBarUser> {
             ),
           ),
           SizedBox(height: 110),
-           Divider(),
+          Divider(),
           ListTile(
             leading: Icon(Icons.logout),
             iconColor: Colors.black,
@@ -209,7 +212,7 @@ class _NavBarAdminState extends State<NavBarAdmin> {
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.zero, 
+        padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
             accountName: Text(loggedInUsername),
@@ -219,14 +222,14 @@ class _NavBarAdminState extends State<NavBarAdmin> {
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
                 child: Image.asset(
-                'assets/Backgrounds/defaultUserPic2.png',
-                width: 110,
-                height: 110,
-                fit: BoxFit.cover,
-              ),
+                  'assets/Backgrounds/defaultUserPic2.png',
+                  width: 110,
+                  height: 110,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-                decoration: BoxDecoration(
+            decoration: BoxDecoration(
               color: Color.fromARGB(255, 39, 0, 73),
             ),
           ),
@@ -323,7 +326,6 @@ AppBar buildAppBar(String titleText) {
     ),
   );
 }
-
 
 class BottomNavBar extends StatefulWidget {
   final int currentIndex;
@@ -532,8 +534,7 @@ void _showSnackBar(BuildContext context, String message) {
         right: 20,
         left: 20,
       ),
-      backgroundColor:
-          Color.fromARGB(255, 63, 12, 118), 
+      backgroundColor: Color.fromARGB(255, 63, 12, 118),
     ),
   );
 }

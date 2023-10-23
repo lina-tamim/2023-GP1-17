@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:techxcel11/pages/user_posts_page.dart';
 import 'firebase_options.dart';
 import 'package:techxcel11/pages/start.dart'; //m
 
@@ -23,7 +24,7 @@ class MainApp extends StatelessWidget {
         fontFamily: "Intel",
         inputDecorationTheme: const InputDecorationTheme(
           filled: true,
-          fillColor:  Colors.white,
+          fillColor: Colors.white,
           errorStyle: TextStyle(height: 0),
           border: defaultInputBorder,
           enabledBorder: defaultInputBorder,
@@ -43,5 +44,3 @@ const defaultInputBorder = OutlineInputBorder(
     width: 1,
   ),
 );
-
-
