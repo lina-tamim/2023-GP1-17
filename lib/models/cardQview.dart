@@ -7,10 +7,9 @@ class CardQview {
   final String description;
   final List<String> topics;
   final String userId;
-  String docId;
-  String username;
-
-  //final int anwersNo;
+  String? docId;
+  String? username;
+  String? userPhotoUrl; // Add userPhotoUrl property
 
   CardQview({
     required this.id,
@@ -19,9 +18,9 @@ class CardQview {
     required this.description,
     required this.topics,
     required this.userId,
-    required this.docId,
-    this.username = '',
-    //required this.anwersNo,
+    this.docId ='' ,
+    required this.username,
+    required this.userPhotoUrl,
   });
 
   Map<String, dynamic> toJson() => {
@@ -32,8 +31,8 @@ class CardQview {
         'selectedInterests': topics,
         'userId': userId,
         'docId': docId,
-        'username': '',
-        //'anwersNo':anwersNo,
+        'username': username,
+        'userPhotoUrl': userPhotoUrl, // Update property name to userPhotoUrl
       };
 
   static CardQview fromJson(Map<String, dynamic> json) => CardQview(
@@ -43,9 +42,9 @@ class CardQview {
         description: json['largeTextFieldValue'],
         topics: List<String>.from(json['selectedInterests']),
         userId: json['userId'],
-        docId: json['docId'],
+        docId: json['docId'] ?? '',
         username: json['username'] ?? '',
-        //anwersNo:json['anwersNo']
+        userPhotoUrl: json['userPhotoUrl'] as String?, // Update property name to userPhotoUrl
       );
 }
 
