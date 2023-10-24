@@ -36,4 +36,11 @@ To run the app:
 
 That's it! The TechXcel app should now be up and running on your device or emulator, allowing you to explore its features and functionality.
 
+NOTE: Please make sure that your Dart version is >=3.1.0 <4.0.0 and 'get' version is ^4.6.5. If your versions do not match, please run 'pub get' or make the necessary changes manually.
+
+To change them manually, go to 'pubspec.yaml' and follow these steps:
+
+For Dart version: Under 'environment > sdk', change the value to >=3.1.0 <4.0.0.
+For 'get' version: Under 'dependencies > get', change the value to ^4.6.5.
+
 ### Note: Will be modified when needed
