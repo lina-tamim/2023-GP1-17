@@ -15,7 +15,7 @@ Prerequisites:
 
 - Ensure you have Flutter and Dart installed on your system.
   
-- Set up a Firebase project and obtain the necessary Firebase configuration details (API keys, project ID, etc.).
+- Set up a Firebase project and obtain the necessary Firebase configuration details.
 
 
 To run the app:
