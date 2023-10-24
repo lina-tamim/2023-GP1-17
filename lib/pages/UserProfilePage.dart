@@ -1,13 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; 
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:techxcel11/pages/EditProfile2.dart';
 import 'package:techxcel11/pages/Login.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:google_fonts/google_fonts.dart';//
+import 'package:google_fonts/google_fonts.dart'; //
 import 'dart:math' as math;
 
 class UserProfilePage extends StatefulWidget {
@@ -28,9 +28,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
   String loggedInImage = '';
   bool showSkills = false;
   bool showInterests = false;
-  String url='';
+  String url = '';
   int _currentIndex = 0;
-
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -61,7 +60,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
       final userType = userData['userType'] ?? '';
       final imageUrl = userData['imageUrl'] ?? '';
 
-
       setState(() {
         loggedInUsername = username;
         loggedInCountry = country;
@@ -75,8 +73,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     }
   }
 
-
- void toggleSkills() {
+  void toggleSkills() {
     setState(() {
       showSkills = !showSkills;
     });
@@ -122,21 +119,21 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 
-void logUserOut() async {
-  try {
-    await FirebaseAuth.instance.signOut();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('loggedInEmail');
-    _showSnackBar("Logged out successfully");
-       Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Login()),
-                    );
-  } catch (e) {
-    print('$e');
-    _showSnackBar("Logout failed");
+  void logUserOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.remove('loggedInEmail');
+      _showSnackBar("Logged out successfully");
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Login()),
+      );
+    } catch (e) {
+      print('$e');
+      _showSnackBar("Logout failed");
+    }
   }
-}
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -157,80 +154,78 @@ void logUserOut() async {
     );
   }
 
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavBarUser(),
-      appBar: buildAppBar ('My Profile'),
+      appBar: buildAppBar('My Profile'),
       body: SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Container(
           child: Column(
             children: [
-              
               SizedBox(
                 width: 150,
                 child: ElevatedButton(
-                  
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const EditProfile2()),
+                      MaterialPageRoute(
+                          builder: (context) => const EditProfile2()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 10, 1, 95),
-                    side: BorderSide.none ,
+                    foregroundColor: Colors.white,
+                    backgroundColor: const Color.fromARGB(255, 10, 1, 95),
+                    side: BorderSide.none,
                     shape: const StadiumBorder(),
                   ),
-                  child: const Text('Edit Profile', style: TextStyle(color: Color.fromARGB(255, 254, 254, 254))),
-                  
+                  child: const Text('Edit Profile',
+                      style:
+                          TextStyle(color: Color.fromARGB(255, 254, 254, 254))),
                 ),
               ),
 
-const SizedBox(height: 5),
-const Divider(),
-const SizedBox(height: 5),
-Container(
-  width: 110,
-  height: 110,
-  child: CircleAvatar(
-    child: ClipOval(
-      child: Image.network(
-        loggedInImage ,
-         width: 110,
-      height: 110,
-        fit: BoxFit.cover,
-      ),
-    ),
-  ),
-),
-              const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                  Text(
-                  '$loggedInUsername ',
-                  style: GoogleFonts.orbitron(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+              const SizedBox(height: 5),
+              const Divider(),
+              const SizedBox(height: 5),
+              if (loggedInImage.isNotEmpty)
+                Container(
+                  width: 110,
+                  height: 110,
+                  child: CircleAvatar(
+                    child: ClipOval(
+                      child: Image.network(
+                        loggedInImage,
+                        width: 110,
+                        height: 110,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-                  textAlign: TextAlign.center,
                 ),
-                     if (loggedInUserType == "Freelancer") // Replace "userType" with the actual variable representing the user type
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '$loggedInUsername ',
+                    style: GoogleFonts.orbitron(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  if (loggedInUserType ==
+                      "Freelancer") // Replace "userType" with the actual variable representing the user type
                     const Icon(
-                      Icons.verified ,
+                      Icons.verified,
                       color: Color.fromARGB(255, 0, 91, 228),
                       size: 25, // Adjust the size of the star icon as desired
-                  ),
-              ],
-            ),
+                    ),
+                ],
+              ),
               // Country and City
               const SizedBox(height: 15),
               Row(
@@ -238,7 +233,9 @@ Container(
                 children: [
                   const SizedBox(width: 4),
                   Text(
-                    loggedInCity == 'null' ? loggedInCountry : '$loggedInCountry, $loggedInCity',
+                    loggedInCity == 'null'
+                        ? loggedInCountry
+                        : '$loggedInCountry, $loggedInCity',
                     style: const TextStyle(
                       fontSize: 16,
                       color: Colors.black,
@@ -247,11 +244,11 @@ Container(
                 ],
               ),
               // Github
-              const SizedBox(height: 4), 
+              const SizedBox(height: 4),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                   const SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   Icon(
                     FontAwesomeIcons.github,
                     size: 18,
@@ -260,15 +257,21 @@ Container(
                   const SizedBox(width: 4),
                   GestureDetector(
                     onTap: () {
-                       url = loggedInGithub ;
+                      url = loggedInGithub;
                       launchURL(url);
                     },
                     child: Text(
-                      loggedInGithub.isEmpty ? 'Add your GitHub account now!' : '   $loggedInGithub',
+                      loggedInGithub.isEmpty
+                          ? 'Add your GitHub account now!'
+                          : '   $loggedInGithub',
                       style: TextStyle(
                         fontSize: 16,
-                        color: loggedInGithub.isEmpty ? const Color.fromARGB(255, 0, 0, 0) : Colors.blueAccent,
-                        decoration: loggedInGithub.isEmpty ? TextDecoration.none : TextDecoration.none,
+                        color: loggedInGithub.isEmpty
+                            ? const Color.fromARGB(255, 0, 0, 0)
+                            : Colors.blueAccent,
+                        decoration: loggedInGithub.isEmpty
+                            ? TextDecoration.none
+                            : TextDecoration.none,
                       ),
                       textAlign: TextAlign.left,
                     ),
@@ -277,86 +280,84 @@ Container(
               ),
               const Divider(),
               const SizedBox(height: 20),
-          InkWell(
-          onTap: toggleInterests,
-          child: Row(
-            children: [
-              Transform.rotate(
-                angle: showInterests ? math.pi / 2 : 0,
-                child: const Icon(
-                  Icons.arrow_right ,
-                  color: Colors.black,
+              InkWell(
+                onTap: toggleInterests,
+                child: Row(
+                  children: [
+                    Transform.rotate(
+                      angle: showInterests ? math.pi / 2 : 0,
+                      child: const Icon(
+                        Icons.arrow_right,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    const Text(
+                      'Interests',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 5),
-              const Text(
-                'Interests',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              if (showInterests)
+                Column(
+                  children: userInterests.map((interest) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: Text(interest),
+                    );
+                  }).toList(),
                 ),
-              ),
-            ],
-          ),
-          ),
-        if (showInterests)
-          Column(
-            children: userInterests.map((interest) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Text(interest),
-              );
-            }).toList(),
-          ),
               const SizedBox(height: 20),
               const Divider(),
-               InkWell(
-          onTap: toggleSkills,
-          child: Row(
-            children: [
-              Transform.rotate(
-                angle: showSkills ? math.pi / 2 : 0,
-                child: const Icon(
-                  Icons.arrow_right,
-                  color: Colors.black,
+              InkWell(
+                onTap: toggleSkills,
+                child: Row(
+                  children: [
+                    Transform.rotate(
+                      angle: showSkills ? math.pi / 2 : 0,
+                      child: const Icon(
+                        Icons.arrow_right,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    const Text(
+                      'Skills',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 5),
-              const Text(
-                'Skills',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              if (showSkills)
+                Column(
+                  children: [
+                    if (userSkills.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 5),
+                        child: Text("You haven't added any skills yet!"),
+                      )
+                    else
+                      ...userSkills.map((skill) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: Text(skill),
+                        );
+                      }).toList(),
+                  ],
                 ),
-              ),
-            ],
-          ),
-        ),
-        if (showSkills)
-          Column(
-            children: [
-              if (userSkills.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5),
-                  child: Text("You haven't added any skills yet!"),
-                )
-              else
-                ...userSkills.map((skill) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: Text(skill),
-                  );
-                }).toList(),
-            ],
-          ),
               const SizedBox(height: 26),
             ],
           ),
-          
         ),
-        
       ),
-         bottomNavigationBar: BottomNavBar(
+      bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
