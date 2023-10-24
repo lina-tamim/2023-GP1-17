@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:techxcel11/pages/user_posts_page.dart';
 import 'firebase_options.dart';
-import 'package:techxcel11/pages/start.dart'; //m
+import 'package:techxcel11/pages/start.dart'; 
 
-void main() async {
+void main() async { //Last codee
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

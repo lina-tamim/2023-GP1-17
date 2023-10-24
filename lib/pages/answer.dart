@@ -318,7 +318,7 @@ Stream<List<CardAnswer>> readAnswer() => FirebaseFirestore.instance
               stream: readAnswer(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
+                  return Text('No answers yet');
                 }
 
                if (!snapshot.hasData) {
