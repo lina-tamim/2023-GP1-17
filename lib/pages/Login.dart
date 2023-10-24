@@ -13,8 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:techxcel11/pages/Signup.dart';
-
-
+//full code
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -26,69 +25,87 @@ class Login extends StatefulWidget {
 class _Login extends State<Login> {
   final TextEditingController _password = TextEditingController();
   final TextEditingController _email = TextEditingController();
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _isLoading = false;
 
-@override
+  @override
   void dispose() {
     _email.dispose();
     _password.dispose();
     super.dispose();
   }
 
-void logUserIn() async {
-  final String email = _email.text.toLowerCase();
-  final String password = _password.text.trim();
+  void logUserIn() async {
+    final String email = _email.text.toLowerCase();
+    final String password = _password.text.trim();
 
-  try {
-    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    setState(() {
+      _isLoading = true;
+    });
+    
+if (email.isEmpty && password.isEmpty) {
+      _showSnackBar('Please enter an email and password');
+      return;
+    }
+    if (email.isEmpty) {
+      _showSnackBar('Please enter an email');
+      return;
+    }
 
-    // Email and password match a user in the database
-    final uid = userCredential.user!.uid;
-   if (userCredential.user!.emailVerified) {
+    if (password.isEmpty) {
+      _showSnackBar('Please enter a password');
+      return;
+    }
 
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
+      // Email and password match a user in the database
+      final uid = userCredential.user!.uid;
+      if (userCredential.user!.emailVerified) {
+        // Fetch the user document from Firestore based on the uid
+        final DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .get();
 
+        if (snapshot.exists) {
+          final user = snapshot.data()!;
 
-    // Fetch the user document from Firestore based on the uid
-    final DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .get();
+          // Save the user's email in shared preferences
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('loggedInEmail', email);
 
-    if (snapshot.exists) {
-      final user = snapshot.data()!;
-
-      // Save the user's email in shared preferences
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('loggedInEmail', email);
-
-      // Redirect the user based on the user type
-      if (user['userType'] == 'Admin') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const AdminHome()),
-        );
+          // Redirect the user based on the user type
+          if (user['userType'] == 'Admin') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AdminHome()),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const FHomePage()),
+            );
+          }
+        } else {
+          _showSnackBar("Login failed, please enter correct credentials");
+        }
       } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const FHomePage()),
-        );
+        _showSnackBar("Verify your email before logging in.\nIf not found, please check your junk folder.");
+
       }
-    } else {
+    } catch (e) {
+      print('$e');
       _showSnackBar("Login failed, please enter correct credentials");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
-    }else {
-      _showSnackBar("Please verify your email before logging in.");
-    }
-  } catch (e) {
-    print('$e');
-      _showSnackBar("Login failed, please enter correct credentials");
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -153,6 +170,17 @@ void logUserIn() async {
                         textAlign: TextAlign.center,
                       ),
                     ),
+                     if (_isLoading)
+                        IgnorePointer(
+                          child: Opacity(
+                            opacity: 1,
+                            child: Container(
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          ),
+                        ),
                     const SizedBox(
                       width: 300, 
                       child: Divider(
@@ -230,7 +258,8 @@ void logUserIn() async {
                       ),
                     ),
                     signUpOption(), 
-  
+
+
 
                     GestureDetector(
                       onTap: 

@@ -211,7 +211,7 @@ class __FHomePageState extends State<FHomePage> {
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.comment),
+                    icon: Icon(Icons.chat_bubble),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -297,19 +297,13 @@ class __FHomePageState extends State<FHomePage> {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.comment),
+                icon: Icon(Icons.chat_bubble),
                 onPressed: () {
                   // Add your functionality for the button here
                 },
               ),
               IconButton(
                 icon: Icon(Icons.report),
-                onPressed: () {
-                  // Add your functionality for the button here
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.chat_rounded),
                 onPressed: () {
                   // Add your functionality for the button here
                 },
@@ -421,7 +415,7 @@ class __FHomePageState extends State<FHomePage> {
             tabs: [
               Tab(
                 child: Text(
-                  'Question',
+                  'Questions',
                   style: TextStyle(
                     color: Color.fromARGB(
                         255, 245, 227, 255), // Set the desired color here

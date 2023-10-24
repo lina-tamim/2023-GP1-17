@@ -6,15 +6,12 @@ import 'package:techxcel11/user_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:techxcel11/pages/reuse.dart';
-import 'package:techxcel11/pages/Fhome.dart';
 import 'package:lottie/lottie.dart';
 import 'package:techxcel11/pages/start.dart';
 import 'package:techxcel11/pages/Login.dart';
 import "package:csc_picker/csc_picker.dart"; // city
 import 'package:email_validator/email_validator.dart'; // email
-import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'dart:async';
-import 'package:image_picker/image_picker.dart'; //+
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
@@ -67,6 +64,7 @@ class _Signup extends State<Signup> {
   String _selectedState = '';
   File? _selectedImage;
   String defaultImagePath = 'assets/Backgrounds/defaultUserPic2.png';
+  bool _isLoading = false;
 
 
   List<String> _selectedSkills = [];
@@ -85,7 +83,12 @@ class _Signup extends State<Signup> {
 // ...
 
 Future<void> signUserUp() async {
+
   try {
+      setState(() {
+      _isLoading = true;
+    });
+
     UserCredential userCredential =
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
       email: _email.text.trim(),
@@ -144,7 +147,6 @@ Future<void> signUserUp() async {
 
     // Display a success message to the user
     _showSnackBar("Please check your email for verification.");
-print('/////////////////////');
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -156,7 +158,6 @@ print('/////////////////////');
         );
       },
     );
-print('000000))))))))))))))))))))/');
 
     // Delay the navigation to the login page using a Timer
     Timer(const Duration(seconds: 6), () {
@@ -171,7 +172,13 @@ print('000000))))))))))))))))))))/');
     // Handle sign-up errors here
     print('Sign-up error: $e');
   }
-}
+   finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
 
 
   void _showMultiSelectSkills() async {
@@ -1023,8 +1030,19 @@ print('000000))))))))))))))))))))/');
                         ],
                       ),
                     ),
-                    const SizedBox(height: 40), // space
-
+                    const SizedBox(height: 10), // space
+    if (_isLoading)
+                        IgnorePointer(
+                          child: Opacity(
+                            opacity: 1,
+                            child: Container(
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          ),
+                        ),
+                       const SizedBox(height: 10), // space
                     SizedBox(
                       width: 200,
                       height: 50,
@@ -1036,18 +1054,6 @@ print('000000))))))))))))))))))))/');
                           if (await isStep1Valid && isStep2Valid) {
                             signUserUp();
                           }
-
-                          //bool isvalid = _createAccount1();
-                          // Check the validity of the input
-
-                          // If the input is valid, navigate to the login page
-                          /*bool isValid = _createAccount1() as bool;
-                            if (!isValid) {
-                            // Validation failed, do not proceed to Step 2
-                            return;
-                          } else {
-                            allValid(context);
-                          }*/
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Color.fromARGB(255, 198, 180, 247),
@@ -1085,58 +1091,6 @@ print('000000))))))))))))))))))))/');
     var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
     return digest.toString(); // Convert the hash to a string
   }
-/*
-  void allValid(BuildContext context) async {
- Future<bool> iscreateAccount1 = _createAccount1() ;
-    if ( (await iscreateAccount1) as bool == true) {
-                            
- //bool iscreateAccount1 = _createAccount1() as bool;
-  if ( _createAccount2()) {
-   //hash the password
-   
-
-    final user = UserModel(
-      userName: _userName.text.trim().toLowerCase(),
-      userType: _selectedUser,
-      attendancePreference: _selectedPreference,
-      country: _selectedCountry,
-      state: _selectedState,
-      city: _selectedCity,
-      email: _email.text.trim().toLowerCase(),
-      password: hashPassword(_password.text.trim()),
-      GithubLink: _GitHublink.text.trim(),
-      interests: _selectedInterests,
-      skills: _selectedSkills,
-    );
-    UserRepository userRep = UserRepository();
-
-    userRep.createUser(user);
-   
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          child: ValidationAnimation(),
-        );
-      },
-    );
-
-    // Delay the navigation to the login page using a Timer
-    Timer(const Duration(seconds: 6), () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const Login(),
-        ),
-      );
-    });
-  }
-    }
-}*/
-  // validation function
 
   // validation 1
   // validation of empty fields
@@ -1154,6 +1108,7 @@ print('000000))))))))))))))))))))/');
       return false;
     }
 
+
     //                                   *** username validation ***
     // Check username validity (>6 + no WS)
     if (_userName.text.length < 6) {
@@ -1161,6 +1116,10 @@ print('000000))))))))))))))))))))/');
       return false;
     } else if (_userName.text.contains(RegExp(r'\s'))) {
       _showSnackBar('Username should not contain whitespace');
+      return false;
+    }
+    else if (_userName.text.contains(RegExp(r'^\d+$'))) {
+      _showSnackBar('Username should not contain only digits');
       return false;
     }
     if (await checkAvailableUsername(_userName.text.trim()) == false) {
@@ -1200,20 +1159,12 @@ print('000000))))))))))))))))))))/');
     }
 
     //                                   *** password validation ***
-    // Check password validity (>8 + no WS)
     if (_password.text.length < 6) {
       _showSnackBar('Password should be at least 8 characters');
       return false;
-    } /*else if (!_password.text.contains(RegExp(r'[A-Z]'))) {
-      _showSnackBar('Password should contain at least 1 capital letter');
-      return false;
-    } else if (_password.text.contains(RegExp(r'\s'))) {
-      _showSnackBar('Password should not contain whitespace');
-      return false;
-    }*/
+    } 
     return true;
-  } // end _createAccount1()
-
+  } 
   bool _createAccount2() {
     //                                   *** skills validation ***
 

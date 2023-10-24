@@ -160,37 +160,69 @@ class _ForgetPasswordState extends State<ForgetPassword> {
   Future<void> resetPassword(BuildContext context) async {
   String email = emailController.text.trim();
   if (await doesEmailExists(email) == false) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: Text('This email does not exist! Please enter a valid one'),
-        );
-      },
-    );
+   showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: const Text('This email does not exist! Please enter a valid one'),
+        actions: [
+          TextButton(
+            onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Login()),
+            );
+          },
+            child: const Text('Ok'),
+          ),
+        ],
+      );
+    },
+  );
   } else {
     try {
       // Email is registered, send password reset link
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            content: Text('Password reset link has been sent! Check your email'),
-          );
-        },
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: const Text('Password reset link has been sent! Check your email'),
+        actions: [
+          TextButton(
+            onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Login()),
+            );
+          },
+            child: const Text('Ok'),
+          ),
+        ],
       );
+    },
+  );
     } catch (e) {
-      print('Error: $e');
-
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            content: Text('An error occurred. Please try again later.'),
-          );
-        },
+     print('Error: $e');
+     showDialog(
+     context: context,
+     builder: (BuildContext context) {
+      return AlertDialog(
+        content: const Text('An error occured. Please try again later.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Login()),
+            );
+          },
+            child: const Text('Ok'),
+          ),
+        ],
       );
+    },
+  );
     }
   }
 }

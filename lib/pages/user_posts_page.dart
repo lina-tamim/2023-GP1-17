@@ -678,6 +678,12 @@ class _UserPostsPageState extends State<UserPostsPage> {
                             },
                           ),
                           Text('Upvotes: $upvoteCount'),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          PostDeleteButton(docId: answer.docId,
+                          type: 'answer',
+                          )
                         ],
                       );
                     }

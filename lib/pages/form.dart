@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:techxcel11/pages/reuse.dart';
 
 class FormWidget extends StatefulWidget {
   const FormWidget({Key? key}) : super(key: key);
@@ -227,9 +228,7 @@ void _showMultiSelectTopics() async {
    @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('My Form'),
-      ),
+      appBar: buildAppBar('My Form'),
       body: KeyboardDismisser(
         child: SingleChildScrollView(
       child:Padding(

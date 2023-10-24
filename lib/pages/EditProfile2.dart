@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +43,7 @@ class _EditProfile2State extends State<EditProfile2> {
   bool showInterests = false;
   bool isModified = false;
   bool isPasswordchange = false;
+  bool _isLoading = false;
 
 /////////// MODIFIED BY USER:
 String newUsername=''; //used later when comparison if values have
@@ -63,7 +63,6 @@ List<String> newUserSkills =[];
 String newGithubLink='';
 File? newProfilePicture;
 
-
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   @override
   void initState() {
@@ -72,6 +71,10 @@ final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   }
 
   Future<void> fetchUserData() async {
+
+      setState(() {
+      _isLoading = true;
+    });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('loggedInEmail') ?? '';
     final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
@@ -125,6 +128,9 @@ final FirebaseFirestore _firestore = FirebaseFirestore.instance;
         loggedInimageUrl = imageUrl;
       });
     }
+       setState(() {
+        _isLoading = false;
+      });
   }
 
  @override
@@ -584,6 +590,17 @@ const Row(
     const SizedBox(width: 5),
   ],
 ),
+    if (_isLoading)
+                        IgnorePointer(
+                          child: Opacity(
+                            opacity: 1,
+                            child: Container(
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          ),
+                        ),
 const SizedBox(height: 20),
 // Save button
 Row(
@@ -1063,7 +1080,11 @@ Future<bool> validateUsername() async {
     _showSnackBar('Username should not contain spaces.');
       return false;
 
-  } else if (newUsername != loggedInUsername) {
+  } else if (newUsername.contains(RegExp(r'^\d+$'))) {
+      _showSnackBar('Username should not contain only digits');
+      return false;
+    }
+    else if (newUsername != loggedInUsername) {
     bool usernameExists = await checkUsernameExists(newUsername);
     if (usernameExists) {
       _showSnackBar('Username is already taken. Please choose a different one.');
@@ -1089,6 +1110,9 @@ Future<bool> checkUsernameExists(String username) async {
 }
 
 Future<bool> updateUsernameByEmail() async {
+     setState(() {
+        _isLoading = true;
+      });
   final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
       .collection('users')
       .where('email', isEqualTo: loggedInEmail)
@@ -1103,6 +1127,9 @@ Future<bool> updateUsernameByEmail() async {
       'userName': newUsername,
     });
   }
+     setState(() {
+        _isLoading = false;
+      });
       isModified = true;
        return true;
 
@@ -1134,6 +1161,9 @@ else
 }
 
 Future<bool> updatePasswordByEmail() async {
+  setState(() {
+        _isLoading = true;
+      });
   final QuerySnapshot<Map<String, dynamic>> snapshot =
       await FirebaseFirestore.instance
           .collection('users')
@@ -1156,6 +1186,9 @@ Future<bool> updatePasswordByEmail() async {
     if (user != null) {
       try {
         await user.updatePassword(newPassword);
+        setState(() {
+        _isLoading = false;
+      });
          isModified = true;
         return true;
       } catch (e) {
@@ -1189,6 +1222,9 @@ return false;
 }
 
 Future<bool> updateCSC() async {
+  setState(() {
+        _isLoading = true;
+      });
   final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
       .collection('users')
       .where('email', isEqualTo: loggedInEmail)
@@ -1203,6 +1239,9 @@ Future<bool> updateCSC() async {
       'country': newCountry, 'city': newCity,'state': newState,
     });
   }
+  setState(() {
+        _isLoading = false;
+      });
        isModified = true;
        return true;
 }
@@ -1222,6 +1261,9 @@ return false;
 }
 
 Future<bool> updateUserType() async {
+  setState(() {
+        _isLoading = true;
+      });
   final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
       .collection('users')
       .where('email', isEqualTo: loggedInEmail)
@@ -1236,7 +1278,9 @@ Future<bool> updateUserType() async {
       'userType': newUserType, 
     });
   }
-
+setState(() {
+        _isLoading = false;
+      });
       isModified = true;
        return true;
 }
@@ -1252,6 +1296,9 @@ return false;
 }
 
 Future<bool> updateUserPreference()  async {
+  setState(() {
+        _isLoading = true;
+      });
   final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
       .collection('users')
       .where('email', isEqualTo: loggedInEmail)
@@ -1266,6 +1313,9 @@ Future<bool> updateUserPreference()  async {
       'attendancePreference': newUserPreference, 
     });
   }
+  setState(() {
+        _isLoading = false;
+      });
       isModified = true;
        return true;
 }
@@ -1289,6 +1339,9 @@ return false;
 
 
 Future<bool> updateInterests()  async {
+  setState(() {
+        _isLoading = true;
+      });
   final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
       .collection('users')
       .where('email', isEqualTo: loggedInEmail)
@@ -1303,6 +1356,9 @@ Future<bool> updateInterests()  async {
       'interests': newUserInterests, 
     });
   }
+  setState(() {
+        _isLoading = false;
+      });
         isModified = true;
        return true;
 }
@@ -1323,6 +1379,9 @@ return false;
 }
 
 Future<bool> updateSkills()  async {
+  setState(() {
+        _isLoading = true;
+      });
   final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
       .collection('users')
       .where('email', isEqualTo: loggedInEmail)
@@ -1337,6 +1396,9 @@ Future<bool> updateSkills()  async {
       'skills': newUserSkills, 
     });
   }
+  setState(() {
+        _isLoading = false;
+      });
       isModified = true;
        return true;
 }
@@ -1360,6 +1422,9 @@ Future<bool> validateGithubLink() async {
 }
 
 Future<bool> updateGithubLink() async {
+     setState(() {
+        _isLoading = true;
+      });
   final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
       .collection('users')
       .where('email', isEqualTo: loggedInEmail)
@@ -1374,14 +1439,13 @@ Future<bool> updateGithubLink() async {
       'GithubLink': newGithubLink,
     });
   }
+     setState(() {
+        _isLoading = false;
+      });
      isModified = true;
        return true;
 
 }
-
-
-
-
 
 Future<bool> validateUserPic() async {
   if (newProfilePicture == null) {
@@ -1392,10 +1456,11 @@ Future<bool> validateUserPic() async {
 }
 
 
-
-
 Future<bool> updateProfilePicture(String userId) async {
   try {
+    setState(() {
+        _isLoading = true;
+      });
     // Upload the new profile picture to Firebase Storage
     final Reference storageRef = FirebaseStorage.instance.ref().child('user_images/$userId.jpg');
     final UploadTask uploadTask = storageRef.putFile(newProfilePicture!);
@@ -1408,6 +1473,9 @@ Future<bool> updateProfilePicture(String userId) async {
     });
 
     // Update the local user object
+    setState(() {
+        _isLoading = false;
+      });
     loggedInimageUrl = downloadURL;
     isModified = true;
 
@@ -1419,12 +1487,10 @@ Future<bool> updateProfilePicture(String userId) async {
 }
 
 
-
-
-
-
-
 Future<bool> isDeleted() async {
+  setState(() {
+        _isLoading = true;
+      });
   final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
       .collection('users')
       .where('email', isEqualTo: loggedInEmail)
@@ -1443,8 +1509,14 @@ Future<bool> isDeleted() async {
     if (user != null) {
       await user.delete();
     }
+    setState(() {
+        _isLoading = false;
+      });
     return true;
   }
+  setState(() {
+        _isLoading = false;
+      });
   _showSnackBar('An error occurred while trying to delete your account');
   return false;
 }

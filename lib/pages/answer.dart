@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/models/cardQuestion.dart';
 import 'package:techxcel11/models/cardanswer.dart';
+import 'package:techxcel11/pages/reuse.dart';
 
 class AnswerPage extends StatefulWidget {
   final int questionId;
@@ -77,7 +78,7 @@ Future<List<CardQuestion>> readQuestion() async {
           question.username ?? '', // Display the username
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 39, 103, 29)
+            color: Color.fromARGB(255, 0, 0, 0)
           ),
         ),
         SizedBox(height: 5),
@@ -289,10 +290,7 @@ Stream<List<CardAnswer>> readAnswer() => FirebaseFirestore.instance
   Widget build(BuildContext context) {
     
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Answers'),
-      ),
-      
+      appBar: buildAppBar('Answers'),
       body: Column(
         children:[
           Padding(
