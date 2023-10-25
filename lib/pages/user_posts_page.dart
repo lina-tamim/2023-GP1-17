@@ -1,5 +1,6 @@
-//Full code, m
+//Full code, m s
 import 'dart:developer';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/models/cardFTview.dart';
 import 'package:techxcel11/models/cardQview.dart';
@@ -280,7 +281,10 @@ class _UserPostsPageState extends State<UserPostsPage> {
         return answers;
       });
 
-  Widget buildTeamCard(CardFTview fandT) => Card(
+  Widget buildTeamCard(CardFTview fandT) {
+    final formattedDate = DateFormat.yMMMMd().format(fandT.date); // Format the date
+
+    return Card(
         child: ListTile(
           leading: CircleAvatar(
             // ignore: unnecessary_null_comparison
@@ -347,33 +351,27 @@ class _UserPostsPageState extends State<UserPostsPage> {
                     },
                   ),
                   PostDeleteButton(docId: fandT.docId),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 4.0, horizontal: 8.0),
-                        decoration: BoxDecoration(
-                          color: Colors.purple.shade200,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Text(
-                          'Deadline: ${fandT.date}',
-                          // Replace with the actual deadline date
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  Container(
+            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+            decoration: BoxDecoration(
+              color: Colors.purple.shade200,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Text(
+              'Deadline: $formattedDate', // Use the formatted date
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12.0,
+              ),
+            ),
+          ),
+          SizedBox(height: 5),
                 ],
               ),
             ],
           ),
         ),
-      );
+      );}
 
   @override
   Widget build(BuildContext context) {
