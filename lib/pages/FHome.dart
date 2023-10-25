@@ -1,3 +1,4 @@
+//Full code, m
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -147,7 +148,7 @@ class __FHomePageState extends State<FHomePage> {
 
       questions.forEach((question) {
         final userDoc = userMap[question.userId];
-        final username = userDoc?['f'] as String? ?? '';
+        final username = userDoc?['userName'] as String? ?? '';
         final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;

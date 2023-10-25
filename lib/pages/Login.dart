@@ -1,3 +1,4 @@
+//Full code, m
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +42,7 @@ class _Login extends State<Login> {
     setState(() {
       _isLoading = true;
     });
-    
+
 if (email.isEmpty && password.isEmpty) {
       _showSnackBar('Please enter an email and password');
       return;
