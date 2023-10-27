@@ -41,7 +41,7 @@ class CardFT {
       title: json['textFieldValue'],
       description: json['largeTextFieldValue'],
       topics: List<String>.from(json['selectedInterests']),
-      date: (json['selectedDate'] as Timestamp).toDate(),
+      date: (json['selectedDate'] as Timestamp).toDate() ,
       userId: json['userId'],
       username: json['username'] ?? '',
       userPhotoUrl: json['userPhotoUrl'] as String?,

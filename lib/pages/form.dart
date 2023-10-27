@@ -1,11 +1,9 @@
-//Full code, m s
 import 'dart:async';
 import 'package:techxcel11/pages/FHome.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techxcel11/pages/reuse.dart';
 
 class FormWidget extends StatefulWidget {
   const FormWidget({Key? key}) : super(key: key);
@@ -224,29 +222,14 @@ void _showMultiSelectTopics() async {
 }
 }
 
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).size.height - 80,
-          right: 20,
-          left: 20,
-        ),
-        backgroundColor:
-            Color.fromARGB(255, 63, 12, 118), // Customize the background color
-      ),
-    );
-  }
+
 
    @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar('My Form'),
+      appBar: AppBar(
+        title: Text('My Form'),
+      ),
       body: KeyboardDismisser(
         child: SingleChildScrollView(
       child:Padding(
@@ -604,13 +587,12 @@ const SizedBox(height: 16),
     // Selected interests are valid, continue with form submission
 
     // ... Perform your form submission logic here
-    _showSnackBar(interestsValidation!);
-   /* ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(interestsValidation!),
         duration: Duration(seconds: 2),
       ),
-    );*/
+    );
 
   }
     else if (_formKey.currentState!.validate()) {
@@ -680,14 +662,13 @@ if (snapshot.docs.isEmpty) {
       
     });
 
-_showSnackBar('Post submitted successfully!');
-   /* ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Form submitted successfully!')));
 
         Navigator.pushReplacement(
     context,
     MaterialPageRoute(builder: (context) => FHomePage()),
-  );*/
+  );
   }}
 }
 
