@@ -5,12 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:techxcel11/pages/login.dart';
 
+import 'CoursesAndEventsPage.dart';
+import 'courses_events_page.dart';
+
 class AdminHome extends StatefulWidget {
   const AdminHome({Key? key}) : super(key: key);
 
   @override
   State<AdminHome> createState() => _AdminHome();
 }
+
 class _AdminHome extends State<AdminHome> {
   @override
   Widget build(BuildContext context) {
@@ -25,7 +29,7 @@ class _AdminHome extends State<AdminHome> {
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
               decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(topLeft: Radius.circular(0)),
-              ), 
+              ),
               child: GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -38,7 +42,9 @@ class _AdminHome extends State<AdminHome> {
                       // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const AdminHome()), // will be changed in sprint2
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const AdminHome()), // will be changed in sprint2
                       );
                     },
                     child: itemDashborde(
@@ -52,7 +58,8 @@ class _AdminHome extends State<AdminHome> {
                       // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const AdminHome()),
+                        MaterialPageRoute(
+                            builder: (context) => const AdminHome()),
                       );
                     },
                     child: itemDashborde(
@@ -66,7 +73,8 @@ class _AdminHome extends State<AdminHome> {
                       // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const AdminHome()),
+                        MaterialPageRoute(
+                            builder: (context) => const CoursesEventsPage()),
                       );
                     },
                     child: itemDashborde(
@@ -80,7 +88,8 @@ class _AdminHome extends State<AdminHome> {
                       // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const AdminHome()),
+                        MaterialPageRoute(
+                            builder: (context) => const AdminHome()),
                       );
                     },
                     child: itemDashborde(
@@ -94,7 +103,8 @@ class _AdminHome extends State<AdminHome> {
                       // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const AdminHome()),
+                        MaterialPageRoute(
+                            builder: (context) => const AdminHome()),
                       );
                     },
                     child: itemDashborde(
@@ -105,48 +115,45 @@ class _AdminHome extends State<AdminHome> {
                   ),
                 ],
               ),
-              
             ),
-            
           ),
           InkWell(
-  onTap: showLogoutConfirmationDialog,
-  child: ListTile(
-    leading: Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100),
-        color: Colors.red,
-      ),
-      child: const Icon(
-        Icons.logout,
-        color: Colors.white,
-      ),
-    ),
-    title: Text(
-      'Logout',
-      style: Theme.of(context).textTheme.bodyLarge?.apply(
-            color: Colors.black87,
-            fontWeightDelta: 2,
-          ),
-    ),
-    trailing: Container(
-      width: 30,
-      height: 30,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100),
-        color: Colors.grey.withOpacity(0.1),
-      ),
-      child: const Icon(
-        Icons.arrow_forward_ios_rounded,
-        size: 18.0,
-        color: Colors.grey,
-      ),
-    ),
-  ),
-            
-)
+            onTap: showLogoutConfirmationDialog,
+            child: ListTile(
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: Colors.red,
+                ),
+                child: const Icon(
+                  Icons.logout,
+                  color: Colors.white,
+                ),
+              ),
+              title: Text(
+                'Logout',
+                style: Theme.of(context).textTheme.bodyLarge?.apply(
+                      color: Colors.black87,
+                      fontWeightDelta: 2,
+                    ),
+              ),
+              trailing: Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: Colors.grey.withOpacity(0.1),
+                ),
+                child: const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 18.0,
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -186,7 +193,7 @@ class _AdminHome extends State<AdminHome> {
         ),
       );
 
-void showLogoutConfirmationDialog() {
+  void showLogoutConfirmationDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -196,10 +203,10 @@ void showLogoutConfirmationDialog() {
           actions: [
             TextButton(
               onPressed: () {
-                      Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Login()),
-                    );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Login()),
+                );
               },
               child: const Text('Yes'),
             ),
@@ -213,4 +220,5 @@ void showLogoutConfirmationDialog() {
         );
       },
     );
-  }}
+  }
+}

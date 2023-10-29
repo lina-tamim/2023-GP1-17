@@ -2,6 +2,7 @@
 //GP discussion
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/pages/AdminProfilePage.dart';
 import 'package:techxcel11/pages/Admin_home.dart';
@@ -118,7 +119,7 @@ class _NavBarUserState extends State<NavBarUser> {
             title: const Text('My Interactions'),
             onTap: () async {
               await fetchUserData(); // Fetch user data and assign the value to 'loggedInEmail'
-              print("**************$loggedInEmail");
+              print("******$loggedInEmail");
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => UserPostsPage()),
@@ -182,6 +183,7 @@ class _NavBarAdminState extends State<NavBarAdmin> {
   String loggedImage = '';
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   @override
   void initState() {
     super.initState();
@@ -270,7 +272,8 @@ class _NavBarAdminState extends State<NavBarAdmin> {
 }
 
 TextField reusableTextField(String text, IconData icon, bool isPasswordType,
-    TextEditingController controller, bool modifiable) {
+    TextEditingController controller, bool modifiable,
+    {int? maxLines}) {
   Color boxColor = modifiable
       ? const Color.fromARGB(255, 200, 176, 185).withOpacity(0.3)
       : const Color.fromARGB(255, 165, 165, 165);
@@ -300,6 +303,7 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
         //borderSide: const BorderSide(width: 0, style: BorderStyle.none),
       ),
     ),
+    maxLines: isPasswordType ? 1 : maxLines,
     keyboardType: isPasswordType
         ? TextInputType.visiblePassword
         : TextInputType.emailAddress,
@@ -327,6 +331,34 @@ AppBar buildAppBar(String titleText) {
       ),
     ),
   );
+}
+
+void showSnackBar(String message, context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
+      margin: EdgeInsets.only(
+        bottom: MediaQuery.of(context).size.height - 80,
+        right: 20,
+        left: 20,
+      ),
+      backgroundColor: Color.fromARGB(255, 63, 12, 118),
+    ),
+  );
+}
+
+void toastMessage(String message) {
+  Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
+      textColor: Color(0xffffffff),
+      gravity: ToastGravity.TOP,
+      timeInSecForIosWeb: 1);
 }
 
 class BottomNavBar extends StatefulWidget {
@@ -524,20 +556,173 @@ void logUserOut(BuildContext context) async {
 }
 
 void _showSnackBar(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(message),
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-      ),
-      margin: EdgeInsets.only(
-        bottom: MediaQuery.of(context).size.height - 80,
-        right: 20,
-        left: 20,
-      ),
-      backgroundColor: Color.fromARGB(255, 63, 12, 118),
+  final SnackBar snackBar = SnackBar(
+    content: Text(message),
+    //behavior: SnackBarBehavior.floating,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(24),
     ),
+    //margin: EdgeInsets.only(
+    //bottom: MediaQuery.of(context).size.height - 80,
+    //right: 20,
+    //left: 20,
+    //),
+    backgroundColor: Color.fromARGB(255, 63, 12, 118),
   );
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 
+////Dropdown widget to show dropdown in Courses or Events Post Screen
+class DropDownWidget extends StatefulWidget {
+  DropDownWidget({
+    Key? key,
+    required this.selectedItem,
+    required this.list,
+    required this.onItemSelected,
+    this.fontSize = 16,
+  }) : super(key: key);
+  late final String selectedItem;
+  final void Function(String?) onItemSelected;
+  final List<String> list;
+  final double fontSize;
+
+  @override
+  State<DropDownWidget> createState() => _DropDownWidgetState();
+}
+
+class DropDownMenu extends StatelessWidget {
+  const DropDownMenu({
+    Key? key,
+    required this.gender,
+    required this.onTap,
+    required this.items,
+    this.fontSize = 16,
+  }) : super(key: key);
+  final String gender;
+  final List<String> items;
+  final double fontSize;
+  final ValueChanged<String?> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      value: gender,
+      icon: Text(""),
+      isExpanded: false,
+      decoration: InputDecoration(border: InputBorder.none),
+      items: items.map((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(
+            value,
+            style: TextStyle(
+                fontSize: 16, color: Color.fromRGBO(37, 6, 81, 0.898)),
+          ),
+        );
+      }).toList(),
+      onChanged: onTap,
+    );
+  }
+}
+
+class _DropDownWidgetState extends State<DropDownWidget> {
+  // List<String> get stringList => widget.list.map((item) => item.toString()).toList();
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 58,
+      width: 190,
+      // padding:
+      // EdgeInsets.only(left: 8),
+      decoration: BoxDecoration(
+          //     color: Color.fromARGB(255, 228, 228, 228).withOpacity(0.3),
+          // border: Border.all(
+          //   color: mainColor.withOpacity(0.6),
+          // ),
+          // boxShadow: ([
+          //   BoxShadow(
+          //       color: mainColor.withOpacity(0.2),
+          //       spreadRadius: 1,
+          //       blurRadius: 4,
+          //       offset: Offset(
+          //           0,3
+          //       )
+          //   )
+          // ]),
+          borderRadius: BorderRadius.circular(12)),
+      child: DropDownMenu(
+          gender: widget.selectedItem,
+          onTap: widget.onItemSelected,
+          // onTap: (value) {
+          //   setState(() {
+          //     widget.selectedItem = value!;
+          //     print("selectedGender$widget.selectedItem");
+          //   });
+          // },
+          fontSize: widget.fontSize,
+          items: widget.list),
+    );
+  }
+}
+
+//////Pop to show in Events Post Screen
+showAlertDialog(context, Widget child,
+    {okButtonText = 'Ok',
+    onPress = null,
+    showCancelButton = true,
+    dismissible = true}) {
+  String icon;
+  showGeneralDialog(
+      context: context,
+      barrierLabel: "Barrier",
+      barrierDismissible: dismissible,
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: Duration(milliseconds: 400),
+      transitionBuilder: (_, anim, __, child) {
+        var begin = 0.5;
+        var end = 1.0;
+        var curve = Curves.bounceOut;
+        if (anim.status == AnimationStatus.reverse) {
+          curve = Curves.fastLinearToSlowEaseIn;
+        }
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        return ScaleTransition(
+          scale: anim.drive(tween),
+          child: child,
+        );
+      },
+      pageBuilder: (BuildContext alertContext, Animation<double> animation,
+          Animation<double> secondaryAnimation) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return WillPopScope(
+              onWillPop: () {
+                return Future.value(dismissible);
+              },
+              child: Center(
+                child: Container(
+                  margin: const EdgeInsets.all(25),
+                  child: SingleChildScrollView(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                        bottomLeft: Radius.circular(4),
+                        bottomRight: Radius.circular(4),
+                      ),
+                      child: Material(
+                        child: Container(
+                            color: Colors.white,
+                            padding: const EdgeInsets.all(5),
+                            child: child),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      });
+}
