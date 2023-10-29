@@ -44,7 +44,7 @@ class _Login extends State<Login> {
       _isLoading = true;
     });
 
-if (email.isEmpty && password.isEmpty) {
+    if (email.isEmpty && password.isEmpty) {
       _showSnackBar('Please enter an email and password');
       return;
     }
@@ -59,7 +59,8 @@ if (email.isEmpty && password.isEmpty) {
     }
 
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -68,10 +69,8 @@ if (email.isEmpty && password.isEmpty) {
       final uid = userCredential.user!.uid;
       if (userCredential.user!.emailVerified) {
         // Fetch the user document from Firestore based on the uid
-        final DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(uid)
-            .get();
+        final DocumentSnapshot<Map<String, dynamic>> snapshot =
+            await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
         if (snapshot.exists) {
           final user = snapshot.data()!;
@@ -96,8 +95,8 @@ if (email.isEmpty && password.isEmpty) {
           _showSnackBar("Login failed, please enter correct credentials");
         }
       } else {
-        _showSnackBar("Verify your email before logging in.\nIf not found, please check your junk folder.");
-
+        _showSnackBar(
+            "Verify your email before logging in.\nIf not found, please check your junk folder.");
       }
     } catch (e) {
       print('$e');
@@ -172,19 +171,19 @@ if (email.isEmpty && password.isEmpty) {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                     if (_isLoading)
-                        IgnorePointer(
-                          child: Opacity(
-                            opacity: 1,
-                            child: Container(
-                              child: const Center(
-                                child: CircularProgressIndicator(),
-                              ),
+                    if (_isLoading)
+                      IgnorePointer(
+                        child: Opacity(
+                          opacity: 1,
+                          child: Container(
+                            child: const Center(
+                              child: CircularProgressIndicator(),
                             ),
                           ),
                         ),
+                      ),
                     const SizedBox(
-                      width: 300, 
+                      width: 300,
                       child: Divider(
                         color: Color.fromARGB(255, 211, 211, 211),
                         thickness: 1,
@@ -232,7 +231,7 @@ if (email.isEmpty && password.isEmpty) {
                               children: [
                                 reusableTextField("Please Enter Your Password",
                                     Icons.lock, true, _password, true),
-                          TextButton(
+                                TextButton(
                                   onPressed: () {
                                     Navigator.push(
                                       context,
@@ -259,13 +258,9 @@ if (email.isEmpty && password.isEmpty) {
                         ],
                       ),
                     ),
-                    signUpOption(), 
-
-
-
+                    signUpOption(),
                     GestureDetector(
-                      onTap: 
-                        logUserIn,
+                      onTap: logUserIn,
                       child: SizedBox(
                         height: 174,
                         child: Lottie.network(
@@ -274,7 +269,6 @@ if (email.isEmpty && password.isEmpty) {
                         ),
                       ),
                     ),
-
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 0, horizontal: 10),
@@ -310,6 +304,7 @@ if (email.isEmpty && password.isEmpty) {
       ),
     );
   }
+
   Row signUpOption() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -336,14 +331,14 @@ if (email.isEmpty && password.isEmpty) {
       ],
     );
   }
-String hashPassword(String password) {
-  var bytes = utf8.encode(password); // Encode the password as bytes
-  var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
-  return digest.toString(); // Convert the hash to a string
-} 
 
+  String hashPassword(String password) {
+    var bytes = utf8.encode(password); // Encode the password as bytes
+    var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
+    return digest.toString(); // Convert the hash to a string
+  }
 
-   void _showSnackBar(String message) {
+  void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -356,10 +351,8 @@ String hashPassword(String password) {
           right: 20,
           left: 20,
         ),
-        backgroundColor:
-            Color.fromARGB(255, 63, 12, 118), 
+        backgroundColor: Color.fromARGB(255, 63, 12, 118),
       ),
     );
   }
 }
-
