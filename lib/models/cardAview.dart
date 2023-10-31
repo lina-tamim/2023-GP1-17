@@ -9,7 +9,7 @@ class CardAview {
   String? username;
   List<String> upvotedUserIds;
   final String? docId;
-    String? userPhotoUrl; // Add userPhotoUrl property
+  String? userPhotoUrl; 
 
 
   CardAview(

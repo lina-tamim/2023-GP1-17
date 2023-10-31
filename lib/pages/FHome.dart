@@ -1,15 +1,11 @@
-//Full code, m s
-//GP discussion
-import 'dart:io';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/models/cardFandT.dart';
 import 'package:techxcel11/models/cardQuestion.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:techxcel11/pages/answer.dart';
 import 'package:techxcel11/pages/reuse.dart';
-import 'form.dart'; //
+import 'form.dart'; 
 
 class FHomePage extends StatefulWidget {
   const FHomePage({Key? key}) : super(key: key);
@@ -27,95 +23,117 @@ class __FHomePageState extends State<FHomePage> {
       MaterialPageRoute(builder: (context) => FormWidget()),
     );
   }
-
+ 
   bool showSearchBar = false;
 
   TextEditingController searchController = TextEditingController();
 
-  Stream<List<CardQuestion>> readQuestion() {
-    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-        .collection('posts')
-        .where('dropdownValue', isEqualTo: 'Question');
 
-    if (searchController.text.isNotEmpty) {
-      query = query
-          .where('largeTextFieldValue',
-              isGreaterThanOrEqualTo: searchController.text)
-          .where('largeTextFieldValue',
-              isLessThanOrEqualTo: searchController.text + '\uf8ff');
-    } else {
-      query = query.orderBy('postedDate', descending: true);
-    }
+Stream<List<CardQuestion>> readQuestion() {
+  Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+      .collection('posts')
+      .where('dropdownValue', isEqualTo: 'Question');
 
-    return query.snapshots().asyncMap((snapshot) async {
-      final questions = snapshot.docs
-          .map((doc) =>
-              CardQuestion.fromJson(doc.data() as Map<String, dynamic>))
-          .toList();
-      if (questions.isEmpty) return [];
-      final userIds = questions.map((question) => question.userId).toList();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('users')
-          .where('email', whereIn: userIds)
-          .get();
-
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-              doc.data() as Map<String, dynamic>)));
-
-      questions.forEach((question) {
-        final userDoc = userMap[question.userId];
-        final username = userDoc?['userName'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-        question.username = username;
-        question.userPhotoUrl = userPhotoUrl;
-      });
-
-      return questions;
-    });
+  if (searchController.text.isNotEmpty) {
+    query = query
+        .where('largeTextFieldValue',
+            isGreaterThanOrEqualTo: searchController.text)
+        .where('largeTextFieldValue',
+            isLessThanOrEqualTo: searchController.text + '\uf8ff');
+  } else {
+    query = query.orderBy('postedDate', descending: true);
   }
 
+  return query.snapshots().asyncMap((snapshot) async {
+    final questions = snapshot.docs
+        .map((doc) =>
+            CardQuestion.fromJson(doc.data() as Map<String, dynamic>))
+        .toList();
+    if (questions.isEmpty) return [];
+
+    final userIds = questions.map((question) => question.userId).toList();
+    final userDocs = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', whereIn: userIds)
+        .get();
+
+    final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+        userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+            doc.data() as Map<String, dynamic>)));
+
+    questions.forEach((question) {
+      final userDoc = userMap[question.userId];
+      final username = userDoc?['userName'] as String? ?? '';
+      final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+      question.username = username;
+      question.userPhotoUrl = userPhotoUrl;
+    });
+
+   // Check if any userIds were not found in the 'users' collection
+    final userIdsNotFound = userIds.where((userId) => !userMap.containsKey(userId)).toList();
+    userIdsNotFound.forEach((userId) {
+      questions.forEach((question)  {
+        if (question.userId == userId) {
+          question.username = 'DeactivatedUser';
+           question.userPhotoUrl ='';
+        }
+      });
+    });
+    return questions;
+  });
+}
   Stream<List<CardFT>> readTeam() {
-    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-        .collection('posts')
-        .where('dropdownValue', isEqualTo: 'Team Collaberation');
+  Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+      .collection('posts')
+      .where('dropdownValue', isEqualTo: 'Team Collaberation');
 
-    if (searchController.text.isNotEmpty) {
-      query = query
-          .where('textFieldValue',
-              isGreaterThanOrEqualTo: searchController.text)
-          .where('textFieldValue',
-              isLessThanOrEqualTo: searchController.text + '\uf8ff');
-    } else {
-      query = query.orderBy('postedDate', descending: true);
-    }
-
-    return query.snapshots().asyncMap((snapshot) async {
-      final questions = snapshot.docs
-          .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
-          .toList();
-      if (questions.isEmpty) return [];
-      final userIds = questions.map((question) => question.userId).toList();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('users')
-          .where('email', whereIn: userIds)
-          .get();
-
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-              doc.data() as Map<String, dynamic>)));
-
-      questions.forEach((question) {
-        final userDoc = userMap[question.userId];
-        final username = userDoc?['userName'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-        question.username = username;
-        question.userPhotoUrl = userPhotoUrl;
-      });
-
-      return questions;
-    });
+  if (searchController.text.isNotEmpty) {
+    query = query
+        .where('textFieldValue',
+            isGreaterThanOrEqualTo: searchController.text)
+        .where('textFieldValue',
+            isLessThanOrEqualTo: searchController.text + '\uf8ff');
+  } else {
+    query = query.orderBy('postedDate', descending: true);
   }
+
+  return query.snapshots().asyncMap((snapshot) async {
+    final questions = snapshot.docs
+        .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
+        .toList();
+    if (questions.isEmpty) return [];
+    final userIds = questions.map((question) => question.userId).toList();
+    final userDocs = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', whereIn: userIds)
+        .get();
+
+    final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+        userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+            doc.data() as Map<String, dynamic>)));
+
+    questions.forEach((question) {
+      final userDoc = userMap[question.userId];
+      final username = userDoc?['userName'] as String? ?? '';
+      final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+      question.username = username;
+      question.userPhotoUrl = userPhotoUrl;
+    });
+
+    // Check if any userIds were not found in the 'users' collection
+    final userIdsNotFound = userIds.where((userId) => !userMap.containsKey(userId)).toList();
+    userIdsNotFound.forEach((userId) {
+      questions.forEach((question)  {
+        if (question.userId == userId) {
+          question.username = 'DeactivatedUser';
+           question.userPhotoUrl ='';
+        }
+      });
+    });
+    return questions;
+  });
+}
+
 
   Stream<List<CardFT>> readProjects() {
     Query<Map<String, dynamic>> query = FirebaseFirestore.instance
@@ -144,28 +162,40 @@ class __FHomePageState extends State<FHomePage> {
           .get();
 
       final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-              doc.data() as Map<String, dynamic>)));
+        userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+            doc.data() as Map<String, dynamic>)));
 
-      questions.forEach((question) {
-        final userDoc = userMap[question.userId];
-        final username = userDoc?['userName'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-        question.username = username;
-        question.userPhotoUrl = userPhotoUrl;
-      });
-
-      return questions;
+    questions.forEach((question) {
+      final userDoc = userMap[question.userId];
+      final username = userDoc?['userName'] as String? ?? '';
+      final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+      question.username = username;
+      question.userPhotoUrl = userPhotoUrl;
     });
-  }
+
+    // Check if any userIds were not found in the 'users' collection
+    final userIdsNotFound = userIds.where((userId) => !userMap.containsKey(userId)).toList();
+    userIdsNotFound.forEach((userId) {
+      questions.forEach((question)  {
+        if (question.userId == userId) {
+          question.username = 'DeactivatedUser';
+           question.userPhotoUrl ='';
+        }
+      });
+    });
+    return questions;
+  });
+}
+
+
 
   Widget buildQuestionCard(CardQuestion question) => Card(
         child: ListTile(
-          leading: CircleAvatar(
-            backgroundImage: question.userPhotoUrl != null
-                ? NetworkImage(question.userPhotoUrl!)
-                : null, // Handle null value
-          ),
+            leading: CircleAvatar(
+  backgroundImage: question.userPhotoUrl != ''
+      ? NetworkImage(question.userPhotoUrl!)
+      : const AssetImage('assets/Backgrounds/defaultUserPic.png') as ImageProvider<Object>, // Cast to ImageProvider<Object>
+),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -243,11 +273,11 @@ class __FHomePageState extends State<FHomePage> {
       child: Column(
         children: [
           ListTile(
-            leading: CircleAvatar(
-              backgroundImage: team.userPhotoUrl != null
-                  ? NetworkImage(team.userPhotoUrl!)
-                  : null, // Handle null value
-            ),
+        leading: CircleAvatar(
+  backgroundImage: team.userPhotoUrl != ''
+      ? NetworkImage(team.userPhotoUrl!)
+      : const AssetImage('assets/Backgrounds/defaultUserPic.png') as ImageProvider<Object>, // Cast to ImageProvider<Object>
+),
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

@@ -1,5 +1,4 @@
-//Full code, m s
-//GP discussion
+
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -12,9 +11,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:techxcel11/pages/start.dart'; 
 import 'package:crypto/crypto.dart';
+import 'package:techxcel11/userEditImagePicker.dart';
 import 'dart:convert';
-
-import 'package:techxcel11/user_image.dart';//m
 
 
 class EditProfile2 extends StatefulWidget {
@@ -145,14 +143,23 @@ Widget build(BuildContext context) {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-             Center(
-                child: UserImagePicker(
-                  onPickImage: (pickedImage) {
-                    newProfilePicture = pickedImage;
-                  },
-                ),
-              ),
-          const Row(
+Center(
+  child: Container(
+    padding: EdgeInsets.all(20),
+    child: Transform.scale(
+      scale: 1.6, // Increase the scale value to make the image bigger
+      child: UserEditImagePicker(
+        onPickImage: (pickedImage) {
+          newProfilePicture = pickedImage;
+        },
+      ),
+    ),
+  ),
+),
+SizedBox(height: 10,) ,
+Divider(),
+SizedBox(height: 10,),
+         const Row(
             children: [
               SizedBox(width: 30),
               Text(
@@ -1493,6 +1500,14 @@ Future<bool> isDeleted() async {
   setState(() {
         _isLoading = true;
       });
+
+   // Delete user from Firebase Authentication
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await user.delete();
+    }
+
+
   final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
       .collection('users')
       .where('email', isEqualTo: loggedInEmail)
@@ -1506,11 +1521,30 @@ Future<bool> isDeleted() async {
     // Delete user document from Firestore
     await FirebaseFirestore.instance.collection('users').doc(userId).delete();
 
-    // Delete user from Firebase Authentication
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      await user.delete();
-    }
+    // Delete user's name questions, team requests, and projects
+      await FirebaseFirestore.instance
+          .collection('posts')
+          .where('userId', isEqualTo: loggedInEmail)
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          doc.reference.update({'userId': 'DeactivatedUser'});
+        });
+      });
+
+      // Delete user answers
+      // Delete user's name questions, team requests, and projects
+      await FirebaseFirestore.instance
+          .collection('answers')
+          .where('userId', isEqualTo: loggedInEmail)
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          doc.reference.update({'userId': 'DeactivatedUser'});
+        });
+      });
+
+
     setState(() {
         _isLoading = false;
       });

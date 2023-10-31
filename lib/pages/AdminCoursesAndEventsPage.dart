@@ -1,7 +1,13 @@
+import 'dart:io';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:techxcel11/courseAndEvent_image.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/course.dart';
@@ -10,14 +16,14 @@ const Color mainColor = Color.fromRGBO(37, 6, 81, 0.898);
 const Color secondaryColor = Color(0xffffffff);
 const Color redColor = Color(0xffbd2727);
 
-class CoursesEventsPage extends StatefulWidget {
-  const CoursesEventsPage({Key? key}) : super(key: key);
+class AdminCoursesAndEventsPage extends StatefulWidget {
+  const AdminCoursesAndEventsPage({Key? key}) : super(key: key);
 
   @override
-  State<CoursesEventsPage> createState() => _CoursesEventsPageState();
+  State<AdminCoursesAndEventsPage> createState() => _AdminCoursesAndEventsPageState();
 }
 
-class _CoursesEventsPageState extends State<CoursesEventsPage> {
+class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
   final titleController = TextEditingController();
   final descController = TextEditingController();
   final locationController = TextEditingController();
@@ -26,17 +32,13 @@ class _CoursesEventsPageState extends State<CoursesEventsPage> {
   DateTime? courseStartDate;
   DateTime? courseEndDate;
   Course? item;
+  File? _selectedImage;
+  String defaultImagePath = 'assets/Backgrounds/defaultCoursePic.png';
+
   List<String> incidentDistrict = ["Course", "Event"];
   String selectedIncidentDistrict = "Course";
   bool showSearchBar = false;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    // courseStartDate = "Select Start date";
-    // courseEndDate = "Select End date";
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +158,7 @@ class _CoursesEventsPageState extends State<CoursesEventsPage> {
                     }
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      height: 270,
+                      height: 350,
                       child: ListView.builder(
                           itemCount: list.length,
                           scrollDirection: Axis.horizontal,
@@ -220,7 +222,7 @@ class _CoursesEventsPageState extends State<CoursesEventsPage> {
                     }
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      height: 270,
+                      height: 350,
                       child: ListView.builder(
                           itemCount: list.length,
                           scrollDirection: Axis.horizontal,
@@ -318,12 +320,47 @@ class _CoursesEventsPageState extends State<CoursesEventsPage> {
   }
 
   Future<void> _submitForm() async {
+
     // log('MK: ${courseStartDate}');
     // return;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('loggedInEmail') ?? '';
     // Create a Firestore document reference
     final formCollection = FirebaseFirestore.instance.collection('courses');
+
+
+
+final storageRef = FirebaseStorage.instance
+        .ref()
+        .child('coursesAndEvents_images')
+        .child('${item?.docId}png');
+
+
+ if (_selectedImage == null) {
+  // Load the default image from assets
+   final defaultImagePath = 'assets/Backgrounds/defaultCoursePic.png';
+
+      // Load the default image from assets
+      final byteData = await rootBundle.load(defaultImagePath);
+      final bytes = byteData.buffer.asUint8List();
+
+      // Save the default image to a temporary file
+      final tempDir = await getTemporaryDirectory();
+      final tempPath = path.join(tempDir.path, 'default_image.png');
+      await File(tempPath).writeAsBytes(bytes);
+
+      // Upload the default image to storage
+      await storageRef.putFile(File(tempPath));
+    } else {
+      // Upload the selected image to storage
+      await storageRef.putFile(_selectedImage!);
+    
+    }
+
+    // Get the download URL of the uploaded image
+    final imageURL = await storageRef.getDownloadURL();
+    print(imageURL);
+
 
     // Create a new document with auto-generated ID
     final newFormDoc = formCollection.doc();
@@ -339,6 +376,7 @@ class _CoursesEventsPageState extends State<CoursesEventsPage> {
         'end_date': courseEndDate,
         'link': linkController.text,
         'location': locationController.text,
+        'imageURL':imageURL,
         // 'created_at': postDate,
       });
     } else {
@@ -352,6 +390,8 @@ class _CoursesEventsPageState extends State<CoursesEventsPage> {
         'link': linkController.text,
         'location': locationController.text,
         'created_at': postDate,
+        'imageURL':imageURL,
+
       });
     }
 
@@ -372,6 +412,7 @@ class _CoursesEventsPageState extends State<CoursesEventsPage> {
     locationController.clear();
     linkController.clear();
     item = null;
+    _selectedImage = null;
   }
 
   Stream<List<Course>> readCourses({String type = 'Course'}) {
@@ -399,74 +440,89 @@ class _CoursesEventsPageState extends State<CoursesEventsPage> {
     });
   }
 
-  void showInputDialog() {
-    showAlertDialog(
-      context,
-      StatefulBuilder(builder: (context, setstate) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Icon(
-                        Icons.arrow_back_outlined,
+void showInputDialog() {
+  showAlertDialog(
+    context,
+    StatefulBuilder(builder: (context, setstate) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Icon(
+                      Icons.arrow_back_outlined,
+                      color: mainColor,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 12,
+                  ),
+                  const Text(
+                    "Add Course or Event",
+                    style: TextStyle(
+                        fontSize: 17,
+                        fontFamily: "Poppins",
                         color: mainColor,
-                      ),
+                        fontWeight: FontWeight.w400),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 15, bottom: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const FormTitleWidget(
+                      title: "",
+                      isRequired: false,
+
                     ),
-                    const SizedBox(
-                      width: 12,
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: CourseAndEventImagePicker(
+                      onPickImage: (pickedImage) {
+                        _selectedImage = pickedImage;
+                      },
                     ),
-                    const Text(
-                      "Add Course or Event",
-                      style: TextStyle(
-                          fontSize: 17,
-                          fontFamily: "Poppins",
-                          color: mainColor,
-                          fontWeight: FontWeight.w400),
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Divider(
-                    color: mainColor.withOpacity(0.5),
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const FormTitleWidget(
+                    title: "Type",
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 15, bottom: 5),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const FormTitleWidget(
-                        title: "Type",
-                        tooltip: 'Please choose type from course or event',
-                      ),
-                      const SizedBox(height: 8),
-                      DropDownWidget(
-                          selectedItem: selectedIncidentDistrict,
-                          list: incidentDistrict,
-                          onItemSelected: (value) {
-                            setState(() {
-                              selectedIncidentDistrict = value!;
-                              print(
-                                  "incidentDistrict$selectedIncidentDistrict");
-                            });
-                          }),
-                    ],
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: DropDownWidget(
+                      selectedItem: selectedIncidentDistrict,
+                      list: incidentDistrict,
+                      onItemSelected: (value) {
+                        setstate(() {
+                          selectedIncidentDistrict = value!;
+                          print("incidentDistrict$selectedIncidentDistrict");
+                        });
+                      },
+                    ),
                   ),
-                ),
+                ],
+              ),
                 const FormTitleWidget(
                   title: "Title",
                   tooltip: 'Please write here title of course or event',
@@ -790,11 +846,10 @@ class CoursesWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 0),
       child: Container(
-        // height: 150,
         width: MediaQuery.of(context).size.width * 0.9,
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.only(right: 12 , left: 12),
         decoration: BoxDecoration(
           color: secondaryColor,
           borderRadius: BorderRadius.circular(12),
@@ -810,6 +865,17 @@ class CoursesWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+          Center(
+  child: ClipRRect(
+    borderRadius: BorderRadius.circular(8),
+    child: Image.network(
+      item.imageURL,
+      width: 250,
+      height: 105,
+      fit: BoxFit.cover,
+    ),
+  ),
+),
             Text(
               item.title ?? '--',
               style: const TextStyle(
@@ -828,6 +894,7 @@ class CoursesWidget extends StatelessWidget {
                   color: mainColor.withOpacity(0.6),
                   fontWeight: FontWeight.w400),
             ),
+            SizedBox(height: 5),
             Row(
               children: [
                 Expanded(

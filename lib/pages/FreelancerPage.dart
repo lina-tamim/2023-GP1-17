@@ -1,5 +1,4 @@
-//Full code, m s
-//GP discussion
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:techxcel11/pages/reuse.dart';

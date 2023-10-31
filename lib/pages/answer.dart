@@ -58,20 +58,32 @@ Future<List<CardQuestion>> readQuestion() async {
     final userDoc = userMap[question.userId];
     final username = userDoc?['userName'] as String? ?? '';
     final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+    
     question.username = username;
     question.userPhotoUrl = userPhotoUrl;
   });
 
+ // Check if any userIds were not found in the 'users' collection
+    final userIdsNotFound = userIds.where((userId) => !userMap.containsKey(userId)).toList();
+    userIdsNotFound.forEach((userId) {
+      questions.forEach((question)  {
+        if (question.userId == userId) {
+          question.username = 'DeactivatedUser';
+          question.userPhotoUrl = '';
+        }
+      });
+    });
   return questions;
 }
 
+
   Widget buildQuestionCard(CardQuestion question) => Card(
   child: ListTile(
-    leading: CircleAvatar(
-          backgroundImage: question.userPhotoUrl != null
-              ? NetworkImage(question.userPhotoUrl!)
-              : null, // Handle null value
-        ),
+              leading: CircleAvatar(
+  backgroundImage: question.userPhotoUrl != ''
+      ? NetworkImage(question.userPhotoUrl!)
+      : AssetImage('assets/Backgrounds/defaultUserPic.png') as ImageProvider<Object>, // Cast to ImageProvider<Object>
+),
     title: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -153,11 +165,11 @@ Widget buildAnswerCard(CardAnswer answer) {
 
   return Card(
   child: ListTile(
-     leading: CircleAvatar(
-          backgroundImage: answer.userPhotoUrl != null
-              ? NetworkImage(answer.userPhotoUrl!)
-              : null, // Handle null value
-        ),
+               leading: CircleAvatar(
+  backgroundImage: answer.userPhotoUrl != ''
+      ? NetworkImage(answer.userPhotoUrl!)
+      : AssetImage('assets/Backgrounds/defaultUserPic.png') as ImageProvider<Object>, // Cast to ImageProvider<Object>
+),
     title: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -278,10 +290,23 @@ Stream<List<CardAnswer>> readAnswer() => FirebaseFirestore.instance
         final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
         answer.username = username;
         answer.userPhotoUrl = userPhotoUrl;
-      });
 
+ // Check if any userIds were not found in the 'users' collection
+    final userIdsNotFound = userIds.where((userId) => !userMap.containsKey(userId)).toList();
+    userIdsNotFound.forEach((userId) {
+      answers.forEach((answer)  {
+        if (answer.userId == userId) {
+          answer.username = 'DeactivatedUser';
+            answer.userPhotoUrl = '';
+        }
+      });
+    });
+      });
       return answers;
     });
+
+
+    
   @override
   void dispose() {
     _answerController.dispose();

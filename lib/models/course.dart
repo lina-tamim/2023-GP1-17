@@ -13,6 +13,8 @@ class Course {
   final String? type;
   final String? userId;
   final String? docId;
+  final String imageURL; // New attribute
+
 
   Course({
     this.createdAt,
@@ -25,6 +27,8 @@ class Course {
     this.type,
     this.userId,
     this.docId,
+    required this.imageURL,
+
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
@@ -43,6 +47,7 @@ class Course {
       type: json['type'],
       userId: json['userId'],
       docId: json['docId'],
+      imageURL: json['imageURL'],
     );
   }
 
@@ -58,6 +63,8 @@ class Course {
       'type': type,
       'userId': userId,
       'docId': docId,
+      'imageURL': imageURL,
+
     };
   }
 }

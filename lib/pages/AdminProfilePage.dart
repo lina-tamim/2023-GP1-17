@@ -50,7 +50,7 @@ class _AdminProfile extends State<AdminProfile> {
               const Divider(),
               const SizedBox(height: 10),
               Image.asset(
-                'assets/Backgrounds/defaultUserPic2.png',
+                'assets/Backgrounds/defaultUserPic.png',
                 width: 110,
                 height: 110,
                 fit: BoxFit.cover,

@@ -4,9 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:techxcel11/pages/login.dart';
-
-import 'CoursesAndEventsPage.dart';
-import 'courses_events_page.dart';
+import 'AdminCoursesAndEventsPage.dart';
 
 class AdminHome extends StatefulWidget {
   const AdminHome({Key? key}) : super(key: key);
@@ -74,7 +72,7 @@ class _AdminHome extends State<AdminHome> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const CoursesEventsPage()),
+                            builder: (context) => const AdminCoursesAndEventsPage()),
                       );
                     },
                     child: itemDashborde(

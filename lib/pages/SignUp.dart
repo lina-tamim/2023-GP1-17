@@ -1,5 +1,4 @@
-//Full code, m s
-//GP discussion
+
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -65,7 +64,7 @@ class _Signup extends State<Signup> {
   String _selectedCity = '';
   String _selectedState = '';
   File? _selectedImage;
-  String defaultImagePath = 'assets/Backgrounds/defaultUserPic2.png';
+  String defaultImagePath = 'assets/Backgrounds/defaultUserPic.png';
   bool _isLoading = false;
 
 
@@ -107,7 +106,7 @@ Future<void> signUserUp() async {
 
  if (_selectedImage == null) {
   // Load the default image from assets
-   final defaultImagePath = 'assets/Backgrounds/defaultUserPic2.png';
+   final defaultImagePath = 'assets/Backgrounds/defaultUserPic.png';
 
       // Load the default image from assets
       final byteData = await rootBundle.load(defaultImagePath);

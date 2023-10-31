@@ -11,7 +11,7 @@ class CardQview {
   final String userId;
   String? docId;
   String? username;
-  String? userPhotoUrl; // Add userPhotoUrl property
+  String? userPhotoUrl; 
 
   CardQview({
     required this.id,

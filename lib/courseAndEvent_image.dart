@@ -1,24 +1,23 @@
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-class UserImagePicker extends StatefulWidget {
-const UserImagePicker({Key? key, required this.onPickImage})
+class CourseAndEventImagePicker extends StatefulWidget {
+const CourseAndEventImagePicker({Key? key, required this.onPickImage})
       : super(key: key);
 
   final void Function(File pickedImage) onPickImage;
 
   @override
-  State<UserImagePicker> createState() {
-    return _UserImagePickerState();
+  State<CourseAndEventImagePicker> createState() {
+    return _CourseAndEventImagePickerState();
   }
 }
 
-class _UserImagePickerState extends State<UserImagePicker> {
+class _CourseAndEventImagePickerState extends State<CourseAndEventImagePicker> {
   File? _pickedImageFile;
   final String defaultPhotoUrl =
-      'assets/Backgrounds/defaultUserPic.png';
+      'assets/Backgrounds/defaultCoursePic.png';
 
   void _pickImage() async {
     final pickedImage = await ImagePicker().pickImage(
@@ -42,7 +41,7 @@ class _UserImagePickerState extends State<UserImagePicker> {
     return Column(
       children: [
         CircleAvatar(
-          radius: 40,
+          radius: 70,
           backgroundImage: AssetImage(defaultPhotoUrl) as ImageProvider<Object>,
           foregroundImage:
               _pickedImageFile != null ? FileImage(_pickedImageFile!) : null,

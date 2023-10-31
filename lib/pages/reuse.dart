@@ -1,5 +1,4 @@
-//Full code, m s
-//GP discussion
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/pages/AdminProfilePage.dart';
 import 'package:techxcel11/pages/Admin_home.dart';
 import 'package:techxcel11/pages/ChatPage.dart';
-import 'package:techxcel11/pages/CoursesAndEventsPage.dart';
+import 'package:techxcel11/pages/AdminCoursesAndEventsPage.dart';
 import 'package:techxcel11/pages/Fhome.dart';
 import 'package:techxcel11/pages/FreelancerPage.dart';
 import 'package:techxcel11/pages/UserProfilePage.dart';
@@ -226,7 +225,7 @@ class _NavBarAdminState extends State<NavBarAdmin> {
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
                 child: Image.asset(
-                  'assets/Backgrounds/defaultUserPic2.png',
+                  'assets/Backgrounds/defaultUserPic.png',
                   width: 110,
                   height: 110,
                   fit: BoxFit.cover,
@@ -400,7 +399,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
       case 3:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const CoursesAndEventsPage()),
+          MaterialPageRoute(builder: (context) => const AdminCoursesAndEventsPage()),
         );
         break;
       default:
