@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -399,7 +398,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
       case 3:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const AdminCoursesAndEventsPage()),
+          MaterialPageRoute(
+              builder: (context) => const AdminCoursesAndEventsPage()),
         );
         break;
       default:
@@ -676,13 +676,13 @@ showAlertDialog(context, Widget child,
       barrierLabel: "Barrier",
       barrierDismissible: dismissible,
       barrierColor: Colors.black.withOpacity(0.5),
-      transitionDuration: Duration(milliseconds: 400),
+      transitionDuration: Duration(milliseconds: 0),
       transitionBuilder: (_, anim, __, child) {
-        var begin = 0.5;
+        var begin = 1.0;
         var end = 1.0;
-        var curve = Curves.bounceOut;
+        var curve = Curves.easeIn;
         if (anim.status == AnimationStatus.reverse) {
-          curve = Curves.fastLinearToSlowEaseIn;
+          curve = Curves.easeOut;
         }
         var tween =
             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
@@ -693,35 +693,38 @@ showAlertDialog(context, Widget child,
       },
       pageBuilder: (BuildContext alertContext, Animation<double> animation,
           Animation<double> secondaryAnimation) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return WillPopScope(
-              onWillPop: () {
-                return Future.value(dismissible);
-              },
-              child: Center(
-                child: Container(
-                  margin: const EdgeInsets.all(25),
-                  child: SingleChildScrollView(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
-                        bottomLeft: Radius.circular(4),
-                        bottomRight: Radius.circular(4),
-                      ),
-                      child: Material(
-                        child: Container(
-                            color: Colors.white,
-                            padding: const EdgeInsets.all(5),
-                            child: child),
+        return Padding(
+          padding: const EdgeInsets.only(top: 80.0, bottom: 40),
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return WillPopScope(
+                onWillPop: () {
+                  return Future.value(dismissible);
+                },
+                child: Center(
+                  child: Container(
+                    margin: const EdgeInsets.all(25),
+                    child: SingleChildScrollView(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                          bottomLeft: Radius.circular(30),
+                          bottomRight: Radius.circular(30),
+                        ),
+                        child: Material(
+                          child: Container(
+                              color: Colors.white,
+                              padding: const EdgeInsets.all(5),
+                              child: child),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         );
       });
 }
