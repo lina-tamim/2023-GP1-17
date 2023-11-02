@@ -1,19 +1,20 @@
-
 import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
-import 'package:techxcel11/pages/Login.dart';//m
+import 'package:techxcel11/pages/Login.dart'; //m
 
 class OnboardingScreen extends StatefulWidget {
-const OnboardingScreen({Key? key}) : super(key: key);
+  const OnboardingScreen({Key? key}) : super(key: key);
 
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
 }
+
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final String txlLogo = 'assets/Backgrounds/Xlogo.png'; 
-  final String txlLogo2 = 'assets/Backgrounds/TXLogo.png'; 
+  final String txlLogo = 'assets/Backgrounds/Xlogo.png';
+  final String txlLogo2 = 'assets/Backgrounds/TXLogo.png';
 
   @override
   Widget build(BuildContext context) {
@@ -72,17 +73,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 fontStyle: FontStyle.italic,
                                 color: Color.fromARGB(255, 27, 27, 26)),
                           ),
-                          
                         ],
-                        
                       ),
-                      
                     ],
-                    
                   ),
-                  
                 ),
-                    Positioned(
+                Positioned(
                   top: 377,
                   left: 20,
                   child: Image.asset(

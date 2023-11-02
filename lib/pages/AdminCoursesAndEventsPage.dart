@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:get/state_manager.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -39,6 +40,7 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
   List<String> incidentDistrict = ["Course", "Event"];
   String selectedIncidentDistrict = "Course";
   bool showSearchBar = false;
+  bool _loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -254,6 +256,9 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                   }
                 },
               ),
+              SizedBox(
+                height: 60,
+              )
             ],
           ),
         ),
@@ -330,9 +335,11 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
     final storageRef = FirebaseStorage.instance
         .ref()
         .child('coursesAndEvents_images')
-        .child('${item?.docId}png');
+        .child('${DateTime.now().toIso8601String()}png');
 
-    if (_selectedImage == null) {
+    String? imageURL = item?.imageURL;
+
+    if (_selectedImage == null && (imageURL == null || imageURL == '')) {
       // Load the default image from assets
       final defaultImagePath = 'assets/Backgrounds/defaultCoursePic.png';
 
@@ -347,13 +354,13 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
 
       // Upload the default image to storage
       await storageRef.putFile(File(tempPath));
-    } else {
+      imageURL = await storageRef.getDownloadURL();
+    } else if (_selectedImage != null) {
       // Upload the selected image to storage
       await storageRef.putFile(_selectedImage!);
+      imageURL = await storageRef.getDownloadURL();
     }
 
-    // Get the download URL of the uploaded image
-    final imageURL = await storageRef.getDownloadURL();
     print(imageURL);
 
     // Create a new document with auto-generated ID
@@ -683,54 +690,73 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                       //   ),
                       // ),
                       // SizedBox(width: 16),
-                      GestureDetector(
-                        onTap: () async {
-                          bool validLink =
-                              await isValidUrl(linkController.text);
-                          // if (!validLink) {
-                          //   validLink = await isValidUrl(
-                          //       'https://' + linkController.text);
-                          //   if(validLink)
-                          //   linkController.text = 'https://' + linkController.text;
-                          // }
-                          if (titleController.text.isEmpty) {
-                            toastMessage("Please enter title");
-                          } else if (descController.text.isEmpty) {
-                            toastMessage("Please enter description");
-                          } else if (selectedIncidentDistrict == '') {
-                            toastMessage("Please select type");
-                          } else if (locationController.text.isEmpty) {
-                            toastMessage("Please enter location");
-                          } else if (linkController.text.isEmpty) {
-                            toastMessage("Please enter link");
-                          } else if (!validLink) {
-                            toastMessage("Please enter valid link");
-                          } else {
-                            ////
+                      if (_loading)
+                        IgnorePointer(
+                          child: Opacity(
+                            opacity: 1,
+                            child: Container(
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          ),
+                        )
+                      else
+                        GestureDetector(
+                          onTap: () async {
+                            bool validLink =
+                                await isValidUrl(linkController.text);
+                            // if (!validLink) {
+                            //   validLink = await isValidUrl(
+                            //       'https://' + linkController.text);
+                            //   if(validLink)
+                            //   linkController.text = 'https://' + linkController.text;
+                            // }
+                            if (titleController.text.isEmpty) {
+                              toastMessage("Please enter title");
+                            } else if (descController.text.isEmpty) {
+                              toastMessage("Please enter description");
+                            } else if (selectedIncidentDistrict == '') {
+                              toastMessage("Please select type");
+                            } else if (locationController.text.isEmpty) {
+                              toastMessage("Please enter location");
+                            } else if (linkController.text.isEmpty) {
+                              toastMessage("Please enter link");
+                            } else if (!validLink) {
+                              toastMessage("Please enter valid link");
+                            } else {
+                              ////
+                              ///
+                              setstate(() {
+                                _loading = true;
+                              });
 
-                            await _submitForm();
-                          }
-                          // else if (courseStartDate == "Please select date" &&
-                          //     appDataProvider.courseStartDate == null) {
-                          //   toastMessage("Please select date");
-                          // }
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: mainColor.withOpacity(0.8),
-                              borderRadius: BorderRadius.circular(32)),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 40),
-                          child: const Text(
-                            "Submit",
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontFamily: "Poppins",
-                              color: secondaryColor,
+                              await _submitForm();
+                              setstate(() {
+                                _loading = false;
+                              });
+                            }
+                            // else if (courseStartDate == "Please select date" &&
+                            //     appDataProvider.courseStartDate == null) {
+                            //   toastMessage("Please select date");
+                            // }
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: mainColor.withOpacity(0.8),
+                                borderRadius: BorderRadius.circular(32)),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 40),
+                            child: const Text(
+                              "Submit",
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontFamily: "Poppins",
+                                color: secondaryColor,
+                              ),
                             ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 )
@@ -1035,37 +1061,6 @@ class CoursesWidget extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class PublicTitle extends StatelessWidget {
-  final String title;
-
-  const PublicTitle({Key? key, required this.title}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18, // Adjust the font size
-            fontFamily: "Poppins",
-            color: mainColor,
-          ),
-        ),
-        const Text(
-          "*",
-          style: TextStyle(
-            fontSize: 16, // Adjust the font size
-            fontFamily: "Poppins",
-            color: redColor,
-          ),
-        ),
-      ],
     );
   }
 }
