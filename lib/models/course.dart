@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Course {
   final DateTime? createdAt;
   final String? description;
@@ -11,10 +8,11 @@ class Course {
   final DateTime? startDate;
   final String? title;
   final String? type;
+  final String? attendanceType;
   final String? userId;
   final String? docId;
   final String imageURL; // New attribute
-
+  final String? approval;
 
   Course({
     this.createdAt,
@@ -25,10 +23,11 @@ class Course {
     this.startDate,
     this.title,
     this.type,
+    this.attendanceType,
     this.userId,
     this.docId,
     required this.imageURL,
-
+    this.approval,
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
@@ -45,9 +44,11 @@ class Course {
           : (json['start_date'] as Timestamp).toDate(),
       title: json['title'],
       type: json['type'],
+      attendanceType: json['attendanceType'],
       userId: json['userId'],
       docId: json['docId'],
       imageURL: json['imageURL'],
+      approval: json['approval'],
     );
   }
 
@@ -61,10 +62,11 @@ class Course {
       'start_date': startDate?.toIso8601String(),
       'title': title,
       'type': type,
+      'attendanceType': attendanceType,
       'userId': userId,
       'docId': docId,
       'imageURL': imageURL,
-
+      'approval':approval,
     };
   }
 }

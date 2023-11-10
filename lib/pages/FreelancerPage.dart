@@ -16,7 +16,6 @@ class _FreelancerPageState extends State<FreelancerPage> {
     return Scaffold(
       drawer: const NavBarUser(),
        appBar: buildAppBar ('Freelancers'),
-
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Center(

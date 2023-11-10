@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -56,7 +55,7 @@ String newUserType='';
 String newUserPreference='';
 List<String> typeOfUser = ['Regular User', 'Freelancer'];
 String selectedUserType ='';
-List<String> typeOfPreference = ['Online', 'In Place'];
+List<String> typeOfPreference = ['Online', 'Onsite'];
 String selectedPreference = '';
 List<String> newUserInterests =[];
 List<String> newUserSkills =[];
@@ -156,9 +155,9 @@ Center(
     ),
   ),
 ),
-SizedBox(height: 10,) ,
-Divider(),
-SizedBox(height: 10,),
+const SizedBox(height: 10,) ,
+const Divider(),
+const SizedBox(height: 10,),
          const Row(
             children: [
               SizedBox(width: 30),

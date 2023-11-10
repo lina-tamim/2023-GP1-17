@@ -1,7 +1,6 @@
-//Full code, m s
-//GP discussion
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:techxcel11/pages/AdminCoursesAndEventsRequestsPage.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:techxcel11/pages/login.dart';
 import 'AdminCoursesAndEventsPage.dart';
@@ -45,7 +44,7 @@ class _AdminHome extends State<AdminHome> {
                                 const AdminHome()), // will be changed in sprint2
                       );
                     },
-                    child: itemDashborde(
+                    child: itemDashboard(
                       "Reported Posts",
                       CupertinoIcons.flag_fill,
                       const Color.fromARGB(255, 194, 0, 0),
@@ -60,7 +59,7 @@ class _AdminHome extends State<AdminHome> {
                             builder: (context) => const AdminHome()),
                       );
                     },
-                    child: itemDashborde(
+                    child: itemDashboard(
                       "Reported Accounts",
                       CupertinoIcons.flag_fill,
                       const Color.fromARGB(255, 34, 115, 255),
@@ -75,7 +74,7 @@ class _AdminHome extends State<AdminHome> {
                             builder: (context) => const AdminCoursesAndEventsPage()),
                       );
                     },
-                    child: itemDashborde(
+                    child: itemDashboard(
                       "Admin Course and Event Management",
                       CupertinoIcons.square_stack_3d_up_fill,
                       const Color.fromARGB(255, 0, 194, 49),
@@ -90,7 +89,7 @@ class _AdminHome extends State<AdminHome> {
                             builder: (context) => const AdminHome()),
                       );
                     },
-                    child: itemDashborde(
+                    child: itemDashboard(
                       "Admin Pathways Management",
                       CupertinoIcons.arrow_down_doc_fill,
                       const Color.fromARGB(255, 228, 211, 25),
@@ -102,10 +101,10 @@ class _AdminHome extends State<AdminHome> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const AdminHome()),
+                            builder: (context) => const AdminCoursesAndEventsRequestsPage()),
                       );
                     },
-                    child: itemDashborde(
+                    child: itemDashboard(
                       "User Course or Event Addition Request",
                       CupertinoIcons.add_circled,
                       const Color.fromARGB(255, 228, 27, 168),
@@ -157,7 +156,7 @@ class _AdminHome extends State<AdminHome> {
     );
   }
 
-  itemDashborde(String title, IconData iconData, Color background) => Container(
+  itemDashboard(String title, IconData iconData, Color background) => Container(
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),

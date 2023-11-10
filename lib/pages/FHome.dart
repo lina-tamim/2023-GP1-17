@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:techxcel11/pages/answer.dart';
 import 'package:techxcel11/pages/reuse.dart';
+
 import 'form.dart'; 
 
 class FHomePage extends StatefulWidget {
@@ -18,14 +19,13 @@ int _currentIndex = 0;
 
 class __FHomePageState extends State<FHomePage> {
   void _toggleFormVisibility() async {
-    final result = await Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => FormWidget()),
     );
   }
  
   bool showSearchBar = false;
-
   TextEditingController searchController = TextEditingController();
 
 
@@ -35,64 +35,64 @@ Stream<List<CardQuestion>> readQuestion() {
       .where('dropdownValue', isEqualTo: 'Question');
 
   if (searchController.text.isNotEmpty) {
-    query = query
-        .where('largeTextFieldValue',
-            isGreaterThanOrEqualTo: searchController.text)
-        .where('largeTextFieldValue',
-            isLessThanOrEqualTo: searchController.text + '\uf8ff');
+    String searchText = searchController.text;
+    query = query.where(
+      FieldPath(['largeTextFieldValue']),
+      isGreaterThanOrEqualTo: searchText.toLowerCase(),
+      isLessThanOrEqualTo: searchText.toLowerCase() + '\uf8ff',
+    );
   } else {
     query = query.orderBy('postedDate', descending: true);
   }
 
   return query.snapshots().asyncMap((snapshot) async {
-    final questions = snapshot.docs
-        .map((doc) =>
-            CardQuestion.fromJson(doc.data() as Map<String, dynamic>))
-        .toList();
-    if (questions.isEmpty) return [];
+      final questions = snapshot.docs
+          .map((doc) => CardQuestion.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+      if (questions.isEmpty) return [];
 
-    final userIds = questions.map((question) => question.userId).toList();
-    final userDocs = await FirebaseFirestore.instance
-        .collection('users')
-        .where('email', whereIn: userIds)
-        .get();
+      final userIds = questions.map((question) => question.userId).toList();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', whereIn: userIds)
+          .get();
 
-    final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-        userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-            doc.data() as Map<String, dynamic>)));
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String, doc.data() as Map<String, dynamic>)));
 
-    questions.forEach((question) {
-      final userDoc = userMap[question.userId];
-      final username = userDoc?['userName'] as String? ?? '';
-      final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-      question.username = username;
-      question.userPhotoUrl = userPhotoUrl;
-    });
-
-   // Check if any userIds were not found in the 'users' collection
-    final userIdsNotFound = userIds.where((userId) => !userMap.containsKey(userId)).toList();
-    userIdsNotFound.forEach((userId) {
-      questions.forEach((question)  {
-        if (question.userId == userId) {
-          question.username = 'DeactivatedUser';
-           question.userPhotoUrl ='';
-        }
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['userName'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
       });
-    });
-    return questions;
+
+      // Check if any userIds were not found in the 'users' collection
+      final userIdsNotFound = userIds.where((userId) => !userMap.containsKey(userId)).toList();
+      userIdsNotFound.forEach((userId) {
+        questions.forEach((question) {
+          if (question.userId == userId) {
+            question.username = 'DeactivatedUser';
+            question.userPhotoUrl = '';
+          }
+        });
+      });
+
+      return questions;
+    
   });
 }
-  Stream<List<CardFT>> readTeam() {
+
+Stream<List<CardFT>> readTeam() {
   Query<Map<String, dynamic>> query = FirebaseFirestore.instance
       .collection('posts')
       .where('dropdownValue', isEqualTo: 'Team Collaberation');
 
   if (searchController.text.isNotEmpty) {
-    query = query
-        .where('textFieldValue',
-            isGreaterThanOrEqualTo: searchController.text)
-        .where('textFieldValue',
-            isLessThanOrEqualTo: searchController.text + '\uf8ff');
+    String searchText = searchController.text.toLowerCase(); // Convert search text to lowercase
+    query = query.where('textFieldValue', isGreaterThanOrEqualTo: searchText)
+                 .where('textFieldValue', isLessThanOrEqualTo: searchText + '\uf8ff');
   } else {
     query = query.orderBy('postedDate', descending: true);
   }
@@ -126,7 +126,7 @@ Stream<List<CardQuestion>> readQuestion() {
       questions.forEach((question)  {
         if (question.userId == userId) {
           question.username = 'DeactivatedUser';
-           question.userPhotoUrl ='';
+          question.userPhotoUrl ='';
         }
       });
     });
@@ -140,15 +140,14 @@ Stream<List<CardQuestion>> readQuestion() {
         .collection('posts')
         .where('dropdownValue', isEqualTo: 'Project');
 
-    if (searchController.text.isNotEmpty) {
-      query = query
-          .where('textFieldValue',
-              isGreaterThanOrEqualTo: searchController.text)
-          .where('textFieldValue',
-              isLessThanOrEqualTo: searchController.text + '\uf8ff');
-    } else {
-      query = query.orderBy('postedDate', descending: true);
-    }
+if (searchController.text.isNotEmpty) {
+  String searchText = searchController.text.toLowerCase(); // Convert search text to lowercase
+  query = query
+      .where('textFieldValue', isGreaterThanOrEqualTo: searchText)
+      .where('textFieldValue', isLessThanOrEqualTo: searchText + '\uf8ff');
+} else {
+  query = query.orderBy('postedDate', descending: true);
+}
 
     return query.snapshots().asyncMap((snapshot) async {
       final questions = snapshot.docs
@@ -187,11 +186,10 @@ Stream<List<CardQuestion>> readQuestion() {
   });
 }
 
-
-
   Widget buildQuestionCard(CardQuestion question) => Card(
         child: ListTile(
             leading: CircleAvatar(
+            radius: 30, // Adjust the radius to make the avatar bigger
   backgroundImage: question.userPhotoUrl != ''
       ? NetworkImage(question.userPhotoUrl!)
       : const AssetImage('assets/Backgrounds/defaultUserPic.png') as ImageProvider<Object>, // Cast to ImageProvider<Object>
@@ -203,7 +201,9 @@ Stream<List<CardQuestion>> readQuestion() {
               Text(
                 question.username ?? '', // Display the username
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                    fontWeight: FontWeight.bold, color: Colors.deepPurple,
+                    fontSize : 16),
+                    
               ),
               SizedBox(height: 5),
               Text(
@@ -239,7 +239,7 @@ Stream<List<CardQuestion>> readQuestion() {
                   IconButton(
                     icon: Icon(Icons.bookmark),
                     onPressed: () {
-                      // Add your functionality for the button here
+                      // Add functionality in upcoming sprints
                     },
                   ),
                   IconButton(
@@ -256,7 +256,7 @@ Stream<List<CardQuestion>> readQuestion() {
                   IconButton(
                     icon: Icon(Icons.report),
                     onPressed: () {
-                      // Add your functionality for the button here
+                      // Add functionality in upcoming sprints
                     },
                   ),
                 ],
@@ -449,8 +449,9 @@ Stream<List<CardQuestion>> readQuestion() {
                 child: Text(
                   'Questions',
                   style: TextStyle(
-                    color: Color.fromARGB(
-                        255, 245, 227, 255), // Set the desired color here
+                   fontSize : 16,
+                   fontWeight: FontWeight.bold,
+                    color: Color.fromARGB( 255, 245, 227, 255), // Set the desired color here
                   ),
                 ),
               ),
@@ -458,8 +459,9 @@ Stream<List<CardQuestion>> readQuestion() {
                 child: Text(
                   'Build Team',
                   style: TextStyle(
-                    color: Color.fromARGB(
-                        255, 245, 227, 255), // Set the desired color here
+                   fontSize : 16,
+                   fontWeight: FontWeight.bold,
+                    color: Color.fromARGB( 255, 245, 227, 255), // Set the desired color here
                   ),
                 ),
               ),
@@ -467,8 +469,9 @@ Stream<List<CardQuestion>> readQuestion() {
                 child: Text(
                   'Projects',
                   style: TextStyle(
-                    color: Color.fromARGB(
-                        255, 245, 227, 255), // Set the desired color here
+                   fontSize : 16,
+                   fontWeight: FontWeight.bold,
+                   color: Color.fromARGB( 255, 245, 227, 255), // Set the desired color here
                   ),
                 ),
               ),

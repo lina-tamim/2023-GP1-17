@@ -1,3 +1,4 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -5,9 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/pages/AdminProfilePage.dart';
 import 'package:techxcel11/pages/Admin_home.dart';
 import 'package:techxcel11/pages/ChatPage.dart';
-import 'package:techxcel11/pages/AdminCoursesAndEventsPage.dart';
 import 'package:techxcel11/pages/Fhome.dart';
 import 'package:techxcel11/pages/FreelancerPage.dart';
+import 'package:techxcel11/pages/UserCoursesAndEventsPage.dart';
 import 'package:techxcel11/pages/UserProfilePage.dart';
 import 'package:techxcel11/pages/aboutus.dart';
 import 'package:techxcel11/pages/bookmark.dart';
@@ -103,7 +104,7 @@ class _NavBarUserState extends State<NavBarUser> {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.person),
+            leading: const Icon(Icons.person, size:27),
             iconColor: Colors.black,
             title: const Text('Profile'),
             onTap: () => Navigator.push(
@@ -112,12 +113,11 @@ class _NavBarUserState extends State<NavBarUser> {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.post_add),
+            leading: const Icon(Icons.post_add, size:27),
             iconColor: Colors.black,
             title: const Text('My Interactions'),
             onTap: () async {
               await fetchUserData(); // Fetch user data and assign the value to 'loggedInEmail'
-              print("******$loggedInEmail");
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => UserPostsPage()),
@@ -125,7 +125,7 @@ class _NavBarUserState extends State<NavBarUser> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.bookmark),
+            leading: const Icon(Icons.bookmark, size:27),
             iconColor: Colors.black,
             title: const Text('Bookmark'),
             onTap: () => Navigator.push(
@@ -134,7 +134,7 @@ class _NavBarUserState extends State<NavBarUser> {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.calendar_month),
+            leading: const Icon(Icons.calendar_month, size:27),
             iconColor: Colors.black,
             title: const Text('Calendar'),
             onTap: () => Navigator.push(
@@ -143,18 +143,21 @@ class _NavBarUserState extends State<NavBarUser> {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.groups_2_rounded),
-            iconColor: Colors.black,
+            leading: Container(
+              width: 30, // Adjust the width as needed
+              height: 100, // Adjust the height as needed
+              child: Image.asset('assets/Backgrounds/Xlogo.png'), // Replace 'image_name.png' with the actual image file name and extension
+            ),
             title: const Text('About Us'),
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const AboutUsPage()),
             ),
           ),
-          SizedBox(height: 110),
+          SizedBox(height: 260),
           Divider(),
           ListTile(
-            leading: Icon(Icons.logout),
+            leading: Icon(Icons.logout, size:30),
             iconColor: Colors.black,
             title: const Text('Logout'),
             onTap: () {
@@ -166,8 +169,6 @@ class _NavBarUserState extends State<NavBarUser> {
     );
   }
 }
-
-// admin NAVBAR
 class NavBarAdmin extends StatefulWidget {
   const NavBarAdmin({super.key});
 
@@ -253,7 +254,7 @@ class _NavBarAdminState extends State<NavBarAdmin> {
               MaterialPageRoute(builder: (context) => const AdminHome()),
             ),
           ),
-          SizedBox(height: 280),
+          SizedBox(height: 430),
           Divider(),
           ListTile(
             leading: Icon(Icons.logout),
@@ -331,6 +332,8 @@ AppBar buildAppBar(String titleText) {
   );
 }
 
+
+
 void showSnackBar(String message, context) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
@@ -352,11 +355,11 @@ void showSnackBar(String message, context) {
 void toastMessage(String message) {
   Fluttertoast.showToast(
       msg: message,
-      toastLength: Toast.LENGTH_SHORT,
+      toastLength: Toast.LENGTH_LONG,
       backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
       textColor: Color(0xffffffff),
       gravity: ToastGravity.TOP,
-      timeInSecForIosWeb: 1);
+      );
 }
 
 class BottomNavBar extends StatefulWidget {
@@ -376,6 +379,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
   int _currentTappedIndex = -1;
 
   void _navigateToPage(BuildContext context, int index) {
+    setState(() {
+      _currentTappedIndex = index;
+    });
+
     switch (index) {
       case 0:
         Navigator.push(
@@ -398,8 +405,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
       case 3:
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) => const AdminCoursesAndEventsPage()),
+          MaterialPageRoute(builder: (context) => const UserCoursesAndEventsPage()),
         );
         break;
       default:
@@ -419,19 +425,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           GestureDetector(
-            onTap: () {
-              setState(() {
-                _currentTappedIndex = 0;
-              });
-              _navigateToPage(context, 0);
-            },
+            onTap: () => _navigateToPage(context, 0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
                   FontAwesomeIcons.solidMessage,
                   size: 18.5,
-                  color: Colors.black,
+                  color: _currentTappedIndex == 0 ? Colors.blue : Colors.black,
                 ),
                 Text(
                   'Chat',
@@ -441,19 +442,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
             ),
           ),
           GestureDetector(
-            onTap: () {
-              setState(() {
-                _currentTappedIndex = 1;
-              });
-              _navigateToPage(context, 1);
-            },
+            onTap: () => _navigateToPage(context, 1),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
                   FontAwesomeIcons.handshakeSimple,
                   size: 20,
-                  color: Colors.black,
+                  color: _currentTappedIndex == 1 ? Colors.blue : Colors.black,
                 ),
                 Text(
                   'Freelancer',
@@ -463,19 +459,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
             ),
           ),
           GestureDetector(
-            onTap: () {
-              setState(() {
-                _currentTappedIndex = 2;
-              });
-              _navigateToPage(context, 2);
-            },
+            onTap: () => _navigateToPage(context, 2),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
                   FontAwesomeIcons.home,
                   size: 20,
-                  color: Colors.black,
+                  color: _currentTappedIndex == 2 ? Colors.blue : Colors.black,
                 ),
                 Text(
                   ' Home',
@@ -485,19 +476,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
             ),
           ),
           GestureDetector(
-            onTap: () {
-              setState(() {
-                _currentTappedIndex = 3;
-              });
-              _navigateToPage(context, 3);
-            },
+            onTap: () => _navigateToPage(context, 3),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
                   Icons.explore,
                   size: 22.5,
-                  color: Colors.black,
+                  color: _currentTappedIndex == 3 ? Colors.blue : Colors.black,
                 ),
                 Text(
                   'Explore',
@@ -543,7 +529,6 @@ void logUserOut(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('loggedInEmail');
-    _showSnackBar(context, "Logged out successfully");
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const OnboardingScreen()),
@@ -561,17 +546,13 @@ void _showSnackBar(BuildContext context, String message) {
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(24),
     ),
-    //margin: EdgeInsets.only(
-    //bottom: MediaQuery.of(context).size.height - 80,
-    //right: 20,
-    //left: 20,
-    //),
     backgroundColor: Color.fromARGB(255, 63, 12, 118),
   );
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 
-////Dropdown widget to show dropdown in Courses or Events Post Screen
+///
+
 class DropDownWidget extends StatefulWidget {
   DropDownWidget({
     Key? key,
@@ -580,6 +561,7 @@ class DropDownWidget extends StatefulWidget {
     required this.onItemSelected,
     this.fontSize = 16,
   }) : super(key: key);
+
   late final String selectedItem;
   final void Function(String?) onItemSelected;
   final List<String> list;
@@ -592,74 +574,79 @@ class DropDownWidget extends StatefulWidget {
 class DropDownMenu extends StatelessWidget {
   const DropDownMenu({
     Key? key,
-    required this.gender,
+    required this.option,
     required this.onTap,
     required this.items,
-    this.fontSize = 16,
+    required this.isMenuOpen, // Add isMenuOpen parameter
+    this.fontSize = 12,
   }) : super(key: key);
-  final String gender;
+
+  final String option;
   final List<String> items;
   final double fontSize;
   final ValueChanged<String?> onTap;
+  final bool isMenuOpen; // Declare isMenuOpen property
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
-      value: gender,
-      icon: Text(""),
-      isExpanded: false,
-      decoration: InputDecoration(border: InputBorder.none),
-      items: items.map((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(
-            value,
-            style: TextStyle(
-                fontSize: 16, color: Color.fromRGBO(37, 6, 81, 0.898)),
-          ),
-        );
-      }).toList(),
-      onChanged: onTap,
+    return DropdownButtonHideUnderline(
+      child: DropdownButtonFormField<String>(
+        value: option,
+        items: items.map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: SizedBox(
+              width: 120, // Adjust the width of the dropdown list
+              child: Text(
+                value,
+                style: TextStyle(
+                  fontSize: fontSize,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+        onChanged: onTap,
+        onTap: () {
+          if (isMenuOpen) {
+            onTap(null); // Close the menu when tapped outside the options
+          }
+        },
+      ),
     );
   }
 }
 
 class _DropDownWidgetState extends State<DropDownWidget> {
-  // List<String> get stringList => widget.list.map((item) => item.toString()).toList();
+  bool isMenuOpen = false; // Track the menu open/closed state
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 58,
-      width: 190,
-      // padding:
-      // EdgeInsets.only(left: 8),
-      decoration: BoxDecoration(
-          //     color: Color.fromARGB(255, 228, 228, 228).withOpacity(0.3),
-          // border: Border.all(
-          //   color: mainColor.withOpacity(0.6),
-          // ),
-          // boxShadow: ([
-          //   BoxShadow(
-          //       color: mainColor.withOpacity(0.2),
-          //       spreadRadius: 1,
-          //       blurRadius: 4,
-          //       offset: Offset(
-          //           0,3
-          //       )
-          //   )
-          // ]),
-          borderRadius: BorderRadius.circular(12)),
-      child: DropDownMenu(
-          gender: widget.selectedItem,
-          onTap: widget.onItemSelected,
-          // onTap: (value) {
-          //   setState(() {
-          //     widget.selectedItem = value!;
-          //     print("selectedGender$widget.selectedItem");
-          //   });
-          // },
-          fontSize: widget.fontSize,
-          items: widget.list),
+      height: isMenuOpen ? 90 : 58, // Adjust the height based on the menu state
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  isMenuOpen = !isMenuOpen; // Toggle the menu state
+                });
+              },
+              child: DropDownMenu(
+                option: widget.selectedItem,
+                onTap: widget.onItemSelected,
+                fontSize: widget.fontSize,
+                items: widget.list,
+                isMenuOpen: isMenuOpen, // Pass the menu state to DropDownMenu
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -670,7 +657,6 @@ showAlertDialog(context, Widget child,
     onPress = null,
     showCancelButton = true,
     dismissible = true}) {
-  String icon;
   showGeneralDialog(
       context: context,
       barrierLabel: "Barrier",

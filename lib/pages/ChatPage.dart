@@ -17,7 +17,6 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       drawer: const NavBarUser(),
       appBar: buildAppBar ('Chat'),
-
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Center(

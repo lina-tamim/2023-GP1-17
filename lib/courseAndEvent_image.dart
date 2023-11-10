@@ -3,12 +3,10 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class CourseAndEventImagePicker extends StatefulWidget {
-  const CourseAndEventImagePicker(
-      {Key? key, required this.onPickImage, this.imageUrl})
+const CourseAndEventImagePicker({Key? key, required this.onPickImage})
       : super(key: key);
 
   final void Function(File pickedImage) onPickImage;
-  final String? imageUrl;
 
   @override
   State<CourseAndEventImagePicker> createState() {
@@ -18,7 +16,8 @@ class CourseAndEventImagePicker extends StatefulWidget {
 
 class _CourseAndEventImagePickerState extends State<CourseAndEventImagePicker> {
   File? _pickedImageFile;
-  final String defaultPhotoUrl = 'assets/Backgrounds/defaultCoursePic.png';
+  final String defaultPhotoUrl =
+      'assets/Backgrounds/defaultCoursePic.png';
 
   void _pickImage() async {
     final pickedImage = await ImagePicker().pickImage(
@@ -44,11 +43,8 @@ class _CourseAndEventImagePickerState extends State<CourseAndEventImagePicker> {
         CircleAvatar(
           radius: 70,
           backgroundImage: AssetImage(defaultPhotoUrl) as ImageProvider<Object>,
-          foregroundImage: _pickedImageFile != null
-              ? FileImage(_pickedImageFile!)
-              : widget.imageUrl != null
-                  ? (NetworkImage(widget.imageUrl!) as ImageProvider)
-                  : null,
+          foregroundImage:
+              _pickedImageFile != null ? FileImage(_pickedImageFile!) : null,
         ),
         TextButton.icon(
           onPressed: _pickImage,

@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:techxcel11/pages/Signup.dart';
-//full code
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);

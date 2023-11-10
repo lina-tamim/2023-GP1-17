@@ -57,7 +57,7 @@ class _Signup extends State<Signup> {
   List<String> typeOfUser = ['Regular User', 'Freelancer'];
   String _selectedUser = 'Regular User';
 
-  List<String> typeOfPreference = ['Online', 'In Place'];
+  List<String> typeOfPreference = ['Online', 'Onsite'];
   String _selectedPreference = 'Online';
 
   String _selectedCountry = '';
@@ -105,9 +105,7 @@ Future<void> signUserUp() async {
     await userCredential.user?.sendEmailVerification();
 
  if (_selectedImage == null) {
-  // Load the default image from assets
-   final defaultImagePath = 'assets/Backgrounds/defaultUserPic.png';
-
+ 
       // Load the default image from assets
       final byteData = await rootBundle.load(defaultImagePath);
       final bytes = byteData.buffer.asUint8List();
@@ -127,8 +125,6 @@ Future<void> signUserUp() async {
 
     // Get the download URL of the uploaded image
     final imageURL = await storageRef.getDownloadURL();
-    print(imageURL);
-
     String uid = userCredential.user!.uid;
 
     await FirebaseFirestore.instance.collection('users').doc(uid).set({

@@ -1,9 +1,6 @@
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:techxcel11/pages/EditProfile2.dart';
-import 'package:techxcel11/pages/Login.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -91,48 +88,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
       await launch(url);
     } else {
       throw 'Could not launch $url';
-    }
-  }
-
-  void showLogoutConfirmationDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Logout'),
-          content: const Text('Are you sure you want to logout?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                logUserOut();
-              },
-              child: const Text('Yes'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('No'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void logUserOut() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.remove('loggedInEmail');
-      _showSnackBar("Logged out successfully");
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const Login()),
-      );
-    } catch (e) {
-      print('$e');
-      _showSnackBar("Logout failed");
     }
   }
 
@@ -369,6 +324,4 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 }
-
-//TECHXCEL-LINA
 
