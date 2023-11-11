@@ -16,16 +16,18 @@ class UserCoursesAndEventsPage extends StatefulWidget {
   const UserCoursesAndEventsPage({super.key});
 
   @override
-  State<UserCoursesAndEventsPage> createState() => _UserCoursesAndEventsPageState();
-
+  State<UserCoursesAndEventsPage> createState() =>
+      _UserCoursesAndEventsPageState();
 }
+
 const Color mainColor = Color.fromRGBO(37, 6, 81, 0.898);
 const Color secondaryColor = Color(0xffffffff);
 const Color redColor = Color(0xffbd2727);
 
 int _currentIndex = 0;
+
 class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
- final titleController = TextEditingController();
+  final titleController = TextEditingController();
   final descController = TextEditingController();
   final locationController = TextEditingController();
   final linkController = TextEditingController();
@@ -36,14 +38,14 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
   File? _selectedImage;
   String defaultImagePath = 'assets/Backgrounds/defaultCoursePic.png';
   int _currentIndex = 0;
-  List<String> incidentDistrict = ["Course", "Event"];
-  String selectedIncidentDistrict = "Course";
+  List<String> courseType = ["Course", "Event"];
+  String selectedCourseType = "Course";
   List<String> AttendanceType = ["Onsite", "Online"];
   String selectedAttendanceType = "Onsite";
   bool showSearchBar = false;
   bool _loading = false;
-  
- @override
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavBarUser(),
@@ -103,110 +105,110 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
           ],
         ),
       ),
-
-floatingActionButton: FloatingActionButton(
-  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-  onPressed: () {
-    clearAllFields();
-    showInputDialog();
-  },
-  child: const Tooltip(
-    message: '  Add a course or event now!   ',
-    child: Icon(
-      Icons.add,
-      color: Colors.white,
-      size: 25,
-    ),
-  ),
-),
+      floatingActionButton: FloatingActionButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        onPressed: () {
+          clearAllFields();
+          showInputDialog();
+        },
+        child: const Tooltip(
+          message: '  Add a course or event now!   ',
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
+            size: 25,
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-Padding(
-  padding: const EdgeInsets.only(top: 20),
-  child: Row(
-    children: [
-      const Text(
-        "Courses",
-        style: TextStyle(
-          fontSize: 22,
-          fontFamily: "Poppins",
-          color: Colors.black,
-          fontWeight: FontWeight.w400,
-        ),
-      ),
-   const SizedBox(width: 122),
-PopupMenuButton<String>(
-  onSelected: (value) {
-    if (value == 'my_requests') {
-      showRequestList();
-    } else if (value == 'submit_request') {
-      showInputDialog();
-    }
-  },
-  offset: const Offset(-0.5, 43), // Adjust the vertical offset as needed
-  itemBuilder: (BuildContext context) => [
-    const PopupMenuItem<String>(
-      value: 'my_requests',
-      child: SizedBox(
-        width: 100,
-        child: Text(
-          'My Requests',
-          style: TextStyle(
-            fontSize: 13,
-            color: Color.fromARGB(255, 0, 0, 2),
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-    ),
-    const PopupMenuDivider(),
-    const PopupMenuItem<String>(
-      value: 'submit_request',
-      child: SizedBox(
-        width: 130,
-        child: Text(
-          'Add Course or Event',
-          style: TextStyle(
-            fontSize: 13,
-            color: Colors.black,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-    ),
-  ],
-  child: const SizedBox(
-    width: 169, 
-    child: OutlinedButton(
-      onPressed: null,
-       child: Align(
-        alignment: Alignment.center,
-      child: Row(
-        children: [
-          Text(
-            'My Requests',
-            style: TextStyle(
-              fontSize: 14,
-              fontFamily: 'Poppins',
-              color: Color.fromARGB(255, 7, 0, 101),
-              fontWeight: FontWeight.w100,
-            ),
-          ),
-          SizedBox(width: 10),
-          Icon(Icons.arrow_drop_down),
-        ],
-      ),
-       ),
-    ),
-  ),
-),
-    ],
-  ),
-),
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Row(
+                  children: [
+                    const Text(
+                      "Courses",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontFamily: "Poppins",
+                        color: Colors.black,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(width: 122),
+                    PopupMenuButton<String>(
+                      onSelected: (value) {
+                        if (value == 'my_requests') {
+                          showRequestList();
+                        } else if (value == 'submit_request') {
+                          showInputDialog();
+                        }
+                      },
+                      offset: const Offset(
+                          -0.5, 43), // Adjust the vertical offset as needed
+                      itemBuilder: (BuildContext context) => [
+                        const PopupMenuItem<String>(
+                          value: 'my_requests',
+                          child: SizedBox(
+                            width: 100,
+                            child: Text(
+                              'My Requests',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Color.fromARGB(255, 0, 0, 2),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const PopupMenuDivider(),
+                        const PopupMenuItem<String>(
+                          value: 'submit_request',
+                          child: SizedBox(
+                            width: 130,
+                            child: Text(
+                              'Add Course or Event',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                      child: const SizedBox(
+                        width: 169,
+                        child: OutlinedButton(
+                          onPressed: null,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Row(
+                              children: [
+                                Text(
+                                  'My Requests',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontFamily: 'Poppins',
+                                    color: Color.fromARGB(255, 7, 0, 101),
+                                    fontWeight: FontWeight.w100,
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Icon(Icons.arrow_drop_down),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               StreamBuilder<List<Course>>(
                 stream: readCourses(type: 'Course'),
                 builder: (context, snapshot) {
@@ -309,7 +311,7 @@ PopupMenuButton<String>(
           ),
         ),
       ),
-            bottomNavigationBar: BottomNavBar(
+      bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
@@ -324,19 +326,19 @@ PopupMenuButton<String>(
     return await canLaunchUrl(Uri.parse(url));
   }
 
-bool isDateValid(DateTime? start, DateTime? end) {
-  if (start == null || end == null) {
-    return false;
+  bool isDateValid(DateTime? start, DateTime? end) {
+    if (start == null || end == null) {
+      return false;
+    }
+    return end.isAfter(DateTime.now());
   }
-  return end.isAfter(DateTime.now());
-}
 
   setData(Course item) {
     titleController.text = item.title ?? '';
     descController.text = item.description ?? '';
     locationController.text = item.location ?? '';
     linkController.text = item.link ?? '';
-    selectedIncidentDistrict = item.type ?? '';
+    selectedCourseType = item.type ?? '';
     selectedAttendanceType = item.attendanceType ?? '';
     courseStartDate = item.startDate;
     courseEndDate = item.endDate;
@@ -353,22 +355,21 @@ bool isDateValid(DateTime? start, DateTime? end) {
         .child('${item?.docId}png');
 
     if (_selectedImage == null) {
-          // Load the default image from assets
-          final byteData = await rootBundle.load(defaultImagePath);
-          final bytes = byteData.buffer.asUint8List();
+      // Load the default image from assets
+      final byteData = await rootBundle.load(defaultImagePath);
+      final bytes = byteData.buffer.asUint8List();
 
-          // Save the default image to a temporary file
-          final tempDir = await getTemporaryDirectory();
-          final tempPath = path.join(tempDir.path, 'default_image.png');
-          await File(tempPath).writeAsBytes(bytes);
+      // Save the default image to a temporary file
+      final tempDir = await getTemporaryDirectory();
+      final tempPath = path.join(tempDir.path, 'default_image.png');
+      await File(tempPath).writeAsBytes(bytes);
 
-          // Upload the default image to storage
-          await storageRef.putFile(File(tempPath));
-        } else {
-          // Upload the selected image to storage
-          await storageRef.putFile(_selectedImage!);
-        
-        }
+      // Upload the default image to storage
+      await storageRef.putFile(File(tempPath));
+    } else {
+      // Upload the selected image to storage
+      await storageRef.putFile(_selectedImage!);
+    }
     final imageURL = await storageRef.getDownloadURL();
 
     final newFormDoc = formCollection.doc();
@@ -377,7 +378,7 @@ bool isDateValid(DateTime? start, DateTime? end) {
     if (item?.docId != null) {
       await formCollection.doc(item!.docId).update({
         'userId': email,
-        'type': selectedIncidentDistrict,
+        'type': selectedCourseType,
         'attendanceType': selectedAttendanceType,
         'title': titleController.text,
         'description': descController.text,
@@ -391,7 +392,7 @@ bool isDateValid(DateTime? start, DateTime? end) {
     } else {
       await newFormDoc.set({
         'userId': email,
-        'type': selectedIncidentDistrict,
+        'type': selectedCourseType,
         'attendanceType': selectedAttendanceType,
         'title': titleController.text,
         'description': descController.text,
@@ -407,41 +408,40 @@ bool isDateValid(DateTime? start, DateTime? end) {
     clearAllFields();
     Navigator.pop(context);
     showCourseOrEventSubmissionDialog(context);
-
   }
 
-void showCourseOrEventSubmissionDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text(
-                'Request Submitted',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-        content: const Text('Your request is pending approval. Stay tuned!'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('Ok'),
+  void showCourseOrEventSubmissionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Request Submitted',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+            ),
           ),
-        ],
-      );
-    },
-  );
-}
+          content: const Text('Your request is pending approval. Stay tuned!'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   clearAllFields() {
     titleController.clear();
     descController.clear();
     courseStartDate = null;
     courseEndDate = null;
-    selectedIncidentDistrict = 'Course';
+    selectedCourseType = 'Course';
     selectedAttendanceType = 'Onsite';
     locationController.clear();
     linkController.clear();
@@ -449,31 +449,33 @@ void showCourseOrEventSubmissionDialog(BuildContext context) {
     _selectedImage = null;
   }
 
-Stream<List<Course>> readCourses({String type = 'Course'}) {
-  Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-      .collection('Program')
-      .where('type', isEqualTo: type)
-      .where('approval', isEqualTo: 'Yes');
+  Stream<List<Course>> readCourses({String type = 'Course'}) {
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+        .collection('Program')
+        .where('type', isEqualTo: type)
+        .where('approval', isEqualTo: 'Yes');
 
-  if (searchController.text.isNotEmpty) {
-    query = query
-        .where('title', isGreaterThanOrEqualTo: searchController.text.toLowerCase())
-        .where('title',
-            isLessThanOrEqualTo: searchController.text.toLowerCase() + '\uf8ff');
-  } else {
-    query = query.orderBy('created_at', descending: true);
+    if (searchController.text.isNotEmpty) {
+      query = query
+          .where('title',
+              isGreaterThanOrEqualTo: searchController.text.toLowerCase())
+          .where('title',
+              isLessThanOrEqualTo:
+                  searchController.text.toLowerCase() + '\uf8ff');
+    } else {
+      query = query.orderBy('created_at', descending: true);
+    }
+
+    return query.snapshots().asyncMap((snapshot) async {
+      final courses = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        data['docId'] = doc.id;
+        return Course.fromJson(data);
+      }).toList();
+
+      return courses;
+    });
   }
-
-  return query.snapshots().asyncMap((snapshot) async {
-    final courses = snapshot.docs.map((doc) {
-      Map<String, dynamic> data = doc.data();
-      data['docId'] = doc.id;
-      return Course.fromJson(data);
-    }).toList();
-
-    return courses;
-  });
-}
 
   void showInputDialog() {
     showAlertDialog(
@@ -535,7 +537,7 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                     ],
                   ),
                 ),
-              const SizedBox(height: 8),
+                const SizedBox(height: 8),
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -545,19 +547,29 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                     ),
                   ],
                 ),
-             const SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     Expanded(
-                      child: DropDownWidget(
-                        selectedItem: selectedIncidentDistrict,
-                        list: incidentDistrict,
-                        onItemSelected: (value) {
-                          setstate(() {
-                            selectedIncidentDistrict = value!;
-                            print("incidentDistrict$selectedIncidentDistrict");
-                          });
-                        },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 228, 228, 228)
+                                .withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: const Color.fromARGB(255, 228, 228, 228)
+                                  .withOpacity(0.5),
+                            )),
+                        child: DropDownWidget(
+                          selectedItem: selectedCourseType,
+                          list: courseType,
+                          onItemSelected: (value) {
+                            setstate(() {
+                              selectedCourseType = value!;
+                              print("incidentDistrict$selectedCourseType");
+                            });
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -567,16 +579,28 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                   title: "Title",
                 ),
                 const SizedBox(height: 8),
-                reusableTextField(selectedIncidentDistrict == 'Course' ? "Please enter the course's title" : "Please enter the event's title", Icons.title,
-                    false, titleController, true,
+                reusableTextField(
+                    selectedCourseType == 'Course'
+                        ? "Please enter the course's title"
+                        : "Please enter the event's title",
+                    Icons.title,
+                    false,
+                    titleController,
+                    true,
                     maxLines: 1),
                 const SizedBox(height: 14),
                 const FormTitleWidget(
                   title: "Description",
                 ),
                 const SizedBox(height: 8),
-                reusableTextField(selectedIncidentDistrict == 'Course' ? "Please enter the course's description" : "Please enter the event's description",
-                    Icons.description, false, descController, true,
+                reusableTextField(
+                    selectedCourseType == 'Course'
+                        ? "Please enter the course's description"
+                        : "Please enter the event's description",
+                    Icons.description,
+                    false,
+                    descController,
+                    true,
                     maxLines: 1),
                 const Padding(
                   padding: EdgeInsets.only(top: 20),
@@ -675,8 +699,8 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                     ],
                   ),
                 ),
-                 const SizedBox(height: 14),
-                   const Row(
+                const SizedBox(height: 14),
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -685,24 +709,35 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                     ),
                   ],
                 ),
-             const SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     Expanded(
-                      child: DropDownWidget(
-                        selectedItem: selectedAttendanceType,
-                        list: AttendanceType,
-                        onItemSelected: (value) {
-                          setstate(() {
-                            selectedAttendanceType = value!;
-                          });
-                        },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 228, 228, 228)
+                                .withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: const Color.fromARGB(255, 228, 228, 228)
+                                  .withOpacity(0.5),
+                            )),
+                        child: DropDownWidget(
+                          selectedItem: selectedCourseType,
+                          list: courseType,
+                          onItemSelected: (value) {
+                            setstate(() {
+                              selectedCourseType = value!;
+                              print("courseType$selectedCourseType");
+                            });
+                          },
+                        ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 14),
-  const SizedBox(height: 14),
+                const SizedBox(height: 14),
                 Visibility(
                   visible: selectedAttendanceType == 'Onsite',
                   child: const Padding(
@@ -716,7 +751,7 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                 Visibility(
                   visible: selectedAttendanceType == 'Onsite',
                   child: reusableTextField(
-                    selectedIncidentDistrict == 'Course'
+                    selectedCourseType == 'Course'
                         ? "Please write the place of the course"
                         : "Please write the place of the event",
                     Icons.location_on_rounded,
@@ -732,8 +767,14 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                     title: "Link",
                   ),
                 ),
-                reusableTextField(selectedIncidentDistrict == 'Course' ? "Please enter the course's link" : "Please enter the event's link" , Icons.link, false,
-                    linkController, true,
+                reusableTextField(
+                    selectedCourseType == 'Course'
+                        ? "Please enter the course's link"
+                        : "Please enter the event's link",
+                    Icons.link,
+                    false,
+                    linkController,
+                    true,
                     maxLines: 1),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 18),
@@ -755,23 +796,25 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                         GestureDetector(
                           onTap: () async {
                             bool validLink =
-                            await isValidUrl(linkController.text);
+                                await isValidUrl(linkController.text);
                             if (titleController.text.isEmpty) {
                               toastMessage("Please enter a title");
-                            } else if (descController.text.isEmpty ) {
+                            } else if (descController.text.isEmpty) {
                               toastMessage("Please enter a description");
-                            }else if (isDateValid(courseStartDate , courseEndDate) == false) {
+                            } else if (isDateValid(
+                                    courseStartDate, courseEndDate) ==
+                                false) {
                               toastMessage("Please enter a valid date");
-                            }else if (selectedIncidentDistrict == '') {
+                            } else if (selectedCourseType == '') {
                               toastMessage("Please select a type");
-                            } else if (locationController.text.isEmpty && selectedAttendanceType =='Onsite') {
+                            } else if (locationController.text.isEmpty &&
+                                selectedAttendanceType == 'Onsite') {
                               toastMessage("Please enter  a location");
                             } else if (linkController.text.isEmpty) {
                               toastMessage("Please enter a link");
                             } else if (!validLink) {
                               toastMessage("Please enter a valid link");
                             } else {
-             
                               setstate(() {
                                 _loading = true;
                               });
@@ -809,177 +852,176 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
     );
   }
 
-Future<List<Map<String, dynamic>>> fetchCourseEventTitles() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  final email = prefs.getString('loggedInEmail') ?? '';
+  Future<List<Map<String, dynamic>>> fetchCourseEventTitles() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('loggedInEmail') ?? '';
 
-  QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
-      .collection('Program')
-      .where('userId', isEqualTo: email)
-      .get();
+    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('Program')
+        .where('userId', isEqualTo: email)
+        .get();
 
-  // Extract titles, approval values, and reason from the query snapshot
-  List<Map<String, dynamic>> courses = snapshot.docs.map((doc) {
-    String approval = doc.data()['approval'] as String;
-    String reason = '';
-    if (approval.contains(',')) {
-      List<String> approvalSplit = approval.split(',');
-      approval = approvalSplit[0].trim();
-      reason = approvalSplit[1].trim();
-    }
-    return {
-      'title': doc.data()['title'] as String,
-      'approval': approval,
-      'reason': reason,
-    };
-  }).toList();
+    // Extract titles, approval values, and reason from the query snapshot
+    List<Map<String, dynamic>> courses = snapshot.docs.map((doc) {
+      String approval = doc.data()['approval'] as String;
+      String reason = '';
+      if (approval.contains(',')) {
+        List<String> approvalSplit = approval.split(',');
+        approval = approvalSplit[0].trim();
+        reason = approvalSplit[1].trim();
+      }
+      return {
+        'title': doc.data()['title'] as String,
+        'approval': approval,
+        'reason': reason,
+      };
+    }).toList();
 
-  return courses;
-}
+    return courses;
+  }
 
-void showRequestList() {
-  
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return FutureBuilder<List<Map<String, dynamic>>>(
-        future: fetchCourseEventTitles(),
-        builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return AlertDialog(
-              title: const Text('My submitted requests'),
-              content: Text('Error: ${snapshot.error}'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Ok'),
-                ),
-              ],
-            );
-          } else {
-            return AlertDialog(
-              title: const Text('My submitted requests'),
-              content: snapshot.data != null && snapshot.data!.isNotEmpty
-                  ? Container(
-                      width: double.maxFinite,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final course = snapshot.data![index];
-                          return Card(
-                            child: ListTile(
-                              title:  Text(
-                                      course['title'],
-                                      style: const TextStyle(
-                                        fontSize: 17,
-                                        color: Color.fromARGB(171, 0, 0, 0),
+  void showRequestList() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return FutureBuilder<List<Map<String, dynamic>>>(
+          future: fetchCourseEventTitles(),
+          builder: (BuildContext context,
+              AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return AlertDialog(
+                title: const Text('My submitted requests'),
+                content: Text('Error: ${snapshot.error}'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Ok'),
+                  ),
+                ],
+              );
+            } else {
+              return AlertDialog(
+                title: const Text('My submitted requests'),
+                content: snapshot.data != null && snapshot.data!.isNotEmpty
+                    ? Container(
+                        width: double.maxFinite,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final course = snapshot.data![index];
+                            return Card(
+                              child: ListTile(
+                                title: Text(
+                                  course['title'],
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    color: Color.fromARGB(171, 0, 0, 0),
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildApprovalMessage(course['approval']),
+                                    if (course['approval'].substring(0, 2) ==
+                                        'No')
+                                      Text(
+                                        'Rejection reason: ${course['reason']}',
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          color: Color.fromARGB(171, 66, 0, 0),
+                                        ),
                                       ),
-                                    ), 
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _buildApprovalMessage(course['approval']),
-                                    if (course['approval'].substring(0, 2) == 'No')
-                                    Text(
-                                      'Rejection reason: ${course['reason']}',
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        color: Color.fromARGB(171, 66, 0, 0),
-                                      ),
-                                    ),
-                                ],
+                                  ],
+                                ),
+                                leading: _buildApprovalDot(course['approval']),
                               ),
-                              leading: _buildApprovalDot(course['approval']),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                  : const Text("You have'not added any requests yet!"),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Ok'),
-                ),
-              ],
-            );
-          }
-        },
-      );
-    },
-  );
-} 
+                            );
+                          },
+                        ),
+                      )
+                    : const Text("You have'not added any requests yet!"),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Ok'),
+                  ),
+                ],
+              );
+            }
+          },
+        );
+      },
+    );
+  }
 
-Widget _buildApprovalMessage(String approvalStatus) {
-  String message;
+  Widget _buildApprovalMessage(String approvalStatus) {
+    String message;
 
-  if (approvalStatus == 'Yes') {
-    message = 'Approved';
-  } else if (approvalStatus == 'Pending') {
-    message = 'Pending';
-  } else {
-    message = 'Rejected';
-    int commaIndex = approvalStatus.indexOf(',');
-    if (commaIndex != -1 && commaIndex < approvalStatus.length - 1) {
+    if (approvalStatus == 'Yes') {
+      message = 'Approved';
+    } else if (approvalStatus == 'Pending') {
+      message = 'Pending';
+    } else {
+      message = 'Rejected';
+      int commaIndex = approvalStatus.indexOf(',');
+      if (commaIndex != -1 && commaIndex < approvalStatus.length - 1) {}
     }
-  }
 
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        message,
-        style: TextStyle(
-          fontSize: 15.5,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          message,
+          style: TextStyle(
+            fontSize: 15.5,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
-      ),
-    ],
-  );
-}
-
-Widget _buildApprovalDot(String approvalStatus) {
-  Color dotColor;
-  IconData icon;
-
-  if (approvalStatus == 'Yes') {
-    dotColor = const Color.fromARGB(255, 0, 148, 5);
-    icon = Icons.check_circle;
-  } else if (approvalStatus == 'No') {
-    dotColor = Color.fromARGB(255, 213, 14, 0);
-    icon = Icons.cancel;
-  } else if (approvalStatus == 'Pending') {
-    dotColor = Color.fromARGB(255, 229, 218, 0);
-    icon = Icons.access_time;
-  } else {
-    dotColor = Colors.grey;
-    icon = Icons.help;
+      ],
+    );
   }
 
-  return Container(
-    width: 30,
-    height: 30,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      color: dotColor,
-    ),
-    child: Icon(
-      icon,
-      size: 25,
-      color: Colors.white,
-    ),
-  );
-}
+  Widget _buildApprovalDot(String approvalStatus) {
+    Color dotColor;
+    IconData icon;
 
+    if (approvalStatus == 'Yes') {
+      dotColor = const Color.fromARGB(255, 0, 148, 5);
+      icon = Icons.check_circle;
+    } else if (approvalStatus == 'No') {
+      dotColor = Color.fromARGB(255, 213, 14, 0);
+      icon = Icons.cancel;
+    } else if (approvalStatus == 'Pending') {
+      dotColor = Color.fromARGB(255, 229, 218, 0);
+      icon = Icons.access_time;
+    } else {
+      dotColor = Colors.grey;
+      icon = Icons.help;
+    }
 
+    return Container(
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: dotColor,
+      ),
+      child: Icon(
+        icon,
+        size: 25,
+        color: Colors.white,
+      ),
+    );
+  }
 
   Future<void> selectDate(BuildContext context, String dateType,
       {type = "normal", initialDate = null}) async {
@@ -1040,8 +1082,7 @@ class FormTitleWidget extends StatelessWidget {
             '*',
             style: TextStyle(color: Colors.red),
           ),
-        if (tooltip != null) ...[
-        ]
+        if (tooltip != null) ...[]
       ],
     );
   }
@@ -1060,7 +1101,7 @@ class CoursesWidget extends StatelessWidget {
       padding: const EdgeInsets.only(top: 0),
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
-        padding: const EdgeInsets.only(top: 10,right: 13 , left: 13),
+        padding: const EdgeInsets.only(top: 10, right: 13, left: 13),
         decoration: BoxDecoration(
           color: secondaryColor,
           borderRadius: BorderRadius.circular(12),
@@ -1071,58 +1112,57 @@ class CoursesWidget extends StatelessWidget {
                 blurRadius: 4,
                 offset: const Offset(0, 3))
           ]),
-          
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-          Center( child:
-Stack(
-  children: [
-        Center(
-child:
-    Container(
-      width: 325,
-      height: 200,
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Color.fromARGB(170, 0, 24, 163).withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: Offset(0, 3),
-          ),
-        ],
-        borderRadius: BorderRadius.circular(8),
-      ),
-    ),
-        ),
-        Center(
-   child:  ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      //used when uploadd image failed to download due to unexcpected network issues
-      // ignore: unnecessary_null_comparison
-      child: item.imageURL != null
-          ? Image.network(
-              item.imageURL,
-              width: 325,
-              height: 200,
-              fit: BoxFit.cover,
-            )
-          : Image.asset(
-              'assets/Backgrounds/defaultCoursePic.png',
-              width: 325,
-              height: 200,
-              fit: BoxFit.cover,
+            Center(
+              child: Stack(
+                children: [
+                  Center(
+                    child: Container(
+                      width: 325,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color.fromARGB(170, 0, 24, 163)
+                                .withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      //used when uploadd image failed to download due to unexcpected network issues
+                      // ignore: unnecessary_null_comparison
+                      child: item.imageURL != null
+                          ? Image.network(
+                              item.imageURL,
+                              width: 325,
+                              height: 200,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.asset(
+                              'assets/Backgrounds/defaultCoursePic.png',
+                              width: 325,
+                              height: 200,
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-    ),
-    ),
-  ],
-),
-          ),
-            SizedBox(height:10) ,
-           Text(
+            SizedBox(height: 10),
+            Text(
               item.title ?? '--',
               style: const TextStyle(
                   fontSize: 17,
@@ -1140,7 +1180,7 @@ child:
                   color: mainColor.withOpacity(0.6),
                   fontWeight: FontWeight.w400),
             ),
-           const SizedBox(height: 5),
+            const SizedBox(height: 5),
             Visibility(
               visible: item.attendanceType == 'Onsite',
               child: Row(
@@ -1206,7 +1246,7 @@ child:
                     child: Row(
                       children: [
                         Icon(
-                          Icons.access_time ,
+                          Icons.access_time,
                           color: mainColor.withOpacity(0.5),
                           size: 25,
                         ),
@@ -1221,19 +1261,19 @@ child:
                                 DateFormat('MMM dd, yy')
                                     .format(item.startDate!),
                                 style: const TextStyle(
-                                    fontSize: 13,
-                                    fontFamily: "Poppins",
-                                    color: mainColor,
-                                    ),
+                                  fontSize: 13,
+                                  fontFamily: "Poppins",
+                                  color: mainColor,
+                                ),
                               ),
                             if (item.endDate != null)
                               Text(
                                 DateFormat('MMM dd, yy').format(item.endDate!),
                                 style: const TextStyle(
-                                    fontSize: 13,
-                                    fontFamily: "Poppins",
-                                    color: mainColor,
-                                   ),
+                                  fontSize: 13,
+                                  fontFamily: "Poppins",
+                                  color: mainColor,
+                                ),
                               ),
                           ],
                         ),
@@ -1241,49 +1281,45 @@ child:
                     ),
                   ),
               ],
-            ),       
-                Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-        IconButton(
-              onPressed: () {
-                // Add to calendar functionality!!
-              },
-              icon: Icon(
-                Icons.calendar_today_sharp,
-                size: 28, // Adjust the size as needed
-                color: Colors.blue,
-              ),
-              tooltip: 'Save to Calendar',
             ),
-            if (item.link != null)
-              TextButton(
-                onPressed: () async {
-                  if (await canLaunchUrl(Uri.parse(item.link!))) {
-                    await launchUrl(Uri.parse(item.link!));
-                  } else {
-                    toastMessage('Unable to show details');
-                  }
-                },
-                child: const Text(
-                  'More Details ->',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontFamily: "Poppins",
-                    color: mainColor,
-                    decoration: TextDecoration.underline,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    // Add to calendar functionality!!
+                  },
+                  icon: Icon(
+                    Icons.calendar_today_sharp,
+                    size: 28, // Adjust the size as needed
+                    color: Colors.blue,
                   ),
+                  tooltip: 'Save to Calendar',
                 ),
-              ),
-          ],
-        ),
+                if (item.link != null)
+                  TextButton(
+                    onPressed: () async {
+                      if (await canLaunchUrl(Uri.parse(item.link!))) {
+                        await launchUrl(Uri.parse(item.link!));
+                      } else {
+                        toastMessage('Unable to show details');
+                      }
+                    },
+                    child: const Text(
+                      'More Details ->',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: "Poppins",
+                        color: mainColor,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 }
-
-
-
-

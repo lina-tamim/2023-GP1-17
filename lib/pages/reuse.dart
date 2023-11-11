@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -104,7 +103,7 @@ class _NavBarUserState extends State<NavBarUser> {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.person, size:27),
+            leading: const Icon(Icons.person, size: 27),
             iconColor: Colors.black,
             title: const Text('Profile'),
             onTap: () => Navigator.push(
@@ -113,7 +112,7 @@ class _NavBarUserState extends State<NavBarUser> {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.post_add, size:27),
+            leading: const Icon(Icons.post_add, size: 27),
             iconColor: Colors.black,
             title: const Text('My Interactions'),
             onTap: () async {
@@ -125,7 +124,7 @@ class _NavBarUserState extends State<NavBarUser> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.bookmark, size:27),
+            leading: const Icon(Icons.bookmark, size: 27),
             iconColor: Colors.black,
             title: const Text('Bookmark'),
             onTap: () => Navigator.push(
@@ -134,7 +133,7 @@ class _NavBarUserState extends State<NavBarUser> {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.calendar_month, size:27),
+            leading: const Icon(Icons.calendar_month, size: 27),
             iconColor: Colors.black,
             title: const Text('Calendar'),
             onTap: () => Navigator.push(
@@ -146,7 +145,8 @@ class _NavBarUserState extends State<NavBarUser> {
             leading: Container(
               width: 30, // Adjust the width as needed
               height: 100, // Adjust the height as needed
-              child: Image.asset('assets/Backgrounds/Xlogo.png'), // Replace 'image_name.png' with the actual image file name and extension
+              child: Image.asset(
+                  'assets/Backgrounds/Xlogo.png'), // Replace 'image_name.png' with the actual image file name and extension
             ),
             title: const Text('About Us'),
             onTap: () => Navigator.push(
@@ -157,7 +157,7 @@ class _NavBarUserState extends State<NavBarUser> {
           SizedBox(height: 260),
           Divider(),
           ListTile(
-            leading: Icon(Icons.logout, size:30),
+            leading: Icon(Icons.logout, size: 30),
             iconColor: Colors.black,
             title: const Text('Logout'),
             onTap: () {
@@ -169,6 +169,7 @@ class _NavBarUserState extends State<NavBarUser> {
     );
   }
 }
+
 class NavBarAdmin extends StatefulWidget {
   const NavBarAdmin({super.key});
 
@@ -332,8 +333,6 @@ AppBar buildAppBar(String titleText) {
   );
 }
 
-
-
 void showSnackBar(String message, context) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
@@ -354,12 +353,12 @@ void showSnackBar(String message, context) {
 
 void toastMessage(String message) {
   Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_LONG,
-      backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
-      textColor: Color(0xffffffff),
-      gravity: ToastGravity.TOP,
-      );
+    msg: message,
+    toastLength: Toast.LENGTH_LONG,
+    backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
+    textColor: Color(0xffffffff),
+    gravity: ToastGravity.TOP,
+  );
 }
 
 class BottomNavBar extends StatefulWidget {
@@ -405,7 +404,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
       case 3:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const UserCoursesAndEventsPage()),
+          MaterialPageRoute(
+              builder: (context) => const UserCoursesAndEventsPage()),
         );
         break;
       default:
@@ -590,30 +590,33 @@ class DropDownMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonHideUnderline(
-      child: DropdownButtonFormField<String>(
-        value: option,
-        items: items.map((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: SizedBox(
-              width: 120, // Adjust the width of the dropdown list
-              child: Text(
-                value,
-                style: TextStyle(
-                  fontSize: fontSize,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w700,
+      child: ButtonTheme(
+        alignedDropdown: true,
+        child: DropdownButton<String>(
+          value: option,
+          items: items.map((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: SizedBox(
+                width: 120, // Adjust the width of the dropdown list
+                child: Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: fontSize,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-            ),
-          );
-        }).toList(),
-        onChanged: onTap,
-        onTap: () {
-          if (isMenuOpen) {
-            onTap(null); // Close the menu when tapped outside the options
-          }
-        },
+            );
+          }).toList(),
+          onChanged: onTap,
+          onTap: () {
+            if (isMenuOpen) {
+              onTap(null); // Close the menu when tapped outside the options
+            }
+          },
+        ),
       ),
     );
   }

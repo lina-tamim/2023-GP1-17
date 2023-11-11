@@ -13,10 +13,12 @@ class AdminCoursesAndEventsRequestsPage extends StatefulWidget {
   const AdminCoursesAndEventsRequestsPage({super.key});
 
   @override
-  State<AdminCoursesAndEventsRequestsPage> createState() => _AdminCoursesAndEventsRequestsPageState();
+  State<AdminCoursesAndEventsRequestsPage> createState() =>
+      _AdminCoursesAndEventsRequestsPageState();
 }
 
-class _AdminCoursesAndEventsRequestsPageState extends State<AdminCoursesAndEventsRequestsPage> {
+class _AdminCoursesAndEventsRequestsPageState
+    extends State<AdminCoursesAndEventsRequestsPage> {
   final titleController = TextEditingController();
   final descController = TextEditingController();
   final locationController = TextEditingController();
@@ -30,7 +32,6 @@ class _AdminCoursesAndEventsRequestsPageState extends State<AdminCoursesAndEvent
   List<String> incidentDistrict = ["Course", "Event"];
   String selectedIncidentDistrict = "Course";
   bool showSearchBar = false;
-  
 
   @override
   Widget build(BuildContext context) {
@@ -104,52 +105,51 @@ class _AdminCoursesAndEventsRequestsPageState extends State<AdminCoursesAndEvent
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Column(
-  mainAxisAlignment: MainAxisAlignment.start,
-  children: [
-    const Padding(
-      padding: EdgeInsets.only(top: 20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-            "Welcome to the uploaded requests section by Techxcel users!\nHere, you have the power "
-            "to review and make decisions on these requests.\nYou can either accept them, "
-            "allowing them to be published to the public,or reject them if they don't meet the criteria.\n",
-            style: TextStyle(
-              fontSize: 15,
-              color: mainColor,
-              fontWeight: FontWeight.w600,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Text(
+                        "Welcome to the uploaded requests section by Techxcel users!\nHere, you have the power "
+                        "to review and make decisions on these requests.\nYou can either accept them, "
+                        "allowing them to be published to the public,or reject them if they don't meet the criteria.\n",
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: mainColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Text(
+                      "Your actions will directly impact the visibility of these requests and shape the content available to our users.",
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.red,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-                  Text(
-            "Your actions will directly impact the visibility of these requests and shape the content available to our users.",
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.red,
-              fontWeight: FontWeight.w800,
-
-            ),
-          ),
-        ],
-      ),
-    ),
-    const Padding(
-      padding: EdgeInsets.only(top: 20),
-      child: Row(
-        children: [
-           Text(
-            "Courses Requests",
-            style: TextStyle(
-              fontSize: 20,
-              fontFamily: "Poppins",
-              color: Colors.black,
-            ),
-            ),
-           ],
-      ),
+              const Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: Row(
+                  children: [
+                    Text(
+                      "Courses Requests",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: "Poppins",
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               StreamBuilder<List<Course>>(
                 stream: readCourses(type: 'Course'),
@@ -255,48 +255,51 @@ class _AdminCoursesAndEventsRequestsPageState extends State<AdminCoursesAndEvent
       ),
     );
   }
-Stream<List<Course>> readCourses({String type = 'Course'}) {
-  Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-      .collection('Program')
-      .where('type', isEqualTo: type)
-      .where('approval', isEqualTo: 'Yes');
 
-  if (searchController.text.isNotEmpty) {
-    query = query
-        .where('title', isGreaterThanOrEqualTo: searchController.text.toLowerCase())
-        .where('title',
-            isLessThanOrEqualTo: searchController.text.toLowerCase() + '\uf8ff');
-  } else {
-    query = query.orderBy('created_at', descending: true);
+  Stream<List<Course>> readCourses({String type = 'Course'}) {
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+        .collection('Program')
+        .where('type', isEqualTo: type)
+        .where('approval', isEqualTo: 'Yes');
+
+    if (searchController.text.isNotEmpty) {
+      query = query
+          .where('title',
+              isGreaterThanOrEqualTo: searchController.text.toLowerCase())
+          .where('title',
+              isLessThanOrEqualTo:
+                  searchController.text.toLowerCase() + '\uf8ff');
+    } else {
+      query = query.orderBy('created_at', descending: true);
+    }
+
+    return query.snapshots().asyncMap((snapshot) async {
+      final courses = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        data['docId'] = doc.id;
+        return Course.fromJson(data);
+      }).toList();
+
+      return courses;
+    });
   }
-
-  return query.snapshots().asyncMap((snapshot) async {
-    final courses = snapshot.docs.map((doc) {
-      Map<String, dynamic> data = doc.data();
-      data['docId'] = doc.id;
-      return Course.fromJson(data);
-    }).toList();
-
-    return courses;
-  });
-}
 }
 
 class CoursesWidget extends StatelessWidget {
   final Course item;
-  
-   CoursesWidget({
+
+  CoursesWidget({
     super.key,
     required this.item,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 0),
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
-        padding: const EdgeInsets.only(right: 12 , left: 12),
+        padding: const EdgeInsets.only(right: 12, left: 12),
         decoration: BoxDecoration(
           color: secondaryColor,
           borderRadius: BorderRadius.circular(12),
@@ -312,103 +315,98 @@ class CoursesWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-          Center(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-        //used when uploadd image failed to download due to unexcpected network issues
-        // ignore: unnecessary_null_comparison
-        child: item.imageURL != null
-          ? Image.network(
-            item.imageURL ,
-            width: 250,
-            height: 105,
-            fit: BoxFit.cover,
-          )
-          :  Image.asset(
-            'assets/Backgrounds/defaultCoursePic.png', 
-            width: 250,
-            height: 105,
-            fit: BoxFit.cover,
-          ),
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                //used when uploadd image failed to download due to unexcpected network issues
+                // ignore: unnecessary_null_comparison
+                child: item.imageURL != null
+                    ? Image.network(
+                        item.imageURL,
+                        width: 250,
+                        height: 105,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        'assets/Backgrounds/defaultCoursePic.png',
+                        width: 250,
+                        height: 105,
+                        fit: BoxFit.cover,
+                      ),
+              ),
+            ),
 
-          ),
-),
-
-               Text(
-            'Title: ${item.title}',
+            Text(
+              'Title: ${item.title}',
               style: const TextStyle(
-                  fontSize: 17,
-                  fontFamily: "Poppins",
-                  color: mainColor),
+                  fontSize: 17, fontFamily: "Poppins", color: mainColor),
             ),
             Text(
               'Description: ${item.description}',
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                  fontSize: 15,
-                  fontFamily: "Poppins",
-                  color: mainColor ),
+                  fontSize: 15, fontFamily: "Poppins", color: mainColor),
             ),
 
-Visibility(
-  visible: item.attendanceType == 'Onsite',
-  child: Row(
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: [
-      Icon(
-        Icons.location_on_outlined,
-        color: mainColor.withOpacity(0.6),
-        size: 25,
-      ),
-      const SizedBox(
-        width: 5,
-      ),
-      Expanded(
-        child: Text(
-          item.location ?? '--',
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 15,
-            fontFamily: "Poppins",
-            color: mainColor.withOpacity(0.6),
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      ),
-    ],
-  ),
-),
-Visibility(
-  visible: item.attendanceType == 'Online',
-  child: Row(
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: [
-      Icon(
-        Icons.computer,
-        color: mainColor.withOpacity(0.6),
-        size: 25,
-      ),
-      const SizedBox(
-        width: 5,
-      ),
-      Expanded(
-        child: Text(
-          'Online',
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 15,
-            fontFamily: "Poppins",
-            color: mainColor.withOpacity(0.6),
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      ),
-    ],
-  ),
-),
+            Visibility(
+              visible: item.attendanceType == 'Onsite',
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.location_on_outlined,
+                    color: mainColor.withOpacity(0.6),
+                    size: 25,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Expanded(
+                    child: Text(
+                      item.location ?? '--',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: "Poppins",
+                        color: mainColor.withOpacity(0.6),
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Visibility(
+              visible: item.attendanceType == 'Online',
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.computer,
+                    color: mainColor.withOpacity(0.6),
+                    size: 25,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Expanded(
+                    child: Text(
+                      'Online',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: "Poppins",
+                        color: mainColor.withOpacity(0.6),
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             Row(
               children: [
                 if (item.startDate != null || item.endDate != null)
@@ -419,22 +417,22 @@ Visibility(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (item.startDate != null)
-                          Text(
-                          'Start date:  ${DateFormat('MMM dd, yy').format(item.startDate!)}',
-                          style: const TextStyle(
-                            fontSize: 15,
-                             fontFamily: "Poppins",
-                            color: mainColor,
-                          ),
-                        ),
+                              Text(
+                                'Start date:  ${DateFormat('MMM dd, yy').format(item.startDate!)}',
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontFamily: "Poppins",
+                                  color: mainColor,
+                                ),
+                              ),
                             if (item.endDate != null)
                               Text(
                                 'End date:     ${DateFormat('MMM dd, yy').format(item.endDate!)}',
                                 style: const TextStyle(
-                                    fontSize: 15,
-                                     fontFamily: "Poppins",
-                                    color: mainColor,
-                                    ),
+                                  fontSize: 15,
+                                  fontFamily: "Poppins",
+                                  color: mainColor,
+                                ),
                               ),
                           ],
                         ),
@@ -455,8 +453,8 @@ Visibility(
                         toastMessage('Unable to show details');
                       }
                     },
-                    child:  Text(
-                      'Link for more details: ${item.link}' ,
+                    child: Text(
+                      'Link for more details: ${item.link}',
                       style: const TextStyle(
                           fontSize: 15,
                           fontFamily: "Poppins",
@@ -471,70 +469,80 @@ Visibility(
             ),
             Row(
               children: [
-                                SizedBox(width: 30),
-             ElevatedButton(
-        onPressed: () {
-          updateApprovalStatus('Yes'); // Update the approval status to 'Yes'
-        },
+                SizedBox(width: 30),
+                ElevatedButton(
+                  onPressed: () {
+                    updateApprovalStatus(
+                        'Yes'); // Update the approval status to 'Yes'
+                  },
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Color.fromARGB(255, 22, 146, 0),
-                    side: BorderSide.none ,
+                    foregroundColor: Colors.white,
+                    backgroundColor: Color.fromARGB(255, 22, 146, 0),
+                    side: BorderSide.none,
                     shape: const StadiumBorder(),
                   ),
-                  child: const Text('Accept', style: TextStyle(color: Color.fromARGB(255, 254, 254, 254))),
-                  
+                  child: const Text('Accept',
+                      style:
+                          TextStyle(color: Color.fromARGB(255, 254, 254, 254))),
                 ),
                 SizedBox(width: 120),
-ElevatedButton(
-  onPressed: () {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        String reason = ''; // Variable to store the rejection reason
+                ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        String reason =
+                            ''; // Variable to store the rejection reason
 
-        return AlertDialog(
-          title: const Text('Enter Rejection Reason'),
-          content: TextField(
-            onChanged: (value) {
-              reason = value; // Update the rejection reason as the user types
-            },
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: const Text('Cancel'),
+                        return AlertDialog(
+                          title: const Text('Enter Rejection Reason'),
+                          content: TextField(
+                            onChanged: (value) {
+                              reason =
+                                  value; // Update the rejection reason as the user types
+                            },
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(); // Close the dialog
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                updateApprovalStatus(
+                                    'No,$reason'); // Update the approval status to 'No'
+                                Navigator.of(context).pop(); // Close the dialog
+                              },
+                              style: ButtonStyle(
+                                foregroundColor:
+                                    MaterialStateProperty.all<Color>(Colors
+                                        .red), // Set the background color to red
+                              ),
+                              child: const Text('Reject'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: const Color.fromARGB(255, 122, 1, 1),
+                    side: BorderSide.none,
+                    shape: const StadiumBorder(),
+                  ),
+                  child: const Text(
+                    'Reject',
+                    style: TextStyle(color: Color.fromARGB(255, 254, 254, 254)),
+                  ),
+                ),
+              ],
             ),
-            TextButton(
-              onPressed: () {
-                updateApprovalStatus('No,$reason'); // Update the approval status to 'No'
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.red), // Set the background color to red
-              ),
-              child: const Text('Reject'),
-            ),
-          ],
-        );
-      },
-    );
-  },
-  style: ElevatedButton.styleFrom(
-    foregroundColor: Colors.white,
-    backgroundColor: const Color.fromARGB(255, 122, 1, 1),
-    side: BorderSide.none,
-    shape: const StadiumBorder(),
-  ),
-  child: const Text(
-    'Reject',
-    style: TextStyle(color: Color.fromARGB(255, 254, 254, 254)),
-  ),
-),
-           ],
-            ),
-          SizedBox(height: 3,), //just to add space
+            SizedBox(
+              height: 3,
+            ), //just to add space
           ],
         ),
       ),
@@ -542,23 +550,17 @@ ElevatedButton(
   }
 
   Future<void> updateApprovalStatus(String newStatus) async {
-
     final formCollection = FirebaseFirestore.instance.collection('Program');
-    if ( newStatus.contains('Yes'))
-    {
-    await formCollection.doc(item.docId).update({
-        'approval':'Yes',
+    if (newStatus.contains('Yes')) {
+      await formCollection.doc(item.docId).update({
+        'approval': 'Yes',
       });
       toastMessage('Request has been sent to the public!');
-
-    } 
-    else
-    {
-          await formCollection.doc(item.docId).update({
-        'approval':newStatus,
+    } else {
+      await formCollection.doc(item.docId).update({
+        'approval': newStatus,
       });
-     toastMessage('Request has been sent to the public!');
-
+      toastMessage('Request has been sent to the public!');
     }
-}
+  }
 }

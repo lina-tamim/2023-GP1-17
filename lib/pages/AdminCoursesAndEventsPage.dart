@@ -35,8 +35,8 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
   Course? item;
   File? _selectedImage;
   String defaultImagePath = 'assets/Backgrounds/defaultCoursePic.png';
-  List<String> incidentDistrict = ["Course", "Event"];
-  String selectedIncidentDistrict = "Course";
+  List<String> courseType = ["Course", "Event"];
+  String selectedCourseType = "Course";
   List<String> AttendanceType = ["Onsite", "Online"];
   String selectedAttendanceType = "Onsite";
   bool showSearchBar = false;
@@ -246,7 +246,8 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                           }),
                     );
                   } else if (snapshot.hasError) {
-                                          print('Errorrrrrr-----------------------------:${snapshot.error}');
+                    print(
+                        'Errorrrrrr-----------------------------:${snapshot.error}');
 
                     return Center(
                       child: Text('Error:${snapshot.error}'),
@@ -272,19 +273,19 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
     return await canLaunchUrl(Uri.parse(url));
   }
 
-bool isDateValid(DateTime? start, DateTime? end) {
-  if (start == null || end == null) {
-    return false;
+  bool isDateValid(DateTime? start, DateTime? end) {
+    if (start == null || end == null) {
+      return false;
+    }
+    return end.isAfter(DateTime.now());
   }
-  return end.isAfter(DateTime.now());
-}
 
   setData(Course item) {
     titleController.text = item.title ?? '';
     descController.text = item.description ?? '';
     locationController.text = item.location ?? '';
     linkController.text = item.link ?? '';
-    selectedIncidentDistrict = item.type ?? '';
+    selectedCourseType = item.type ?? '';
     selectedAttendanceType = item.attendanceType ?? '';
     courseStartDate = item.startDate;
     courseEndDate = item.endDate;
@@ -367,7 +368,7 @@ bool isDateValid(DateTime? start, DateTime? end) {
     if (item?.docId != null) {
       await formCollection.doc(item!.docId).update({
         'userId': email,
-        'type': selectedIncidentDistrict,
+        'type': selectedCourseType,
         'attendanceType': selectedAttendanceType,
         'title': titleController.text,
         'description': descController.text,
@@ -381,7 +382,7 @@ bool isDateValid(DateTime? start, DateTime? end) {
     } else {
       await newFormDoc.set({
         'userId': email,
-        'type': selectedIncidentDistrict,
+        'type': selectedCourseType,
         'attendanceType': selectedAttendanceType,
         'title': titleController.text,
         'description': descController.text,
@@ -408,7 +409,7 @@ bool isDateValid(DateTime? start, DateTime? end) {
     descController.clear();
     courseStartDate = null;
     courseEndDate = null;
-    selectedIncidentDistrict = 'Course';
+    selectedCourseType = 'Course';
     selectedAttendanceType = 'Onsite';
     locationController.clear();
     linkController.clear();
@@ -416,31 +417,33 @@ bool isDateValid(DateTime? start, DateTime? end) {
     _selectedImage = null;
   }
 
-Stream<List<Course>> readCourses({String type = 'Course'}) {
-  Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-      .collection('Program')
-      .where('type', isEqualTo: type)
-      .where('approval', isEqualTo: 'Yes');
+  Stream<List<Course>> readCourses({String type = 'Course'}) {
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+        .collection('Program')
+        .where('type', isEqualTo: type)
+        .where('approval', isEqualTo: 'Yes');
 
-  if (searchController.text.isNotEmpty) {
-    query = query
-        .where('title', isGreaterThanOrEqualTo: searchController.text.toLowerCase())
-        .where('title',
-            isLessThanOrEqualTo: searchController.text.toLowerCase() + '\uf8ff');
-  } else {
-    query = query.orderBy('created_at', descending: true);
+    if (searchController.text.isNotEmpty) {
+      query = query
+          .where('title',
+              isGreaterThanOrEqualTo: searchController.text.toLowerCase())
+          .where('title',
+              isLessThanOrEqualTo:
+                  searchController.text.toLowerCase() + '\uf8ff');
+    } else {
+      query = query.orderBy('created_at', descending: true);
+    }
+
+    return query.snapshots().asyncMap((snapshot) async {
+      final courses = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        data['docId'] = doc.id;
+        return Course.fromJson(data);
+      }).toList();
+
+      return courses;
+    });
   }
-
-  return query.snapshots().asyncMap((snapshot) async {
-    final courses = snapshot.docs.map((doc) {
-      Map<String, dynamic> data = doc.data();
-      data['docId'] = doc.id;
-      return Course.fromJson(data);
-    }).toList();
-
-    return courses;
-  });
-}
 
   void showInputDialog() {
     showAlertDialog(
@@ -502,7 +505,7 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                     ],
                   ),
                 ),
-              const SizedBox(height: 8),
+                const SizedBox(height: 8),
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -512,19 +515,29 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                     ),
                   ],
                 ),
-             const SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     Expanded(
-                      child: DropDownWidget(
-                        selectedItem: selectedIncidentDistrict,
-                        list: incidentDistrict,
-                        onItemSelected: (value) {
-                          setstate(() {
-                            selectedIncidentDistrict = value!;
-                            print("incidentDistrict$selectedIncidentDistrict");
-                          });
-                        },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 228, 228, 228)
+                                .withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: const Color.fromARGB(255, 228, 228, 228)
+                                  .withOpacity(0.5),
+                            )),
+                        child: DropDownWidget(
+                          selectedItem: selectedCourseType,
+                          list: courseType,
+                          onItemSelected: (value) {
+                            setstate(() {
+                              selectedCourseType = value!;
+                              print("courseType$selectedCourseType");
+                            });
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -534,16 +547,28 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                   title: "Title",
                 ),
                 const SizedBox(height: 8),
-                reusableTextField(selectedIncidentDistrict == 'Course' ? "Please enter the course's title" : "Please enter the event's title", Icons.title,
-                    false, titleController, true,
+                reusableTextField(
+                    selectedCourseType == 'Course'
+                        ? "Please enter the course's title"
+                        : "Please enter the event's title",
+                    Icons.title,
+                    false,
+                    titleController,
+                    true,
                     maxLines: 1),
                 const SizedBox(height: 14),
                 const FormTitleWidget(
                   title: "Description",
                 ),
                 const SizedBox(height: 8),
-                reusableTextField(selectedIncidentDistrict == 'Course' ? "Please enter the course's description" : "Please enter the event's description",
-                    Icons.description, false, descController, true,
+                reusableTextField(
+                    selectedCourseType == 'Course'
+                        ? "Please enter the course's description"
+                        : "Please enter the event's description",
+                    Icons.description,
+                    false,
+                    descController,
+                    true,
                     maxLines: 1),
                 const Padding(
                   padding: EdgeInsets.only(top: 20),
@@ -642,8 +667,8 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                     ],
                   ),
                 ),
-                 const SizedBox(height: 14),
-                   const Row(
+                const SizedBox(height: 14),
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -652,24 +677,35 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                     ),
                   ],
                 ),
-             const SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     Expanded(
-                      child: DropDownWidget(
-                        selectedItem: selectedAttendanceType,
-                        list: AttendanceType,
-                        onItemSelected: (value) {
-                          setstate(() {
-                            selectedAttendanceType = value!;
-                          });
-                        },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 228, 228, 228)
+                                .withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: const Color.fromARGB(255, 228, 228, 228)
+                                  .withOpacity(0.5),
+                            )),
+                        child: DropDownWidget(
+                          selectedItem: selectedCourseType,
+                          list: courseType,
+                          onItemSelected: (value) {
+                            setstate(() {
+                              selectedCourseType = value!;
+                              print("incidentDistrict$selectedCourseType");
+                            });
+                          },
+                        ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 14),
-  const SizedBox(height: 14),
+                const SizedBox(height: 14),
                 Visibility(
                   visible: selectedAttendanceType == 'Onsite',
                   child: const Padding(
@@ -683,7 +719,7 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                 Visibility(
                   visible: selectedAttendanceType == 'Onsite',
                   child: reusableTextField(
-                    selectedIncidentDistrict == 'Course'
+                    selectedCourseType == 'Course'
                         ? "Please write the place of the course"
                         : "Please write the place of the event",
                     Icons.location_on_rounded,
@@ -699,8 +735,14 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                     title: "Link",
                   ),
                 ),
-                reusableTextField(selectedIncidentDistrict == 'Course' ? "Please enter the course's link" : "Please enter the event's link" , Icons.link, false,
-                    linkController, true,
+                reusableTextField(
+                    selectedCourseType == 'Course'
+                        ? "Please enter the course's link"
+                        : "Please enter the event's link",
+                    Icons.link,
+                    false,
+                    linkController,
+                    true,
                     maxLines: 1),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 18),
@@ -722,23 +764,25 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                         GestureDetector(
                           onTap: () async {
                             bool validLink =
-                            await isValidUrl(linkController.text);
+                                await isValidUrl(linkController.text);
                             if (titleController.text.isEmpty) {
                               toastMessage("Please enter a title");
-                            } else if (descController.text.isEmpty ) {
+                            } else if (descController.text.isEmpty) {
                               toastMessage("Please enter a description");
-                            }else if (isDateValid(courseStartDate , courseEndDate) == false) {
+                            } else if (isDateValid(
+                                    courseStartDate, courseEndDate) ==
+                                false) {
                               toastMessage("Please enter a valid date");
-                            }else if (selectedIncidentDistrict == '') {
+                            } else if (selectedCourseType == '') {
                               toastMessage("Please select a type");
-                            } else if (locationController.text.isEmpty && selectedAttendanceType =='Onsite') {
+                            } else if (locationController.text.isEmpty &&
+                                selectedAttendanceType == 'Onsite') {
                               toastMessage("Please enter  a location");
                             } else if (linkController.text.isEmpty) {
                               toastMessage("Please enter a link");
                             } else if (!validLink) {
                               toastMessage("Please enter a valid link");
                             } else {
-             
                               setstate(() {
                                 _loading = true;
                               });
@@ -916,64 +960,64 @@ class CoursesWidget extends StatelessWidget {
               ),
             ),
             SizedBox(height: 5),
-              Visibility(
-                visible: item.attendanceType == 'Onsite',
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.location_on_outlined,
-                      color: mainColor.withOpacity(0.6),
-                      size: 25,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Expanded(
-                      child: Text(
-                        item.location ?? '--',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontFamily: "Poppins",
-                          color: mainColor.withOpacity(0.6),
-                          fontWeight: FontWeight.w400,
-                        ),
+            Visibility(
+              visible: item.attendanceType == 'Onsite',
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.location_on_outlined,
+                    color: mainColor.withOpacity(0.6),
+                    size: 25,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Expanded(
+                    child: Text(
+                      item.location ?? '--',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: "Poppins",
+                        color: mainColor.withOpacity(0.6),
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Visibility(
-                visible: item.attendanceType == 'Online',
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.computer,
-                      color: mainColor.withOpacity(0.6),
-                      size: 25,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Expanded(
-                      child: Text(
-                        'Online',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontFamily: "Poppins",
-                          color: mainColor.withOpacity(0.6),
-                          fontWeight: FontWeight.w400,
-                        ),
+            ),
+            Visibility(
+              visible: item.attendanceType == 'Online',
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.computer,
+                    color: mainColor.withOpacity(0.6),
+                    size: 25,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Expanded(
+                    child: Text(
+                      'Online',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: "Poppins",
+                        color: mainColor.withOpacity(0.6),
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+            ),
             Row(
               children: [
                 if (item.startDate != null || item.endDate != null)
@@ -1003,8 +1047,7 @@ class CoursesWidget extends StatelessWidget {
                               ),
                             if (item.endDate != null)
                               Text(
-                                DateFormat('MMM dd, yy')
-                                    .format(item.endDate!),
+                                DateFormat('MMM dd, yy').format(item.endDate!),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontFamily: "Poppins",
@@ -1070,5 +1113,3 @@ class CoursesWidget extends StatelessWidget {
     );
   }
 }
-
-
