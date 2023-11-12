@@ -13,7 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/course.dart';
 
 class UserCoursesAndEventsPage extends StatefulWidget {
-  const UserCoursesAndEventsPage({super.key});
+  const UserCoursesAndEventsPage({super.key, required String searchQuery});
 
   @override
   State<UserCoursesAndEventsPage> createState() =>
@@ -49,62 +49,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavBarUser(),
-      appBar: AppBar(
-        iconTheme:
-            const IconThemeData(color: Color.fromARGB(255, 255, 255, 255)),
-        backgroundColor: const Color.fromRGBO(37, 6, 81, 0.898),
-        toolbarHeight: showSearchBar ? 120 : 100,
-        automaticallyImplyLeading: true,
-        elevation: 0,
-        shape: const ContinuousRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(80),
-            bottomRight: Radius.circular(80),
-          ),
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Courses and Events',
-                  style: TextStyle(
-                    fontSize: 18, // Adjust the font size
-                    fontFamily: "Poppins",
-                    color: Colors.white,
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                    onPressed: () {
-                      setState(() {
-                        showSearchBar = !showSearchBar;
-                      });
-                    },
-                    icon: Icon(showSearchBar ? Icons.search_off : Icons.search))
-              ],
-            ),
-            if (showSearchBar)
-              TextField(
-                controller: searchController,
-                decoration: const InputDecoration(
-                  hintText: 'Search for the title of course/event',
-                  prefixIcon: Icon(Icons.search),
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 0,
-                  ),
-                  isDense: true,
-                ),
-                onChanged: (text) {
-                  setState(() {});
-                  // Handle search input changes
-                },
-              ),
-          ],
-        ),
-      ),
       floatingActionButton: FloatingActionButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         onPressed: () {
@@ -723,12 +667,11 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                                   .withOpacity(0.5),
                             )),
                         child: DropDownWidget(
-                          selectedItem: selectedCourseType,
-                          list: courseType,
+                          selectedItem: selectedAttendanceType,
+                          list: AttendanceType,
                           onItemSelected: (value) {
                             setstate(() {
-                              selectedCourseType = value!;
-                              print("courseType$selectedCourseType");
+                              selectedAttendanceType = value!;
                             });
                           },
                         ),
@@ -799,8 +742,12 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                                 await isValidUrl(linkController.text);
                             if (titleController.text.isEmpty) {
                               toastMessage("Please enter a title");
+                            } else if (titleController.text.length > 40) {
+                              toastMessage("Please enter a shorter title");
                             } else if (descController.text.isEmpty) {
                               toastMessage("Please enter a description");
+                            } else if (descController.text.length > 255 ) {
+                              toastMessage("Please enter a shorter description");
                             } else if (isDateValid(
                                     courseStartDate, courseEndDate) ==
                                 false) {
@@ -818,7 +765,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                               setstate(() {
                                 _loading = true;
                               });
-
                               await _submitForm();
                               setstate(() {
                                 _loading = false;
@@ -945,7 +891,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                           },
                         ),
                       )
-                    : const Text("You have'not added any requests yet!"),
+                    : const Text("You have not added any requests yet!"),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {

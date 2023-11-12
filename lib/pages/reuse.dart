@@ -5,9 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/pages/AdminProfilePage.dart';
 import 'package:techxcel11/pages/Admin_home.dart';
 import 'package:techxcel11/pages/ChatPage.dart';
+import 'package:techxcel11/pages/UserExplorePage.dart';
 import 'package:techxcel11/pages/Fhome.dart';
 import 'package:techxcel11/pages/FreelancerPage.dart';
-import 'package:techxcel11/pages/UserCoursesAndEventsPage.dart';
 import 'package:techxcel11/pages/UserProfilePage.dart';
 import 'package:techxcel11/pages/aboutus.dart';
 import 'package:techxcel11/pages/bookmark.dart';
@@ -405,7 +405,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => const UserCoursesAndEventsPage()),
+              builder: (context) =>  UserExplorePage()),
         );
         break;
       default:

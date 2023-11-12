@@ -61,5 +61,4 @@ class DefaultFirebaseOptions {
   );
 }
 
-//TECHXCEL-LINA
 

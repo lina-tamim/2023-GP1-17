@@ -691,12 +691,11 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                                   .withOpacity(0.5),
                             )),
                         child: DropDownWidget(
-                          selectedItem: selectedCourseType,
-                          list: courseType,
+                          selectedItem: selectedAttendanceType,
+                          list: AttendanceType,
                           onItemSelected: (value) {
                             setstate(() {
-                              selectedCourseType = value!;
-                              print("incidentDistrict$selectedCourseType");
+                              selectedAttendanceType = value!;
                             });
                           },
                         ),
@@ -767,8 +766,12 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                                 await isValidUrl(linkController.text);
                             if (titleController.text.isEmpty) {
                               toastMessage("Please enter a title");
+                            } else if (titleController.text.length > 40) {
+                              toastMessage("Please enter a shorter title");
                             } else if (descController.text.isEmpty) {
                               toastMessage("Please enter a description");
+                            } else if (descController.text.length > 255 ) {
+                              toastMessage("Please enter a shorter description");
                             } else if (isDateValid(
                                     courseStartDate, courseEndDate) ==
                                 false) {
@@ -786,7 +789,6 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                               setstate(() {
                                 _loading = true;
                               });
-
                               await _submitForm();
                               setstate(() {
                                 _loading = false;

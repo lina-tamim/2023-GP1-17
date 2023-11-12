@@ -265,7 +265,7 @@ class _Login extends State<Login> {
                           fit: BoxFit.contain,
                         ),
                       ),
-                    ),
+                    ), 
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 0, horizontal: 10),

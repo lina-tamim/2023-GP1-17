@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart'; 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:techxcel11/pages/reuse.dart';
+import 'package:lottie/lottie.dart';
+
 
 class AboutUsPage extends StatefulWidget {
   const AboutUsPage({Key? key}) : super(key: key);
@@ -24,45 +26,39 @@ class _AboutUsPageState extends State<AboutUsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Display application name in big font
-              Text(
-                'TechXcel',
-                style: GoogleFonts.orbitron ( 
-    fontSize: 40,
-    fontWeight: FontWeight.bold,
-    color: Colors.black87,
-  ),
-              ),
+              
+                                Image.asset('assets/Backgrounds/XlogoSmall.png'),
+                                const SizedBox(height: 5),
+                    Center(
+                      child: Lottie.network(
+                          'https://lottie.host/623f88bb-cb70-413c-bb1a-0003d0b7e3d6/RnPQM25m8I.json'),
+                    ),
+                                // Brief description of the platform
+                    const Text(
+                    "TechXcel, the all-in-one destination for tech ",
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                  ),
+                                ),
 
-              // Display application logo
-              Image.asset('assets/Backgrounds/XlogoSmall.png'),
-              const SizedBox(height: 30),
+                  Text(
+                  'enthusiasts, professionals, and lifelong learners.',
+                    style: GoogleFonts.satisfy ( // chakraPetch blackOpsOne orbitron
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(221, 62, 17, 17),
+                    ),),
+              SizedBox(height:25),
 
-              // Brief description of the platform
-  const Text(
-  "TechXcel, the all-in-one destination for tech ",
-                style: TextStyle(
-                  fontSize: 13,
-                ),
-              ),
+              const SizedBox(height:25),
+                            const Text(
+                              "At TechXcel, we're passionate about technology and its endless possibilities. Our platform serves as a hub where you can ignite your tech journey, connect with like-minded individuals, and unlock new opportunities.",
+                              style: TextStyle(
+                                fontSize: 13,
+                              ),
+                            ),
 
-Text(
-'enthusiasts, professionals, and lifelong learners.',
-  style: GoogleFonts.satisfy ( // chakraPetch blackOpsOne orbitron
-    fontSize: 20,
-    fontWeight: FontWeight.bold,
-    color: const Color.fromARGB(221, 62, 17, 17),
-  ),),
-
-const SizedBox(height:20),
-              const Text(
-                "At TechXcel, we're passionate about technology and its endless possibilities. Our platform serves as a hub where you can ignite your tech journey, connect with like-minded individuals, and unlock new opportunities.",
-                style: TextStyle(
-                  fontSize: 13,
-                ),
-              ),
-
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
               // Ways to communicate with us
               const Text(
                 'Reach out to us!',
@@ -116,7 +112,6 @@ const SizedBox(height:20),
   }
 }
 
- //TECHXCEL-LINA
 
 
 
