@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:techxcel11/pages/answer.dart';
 import 'package:techxcel11/pages/reuse.dart';
 
-import 'form.dart'; 
+import 'form.dart';
 
 class FHomePage extends StatefulWidget {
   const FHomePage({Key? key}) : super(key: key);
@@ -24,30 +24,37 @@ class __FHomePageState extends State<FHomePage> {
       MaterialPageRoute(builder: (context) => FormWidget()),
     );
   }
- 
+
   bool showSearchBar = false;
   TextEditingController searchController = TextEditingController();
 
-
-Stream<List<CardQuestion>> readQuestion() {
-  Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-      .collection('posts')
-      .where('dropdownValue', isEqualTo: 'Question');
-
-  if (searchController.text.isNotEmpty) {
-    String searchText = searchController.text;
-    query = query.where(
-      FieldPath(['largeTextFieldValue']),
-      isGreaterThanOrEqualTo: searchText.toLowerCase(),
-      isLessThanOrEqualTo: searchText.toLowerCase() + '\uf8ff',
+  void showInputDialog() {
+    showAlertDialog(
+      context,
+      FormWidget(),
     );
-  } else {
-    query = query.orderBy('postedDate', descending: true);
   }
 
-  return query.snapshots().asyncMap((snapshot) async {
+  Stream<List<CardQuestion>> readQuestion() {
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+        .collection('posts')
+        .where('dropdownValue', isEqualTo: 'Question');
+
+    if (searchController.text.isNotEmpty) {
+      String searchText = searchController.text;
+      query = query.where(
+        FieldPath(['largeTextFieldValue']),
+        isGreaterThanOrEqualTo: searchText.toLowerCase(),
+        isLessThanOrEqualTo: searchText.toLowerCase() + '\uf8ff',
+      );
+    } else {
+      query = query.orderBy('postedDate', descending: true);
+    }
+
+    return query.snapshots().asyncMap((snapshot) async {
       final questions = snapshot.docs
-          .map((doc) => CardQuestion.fromJson(doc.data() as Map<String, dynamic>))
+          .map((doc) =>
+              CardQuestion.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
       if (questions.isEmpty) return [];
 
@@ -58,7 +65,8 @@ Stream<List<CardQuestion>> readQuestion() {
           .get();
 
       final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String, doc.data() as Map<String, dynamic>)));
+          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+              doc.data() as Map<String, dynamic>)));
 
       questions.forEach((question) {
         final userDoc = userMap[question.userId];
@@ -69,7 +77,8 @@ Stream<List<CardQuestion>> readQuestion() {
       });
 
       // Check if any userIds were not found in the 'users' collection
-      final userIdsNotFound = userIds.where((userId) => !userMap.containsKey(userId)).toList();
+      final userIdsNotFound =
+          userIds.where((userId) => !userMap.containsKey(userId)).toList();
       userIdsNotFound.forEach((userId) {
         questions.forEach((question) {
           if (question.userId == userId) {
@@ -80,74 +89,23 @@ Stream<List<CardQuestion>> readQuestion() {
       });
 
       return questions;
-    
-  });
-}
-
-Stream<List<CardFT>> readTeam() {
-  Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-      .collection('posts')
-      .where('dropdownValue', isEqualTo: 'Team Collaberation');
-
-  if (searchController.text.isNotEmpty) {
-    String searchText = searchController.text.toLowerCase(); // Convert search text to lowercase
-    query = query.where('textFieldValue', isGreaterThanOrEqualTo: searchText)
-                 .where('textFieldValue', isLessThanOrEqualTo: searchText + '\uf8ff');
-  } else {
-    query = query.orderBy('postedDate', descending: true);
+    });
   }
 
-  return query.snapshots().asyncMap((snapshot) async {
-    final questions = snapshot.docs
-        .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
-        .toList();
-    if (questions.isEmpty) return [];
-    final userIds = questions.map((question) => question.userId).toList();
-    final userDocs = await FirebaseFirestore.instance
-        .collection('users')
-        .where('email', whereIn: userIds)
-        .get();
-
-    final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-        userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-            doc.data() as Map<String, dynamic>)));
-
-    questions.forEach((question) {
-      final userDoc = userMap[question.userId];
-      final username = userDoc?['userName'] as String? ?? '';
-      final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-      question.username = username;
-      question.userPhotoUrl = userPhotoUrl;
-    });
-
-    // Check if any userIds were not found in the 'users' collection
-    final userIdsNotFound = userIds.where((userId) => !userMap.containsKey(userId)).toList();
-    userIdsNotFound.forEach((userId) {
-      questions.forEach((question)  {
-        if (question.userId == userId) {
-          question.username = 'DeactivatedUser';
-          question.userPhotoUrl ='';
-        }
-      });
-    });
-    return questions;
-  });
-}
-
-
-  Stream<List<CardFT>> readProjects() {
+  Stream<List<CardFT>> readTeam() {
     Query<Map<String, dynamic>> query = FirebaseFirestore.instance
         .collection('posts')
-        .where('dropdownValue', isEqualTo: 'Project');
+        .where('dropdownValue', isEqualTo: 'Team Collaberation');
 
-if (searchController.text.isNotEmpty) {
-  String searchText = searchController.text.toLowerCase(); // Convert search text to lowercase
-  query = query
-      .where('textFieldValue', isGreaterThanOrEqualTo: searchText)
-      .where('textFieldValue', isLessThanOrEqualTo: searchText + '\uf8ff');
-} else {
-  query = query.orderBy('postedDate', descending: true);
-}
+    if (searchController.text.isNotEmpty) {
+      String searchText = searchController.text
+          .toLowerCase(); // Convert search text to lowercase
+      query = query
+          .where('textFieldValue', isGreaterThanOrEqualTo: searchText)
+          .where('textFieldValue', isLessThanOrEqualTo: searchText + '\uf8ff');
+    } else {
+      query = query.orderBy('postedDate', descending: true);
+    }
 
     return query.snapshots().asyncMap((snapshot) async {
       final questions = snapshot.docs
@@ -161,39 +119,94 @@ if (searchController.text.isNotEmpty) {
           .get();
 
       final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-        userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-            doc.data() as Map<String, dynamic>)));
+          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+              doc.data() as Map<String, dynamic>)));
 
-    questions.forEach((question) {
-      final userDoc = userMap[question.userId];
-      final username = userDoc?['userName'] as String? ?? '';
-      final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
-      question.username = username;
-      question.userPhotoUrl = userPhotoUrl;
-    });
-
-    // Check if any userIds were not found in the 'users' collection
-    final userIdsNotFound = userIds.where((userId) => !userMap.containsKey(userId)).toList();
-    userIdsNotFound.forEach((userId) {
-      questions.forEach((question)  {
-        if (question.userId == userId) {
-          question.username = 'DeactivatedUser';
-           question.userPhotoUrl ='';
-        }
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['userName'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
       });
+
+      // Check if any userIds were not found in the 'users' collection
+      final userIdsNotFound =
+          userIds.where((userId) => !userMap.containsKey(userId)).toList();
+      userIdsNotFound.forEach((userId) {
+        questions.forEach((question) {
+          if (question.userId == userId) {
+            question.username = 'DeactivatedUser';
+            question.userPhotoUrl = '';
+          }
+        });
+      });
+      return questions;
     });
-    return questions;
-  });
-}
+  }
+
+  Stream<List<CardFT>> readProjects() {
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+        .collection('posts')
+        .where('dropdownValue', isEqualTo: 'Project');
+
+    if (searchController.text.isNotEmpty) {
+      String searchText = searchController.text
+          .toLowerCase(); // Convert search text to lowercase
+      query = query
+          .where('textFieldValue', isGreaterThanOrEqualTo: searchText)
+          .where('textFieldValue', isLessThanOrEqualTo: searchText + '\uf8ff');
+    } else {
+      query = query.orderBy('postedDate', descending: true);
+    }
+
+    return query.snapshots().asyncMap((snapshot) async {
+      final questions = snapshot.docs
+          .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+      if (questions.isEmpty) return [];
+      final userIds = questions.map((question) => question.userId).toList();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', whereIn: userIds)
+          .get();
+
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+              doc.data() as Map<String, dynamic>)));
+
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['userName'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
+      });
+
+      // Check if any userIds were not found in the 'users' collection
+      final userIdsNotFound =
+          userIds.where((userId) => !userMap.containsKey(userId)).toList();
+      userIdsNotFound.forEach((userId) {
+        questions.forEach((question) {
+          if (question.userId == userId) {
+            question.username = 'DeactivatedUser';
+            question.userPhotoUrl = '';
+          }
+        });
+      });
+      return questions;
+    });
+  }
 
   Widget buildQuestionCard(CardQuestion question) => Card(
         child: ListTile(
-            leading: CircleAvatar(
+          leading: CircleAvatar(
             radius: 30, // Adjust the radius to make the avatar bigger
-  backgroundImage: question.userPhotoUrl != ''
-      ? NetworkImage(question.userPhotoUrl!)
-      : const AssetImage('assets/Backgrounds/defaultUserPic.png') as ImageProvider<Object>, // Cast to ImageProvider<Object>
-),
+            backgroundImage: question.userPhotoUrl != ''
+                ? NetworkImage(question.userPhotoUrl!)
+                : const AssetImage('assets/Backgrounds/defaultUserPic.png')
+                    as ImageProvider<Object>, // Cast to ImageProvider<Object>
+          ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -201,9 +214,9 @@ if (searchController.text.isNotEmpty) {
               Text(
                 question.username ?? '', // Display the username
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.deepPurple,
-                    fontSize : 16),
-                    
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurple,
+                    fontSize: 16),
               ),
               SizedBox(height: 5),
               Text(
@@ -265,6 +278,7 @@ if (searchController.text.isNotEmpty) {
           ),
         ),
       );
+
   Widget buildTeamCard(CardFT team) {
     final formattedDate =
         DateFormat.yMMMMd().format(team.date); // Format the date
@@ -273,11 +287,12 @@ if (searchController.text.isNotEmpty) {
       child: Column(
         children: [
           ListTile(
-        leading: CircleAvatar(
-  backgroundImage: team.userPhotoUrl != ''
-      ? NetworkImage(team.userPhotoUrl!)
-      : const AssetImage('assets/Backgrounds/defaultUserPic.png') as ImageProvider<Object>, // Cast to ImageProvider<Object>
-),
+            leading: CircleAvatar(
+              backgroundImage: team.userPhotoUrl != ''
+                  ? NetworkImage(team.userPhotoUrl!)
+                  : const AssetImage('assets/Backgrounds/defaultUserPic.png')
+                      as ImageProvider<Object>, // Cast to ImageProvider<Object>
+            ),
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -361,6 +376,7 @@ if (searchController.text.isNotEmpty) {
       ),
     );
   }
+
 //team collab
 
   @override
@@ -382,8 +398,10 @@ if (searchController.text.isNotEmpty) {
           iconTheme:
               IconThemeData(color: const Color.fromARGB(255, 255, 255, 255)),
           backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
-          toolbarHeight: 100, // Adjust the height of the AppBar
-          elevation: 0, // Adjust the position of the AppBar
+          toolbarHeight: 100,
+          // Adjust the height of the AppBar
+          elevation: 0,
+          // Adjust the position of the AppBar
           shape: ContinuousRectangleBorder(
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(130),
@@ -449,9 +467,10 @@ if (searchController.text.isNotEmpty) {
                 child: Text(
                   'Questions',
                   style: TextStyle(
-                   fontSize : 16,
-                   fontWeight: FontWeight.bold,
-                    color: Color.fromARGB( 255, 245, 227, 255), // Set the desired color here
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(
+                        255, 245, 227, 255), // Set the desired color here
                   ),
                 ),
               ),
@@ -459,9 +478,10 @@ if (searchController.text.isNotEmpty) {
                 child: Text(
                   'Build Team',
                   style: TextStyle(
-                   fontSize : 16,
-                   fontWeight: FontWeight.bold,
-                    color: Color.fromARGB( 255, 245, 227, 255), // Set the desired color here
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(
+                        255, 245, 227, 255), // Set the desired color here
                   ),
                 ),
               ),
@@ -469,9 +489,10 @@ if (searchController.text.isNotEmpty) {
                 child: Text(
                   'Projects',
                   style: TextStyle(
-                   fontSize : 16,
-                   fontWeight: FontWeight.bold,
-                   color: Color.fromARGB( 255, 245, 227, 255), // Set the desired color here
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(
+                        255, 245, 227, 255), // Set the desired color here
                   ),
                 ),
               ),
@@ -481,7 +502,8 @@ if (searchController.text.isNotEmpty) {
 
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            _toggleFormVisibility();
+            showInputDialog();
+            // _toggleFormVisibility();
           },
           backgroundColor: Color.fromARGB(255, 156, 147, 176),
           child: const Icon(Icons.add),
@@ -573,8 +595,6 @@ if (searchController.text.isNotEmpty) {
     );
   }
 }
-
-
 
 void _showSnackBar(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(
