@@ -1,9 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:techxcel11/pages/UserCoursesAndEventsPage.dart';
 import 'package:techxcel11/pages/UserPathways.dart';
 import 'package:techxcel11/pages/UserProfilePage.dart';
 import 'package:techxcel11/pages/reuse.dart';
-
 
 class UserExplorePage extends StatefulWidget {
   @override
@@ -28,8 +29,7 @@ class _UserExplorePageState extends State<UserExplorePage>
     super.dispose();
   }
 
-  AppBar buildAppBarWithTabs(
-      String titleText, TabController tabController) {
+  AppBar buildAppBarWithTabs(String titleText, TabController tabController) {
     return AppBar(
       automaticallyImplyLeading: false,
       iconTheme: IconThemeData(color: const Color.fromARGB(255, 255, 255, 255)),
@@ -105,7 +105,8 @@ class _UserExplorePageState extends State<UserExplorePage>
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 245, 227, 255), // Set the desired color here
+                color: Color.fromARGB(
+                    255, 245, 227, 255), // Set the desired color here
               ),
             ),
           ),
@@ -115,7 +116,8 @@ class _UserExplorePageState extends State<UserExplorePage>
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 245, 227, 255), // Set the desired color here
+                color: Color.fromARGB(
+                    255, 245, 227, 255), // Set the desired color here
               ),
             ),
           ),
@@ -126,18 +128,23 @@ class _UserExplorePageState extends State<UserExplorePage>
 
   @override
   Widget build(BuildContext context) {
+    print('MK: main of explore: ${searchController.text}');
     return Scaffold(
       appBar: buildAppBarWithTabs('Explore', _tabController),
       drawer: NavBarUser(),
       body: TabBarView(
         controller: _tabController,
         children: [
-          UserCoursesAndEventsPage(searchQuery: searchController.text),
-          UserPathwaysPage(searchQuery: searchController.text),
+          UserCoursesAndEventsPage(
+            searchQuery: searchController.text,
+            key: UniqueKey(),
+          ),
+          UserPathwaysPage(
+            searchQuery: searchController.text,
+            key: UniqueKey(),
+          ),
         ],
       ),
     );
   }
 }
-
-

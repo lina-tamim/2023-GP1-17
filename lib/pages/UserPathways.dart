@@ -18,7 +18,8 @@ import 'package:techxcel11/pages/reuse.dart';
 enum ExerciseFilter { walking, running, cycling, hiking }
 
 class UserPathwaysPage extends StatefulWidget {
-  const UserPathwaysPage({super.key, required String searchQuery});
+  const UserPathwaysPage({super.key, required this.searchQuery});
+  final String searchQuery;
 
   @override
   State<UserPathwaysPage> createState() => _UserPathwaysPageState();
@@ -50,7 +51,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
 
   bool showSearchtBarPath = false;
 
-  TextEditingController searchpathController = TextEditingController();
+  // TextEditingController searchpathController = TextEditingController();
 
   Stream<List<PathwayContainer>> readPathway() {
     Query<Map<String, dynamic>> query =
@@ -58,11 +59,10 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
 
     // search
 
-    if (searchpathController.text.isNotEmpty) {
+    if (widget.searchQuery.isNotEmpty) {
       query = query
-          .where('title', isGreaterThanOrEqualTo: searchpathController.text)
-          .where('title',
-              isLessThanOrEqualTo: searchpathController.text + '\uf8ff');
+          .where('title', isGreaterThanOrEqualTo: widget.searchQuery)
+          .where('title', isLessThanOrEqualTo: widget.searchQuery + '\uf8ff');
     }
 
     return query.snapshots().asyncMap((snapshot) async {
@@ -236,7 +236,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-             // FilterChipExample(key: UniqueKey()),
+              // FilterChipExample(key: UniqueKey()),
             ),
           ),
           Expanded(
@@ -245,7 +245,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final q = snapshot.data!;
-                  final filterText = searchpathController.text.toLowerCase();
+                  final filterText = widget.searchQuery.toLowerCase();
 
                   if (q.isEmpty) {
                     return Center(

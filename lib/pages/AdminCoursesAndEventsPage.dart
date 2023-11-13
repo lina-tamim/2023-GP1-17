@@ -770,8 +770,9 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                               toastMessage("Please enter a shorter title");
                             } else if (descController.text.isEmpty) {
                               toastMessage("Please enter a description");
-                            } else if (descController.text.length > 255 ) {
-                              toastMessage("Please enter a shorter description");
+                            } else if (descController.text.length > 255) {
+                              toastMessage(
+                                  "Please enter a shorter description");
                             } else if (isDateValid(
                                     courseStartDate, courseEndDate) ==
                                 false) {

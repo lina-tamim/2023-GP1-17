@@ -13,7 +13,9 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/course.dart';
 
 class UserCoursesAndEventsPage extends StatefulWidget {
-  const UserCoursesAndEventsPage({super.key, required String searchQuery});
+  const UserCoursesAndEventsPage({super.key, required this.searchQuery});
+
+  final String searchQuery;
 
   @override
   State<UserCoursesAndEventsPage> createState() =>
@@ -31,7 +33,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
   final descController = TextEditingController();
   final locationController = TextEditingController();
   final linkController = TextEditingController();
-  final searchController = TextEditingController();
+  // final searchController = TextEditingController();
   DateTime? courseStartDate;
   DateTime? courseEndDate;
   Course? item;
@@ -399,13 +401,12 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
         .where('type', isEqualTo: type)
         .where('approval', isEqualTo: 'Yes');
 
-    if (searchController.text.isNotEmpty) {
+    if (widget.searchQuery.isNotEmpty) {
       query = query
           .where('title',
-              isGreaterThanOrEqualTo: searchController.text.toLowerCase())
+              isGreaterThanOrEqualTo: widget.searchQuery.toLowerCase())
           .where('title',
-              isLessThanOrEqualTo:
-                  searchController.text.toLowerCase() + '\uf8ff');
+              isLessThanOrEqualTo: widget.searchQuery.toLowerCase() + '\uf8ff');
     } else {
       query = query.orderBy('created_at', descending: true);
     }
@@ -510,7 +511,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                           onItemSelected: (value) {
                             setstate(() {
                               selectedCourseType = value!;
-                              print("incidentDistrict$selectedCourseType");
+                              print("courseType$selectedCourseType");
                             });
                           },
                         ),
@@ -746,8 +747,9 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                               toastMessage("Please enter a shorter title");
                             } else if (descController.text.isEmpty) {
                               toastMessage("Please enter a description");
-                            } else if (descController.text.length > 255 ) {
-                              toastMessage("Please enter a shorter description");
+                            } else if (descController.text.length > 255) {
+                              toastMessage(
+                                  "Please enter a shorter description");
                             } else if (isDateValid(
                                     courseStartDate, courseEndDate) ==
                                 false) {
