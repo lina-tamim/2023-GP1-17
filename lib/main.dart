@@ -31,7 +31,7 @@ class MainApp extends StatelessWidget {
           errorBorder: defaultInputBorder,
         ),
       ),
-      home:  const OnboardingScreen(),
+      home: const OnboardingScreen(),
     );
   }
 }

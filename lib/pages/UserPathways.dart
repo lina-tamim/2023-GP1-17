@@ -15,7 +15,7 @@ import '../user_image.dart';
 import 'package:lottie/lottie.dart';
 import 'package:techxcel11/pages/reuse.dart';
 
-enum ExerciseFilter { walking, running, cycling, hiking }
+//enum ExerciseFilter { walking, running, cycling, hiking }
 
 class UserPathwaysPage extends StatefulWidget {
   const UserPathwaysPage({super.key, required this.searchQuery});
@@ -49,6 +49,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
     });
   }
 
+  List<String> filteredTopics = [];
   bool showSearchtBarPath = false;
 
   // TextEditingController searchpathController = TextEditingController();
@@ -58,7 +59,6 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
         FirebaseFirestore.instance.collection('pathway');
 
     // search
-
     if (widget.searchQuery.isNotEmpty) {
       query = query
           .where('title', isGreaterThanOrEqualTo: widget.searchQuery)
@@ -72,8 +72,26 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
           .toList();
       if (pathway.isEmpty) return [];
 
+      // topic filter
+      if (filteredTopics.isNotEmpty) {
+        return pathway
+            .where((path) => filteredTopics.contains(path.Key_topic))
+            .toList();
+      }
+
       return pathway;
     });
+  }
+
+  List<PathwayContainer> filterPathways(List<PathwayContainer> pathways) {
+    final filterText = widget.searchQuery.toLowerCase();
+
+    return pathways.where((pathway) {
+      final titleMatches = pathway.title.toLowerCase().contains(filterText);
+      final topicMatches =
+          filteredTopics.isEmpty || filteredTopics.contains(pathway.Key_topic);
+      return titleMatches && topicMatches;
+    }).toList();
   }
 
   Widget buildpathwayCard(PathwayContainer pathway) {
@@ -86,6 +104,16 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
       // Display the image from URL
       imageWidget = Image.network(pathway.imagePath);
     }
+
+    // Check if the pathway contains any of the selected topics
+    final containsSelectedTopics =
+        filteredTopics.isEmpty || filteredTopics.contains(pathway.Key_topic);
+
+    if (!containsSelectedTopics) {
+      // Return an empty Container if the pathway doesn't match the selected topics
+      return Container();
+    }
+
     return Padding(
       padding: EdgeInsets.all(8.0), // Add space between each card
       child: FractionallySizedBox(
@@ -223,6 +251,87 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Container(
+          padding: EdgeInsets.only(top: 20),
+          child: Center(
+            child: Column(
+              children: [
+                Text(
+                  'I want to learn...',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 10, left: 10),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Wrap(
+                          spacing: 4.0,
+                          runSpacing: 2.0,
+                          children: _SelectTopicFilter.map(
+                            (topic) => Chip(
+                              label: Text(
+                                topic,
+                                style: TextStyle(fontSize: 12.0),
+                              ),
+                            ),
+                          ).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _showMultiSelectTopic(context);
+                  },
+                  child: const Text('Select Topics'),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          child: StreamBuilder<List<PathwayContainer>>(
+            stream: readPathway(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final pathways = snapshot.data!;
+
+                if (pathways.isEmpty) {
+                  return Center(
+                    child: Text('No Pathways Yet'),
+                  );
+                }
+
+                final filteredPathways = filterPathways(pathways);
+
+                return ListView(
+                  children: [
+                    ...filteredPathways.map(buildpathwayCard).toList(),
+                  ],
+                );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text('Error: ${snapshot.error}'),
+                );
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
+          ),
+        ),
+      ]),
+
+      /*
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -237,6 +346,29 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
                 ),
               ),
               // FilterChipExample(key: UniqueKey()),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 10, left: 10),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Wrap(
+                    spacing: 4.0,
+                    runSpacing: 2.0,
+                    children: _SelectTopicFilter.map(
+                      (topic) => Chip(
+                        label: Text(
+                          topic,
+                          style: TextStyle(fontSize: 12.0),
+                        ),
+                      ),
+                    ).toList(),
+                  ),
+                ],
+              ),
             ),
           ),
           Expanded(
@@ -276,7 +408,8 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
             ),
           ),
         ],
-      ),
+      ),*/
+
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -448,6 +581,12 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
                                   ),
                                 ),
                               ),
+                            ElevatedButton(
+                              onPressed: () {
+                                _showMultiSelectTopic(context);
+                              },
+                              child: const Text('Select Topics'),
+                            ),
                           ],
                         );
                       }).toList(),
@@ -469,57 +608,165 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
       },
     );
   }
-}
 
-/*
-class FilterChipExample extends StatefulWidget {
-  const FilterChipExample({required Key key}) : super(key: key);
+  List<String> _SelectTopicFilter = [];
 
-  @override
-  State<FilterChipExample> createState() => _FilterChipExampleState();
-}
+  void _showMultiSelectTopic(BuildContext context) async {
+    // Rest of the code remains the same
+    final Map<String, List<String>> topicGroups = {
+      'Data Science': [
+        'Python',
+        'R',
+        'Tableau',
+        'Machine learning and artificial intelligence',
+        'Big data technologies (Hadoop, Apache Spark)',
+        'Data science',
+        'Statistical analysis',
+        'Natural language processing (NLP)',
+        'Robotic process automation (RPA)',
+      ],
+      'Database Management': [
+        'Database management SQL',
+        'Database management NoSQL',
+        'Database management NewSQL',
+      ],
+      'Programming Languages': [
+        'Java',
+        'Node.js',
+        'React',
+        'C#',
+        'C++',
+      ],
+      'Web Development': [
+        'Web development (HTML)',
+        'Web development (CSS)',
+        'Web development (JavaScript)',
+        'Web development (PHP)',
+      ],
+      'Mobile App Development': [
+        'Mobile app development (iOS, Android)',
+        'UI/UX design',
+        'Swift',
+        'Ruby',
+        'Flutter and Dart',
+      ],
+      'Other Topics': [
+        'Agile and Scrum methodologies',
+        'Virtual reality (VR)',
+        'Augmented reality (AR)',
+        'Cloud computing',
+        'Cybersecurity',
+        'Network',
+        'Blockchain',
+        'Internet of Things (IoT)',
+      ],
+      'Soft Skills': [
+        'Critical thinking',
+        'Problem-solving',
+        'Communication skills',
+        'Collaboration',
+        'Attention to detail',
+        'Logical reasoning',
+        'Creativity',
+        'Time management',
+        'Adaptability',
+        'Leadership',
+        'Teamwork',
+        'Presentation skills',
+      ],
+    };
 
-class _FilterChipExampleState extends State<FilterChipExample> {
-  Set<ExerciseFilter> filters = <ExerciseFilter>{};
+    final List<String> items = topicGroups.keys.toList();
 
-  @override
-  Widget build(BuildContext context) {
-    final TextTheme textTheme = Theme.of(context).textTheme;
+    final List<String> selectedTopics = List<String>.from(
+        _SelectTopicFilter); // Store the selected topics outside of the dialog
 
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text('Choose an exercise', style: textTheme.headline6),
-          const SizedBox(height: 5.0),
-          Wrap(
-            spacing: 5.0,
-            children: ExerciseFilter.values.map((ExerciseFilter exercise) {
-              return FilterChip(
-                label: Text(exercise.name),
-                selected: filters.contains(exercise),
-                onSelected: (bool selected) {
-                  setState(() {
-                    if (selected) {
-                      filters.add(exercise);
-                    } else {
-                      filters.remove(exercise);
-                    }
-                  });
-                },
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 10.0),
-          Text(
-            'Looking for: ${filters.map((ExerciseFilter e) => e.name).join(', ')}',
-            style: textTheme.headline6,
-          ),
-        ],
-      ),
+    final List<String>? result = await showDialog<List<String>>(
+      context: context,
+      builder: (BuildContext context) {
+        final List<String> chosenTopics = List<String>.from(_SelectTopicFilter);
+
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: const Text('Select Topics'),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    for (String group in items)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            group,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          ...topicGroups[group]!.map((String topic) {
+                            return CheckboxListTile(
+                              title: Text(topic),
+                              value: chosenTopics.contains(topic),
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  if (value == true) {
+                                    chosenTopics.add(topic);
+                                  } else {
+                                    chosenTopics.remove(topic);
+                                  }
+                                });
+                              },
+                            );
+                          }),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(chosenTopics);
+                    setState(() {
+                      // Update filteredTopics with chosenTopics
+                      // Make sure chosenTopics is a List<String> containing selected topics
+                      filteredTopics = chosenTopics;
+                    });
+                  },
+                  child: const Text('Done'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
+
+    if (result != null) {
+      setState(() {
+        _SelectTopicFilter = result;
+      });
+    }
   }
-}*/
+}
+
+
+
+  
+
+
+
+
+//TECHXCEL-LINA
+
 
 
 

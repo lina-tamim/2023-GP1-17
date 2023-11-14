@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:techxcel11/pages/AdminCoursesAndEventsRequestsPage.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:techxcel11/pages/login.dart';
+import 'package:techxcel11/pages/AdminPathways.dart';
+
 import 'AdminCoursesAndEventsPage.dart';
 
 class AdminHome extends StatefulWidget {
@@ -71,7 +73,8 @@ class _AdminHome extends State<AdminHome> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const AdminCoursesAndEventsPage()),
+                            builder: (context) =>
+                                const AdminCoursesAndEventsPage()),
                       );
                     },
                     child: itemDashboard(
@@ -86,7 +89,7 @@ class _AdminHome extends State<AdminHome> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const AdminHome()),
+                            builder: (context) => const AdminPathways()),
                       );
                     },
                     child: itemDashboard(
@@ -101,7 +104,8 @@ class _AdminHome extends State<AdminHome> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const AdminCoursesAndEventsRequestsPage()),
+                            builder: (context) =>
+                                const AdminCoursesAndEventsRequestsPage()),
                       );
                     },
                     child: itemDashboard(
