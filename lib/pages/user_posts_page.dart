@@ -166,7 +166,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   IconButton(
                     icon: Icon(Icons.report),
                     onPressed: () {
-                      // Add your functionality for the button here
+                      // Add functionality next sprints
                     },
                   ),
                   PostDeleteButton(docId: question.docId),
@@ -176,8 +176,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
           ),
         ),
       );
-
-//team collab
   Stream<List<CardFTview>> readTeam() {
     return FirebaseFirestore.instance
         .collection('posts')

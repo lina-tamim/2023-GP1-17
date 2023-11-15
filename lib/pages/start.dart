@@ -43,8 +43,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   left: 300,
                   child: Image.asset(
                     txlLogo,
-                    width: 250, // Adjust the width of the logo as desired
-                    height: 250, // Adjust the height of the logo as desired
+                    width: 250, 
+                    height: 250, 
                   ),
                 ),
                 const Padding(

@@ -772,63 +772,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                             ),
                           ),
                         )
-                      //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++lina mmmm
                       else
-                        /*ElevatedButton(
-                          onPressed: () async {
-                            bool validLink =
-                                await isValidUrl(linkController.text);
-                            if (titleController.text.isEmpty) {
-                              toastMessage("Please enter a title");
-                            } else if (titleController.text.length > 40) {
-                              toastMessage("Please enter a shorter title");
-                            } else if (descController.text.isEmpty) {
-                              toastMessage("Please enter a description");
-                            } else if (descController.text.length > 255) {
-                              toastMessage(
-                                  "Please enter a shorter description");
-                            } else if (isDateValid(
-                                    courseStartDate, courseEndDate) ==
-                                false) {
-                              toastMessage("Please enter a valid date");
-                            } else if (selectedCourseType == '') {
-                              toastMessage("Please select a type");
-                            } else if (locationController.text.isEmpty &&
-                                selectedAttendanceType == 'Onsite') {
-                              toastMessage("Please enter a location");
-                            } else if (linkController.text.isEmpty) {
-                              toastMessage("Please enter a link");
-                            } else if (!validLink) {
-                              toastMessage("Please enter a valid link");
-                            } else {
-                              setState(() {
-                                _loading = true;
-                              });
-                              await _submitForm();
-                              setState(() {
-                                _loading = false;
-                              });
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            primary: Color.fromARGB(255, 198, 180, 247),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            elevation: 10,
-                            shadowColor:
-                                Color.fromARGB(255, 0, 0, 0).withOpacity(1),
-                          ),
-                          child: Text(
-                            'Submit',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        )
-*/
                         GestureDetector(
                           onTap: () async {
                             bool validLink =
@@ -1139,6 +1083,7 @@ class CoursesWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 0),
+      child: SingleChildScrollView(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
         padding: const EdgeInsets.only(top: 10, right: 13, left: 13),
@@ -1210,15 +1155,18 @@ class CoursesWidget extends StatelessWidget {
                   color: mainColor,
                   fontWeight: FontWeight.w400),
             ),
-            Text(
-              item.description ?? '--',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+            Container(
+              width: MediaQuery.of(context).size.width, // Adjust the width as needed
+              child: Text(
+                'Description: ${item.description}',
+                style: const TextStyle(
                   fontSize: 15,
                   fontFamily: "Poppins",
-                  color: mainColor.withOpacity(0.6),
-                  fontWeight: FontWeight.w400),
+                  color: mainColor,
+                ),
+                softWrap: true,
+                maxLines: null, // Allow multiple lines
+              ),
             ),
             const SizedBox(height: 5),
             Visibility(
@@ -1357,6 +1305,7 @@ class CoursesWidget extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }

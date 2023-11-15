@@ -1,9 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:techxcel11/pages/UserCoursesAndEventsPage.dart';
 import 'package:techxcel11/pages/UserPathways.dart';
-import 'package:techxcel11/pages/UserProfilePage.dart';
 import 'package:techxcel11/pages/reuse.dart';
 
 class UserExplorePage extends StatefulWidget {

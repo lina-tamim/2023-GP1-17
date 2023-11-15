@@ -905,6 +905,7 @@ class CoursesWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 0),
+      child: SingleChildScrollView(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
         padding: const EdgeInsets.only(right: 12, left: 12),
@@ -953,8 +954,7 @@ class CoursesWidget extends StatelessWidget {
             ),
             Text(
               item.description ?? '--',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+              maxLines: null,
               style: TextStyle(
                 fontSize: 15,
                 fontFamily: "Poppins",
@@ -1113,6 +1113,7 @@ class CoursesWidget extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }

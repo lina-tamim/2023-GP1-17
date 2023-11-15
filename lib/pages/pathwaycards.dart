@@ -10,8 +10,6 @@ class PathwayContainer extends StatelessWidget {
   final List<String> subtopics;
   final List<String> descriptions;
 
-  //final List<List<TextEditingController>> resources; // Updated field
-
   const PathwayContainer({
     required this.imagePath,
     required this.title,
@@ -19,7 +17,6 @@ class PathwayContainer extends StatelessWidget {
     required this.Key_topic,
     required this.subtopics,
     required this.descriptions,
-    //required this.resources, // Updated parameter
   });
 
   Map<String, dynamic> toJson() => {

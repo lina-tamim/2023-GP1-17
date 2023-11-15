@@ -198,7 +198,7 @@ class _AdminCoursesAndEventsRequestsPageState
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      "Events Courses",
+                      "Events Requests",
                       style: TextStyle(
                           fontSize: 20,
                           fontFamily: "Poppins",
@@ -260,7 +260,7 @@ class _AdminCoursesAndEventsRequestsPageState
     Query<Map<String, dynamic>> query = FirebaseFirestore.instance
         .collection('Program')
         .where('type', isEqualTo: type)
-        .where('approval', isEqualTo: 'Yes');
+        .where('approval', isEqualTo: 'Pending');
 
     if (searchController.text.isNotEmpty) {
       query = query
@@ -297,6 +297,7 @@ class CoursesWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 0),
+      child: SingleChildScrollView(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
         padding: const EdgeInsets.only(right: 12, left: 12),
@@ -341,14 +342,19 @@ class CoursesWidget extends StatelessWidget {
               style: const TextStyle(
                   fontSize: 17, fontFamily: "Poppins", color: mainColor),
             ),
-            Text(
-              'Description: ${item.description}',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                  fontSize: 15, fontFamily: "Poppins", color: mainColor),
+            Container(
+              width: MediaQuery.of(context).size.width, // Adjust the width as needed
+              child: Text(
+                'Description: ${item.description}',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontFamily: "Poppins",
+                  color: mainColor,
+                ),
+                softWrap: true,
+                maxLines: null, // Allow multiple lines
+              ),
             ),
-
             Visibility(
               visible: item.attendanceType == 'Onsite',
               child: Row(
@@ -441,32 +447,38 @@ class CoursesWidget extends StatelessWidget {
                   ),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (item.link != null)
-                  TextButton(
-                    onPressed: () async {
-                      if (await canLaunchUrl(Uri.parse(item.link!))) {
-                        await launchUrl(Uri.parse(item.link!));
-                      } else {
-                        toastMessage('Unable to show details');
-                      }
-                    },
-                    child: Text(
-                      'Link for more details: ${item.link}',
-                      style: const TextStyle(
-                          fontSize: 15,
-                          fontFamily: "Poppins",
-                          decoration: TextDecoration.underline,
-                          color: mainColor,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  )
-                else
-                  const SizedBox(),
-              ],
-            ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (item.link != null)
+                    TextButton(
+                      onPressed: () async {
+                        if (await canLaunchUrl(Uri.parse(item.link!))) {
+                          await launchUrl(Uri.parse(item.link!));
+                        } else {
+                          toastMessage('Unable to show details');
+                        }
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.7, // Adjust the width as needed
+                        child: Text(
+                          'Link for more details: ${item.link}',
+                          softWrap: true,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontFamily: "Poppins",
+                            decoration: TextDecoration.underline,
+                            color: mainColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: null, // Allow multiple lines
+                        ),
+                      ),
+                    )
+                  else
+                    const SizedBox(),
+                ],
+              ),
             Row(
               children: [
                 SizedBox(width: 30),
@@ -546,6 +558,7 @@ class CoursesWidget extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 
@@ -560,7 +573,7 @@ class CoursesWidget extends StatelessWidget {
       await formCollection.doc(item.docId).update({
         'approval': newStatus,
       });
-      toastMessage('Request has been sent to the public!');
+      toastMessage('Request has been Rejected');
     }
   }
 }

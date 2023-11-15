@@ -21,7 +21,6 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
-// lotti class
 class ValidationAnimation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
