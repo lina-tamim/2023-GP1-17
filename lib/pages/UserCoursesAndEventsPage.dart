@@ -57,12 +57,14 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
           clearAllFields();
           showInputDialog();
         },
+        backgroundColor: Color.fromARGB(255, 156, 147, 176),
         child: const Tooltip(
           message: '  Add a course or event now!   ',
           child: Icon(
             Icons.add,
-            color: Colors.white,
+            color: Color.fromARGB(255, 255, 255, 255),
             size: 25,
+            //backgroundcolor: Color.fromARGB(255, 255, 255, 255),
           ),
         ),
       ),
@@ -144,7 +146,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                                     fontWeight: FontWeight.w100,
                                   ),
                                 ),
-                                SizedBox(width: 10),
+                                SizedBox(width: 4),
                                 Icon(Icons.arrow_drop_down),
                               ],
                             ),
@@ -447,19 +449,29 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                         color: mainColor,
                       ),
                     ),
-                    const Spacer(),
-                    const Text(
-                      "Add Course or Event",
-                      style: TextStyle(
-                          fontSize: 17,
-                          fontFamily: "Poppins",
-                          color: mainColor,
-                          fontWeight: FontWeight.w400),
+                    Padding(
+                      padding: EdgeInsets.only(left: 65),
+                      child: const Text(
+                        "Add Course or Event",
+                        style: TextStyle(
+                            fontSize: 17,
+                            fontFamily: "Poppins",
+                            color: mainColor,
+                            fontWeight: FontWeight.w400),
+                      ),
                     ),
-                    const Spacer(),
                   ],
                 ),
-                const Divider(),
+                const SizedBox(
+                  height: 8,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 7),
+                  child: Text(
+                    'Share the Magic and Unveil Extraordinary Courses and Events from Leading Organizations!',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
                 const Divider(),
                 Padding(
                   padding: const EdgeInsets.only(top: 15, bottom: 5),
@@ -487,8 +499,11 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    FormTitleWidget(
-                      title: "Type",
+                    Padding(
+                      padding: EdgeInsets.only(left: 10),
+                      child: FormTitleWidget(
+                        title: "Type",
+                      ),
                     ),
                   ],
                 ),
@@ -519,9 +534,12 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 14),
-                const FormTitleWidget(
-                  title: "Title",
+                const SizedBox(height: 25),
+                Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: const FormTitleWidget(
+                    title: "Title",
+                  ),
                 ),
                 const SizedBox(height: 8),
                 reusableTextField(
@@ -533,9 +551,12 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     titleController,
                     true,
                     maxLines: 1),
-                const SizedBox(height: 14),
-                const FormTitleWidget(
-                  title: "Description",
+                const SizedBox(height: 25),
+                Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: const FormTitleWidget(
+                    title: "Description",
+                  ),
                 ),
                 const SizedBox(height: 8),
                 reusableTextField(
@@ -546,7 +567,8 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     false,
                     descController,
                     true,
-                    maxLines: 1),
+                    maxLines: 5),
+                const SizedBox(height: 25),
                 const Padding(
                   padding: EdgeInsets.only(top: 20),
                   child: Row(
@@ -556,9 +578,12 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            FormTitleWidget(
-                              title: "Start Date",
-                              isRequired: true,
+                            Padding(
+                              padding: EdgeInsets.only(left: 10),
+                              child: FormTitleWidget(
+                                title: "Start Date",
+                                isRequired: true,
+                              ),
                             ),
                           ],
                         ),
@@ -644,13 +669,16 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 25),
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    FormTitleWidget(
-                      title: "Onsite or Online?",
+                    Padding(
+                      padding: EdgeInsets.only(left: 10),
+                      child: FormTitleWidget(
+                        title: "Onsite or Online?",
+                      ),
                     ),
                   ],
                 ),
@@ -680,18 +708,21 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 14),
-                const SizedBox(height: 14),
+                const SizedBox(height: 25),
                 Visibility(
                   visible: selectedAttendanceType == 'Onsite',
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
-                    child: FormTitleWidget(
-                      title: "Location",
-                      isRequired: true,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 10),
+                      child: FormTitleWidget(
+                        title: "Location",
+                        isRequired: true,
+                      ),
                     ),
                   ),
                 ),
+                const SizedBox(height: 10),
                 Visibility(
                   visible: selectedAttendanceType == 'Onsite',
                   child: reusableTextField(
@@ -705,12 +736,17 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     maxLines: 1,
                   ),
                 ),
+                const SizedBox(height: 25),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
-                  child: FormTitleWidget(
-                    title: "Link",
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 10),
+                    child: FormTitleWidget(
+                      title: "Link",
+                    ),
                   ),
                 ),
+                const SizedBox(height: 10),
                 reusableTextField(
                     selectedCourseType == 'Course'
                         ? "Please enter the course's link"
@@ -736,7 +772,63 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                             ),
                           ),
                         )
+                      //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++lina mmmm
                       else
+                        /*ElevatedButton(
+                          onPressed: () async {
+                            bool validLink =
+                                await isValidUrl(linkController.text);
+                            if (titleController.text.isEmpty) {
+                              toastMessage("Please enter a title");
+                            } else if (titleController.text.length > 40) {
+                              toastMessage("Please enter a shorter title");
+                            } else if (descController.text.isEmpty) {
+                              toastMessage("Please enter a description");
+                            } else if (descController.text.length > 255) {
+                              toastMessage(
+                                  "Please enter a shorter description");
+                            } else if (isDateValid(
+                                    courseStartDate, courseEndDate) ==
+                                false) {
+                              toastMessage("Please enter a valid date");
+                            } else if (selectedCourseType == '') {
+                              toastMessage("Please select a type");
+                            } else if (locationController.text.isEmpty &&
+                                selectedAttendanceType == 'Onsite') {
+                              toastMessage("Please enter a location");
+                            } else if (linkController.text.isEmpty) {
+                              toastMessage("Please enter a link");
+                            } else if (!validLink) {
+                              toastMessage("Please enter a valid link");
+                            } else {
+                              setState(() {
+                                _loading = true;
+                              });
+                              await _submitForm();
+                              setState(() {
+                                _loading = false;
+                              });
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromARGB(255, 198, 180, 247),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            elevation: 10,
+                            shadowColor:
+                                Color.fromARGB(255, 0, 0, 0).withOpacity(1),
+                          ),
+                          child: Text(
+                            'Submit',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        )
+*/
                         GestureDetector(
                           onTap: () async {
                             bool validLink =
@@ -1240,7 +1332,7 @@ class CoursesWidget extends StatelessWidget {
                   icon: Icon(
                     Icons.calendar_today_sharp,
                     size: 28, // Adjust the size as needed
-                    color: Colors.blue,
+                    color: Color.fromARGB(255, 150, 202, 245),
                   ),
                   tooltip: 'Save to Calendar',
                 ),
@@ -1256,11 +1348,8 @@ class CoursesWidget extends StatelessWidget {
                     child: const Text(
                       'More Details ->',
                       style: TextStyle(
-                        fontSize: 15,
-                        fontFamily: "Poppins",
-                        color: mainColor,
-                        decoration: TextDecoration.underline,
-                      ),
+                          color: Color.fromARGB(255, 150, 202, 245),
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
               ],

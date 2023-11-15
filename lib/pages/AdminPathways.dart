@@ -526,6 +526,8 @@ class _AdminPathwaysState extends State<AdminPathways> {
                   bottom: 60,
                   right: 50,
                   child: FloatingActionButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
                     onPressed: () {
                       setState(() {
                         showWhiteBox =
@@ -533,7 +535,11 @@ class _AdminPathwaysState extends State<AdminPathways> {
                       });
                     },
                     backgroundColor: Color.fromARGB(255, 156, 147, 176),
-                    child: const Icon(Icons.add),
+                    child: const Icon(
+                      Icons.add,
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      size: 25,
+                    ),
                   ),
                 ),
               ],

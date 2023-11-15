@@ -501,12 +501,18 @@ class __FHomePageState extends State<FHomePage> {
         ),
 
         floatingActionButton: FloatingActionButton(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           onPressed: () async {
             showInputDialog();
             // _toggleFormVisibility();
           },
           backgroundColor: Color.fromARGB(255, 156, 147, 176),
-          child: const Icon(Icons.add),
+          child: const Icon(
+            Icons.add,
+            color: Color.fromARGB(255, 255, 255, 255),
+            size: 25,
+          ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         //CARDS DISPLAY

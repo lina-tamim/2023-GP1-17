@@ -14,8 +14,8 @@ class _BookmarkPageState extends State<BookmarkPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    drawer: const NavBarUser(),
-    appBar: buildAppBar ('Bookmark'),
+      drawer: const NavBarUser(),
+      appBar: buildAppBar('Bookmark'),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Center(
@@ -32,6 +32,13 @@ class _BookmarkPageState extends State<BookmarkPage> {
               ),
               Image.asset('assets/Backgrounds/XlogoSmall.png'),
               const SizedBox(height: 30),
+              Text(
+                'Coming soon !',
+                style: TextStyle(
+                    fontFamily: AutofillHints.familyName,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              )
             ],
           ),
         ),

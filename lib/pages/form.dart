@@ -249,20 +249,31 @@ class _FormWidgetState extends State<FormWidget> {
                         color: Color.fromARGB(255, 1, 9, 111).withOpacity(0.9),
                       ),
                     ),
-                    const Spacer(),
-                    Text(
-                      "My Form",
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontFamily: "Poppins",
-                          color:
-                              Color.fromARGB(255, 1, 9, 111).withOpacity(0.9),
-                          fontWeight: FontWeight.w400),
+                    //const Spacer(),
+                    Padding(
+                      padding: EdgeInsets.only(left: 85),
+                      child: Text(
+                        "Add post",
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: "Poppins",
+                            color:
+                                Color.fromARGB(255, 1, 9, 111).withOpacity(0.9),
+                            fontWeight: FontWeight.w400),
+                      ),
                     ),
-                    const Spacer(),
                   ],
                 ),
-                // const Divider(),
+                const SizedBox(
+                  height: 8,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 7),
+                  child: Text(
+                    'Ask, Connect, Achieve: Empowering Starts Here! ',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
                 const Divider(),
                 const SizedBox(height: 16),
                 Row(
@@ -272,7 +283,7 @@ class _FormWidgetState extends State<FormWidget> {
                       style: TextStyle(
                         color: const Color.fromARGB(255, 1, 9, 111)
                             .withOpacity(0.9),
-                        fontSize: 18,
+                        fontSize: 16,
                       ),
                     ),
                     SizedBox(
@@ -285,7 +296,20 @@ class _FormWidgetState extends State<FormWidget> {
                     SizedBox(
                       width: 5,
                     ),
-                    IconButton(
+                    Tooltip(
+                      child: Icon(
+                        Icons.live_help_rounded,
+                        size: 18,
+                        color: Color.fromARGB(255, 178, 178, 178),
+                      ),
+                      message:
+                          '\nQuestions: Ask TechXcel community.\n\nTeam collaberation: Find and build your team.\n\nProjects: Post your projects to get help from TechXcel community.',
+                      padding: EdgeInsets.all(20),
+                      showDuration: Duration(seconds: 3),
+                      textStyle: TextStyle(color: Colors.white),
+                      preferBelow: false,
+                    ),
+                    /*IconButton(
                       icon: Icon(
                         Icons.live_help_rounded,
                         size: 18,
@@ -306,7 +330,7 @@ class _FormWidgetState extends State<FormWidget> {
                           ),
                         );
                       },
-                    ),
+                    ),*/
                   ],
                 ),
 
@@ -348,15 +372,14 @@ class _FormWidgetState extends State<FormWidget> {
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 25),
                 Row(
                   children: [
                     Text(
                       'Title',
                       style: TextStyle(
-                        color: const Color.fromARGB(255, 1, 9, 111)
-                            .withOpacity(0.9),
-                        fontSize: 18,
+                        color: Color.fromARGB(255, 0, 0, 0).withOpacity(0.9),
+                        fontSize: 16,
                       ),
                     ),
                     SizedBox(
@@ -368,6 +391,8 @@ class _FormWidgetState extends State<FormWidget> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 8),
+
                 TextFormField(
                   onChanged: (value) {
                     setState(() {
@@ -399,15 +424,14 @@ class _FormWidgetState extends State<FormWidget> {
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 25),
                 Row(
                   children: [
                     Text(
                       'Description',
                       style: TextStyle(
-                        color: const Color.fromARGB(255, 1, 9, 111)
-                            .withOpacity(0.9),
-                        fontSize: 18,
+                        color: Color.fromARGB(255, 0, 0, 0).withOpacity(0.9),
+                        fontSize: 16,
                       ),
                     ),
                     SizedBox(
@@ -455,15 +479,14 @@ class _FormWidgetState extends State<FormWidget> {
                     hintText: "Description",
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 25),
                 Row(
                   children: [
                     Text(
                       'Categories',
                       style: TextStyle(
-                        color: const Color.fromARGB(255, 1, 9, 111)
-                            .withOpacity(0.9),
-                        fontSize: 18,
+                        color: Color.fromARGB(255, 0, 0, 0).withOpacity(0.9),
+                        fontSize: 16,
                       ),
                     ),
                     SizedBox(
@@ -475,6 +498,7 @@ class _FormWidgetState extends State<FormWidget> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 8),
 
                 ElevatedButton(
                   onPressed: () async {
@@ -510,9 +534,8 @@ class _FormWidgetState extends State<FormWidget> {
                       Text(
                         'Deadline Date',
                         style: TextStyle(
-                          color: const Color.fromARGB(255, 1, 9, 111)
-                              .withOpacity(0.9),
-                          fontSize: 18,
+                          color: Color.fromARGB(255, 0, 0, 0).withOpacity(0.9),
+                          fontSize: 16,
                         ),
                       ),
                       SizedBox(
@@ -680,4 +703,3 @@ class _FormWidgetState extends State<FormWidget> {
     }
   }
 }
-

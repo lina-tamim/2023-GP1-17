@@ -281,96 +281,98 @@ class _UserPostsPageState extends State<UserPostsPage> {
       });
 
   Widget buildTeamCard(CardFTview fandT) {
-    final formattedDate = DateFormat.yMMMMd().format(fandT.date); // Format the date
+    final formattedDate =
+        DateFormat.yMMMMd().format(fandT.date); // Format the date
 
     return Card(
-        child: ListTile(
-          leading: CircleAvatar(
-            // ignore: unnecessary_null_comparison
-            backgroundImage: fandT.userPhotoUrl != null
-                ? NetworkImage(fandT.userPhotoUrl!)
-                : null,
-          ),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 5),
-              Text(
-                fandT.username ?? '', // Display the username
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.deepPurple),
-              ),
-              SizedBox(height: 5),
-              Text(
-                fandT.title,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 5),
-              Text(fandT.description),
-            ],
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(
-                spacing: 4.0,
-                runSpacing: 2.0,
-                children: fandT.topics
-                    .map(
-                      (topic) => Chip(
-                        label: Text(
-                          topic,
-                          style: TextStyle(fontSize: 12.0),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.bookmark),
-                    onPressed: () {
-                      // Add your functionality for the button here
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.report),
-                    onPressed: () {
-                      // Add your functionality for the button here
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.chat_bubble),
-                    onPressed: () {
-                      // Add your functionality for the button here
-                    },
-                  ),
-                  PostDeleteButton(docId: fandT.docId),
-                  Container(
-            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            decoration: BoxDecoration(
-              color: Colors.purple.shade200,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Text(
-              'Deadline: $formattedDate', // Use the formatted date
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12.0,
-              ),
-            ),
-          ),
-          SizedBox(height: 5),
-                ],
-              ),
-            ],
-          ),
+      child: ListTile(
+        leading: CircleAvatar(
+          // ignore: unnecessary_null_comparison
+          backgroundImage: fandT.userPhotoUrl != null
+              ? NetworkImage(fandT.userPhotoUrl!)
+              : null,
         ),
-      );}
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 5),
+            Text(
+              fandT.username ?? '', // Display the username
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.deepPurple),
+            ),
+            SizedBox(height: 5),
+            Text(
+              fandT.title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(fandT.description),
+          ],
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: 4.0,
+              runSpacing: 2.0,
+              children: fandT.topics
+                  .map(
+                    (topic) => Chip(
+                      label: Text(
+                        topic,
+                        style: TextStyle(fontSize: 12.0),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.bookmark),
+                  onPressed: () {
+                    // Add your functionality for the button here
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.report),
+                  onPressed: () {
+                    // Add your functionality for the button here
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.chat_bubble),
+                  onPressed: () {
+                    // Add your functionality for the button here
+                  },
+                ),
+                PostDeleteButton(docId: fandT.docId),
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.purple.shade200,
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Text(
+                    'Deadline: $formattedDate', // Use the formatted date
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.0,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 5),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -465,11 +467,17 @@ class _UserPostsPageState extends State<UserPostsPage> {
         //drawer: NavBar(),
 
         floatingActionButton: FloatingActionButton(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           onPressed: () async {
             _toggleFormVisibility();
           },
           backgroundColor: Color.fromARGB(255, 156, 147, 176),
-          child: const Icon(Icons.add),
+          child: const Icon(
+            Icons.add,
+            color: Color.fromARGB(255, 255, 255, 255),
+            size: 25,
+          ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         //CARDS DISPLAY
@@ -679,8 +687,9 @@ class _UserPostsPageState extends State<UserPostsPage> {
                           SizedBox(
                             width: 20,
                           ),
-                          PostDeleteButton(docId: answer.docId,
-                          type: 'answer',
+                          PostDeleteButton(
+                            docId: answer.docId,
+                            type: 'answer',
                           )
                         ],
                       );
