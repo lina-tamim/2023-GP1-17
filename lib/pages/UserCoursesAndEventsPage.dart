@@ -270,6 +270,47 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
     );
   }
 
+  //CALENDER
+  Future<void> saveToCalendar(Course courseAndEvent) async {
+  try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('loggedInEmail') ?? '';
+    // Create a reference to the Firestore collection "Calendar"
+    final calendarCollection = FirebaseFirestore.instance.collection('Calendar');
+    //Color purple = Color.fromARGB(255, 230, 230, 250);
+    // Convert the course object to a map
+    final courseAndeventMap = courseAndEvent.toJson2(email);
+
+    // Save the course data to the Firestore collection
+    await calendarCollection.add(courseAndeventMap);
+
+    // Show a success message to the user
+   _showSnackBar("Saved To Calender");
+  } catch (e) {
+    // Show an error message to the user
+    _showSnackBar("Failed to save to cslender$e");
+  }
+}
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.height - 80,
+          right: 20,
+          left: 20,
+        ),
+        backgroundColor:
+            Color.fromARGB(255, 63, 12, 118), // Customize the background color
+      ),
+    );
+  }
+  
   Future<bool> isValidUrl(String url) async {
     return await canLaunchUrl(Uri.parse(url));
   }
@@ -1274,8 +1315,11 @@ class CoursesWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
+                  ///////////////CCCCAAALLLLEENNNDDDERRR!!
                   onPressed: () {
                     // Add to calendar functionality!!
+                     _UserCoursesAndEventsPageState().saveToCalendar(item);
+                     
                   },
                   icon: Icon(
                     Icons.calendar_today_sharp,
@@ -1308,4 +1352,6 @@ class CoursesWidget extends StatelessWidget {
     ),
     );
   }
+
+
 }

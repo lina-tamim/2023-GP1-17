@@ -1,10 +1,12 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 class Course {
   final DateTime? createdAt;
   final String? description;
   final DateTime? endDate;
   final String? link;
-  final String? location;
+  final String location;
   final DateTime? startDate;
   final String? title;
   final String? type;
@@ -13,13 +15,14 @@ class Course {
   final String? docId;
   final String imageURL; // New attribute
   final String? approval;
+  //final Color color;
 
   Course({
     this.createdAt,
     this.description,
     this.endDate,
     this.link,
-    this.location,
+    required this.location,
     this.startDate,
     this.title,
     this.type,
@@ -28,6 +31,7 @@ class Course {
     this.docId,
     required this.imageURL,
     this.approval,
+    //required this.color,
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
@@ -49,6 +53,7 @@ class Course {
       docId: json['docId'],
       imageURL: json['imageURL'],
       approval: json['approval'],
+      //color:json['color'],
     );
   }
 
@@ -67,6 +72,26 @@ class Course {
       'docId': docId,
       'imageURL': imageURL,
       'approval':approval,
+    };
+  }
+
+  Map<String, dynamic> toJson2(String id) {
+    return {
+      //'created_at': createdAt?.toIso8601String(),
+      'description': description,
+      'end_date': endDate?.toIso8601String(),
+      'link': link,
+      'location': location,
+      'start_date': startDate?.toIso8601String(),
+      'title': title,
+      'type': type,
+      'attendanceType': attendanceType,
+      //'userId': userId,
+      'docId': docId,
+      'imageURL': imageURL,
+      'my_id':id,
+      //'color':x,
+      //'approval':approval,
     };
   }
 }

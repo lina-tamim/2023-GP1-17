@@ -2,8 +2,9 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:techxcel11/models/pathwayscards.dart';
 //import 'package:techxcel11/pages/EditPathwayPage.dart';
-import 'package:techxcel11/pages/pathwaycards.dart';
+//import 'package:techxcel11/pages/pathwaycards.dart';
 import 'package:techxcel11/pages/reuse.dart';
 //firebase++
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,6 +15,7 @@ import 'package:path/path.dart' as path;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../models/resource.dart';
 import '../user_image.dart';
 import 'package:lottie/lottie.dart';
 
@@ -1203,8 +1205,24 @@ class _AdminPathwaysState extends State<AdminPathways> {
         flattenedResourcesList.addAll(resourceList);
       }
 
-      // Get the download URL of the uploaded image
+  //RESOURCES PART
 
+      for (int i = 0; i < _resourceControllersList.length; i++) {
+      List<String> subtopicResources = _resourceControllersList[i]
+          .map((controller) => controller.text)
+          .toList();
+
+      // Create a new document reference in the "resources" collection
+      DocumentReference resourceDocumentRef =
+          firestore.collection('resources').doc();
+
+      // Save resource data to Firestore
+      await resourceDocumentRef.set({
+        'pathway_id': documentReference.id,
+        'subtopic_id': i,
+        'link': subtopicResources,
+      });
+    }
       // Save the flattened resources list to Firestore
       await documentReference.set({
         'title': _pathTitle.text,
@@ -1216,6 +1234,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
         'resources': flattenedResourcesList,
         'image_url': imageUrl,
         'id': id,
+        'docId':documentReference.id,
       });
 
       // Display a success message or perform any other actions
@@ -1375,173 +1394,226 @@ class _AdminPathwaysState extends State<AdminPathways> {
     return false;
   }
 
+
+Future<List<String>> getResourcesFromFirestore(PathwayContainer path) async {
+  try {
+
+    DocumentReference documentReference =
+          firestore.collection('pathway').doc();
+          String? idPath = path.docId;
+   
+print("@@@@@@  INSIDE RESOURCE DB");
+print("@@@@@@  id is $idPath");
+
+    // Query Firestore to retrieve resources with matching pathway_id
+    QuerySnapshot snapshot = await firestore
+        .collection('resources')
+        .where('pathway_id', isEqualTo: idPath)
+        .orderBy('subtopic_id')
+        .get();
+
+    // Extract the links from the snapshot
+List<String> resources = snapshot.docs
+    .map((doc) => (doc['link']  ).toString())
+    .toList();
+    resources.sort();
+
+    print("@@@  RESPURCE ARE: $resources");
+
+    return resources;
+  } catch (error) {
+    // Handle the error appropriately
+    throw error;
+  }
+}
+
+
+
   void moreInfo(PathwayContainer pathway) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        Map<String, bool> expandedStates =
-            {}; // Store the expanded state for each subtopic
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 16),
-              backgroundColor: Color.fromARGB(255, 255, 255, 255),
-              content: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Text(
-                        pathway.title,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    SizedBox(height: 15.0),
-                    Center(
-                      child: Lottie.network(
-                          'https://lottie.host/623f88bb-cb70-413c-bb1a-0003d0b7e3d6/RnPQM25m8I.json'),
-                    ),
-                    Center(
-                      child: Text(
-                        pathway.path_description,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: const Color.fromARGB(255, 81, 81, 81),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 300,
-                      child: Divider(
-                        color: Color.fromARGB(255, 211, 211, 211),
-                        thickness: 1,
-                      ),
-                    ),
-                    SizedBox(height: 8.0),
-                    Center(
-                      child: Text(
-                        'Get ready to embark on an exciting journey of learning and growth!',
-                        style:
-                            TextStyle(color: Color.fromARGB(255, 169, 0, 157)),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Text(
-                      'SubTopics:',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8.0),
-                    Column(
+    int i = 0;
+ showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      Map<String, bool> expandedStates = {};
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            insetPadding: EdgeInsets.symmetric(horizontal: 16),
+            backgroundColor: Color.fromARGB(255, 255, 255, 255),
+            content: FutureBuilder<List<String>>(
+              future: getResourcesFromFirestore(pathway),
+              builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error retrieving resources: ${snapshot.error}');
+                } else {
+                  List<String> resources = snapshot.data ?? [];
+                  print("######## RES: $resources");
+
+                  return SingleChildScrollView(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: pathway.subtopics.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final subtopic = entry.value;
-                        if (expandedStates[subtopic] == null) {
-                          expandedStates[subtopic] = false;
-                        }
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                                height: 8.0), // Add space between each subtopic
-                            Row(
-                              children: [
-                                Container(
-                                  width: 20,
-                                  height: 20,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors
-                                        .amber, // Custom function to get circle color based on the index
-                                  ),
-                                  child: Icon(
-                                    Icons.star,
-                                    color: Colors
-                                        .white, // Set the desired color for the star icon
-                                    size: 16,
-                                  ),
-                                ),
-                                SizedBox(width: 8.0),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      expandedStates[subtopic] =
-                                          !(expandedStates[subtopic] ?? false);
-                                    });
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Icon(expandedStates[subtopic] ?? false
-                                          ? Icons.keyboard_arrow_down
-                                          : Icons.keyboard_arrow_right),
-                                      SizedBox(width: 8.0),
-                                      Text(
-                                        subtopic,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: const Color.fromARGB(
-                                              255, 81, 81, 81),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                      children: [
+                        Center(
+                          child: Text(
+                            pathway.title,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
-                            if (expandedStates[subtopic] ?? false)
-                              Padding(
-                                padding: EdgeInsets.only(left: 22.0, top: 4.0),
-                                child: Text(
-                                  pathway.descriptions[index],
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color:
-                                        const Color.fromARGB(255, 81, 81, 81),
-                                  ),
-                                ),
-                              ),
-                            if (expandedStates[subtopic] ?? false)
-                              Padding(
-                                padding: EdgeInsets.only(left: 22.0, top: 8.0),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    launch(
-                                        'http://example.com'); // Replace with the actual URL
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.link),
-                                      SizedBox(width: 4.0),
-                                      Text(
-                                        'here resource',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.blue,
-                                          decoration: TextDecoration.underline,
-                                        ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        SizedBox(height: 15.0),
+                        Center(
+                          child: Lottie.network(
+                              'https://lottie.host/623f88bb-cb70-413c-bb1a-0003d0b7e3d6/RnPQM25m8I.json'),
+                        ),
+                        Center(
+                          child: Text(
+                            pathway.path_description,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: const Color.fromARGB(255, 81, 81, 81),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 300,
+                          child: Divider(
+                            color: Color.fromARGB(255, 211, 211, 211),
+                            thickness: 1,
+                          ),
+                        ),
+                        SizedBox(height: 8.0),
+                        Center(
+                          child: Text(
+                            'Get ready to embark on an exciting journey of learning and growth!',
+                            style:
+                                TextStyle(color: Color.fromARGB(255, 169, 0, 157)),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Text(
+                          'SubTopics:',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8.0),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: pathway.subtopics.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final subtopic = entry.value;
+
+                            int x = index;
+                            if (expandedStates[subtopic] == null) {
+                              expandedStates[subtopic] = false;
+                            }
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 8.0),
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 20,
+                                      height: 20,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.amber,
                                       ),
-                                    ],
-                                  ),
+                                      child: Icon(
+                                        Icons.star,
+                                        color: Colors.white,
+                                        size: 16,
+                                      ),
+                                    ),
+                                    SizedBox(width: 8.0),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          expandedStates[subtopic] =
+                                              !(expandedStates[subtopic] ?? false);
+                                        });
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Icon(expandedStates[subtopic] ?? false
+                                              ? Icons.keyboard_arrow_down
+                                              : Icons.keyboard_arrow_right),
+                                          SizedBox(width: 8.0),
+                                          Text(
+                                            subtopic,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: const Color.fromARGB(
+                                                  255, 81, 81, 81),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                          ],
-                        );
-                      }).toList(),
+                                if (expandedStates[subtopic] ?? false)
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 22.0, top: 4.0),
+                                    child: Text(
+                                      pathway.descriptions[index],
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: const Color.fromARGB(255, 81, 81, 81),
+                                      ),
+                                    ),
+                                  ),
+
+                                //resources
+                                if (expandedStates[subtopic] ?? false)
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 22.0, top: 8.0),
+                                    child: Column(
+                                      children: resources.map((resource) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            launch(resource);
+                                          },
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.link),
+                                              SizedBox(width: 4.0),
+                                              Text(
+                                                resources[x++],
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.blue,
+                                                  decoration: TextDecoration.underline,
+                                       
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  );
+                }
+              },
+            ),
               actions: [
                 TextButton(
                   onPressed: () {
