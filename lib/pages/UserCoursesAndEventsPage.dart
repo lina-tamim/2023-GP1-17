@@ -11,6 +11,7 @@ import 'package:techxcel11/courseAndEvent_image.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/course.dart';
+//EDIT +CALNDER COMMIT
 
 class UserCoursesAndEventsPage extends StatefulWidget {
   const UserCoursesAndEventsPage({super.key, required this.searchQuery});

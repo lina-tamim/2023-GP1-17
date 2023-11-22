@@ -8,6 +8,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:techxcel11/models/calendar.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:intl/intl.dart';
+//EDIT +CALNDER COMMIT
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);
@@ -18,17 +19,16 @@ class CalendarPage extends StatefulWidget {
 
 class _CalendarPageState extends State<CalendarPage> {
   int _currentIndex = 0;
-  List<Color> _colorCollection  =<Color>[];
+  List<Color> _colorCollection = <Color>[];
 //retrive from calender db
-@override
-void initState() {
+  @override
+  void initState() {
     // TODO: implement initState
     super.initState();
     _initializeEventColor();
-
   }
 
-  void _initializeEventColor(){
+  void _initializeEventColor() {
     _colorCollection.add(const Color(0xFF0F8644));
     _colorCollection.add(const Color(0xFF881FA9));
     /*_colorCollection.add(const Color(0xFF0F8644));
@@ -39,8 +39,6 @@ void initState() {
     _colorCollection.add(const Color(0xFF0F8644));
     _colorCollection.add(const Color(0xFF0F8644));
     _colorCollection.add(const Color(0xFF0F8644));*/
-
-
   }
 
   @override
@@ -62,84 +60,79 @@ void initState() {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final events = snapshot.data!;
-return SfCalendar(
-view: CalendarView.month,
-initialDisplayDate: firstDayOfMonth,
-minDate: firstDayOfMonth,
-maxDate: lastDayOfMonth,
-showNavigationArrow: true,
-onSelectionChanged: _onSelectionChanged,
-headerStyle: CalendarHeaderStyle(
-textStyle: TextStyle(
-color: Colors.white,
-fontSize: 20,
-fontWeight: FontWeight.bold,
-),
-backgroundColor: Colors.purple.shade100,
-),
-
-
-                  monthViewSettings: MonthViewSettings(
-                    
-                    showAgenda: true,  agendaStyle: AgendaStyle(
-                backgroundColor: Colors.grey.shade100,
-                appointmentTextStyle: TextStyle(
-                    fontSize: 14,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.black),
-                dateTextStyle: TextStyle(
-                    fontStyle: FontStyle.normal,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w300,
-                    color: Colors.black),
-                dayTextStyle: TextStyle(
-                    fontStyle: FontStyle.normal,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black),
-              ) ),
-                  dataSource: _getCalendarDataSource(events),
-appointmentBuilder: (BuildContext context, CalendarAppointmentDetails details) {
-final List<Appointment> appointments = details.appointments.toList().cast<Appointment>();
+                    return SfCalendar(
+                      view: CalendarView.month,
+                      initialDisplayDate: firstDayOfMonth,
+                      minDate: firstDayOfMonth,
+                      maxDate: lastDayOfMonth,
+                      showNavigationArrow: true,
+                      onSelectionChanged: _onSelectionChanged,
+                      headerStyle: CalendarHeaderStyle(
+                        textStyle: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        backgroundColor: Colors.purple.shade100,
+                      ),
+                      monthViewSettings: MonthViewSettings(
+                          showAgenda: true,
+                          agendaStyle: AgendaStyle(
+                            backgroundColor: Colors.grey.shade100,
+                            appointmentTextStyle: TextStyle(
+                                fontSize: 14,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.black),
+                            dateTextStyle: TextStyle(
+                                fontStyle: FontStyle.normal,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w300,
+                                color: Colors.black),
+                            dayTextStyle: TextStyle(
+                                fontStyle: FontStyle.normal,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black),
+                          )),
+                      dataSource: _getCalendarDataSource(events),
+                      appointmentBuilder: (BuildContext context,
+                          CalendarAppointmentDetails details) {
+                        final List<Appointment> appointments =
+                            details.appointments.toList().cast<Appointment>();
 
 // Adjust the height as needed or use Expanded to fill available space
-return ListView.builder(
-itemCount: appointments.length,
-shrinkWrap: false,
+                        return ListView.builder(
+                          itemCount: appointments.length,
+                          shrinkWrap: false,
 //physics: NeverScrollableScrollPhysics(), // Disable scrolling
-itemBuilder: (BuildContext context, int index) {
-final Appointment appointment = appointments[index];
-final EventModel event = EventModel(
-title: appointment.subject,
-location: appointment.location ?? 'riyadh',
-startDate: appointment.startTime,
-endDate: appointment.endTime,
-);
-return Card(
-margin: EdgeInsets.all(10.0),
-child: ListTile(
-title: Expanded(
-child: Text(event.title),
-),
-trailing: ElevatedButton(
-autofocus: true,
-onPressed: () {
-print("@@@@ YOU PRESSED DELETE");
-deleteEvent(appointment);
-},
-child: Text("delete"),
-),
-),
-
-
-    );
-  },
-);
-},
-);
-
-      
-                    
+                          itemBuilder: (BuildContext context, int index) {
+                            final Appointment appointment = appointments[index];
+                            final EventModel event = EventModel(
+                              title: appointment.subject,
+                              location: appointment.location ?? 'riyadh',
+                              startDate: appointment.startTime,
+                              endDate: appointment.endTime,
+                            );
+                            return Card(
+                              child: ListTile(
+                                dense: true,
+                                title: Expanded(
+                                  child: Text(event.title),
+                                ),
+                                trailing: ElevatedButton(
+                                  autofocus: true,
+                                  onPressed: () {
+                                    print("@@@@ YOU PRESSED DELETE");
+                                    deleteEvent(appointment);
+                                  },
+                                  child: Text("delete"),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
                   } else if (snapshot.hasError) {
                     return Text('Error retrieving events');
                   } else {
@@ -161,16 +154,16 @@ child: Text("delete"),
       ),
     );
   }
-void deleteEvent(Appointment event) async {
+
+  void deleteEvent(Appointment event) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final email = prefs.getString('loggedInEmail') ?? '';
       final QuerySnapshot<Map<String, dynamic>> snapshot =
           await FirebaseFirestore.instance
-            .collection('Calendar')
-            .where('my_id', isEqualTo: email)
-            .get();
-
+              .collection('Calendar')
+              .where('my_id', isEqualTo: email)
+              .get();
 
       if (snapshot.docs.isNotEmpty) {
         final docIdd = snapshot.docs[0].id;
@@ -188,14 +181,13 @@ void deleteEvent(Appointment event) async {
     }
   }
 
- void _onSelectionChanged(CalendarSelectionDetails details) {
-  final selectedEvent = details.date;
-  if (selectedEvent != null) {
-    // You can now access the selected event and perform any desired actions
-    print("*******$selectedEvent");
-   
+  void _onSelectionChanged(CalendarSelectionDetails details) {
+    final selectedEvent = details.date;
+    if (selectedEvent != null) {
+      // You can now access the selected event and perform any desired actions
+      print("*******$selectedEvent");
+    }
   }
-}
 
   Future<List<EventModel>> _getEvents(
       DateTime startDate, DateTime endDate) async {
@@ -238,7 +230,7 @@ void deleteEvent(Appointment event) async {
         endTime: event.endDate,
         subject: event.title,
         notes: event.location,
-        color:color,
+        color: color,
       );
     }).toList();
   }
@@ -249,8 +241,7 @@ void deleteEvent(Appointment event) async {
   }
 }
 
-mixin data {
-}
+mixin data {}
 
 class _DataSource extends CalendarDataSource {
   _DataSource(List<Appointment> source) {
@@ -286,6 +277,4 @@ class _DataSource extends CalendarDataSource {
     final appointment = appointments?[index];
     return appointment?.color ?? Colors.blue;
   }
-
-  
 }

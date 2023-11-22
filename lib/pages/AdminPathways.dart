@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/models/pathwayscards.dart';
 //import 'package:techxcel11/pages/EditPathwayPage.dart';
 //import 'package:techxcel11/pages/pathwaycards.dart';
@@ -18,6 +19,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/resource.dart';
 import '../user_image.dart';
 import 'package:lottie/lottie.dart';
+//EDIT +CALNDER COMMIT
 
 class AdminPathways extends StatefulWidget {
   const AdminPathways({Key? key});
@@ -27,6 +29,229 @@ class AdminPathways extends StatefulWidget {
 }
 
 class _AdminPathwaysState extends State<AdminPathways> {
+  //EDIT
+  //to hold values of key topics selected
+  List<String> _editSelectTopic = [];
+  //hold values retrived from DB
+  List<TextEditingController> subtopicControllers = [];
+  List<TextEditingController> subtopicDescriptionControllers = [];
+  List<List<TextEditingController>> subtopicresourceControllers = [];
+
+  // hold new values from user
+  List<TextEditingController> topics2 = [];
+  List<TextEditingController> descriptions2 = [];
+  List<List<TextEditingController>> resources2 = [];
+
+  //Retrived Values From DB
+  String dbimage_url = '';
+  String dbtitle = '';
+  String dbpath_description = '';
+  List<String> dbKey_topic = [];
+  List<String> dbsubtopics = [];
+  List<String> dbdescriptions = [];
+  int lenghtOftopics = 0;
+  int pathID = 0;
+
+//Modified by user
+  String newimage_url = '';
+  String newtitle = '';
+  String newpath_description = '';
+  List<String> newKey_topic = [];
+  List<String> newsubtopics = [];
+  List<String> newdescriptions = [];
+  File? newProfilePicture;
+
+  Future<void> fetchData(PathwayContainer pathway) async {
+    SharedPreferences pre = await SharedPreferences.getInstance();
+    final pathwayId = pre.getInt('pathwayId_${pathway.id}') ?? '';
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await firestore
+        .collection('pathway')
+        .where('id', isEqualTo: pathwayId)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final pathwayData = snapshot.docs[0].data();
+      final image_url = pathwayData['image_url'] ?? '';
+      final title = pathwayData['title'] ?? '';
+      final path_description = pathwayData['path_description'] ?? '';
+      final Key_topic = List<String>.from(pathwayData['Key_topic'] ?? []);
+      final subtopics = List<String>.from(pathwayData['topics'] ?? []);
+      final descriptions = List<String>.from(pathwayData['descriptions'] ?? []);
+
+      newimage_url = image_url;
+      newtitle = title;
+      newpath_description = path_description;
+      newKey_topic = Key_topic;
+      newsubtopics = subtopics;
+      newdescriptions = descriptions;
+      lenghtOftopics = subtopics.length;
+
+      setState(() {
+        _editSelectTopic = Key_topic;
+        dbimage_url = image_url;
+        dbtitle = title;
+        dbpath_description = path_description;
+        dbKey_topic = Key_topic;
+        dbsubtopics = subtopics;
+        dbdescriptions = descriptions;
+        pathID = pathway.id;
+      });
+    }
+    //Transfer values to the list
+    for (int i = 0; i < lenghtOftopics; i++) {
+      subtopicControllers
+          .add(TextEditingController(text: dbsubtopics[i] ?? ''));
+      subtopicDescriptionControllers
+          .add(TextEditingController(text: dbdescriptions[i] ?? ''));
+    }
+  }
+
+//Multi select for the edit
+
+  void _showMultiSelectTopicedit() async {
+    final Map<String, List<String>> edittopicGroups = {
+      'Data Science': [
+        'Python',
+        'R',
+        'Tableau',
+        'Machine learning and artificial intelligence',
+        'Big data technologies (Hadoop, Apache Spark)',
+        'Data science',
+        'Statistical analysis',
+        'Natural language processing (NLP)',
+        'Robotic process automation (RPA)',
+      ],
+      'Database Management': [
+        'Database management SQL',
+        'Database management NoSQL',
+        'Database management NewSQL',
+      ],
+      'Programming Languages': [
+        'Java',
+        'Node.js',
+        'React',
+        'C#',
+        'C++',
+      ],
+      'Web Development': [
+        'Web development (HTML)',
+        'Web development (CSS)',
+        'Web development (JavaScript)',
+        'Web development (PHP)',
+      ],
+      'Mobile App Development': [
+        'Mobile app development (iOS, Android)',
+        'UI/UX design',
+        'Swift',
+        'Ruby',
+        'Flutter and Dart',
+      ],
+      'Other Topics': [
+        'Agile and Scrum methodologies',
+        'Virtual reality (VR)',
+        'Augmented reality (AR)',
+        'Cloud computing',
+        'Cybersecurity',
+        'Network',
+        'Blockchain',
+        'Internet of Things (IoT)',
+      ],
+      'Soft Skills': [
+        'Critical thinking',
+        'Problem-solving',
+        'Communication skills',
+        'Collaboration',
+        'Attention to detail',
+        'Logical reasoning',
+        'Creativity',
+        'Time management',
+        'Adaptability',
+        'Leadership',
+        'Teamwork',
+        'Presentation skills',
+      ],
+    };
+
+    final List<String> items = edittopicGroups.keys.toList();
+
+    final List<String> selectededitTopics = List<String>.from(
+        _editSelectTopic); // Store the selected topics outside of the dialog
+
+    final List<String>? result = await showDialog<List<String>>(
+      context: context,
+      builder: (BuildContext context) {
+        final List<String> chosenTopics = List<String>.from(selectededitTopics);
+
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: const Text('Select Topics'),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    for (String group in items)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            group,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          ...edittopicGroups[group]!.map((String topic) {
+                            return CheckboxListTile(
+                              title: Text(topic),
+                              value: chosenTopics.contains(topic),
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  if (value == true) {
+                                    chosenTopics.add(topic);
+                                  } else {
+                                    chosenTopics.remove(topic);
+                                  }
+                                });
+                              },
+                            );
+                          }),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(chosenTopics);
+                  },
+                  child: const Text('Done'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (result != null) {
+      setState(() {
+        newKey_topic = result;
+        _editSelectTopic = result;
+      });
+    }
+  }
+
+  bool showEditBox = false;
+//EDIT PART END
   int id = 0;
 
   //firebase++
@@ -184,6 +409,29 @@ class _AdminPathwaysState extends State<AdminPathways> {
     }
   }
 
+//EDIT
+  void clear() {
+    //subtopicControllers.clear();
+    //topics2.clear();  
+
+    ///SOMETHING IS BEING WROTE AGAIN
+      if (topics2.length > 1) {
+      topics2.removeRange(1, topics2.length);
+      descriptions2.removeRange(1, descriptions2.length);
+    }
+
+    for (int i = 0; i < topics2.length; i++) {
+      topics2[i].clear();
+      descriptions2[i].clear();
+     
+    }
+    /* if (subtopicControllers.length > 1) {
+      subtopicControllers.removeRange(1, subtopicControllers.length);
+      subtopicDescriptionControllers.removeRange(1, subtopicDescriptionControllers.length);
+    }*/
+  }
+
+  //EDIT
   Future<Map<String, dynamic>> fetchContainerData() async {
     final DocumentSnapshot snapshot =
         await firestore.collection('pathway').doc('title').get();
@@ -193,6 +441,8 @@ class _AdminPathwaysState extends State<AdminPathways> {
   @override
   void initState() {
     super.initState();
+    _addfieldsub();
+
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       _addField();
       fetchContainerData().then((data) {
@@ -202,6 +452,109 @@ class _AdminPathwaysState extends State<AdminPathways> {
       });
     });
   }
+
+  //edit
+  _addfieldsub() {
+    setState(() {
+      topics2.add(TextEditingController());
+      descriptions2.add(TextEditingController());
+    });
+  }
+
+  Future<void> _removeedit(int indexx, List<TextEditingController> listdeleted,
+      List<TextEditingController> listold) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dialog dismissal on outside tap
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Item'),
+          content: Text('Are you sure you want to delete this item?'),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: Text('Delete'),
+              onPressed: () async {
+                if (indexx >= 0 && indexx < subtopicControllers.length) {
+                  setState(() {
+                    subtopicControllers.removeAt(indexx);
+                    subtopicDescriptionControllers.removeAt(indexx);
+                    //topics2.removeAt(indexx);
+                    print("@@@@@@@IM INNNN");
+                  });
+                }
+                //updatetitlessub(subtopicControllers,topics2);
+
+                Navigator.of(context).pop(); // Close the dialog
+
+                // Navigate back to the previous page after deleting the item
+                // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _removeedit2(int indexx, List<TextEditingController> listdeleted,
+      List<TextEditingController> listold) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dialog dismissal on outside tap
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Item'),
+          content: Text('Are you sure you want to delete this item?'),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: Text('Delete'),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                CollectionReference collectionRef =
+                    FirebaseFirestore.instance.collection('pathway');
+
+                QuerySnapshot querySnapshot =
+                    await collectionRef.where('id', isEqualTo: pathID).get();
+
+                if (querySnapshot.docs.isNotEmpty) {
+                  DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+
+                  List<dynamic> arrayField = documentSnapshot.get('subtopics');
+                  if (arrayField != null && arrayField.length >= indexx) {
+                    arrayField.removeAt(indexx);
+
+                    await documentSnapshot.reference
+                        .update({'subtopics': arrayField});
+                  }
+                }
+                if (indexx >= 0 && indexx < subtopicControllers.length) {
+                  setState(() {
+                    //subtopicControllers.removeAt(indexx);
+                    topics2.removeAt(indexx);
+                    descriptions2.removeAt(indexx);
+                    print("@@@@@@@IM INNNN 2222");
+                  });
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  //edit
 
   _addField() {
     setState(() {
@@ -375,8 +728,16 @@ class _AdminPathwaysState extends State<AdminPathways> {
                             ),
                           ),
                           IconButton(
-                            onPressed: () {
-                              print('Edit button pressed');
+                            onPressed: () async {
+                              print('Edit button pressed*******');
+                              print("******PATH ID:$pathID");
+                              SharedPreferences pre =
+                                  await SharedPreferences.getInstance();
+                              pre.setInt('pathwayId_${pathway.id}', pathway.id);
+                              fetchData(pathway);
+                              setState(() {
+                                showEditBox = !showEditBox;
+                              });
                             },
                             icon: Icon(Icons.edit),
                           ),
@@ -496,7 +857,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
             ),
           ),
 
-          if (!showWhiteBox)
+          if (!showWhiteBox && !showEditBox)
             Stack(
               children: [
                 StreamBuilder<List<PathwayContainer>>(
@@ -1142,11 +1503,1017 @@ class _AdminPathwaysState extends State<AdminPathways> {
               ),
             ),
           //////////////////// END FORM
+          ///
+          ///
+          ///
+          ///
+          ///
+          if (showEditBox)
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                ),
+              ),
+            ),
+
+          if (showEditBox)
+            Positioned(
+              left: MediaQuery.of(context).size.width * 0.05,
+              right: MediaQuery.of(context).size.width * 0.05,
+              top: MediaQuery.of(context).size.height * 0.07,
+              bottom: MediaQuery.of(context).size.height * 0.06,
+              child: SingleChildScrollView(
+                  child: Container(
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20, right: 40),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                showEditBox = false;
+                              });
+                             clear();
+                            },
+                            child: Icon(
+                              Icons.arrow_back,
+                              size: 30,
+                            ),
+                          ),
+                          const SizedBox(width: 40),
+                          Text(
+                            'Edit Pathway ',
+                            style:
+                                TextStyle(fontSize: 24, fontFamily: 'Poppins'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    const Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 7),
+                      child: Text(
+                        'Edit pathways and unlock a world of knowledge!',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 300,
+                      child: Divider(
+                        color: Color.fromARGB(255, 211, 211, 211),
+                        thickness: 1,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    //image++
+                    UserImagePicker(
+                      onPickImage: (pickedImage) {
+                        newProfilePicture = pickedImage;
+                      },
+                    ),
+                    const Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                      child: Text(
+                        'Please make sure to include at least one component (topic, description and resource)',
+                        style: TextStyle(color: Colors.red, fontSize: 13),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            children: [
+                              Text(
+                                'Pathway\'s Title',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                '*',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                    prefixIcon: const Icon(Icons.person,
+                                        color: Color.fromARGB(255, 0, 0, 0)),
+                                    labelStyle: const TextStyle(
+                                      color: Colors.black54,
+                                    ),
+                                    filled: true,
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.never,
+                                    fillColor:
+                                        const Color.fromARGB(255, 228, 228, 228)
+                                            .withOpacity(0.3),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(32),
+                                    ),
+                                  ),
+                                  enabled: true,
+                                  readOnly: false,
+                                  controller: TextEditingController(
+                                      text:
+                                          newtitle), // Use newUsername variable as the initial value
+                                  onChanged: (value) {
+                                    newtitle =
+                                        value; // Update newUsername when the value changes
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                            ],
+                          ),
+                          
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          const Row(
+                            children: [
+                              Text(
+                                'Pathway\'s Description',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                '*',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            enabled: true,
+                            controller: TextEditingController(
+                                text:
+                                    newpath_description), // Use newUsername variable as the initial value
+                            onChanged: (value) {
+                              newpath_description =
+                                  value; // Update newUsername when the value changes
+                            },
+                            maxLines: 4,
+                            cursorColor: const Color.fromARGB(255, 43, 3, 101),
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.description,
+                                  color:
+                                      const Color.fromARGB(255, 63, 12, 118)),
+                              labelStyle: const TextStyle(
+                                color: Colors.black54,
+                              ),
+                              filled: true,
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.never,
+                              fillColor:
+                                  const Color.fromARGB(255, 228, 228, 228)
+                                      .withOpacity(0.3),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(32),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(
+                      height: 20,
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            children: [
+                              const Text(
+                                'Topics',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                '*',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 6,
+                          ),
+                          ElevatedButton(
+                            onPressed: _showMultiSelectTopicedit,
+                            child: const Text('Select Topics'),
+                          ),
+
+                          // Display the selected items
+                          Wrap(
+                            children: _editSelectTopic // Updated variable name
+                                .map((e) => Chip(
+                                      label: Text(e),
+                                    ))
+                                .toList(),
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ///////////
+                    ///
+                    ///
+                    Column(
+                      children: [
+                        SizedBox(
+                          width: 300,
+                          child: Divider(
+                            color: Color.fromARGB(255, 211, 211, 211),
+                            thickness: 1,
+                          ),
+                        ),
+                        Padding(
+                          padding:
+                              EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                          child: Text(
+                            'Please note that you can add more than one topic',
+                            style: TextStyle(color: Colors.red, fontSize: 13),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: topics2.length,
+                            itemBuilder: (BuildContext context, int indexx) {
+                              final isRemovable =
+                                  indexx > 0; // Check if the field is removable
+                              int x = 0;
+                              // Check if index is within the range of subtopicControllers length
+                              if (indexx < subtopicControllers.length) {
+                                return Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(18.0),
+                                          child: Text(
+                                            'SubTopic - ${indexx + 1}',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color.fromARGB(
+                                                  255, 56, 9, 150),
+                                            ),
+                                          ),
+                                        ),
+                                        Spacer(),
+                                        if (isRemovable)
+                                          InkWell(
+                                            child:
+                                                const Icon(Icons.remove_circle),
+                                            onTap: () async {
+                                              print("******INDEXXXXXX $indexx");
+                                              await _removeedit(--indexx,
+                                                  subtopicControllers, topics2);
+                                            },
+                                          ),
+                                        InkWell(
+                                          child: const Icon(Icons.add_circle),
+                                          onTap: () {
+                                            _addfieldsub();
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 0),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Row(
+                                            children: [
+                                              Text(
+                                                'Sub-Topic Title',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              SizedBox(width: 5),
+                                              Text(
+                                                '*',
+                                                style: TextStyle(
+                                                    color: Colors.red),
+                                              ),
+                                              SizedBox(width: 5),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 8),
+                                          buildTextField(indexx),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              } else {
+                                // Return a different ListView.builder when index exceeds subtopicControllers length
+                                return ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: 1, // Only one item in the builder
+                                  itemBuilder:
+                                      (BuildContext context, int subIndex) {
+                                    return Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(18.0),
+                                              child: Text(
+                                                'SubTopic - ${indexx + 1}',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Color.fromARGB(
+                                                      255, 56, 9, 150),
+                                                ),
+                                              ),
+                                            ),
+                                            Spacer(),
+                                            if (isRemovable)
+                                              InkWell(
+                                                child: const Icon(
+                                                    Icons.remove_circle),
+                                                onTap: () async {
+                                                  print(
+                                                      "******INDEXXXXXX $indexx");
+                                                  await _removeedit2(
+                                                      --indexx,
+                                                      topics2,
+                                                      subtopicControllers);
+                                                },
+                                              ),
+                                            InkWell(
+                                              child:
+                                                  const Icon(Icons.add_circle),
+                                              onTap: () {
+                                                _addfieldsub();
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 0),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const Row(
+                                                children: [
+                                                  Text(
+                                                    'Sub-Topic Title',
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 5),
+                                                  Text(
+                                                    '*',
+                                                    style: TextStyle(
+                                                        color: Colors.red),
+                                                  ),
+                                                  SizedBox(width: 5),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 8),
+                                              TextField(
+                                                decoration: InputDecoration(
+                                                  prefixIcon: const Icon(
+                                                      Icons.person,
+                                                      color: Color.fromARGB(
+                                                          255, 0, 0, 0)),
+                                                  labelStyle: const TextStyle(
+                                                    color: Colors.black54,
+                                                  ),
+                                                  filled: true,
+                                                  labelText: "please enter",
+                                                  floatingLabelBehavior:
+                                                      FloatingLabelBehavior
+                                                          .never,
+                                                  fillColor:
+                                                      const Color.fromARGB(255,
+                                                              228, 228, 228)
+                                                          .withOpacity(0.3),
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            32),
+                                                  ),
+                                                ),
+                                                controller: topics2[indexx],
+                                                enabled: true,
+                                                readOnly: false,
+                                                onChanged: (value) {
+                                                  setState(() {});
+                                                },
+                                              ),
+                                              SizedBox(
+                                                height: 5,
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 20),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    const Row(
+                                                      children: [
+                                                        Text(
+                                                          'Description',
+                                                          style: TextStyle(
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                        Text(
+                                                          '*',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.red),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    TextField(
+                                                      enabled: true,
+                                                      controller:
+                                                          descriptions2[indexx],
+                                                      maxLines: 4,
+                                                      cursorColor:
+                                                          const Color.fromARGB(
+                                                              255, 43, 3, 101),
+                                                      decoration:
+                                                          InputDecoration(
+                                                        prefixIcon: Icon(
+                                                          Icons.description,
+                                                          color: const Color
+                                                              .fromARGB(
+                                                              255, 63, 12, 118),
+                                                        ),
+                                                        labelText:
+                                                            "Please enter subtopic's\n\nDescription",
+                                                        labelStyle:
+                                                            const TextStyle(
+                                                          color: Colors.black54,
+                                                        ),
+                                                        filled: true,
+                                                        floatingLabelBehavior:
+                                                            FloatingLabelBehavior
+                                                                .never,
+                                                        fillColor: const Color
+                                                                .fromARGB(255,
+                                                                228, 228, 228)
+                                                            .withOpacity(0.3),
+                                                        border:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(32),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        for (var t in topics2) {
+                          print('Subtopic title: ${t.text} ');
+                          // Save the subtopic data as needed
+                        }
+
+                        for (var t in subtopicControllers) {
+                          print('Subtopic : ${t.text} ');
+                          // Save the subtopic data as needed
+                        }
+
+                        if (await validateTitle() &&
+                            await validatedescription() &&
+                            await validateTopics() &&
+                            await validatesubdescription()&& await validatesubtopics()) {
+                              updateProfilePicture();
+                          _showSnackBar(
+                              "Your information has been changed successfully");
+                          setState(() {
+                            showEditBox = false;
+                          });
+                        }
+                        //updateTitle(); CALLED IN VALIDATION
+                        //updateProfilePicture();
+                        //updateDescription();
+                        //updateInterests();
+                        //validateTopics();
+                        //updatetitlessub(subtopicControllers,topics2);
+                      },
+                      child: const Text('Save'),
+                    )
+                  ],
+                ),
+              )),
+            ),
         ],
       ),
     );
   }
 
+//edit db
+  Future<bool> validateTopics() async {
+    if (newKey_topic == dbKey_topic) {
+      return true;
+    } else if (newKey_topic.isEmpty) {
+      _showSnackBar('Please enter your topics');
+      return false;
+    }
+    if (await updateTopics()) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> updateTopics() async {
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('pathway')
+        .where('id', isEqualTo: pathID)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final DocumentSnapshot<Map<String, dynamic>> userDoc =
+          snapshot.docs.first;
+      final String userId = userDoc.id;
+
+      await FirebaseFirestore.instance
+          .collection('pathway')
+          .doc(userId)
+          .update({
+        'Key_topic': _editSelectTopic,
+      });
+    }
+
+    return true;
+  }
+
+  Widget buildTextField(int index) {
+    if (index < subtopicControllers.length) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            decoration: InputDecoration(
+              prefixIcon:
+                  const Icon(Icons.person, color: Color.fromARGB(255, 0, 0, 0)),
+              labelStyle: const TextStyle(
+                color: Colors.black54,
+              ),
+              filled: true,
+              labelText: "please enter",
+              floatingLabelBehavior: FloatingLabelBehavior.never,
+              fillColor:
+                  const Color.fromARGB(255, 228, 228, 228).withOpacity(0.3),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(32),
+              ),
+            ),
+            controller: subtopicControllers[index],
+            enabled: true,
+            readOnly: false,
+            onChanged: (value) {
+              setState(() {
+                // Handle any changes in the text field
+              });
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Text(
+                      'Description',
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      '*',
+                      style: TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  enabled: true,
+                  controller: subtopicDescriptionControllers[index],
+                  maxLines: 4,
+                  cursorColor: const Color.fromARGB(255, 43, 3, 101),
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(
+                      Icons.description,
+                      color: const Color.fromARGB(255, 63, 12, 118),
+                    ),
+                    labelText: "Please enter subtopic's\n\nDescription",
+                    labelStyle: const TextStyle(
+                      color: Colors.black54,
+                    ),
+                    filled: true,
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    fillColor: const Color.fromARGB(255, 228, 228, 228)
+                        .withOpacity(0.3),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(32),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    } else {
+      return SizedBox(); // Empty container if the text field should be hidden
+    }
+  }
+
+  addvalue(String s, int i) {
+    newsubtopics[++i] = s;
+  }
+
+  Future<bool> updatetitlessub(List<TextEditingController> list1,
+      List<TextEditingController> list2) async {
+    List<String> mergedList = [];
+
+    for (int i = 0; i < list1.length; i++) {
+      String value = list1[i].text;
+      if (value.isNotEmpty) {
+        mergedList.add(value);
+      }
+    }
+
+    for (int i = 0; i < list2.length; i++) {
+      String value = list2[i].text;
+      if (value.isNotEmpty) {
+        mergedList.add(value);
+      }
+    }
+    if (mergedList.isEmpty) {
+      _showSnackBar("Enter at least one subtopic");
+      return false; // Return false if the mergedList is empty
+    }
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('pathway')
+        .where('id', isEqualTo: pathID)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final DocumentSnapshot<Map<String, dynamic>> userDoc =
+          snapshot.docs.first;
+      final String id = userDoc.id;
+
+      await FirebaseFirestore.instance.collection('pathway').doc(id).update({
+        'subtopics': mergedList,
+      });
+    }
+
+    return true;
+  }
+
+Future<bool> updatedescriptionssub(List<TextEditingController> list1,
+      List<TextEditingController> list2) async {
+    List<String> mergedList = [];
+
+    for (int i = 0; i < list1.length; i++) {
+      String value = list1[i].text;
+      if (value.isNotEmpty) {
+        mergedList.add(value);
+      }
+    }
+
+    for (int i = 0; i < list2.length; i++) {
+      String value = list2[i].text;
+      if (value.isNotEmpty) {
+        mergedList.add(value);
+      }
+    }
+    if (mergedList.isEmpty) {
+      _showSnackBar("Enter a description for subtopics");
+      return false; // Return false if the mergedList is empty
+    }
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('pathway')
+        .where('id', isEqualTo: pathID)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final DocumentSnapshot<Map<String, dynamic>> userDoc =
+          snapshot.docs.first;
+      final String id = userDoc.id;
+
+      await FirebaseFirestore.instance.collection('pathway').doc(id).update({
+        'descriptions': mergedList,
+      });
+    }
+
+    return true;
+  }
+
+  Future<bool> updateProfilePicture() async {
+    try {
+      // Upload the new profile picture to Firebase Storage
+      final Reference storageRef =
+          FirebaseStorage.instance.ref().child('pathway_images/$pathID.jpg');
+      final UploadTask uploadTask = storageRef.putFile(newProfilePicture!);
+      final TaskSnapshot taskSnapshot =
+          await uploadTask.whenComplete(() => null);
+      final String downloadURL = await taskSnapshot.ref.getDownloadURL();
+      final QuerySnapshot<Map<String, dynamic>> snapshot =
+          await FirebaseFirestore.instance
+              .collection('pathway')
+              .where('id', isEqualTo: pathID)
+              .limit(1)
+              .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        final DocumentSnapshot<Map<String, dynamic>> userDoc =
+            snapshot.docs.first;
+        final String id = userDoc.id;
+        await FirebaseFirestore.instance.collection('pathway').doc(id).update({
+          'image_url': downloadURL,
+        });
+      }
+      dbimage_url = downloadURL;
+
+      return true;
+    } catch (e) {
+       _showSnackBar('An error occurred while trying to change  picture');
+      return false;
+    }
+  }
+
+  Future<bool> validateTitle() async {
+    if (newtitle == dbtitle) {
+      return true;
+    } else if (newtitle != dbtitle) {
+      bool usernameExists = await isTitleUnique(newtitle);
+      if (!usernameExists == false) {
+        _showSnackBar('title is already taken. Please choose a different one.');
+        return false;
+      }
+      if (newtitle == '') {
+        _showSnackBar('title is EMPTY. Please choose a different one.');
+        return false;
+      } else {
+        // Username is valid and not already taken, perform the save operation
+        if (await updateTitle()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  Future<bool> checktitleExists(String title) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('pathway')
+        .where('title', isEqualTo: title.toLowerCase())
+        .limit(1)
+        .get();
+
+    return querySnapshot.docs.isNotEmpty;
+  }
+
+  Future<bool> updateTitle() async {
+    //SharedPreferences pre = await SharedPreferences.getInstance();
+    //pre.getInt('pathwayId_${pathway.id}', pathway.id);
+
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('pathway')
+        .where('id', isEqualTo: pathID)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final DocumentSnapshot<Map<String, dynamic>> userDoc =
+          snapshot.docs.first;
+      final String id = userDoc.id;
+
+      await FirebaseFirestore.instance.collection('pathway').doc(id).update({
+        'title': newtitle,
+      });
+    }
+
+    return true;
+  }
+
+  Future<bool> updateDescription() async {
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('pathway')
+        .where('id', isEqualTo: pathID)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final DocumentSnapshot<Map<String, dynamic>> userDoc =
+          snapshot.docs.first;
+      final String id = userDoc.id;
+
+      await FirebaseFirestore.instance.collection('pathway').doc(id).update({
+        'path_description': newpath_description,
+      });
+    }
+
+    return true;
+  }
+
+  Future<bool> validatedescription() async {
+    if (newpath_description == dbpath_description) {
+      return true;
+    } else if (newpath_description != dbpath_description) {
+      bool usernameExists = await checkdescriptionExists(newpath_description);
+      if (usernameExists) {
+        _showSnackBar('Please add a description');
+        return false;
+      } else {
+        // Username is valid and not already taken, perform the save operation
+        if (await updateDescription()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  Future<bool> checkdescriptionExists(String description) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('pathway')
+        .where('path_description', isNotEqualTo: '')
+        .limit(1)
+        .get();
+
+    return querySnapshot.docs.isNotEmpty;
+  }
+
+  Future<bool> validatetopics() async {
+    if (newKey_topic == dbKey_topic) {
+      return true;
+    } else if (newKey_topic.isEmpty) {
+      _showSnackBar('Please enter your interests');
+      return false;
+    }
+    if (await updateInterests()) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> updateInterests() async {
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('pathway')
+        .where('id', isEqualTo: pathID)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final DocumentSnapshot<Map<String, dynamic>> userDoc =
+          snapshot.docs.first;
+      final String id = userDoc.id;
+
+      await FirebaseFirestore.instance.collection('pathway').doc(id).update({
+        'Key_topic': newKey_topic,
+      });
+    }
+
+    return true;
+  }
+    Future<bool> validatesubtopics() async {
+
+    for (int i = 0; i < _topics.length; i++) {
+      if (topics2[i].text.isEmpty  && subtopicControllers[i].text.isEmpty ) {
+        _showSnackBar('Please fill all fields for topics and descriptions');
+        return false; // Return early if any topic or description field is empty
+      }}
+      
+      if( await updatetitlessub(subtopicControllers,topics2)){
+        return true;
+      }
+      return false; 
+      }
+      
+    Future<bool> validatesubdescription() async {
+
+    for (int i = 0; i < _topics.length; i++) {
+      if (descriptions2[i].text.isEmpty && subtopicDescriptionControllers[i].text.isEmpty) {
+        _showSnackBar('Please fill all fields for topics and descriptions');
+        return false; // Return early if any topic or description field is empty
+      }}
+      
+      if( await updatedescriptionssub(subtopicDescriptionControllers,descriptions2)){
+        return true;
+      }
+      return false; 
+      }
+//DONE EDIT DATABASE
   // DB
 
   Future<bool> saveDataToFirestore() async {
@@ -1205,24 +2572,24 @@ class _AdminPathwaysState extends State<AdminPathways> {
         flattenedResourcesList.addAll(resourceList);
       }
 
-  //RESOURCES PART
+      //RESOURCES PART
 
       for (int i = 0; i < _resourceControllersList.length; i++) {
-      List<String> subtopicResources = _resourceControllersList[i]
-          .map((controller) => controller.text)
-          .toList();
+        List<String> subtopicResources = _resourceControllersList[i]
+            .map((controller) => controller.text)
+            .toList();
 
-      // Create a new document reference in the "resources" collection
-      DocumentReference resourceDocumentRef =
-          firestore.collection('resources').doc();
+        // Create a new document reference in the "resources" collection
+        DocumentReference resourceDocumentRef =
+            firestore.collection('resources').doc();
 
-      // Save resource data to Firestore
-      await resourceDocumentRef.set({
-        'pathway_id': documentReference.id,
-        'subtopic_id': i,
-        'link': subtopicResources,
-      });
-    }
+        // Save resource data to Firestore
+        await resourceDocumentRef.set({
+          'pathway_id': documentReference.id,
+          'subtopic_id': i,
+          'link': subtopicResources,
+        });
+      }
       // Save the flattened resources list to Firestore
       await documentReference.set({
         'title': _pathTitle.text,
@@ -1234,7 +2601,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
         'resources': flattenedResourcesList,
         'image_url': imageUrl,
         'id': id,
-        'docId':documentReference.id,
+        'docId': documentReference.id,
       });
 
       // Display a success message or perform any other actions
@@ -1394,226 +2761,229 @@ class _AdminPathwaysState extends State<AdminPathways> {
     return false;
   }
 
+  Future<List<List<String>>> getResourcesFromFirestore(
+      PathwayContainer path) async {
+    try {
+      String? idPath = path.docId;
 
-Future<List<String>> getResourcesFromFirestore(PathwayContainer path) async {
-  try {
+      QuerySnapshot snapshot = await firestore
+          .collection('resources')
+          .where('pathway_id', isEqualTo: idPath)
+          .orderBy('subtopic_id')
+          .get();
 
-    DocumentReference documentReference =
-          firestore.collection('pathway').doc();
-          String? idPath = path.docId;
-   
-print("@@@@@@  INSIDE RESOURCE DB");
-print("@@@@@@  id is $idPath");
+      List<List<String>> resources = snapshot.docs.map((doc) {
+        String resourceString = doc['link'].toString();
+        List<String> resourceList = [];
+        RegExp exp = RegExp(r'\[([^\]]+)\]');
+        Iterable<Match> matches = exp.allMatches(resourceString);
+        for (Match match in matches) {
+          String matchString = match.group(1)!;
+          resourceList.addAll(matchString.split(', '));
+        }
+        return resourceList;
+      }).toList();
 
-    // Query Firestore to retrieve resources with matching pathway_id
-    QuerySnapshot snapshot = await firestore
-        .collection('resources')
-        .where('pathway_id', isEqualTo: idPath)
-        .orderBy('subtopic_id')
-        .get();
-
-    // Extract the links from the snapshot
-List<String> resources = snapshot.docs
-    .map((doc) => (doc['link']  ).toString())
-    .toList();
-    resources.sort();
-
-    print("@@@  RESPURCE ARE: $resources");
-
-    return resources;
-  } catch (error) {
-    // Handle the error appropriately
-    throw error;
+      return resources;
+    } catch (error) {
+      throw error;
+    }
   }
-}
-
-
 
   void moreInfo(PathwayContainer pathway) {
     int i = 0;
- showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      Map<String, bool> expandedStates = {};
-      return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          return AlertDialog(
-            insetPadding: EdgeInsets.symmetric(horizontal: 16),
-            backgroundColor: Color.fromARGB(255, 255, 255, 255),
-            content: FutureBuilder<List<String>>(
-              future: getResourcesFromFirestore(pathway),
-              builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('Error retrieving resources: ${snapshot.error}');
-                } else {
-                  List<String> resources = snapshot.data ?? [];
-                  print("######## RES: $resources");
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        Map<String, bool> expandedStates = {};
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 16),
+              backgroundColor: Color.fromARGB(255, 255, 255, 255),
+              content: FutureBuilder<List<List<String>>>(
+                future: getResourcesFromFirestore(pathway),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<List<String>>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text(
+                        'Error retrieving resources: ${snapshot.error}');
+                  } else {
+                    List<List<String>> resources = snapshot.data ?? [];
+                    print("######## RES: $resources");
 
-                  return SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Center(
-                          child: Text(
-                            pathway.title,
+                    return SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: Text(
+                              pathway.title,
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          SizedBox(height: 15.0),
+                          Center(
+                            child: Lottie.network(
+                                'https://lottie.host/623f88bb-cb70-413c-bb1a-0003d0b7e3d6/RnPQM25m8I.json'),
+                          ),
+                          Center(
+                            child: Text(
+                              pathway.path_description,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: const Color.fromARGB(255, 81, 81, 81),
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 300,
+                            child: Divider(
+                              color: Color.fromARGB(255, 211, 211, 211),
+                              thickness: 1,
+                            ),
+                          ),
+                          SizedBox(height: 8.0),
+                          Center(
+                            child: Text(
+                              'Get ready to embark on an exciting journey of learning and growth!',
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 169, 0, 157)),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Text(
+                            'SubTopics:',
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
-                            textAlign: TextAlign.center,
                           ),
-                        ),
-                        SizedBox(height: 15.0),
-                        Center(
-                          child: Lottie.network(
-                              'https://lottie.host/623f88bb-cb70-413c-bb1a-0003d0b7e3d6/RnPQM25m8I.json'),
-                        ),
-                        Center(
-                          child: Text(
-                            pathway.path_description,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: const Color.fromARGB(255, 81, 81, 81),
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 300,
-                          child: Divider(
-                            color: Color.fromARGB(255, 211, 211, 211),
-                            thickness: 1,
-                          ),
-                        ),
-                        SizedBox(height: 8.0),
-                        Center(
-                          child: Text(
-                            'Get ready to embark on an exciting journey of learning and growth!',
-                            style:
-                                TextStyle(color: Color.fromARGB(255, 169, 0, 157)),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Text(
-                          'SubTopics:',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 8.0),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: pathway.subtopics.asMap().entries.map((entry) {
-                            final index = entry.key;
-                            final subtopic = entry.value;
+                          SizedBox(height: 8.0),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children:
+                                pathway.subtopics.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final subtopic = entry.value;
 
-                            int x = index;
-                            if (expandedStates[subtopic] == null) {
-                              expandedStates[subtopic] = false;
-                            }
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(height: 8.0),
-                                Row(
-                                  children: [
-                                    Container(
-                                      width: 20,
-                                      height: 20,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.amber,
+                              int x = index;
+                              if (expandedStates[subtopic] == null) {
+                                expandedStates[subtopic] = false;
+                              }
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 8.0),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 20,
+                                        height: 20,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.amber,
+                                        ),
+                                        child: Icon(
+                                          Icons.star,
+                                          color: Colors.white,
+                                          size: 16,
+                                        ),
                                       ),
-                                      child: Icon(
-                                        Icons.star,
-                                        color: Colors.white,
-                                        size: 16,
-                                      ),
-                                    ),
-                                    SizedBox(width: 8.0),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          expandedStates[subtopic] =
-                                              !(expandedStates[subtopic] ?? false);
-                                        });
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Icon(expandedStates[subtopic] ?? false
-                                              ? Icons.keyboard_arrow_down
-                                              : Icons.keyboard_arrow_right),
-                                          SizedBox(width: 8.0),
-                                          Text(
-                                            subtopic,
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: const Color.fromARGB(
-                                                  255, 81, 81, 81),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                if (expandedStates[subtopic] ?? false)
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 22.0, top: 4.0),
-                                    child: Text(
-                                      pathway.descriptions[index],
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: const Color.fromARGB(255, 81, 81, 81),
-                                      ),
-                                    ),
-                                  ),
-
-                                //resources
-                                if (expandedStates[subtopic] ?? false)
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 22.0, top: 8.0),
-                                    child: Column(
-                                      children: resources.map((resource) {
-                                        return GestureDetector(
-                                          onTap: () {
-                                            launch(resource);
-                                          },
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.link),
-                                              SizedBox(width: 4.0),
-                                              Text(
-                                                resources[x++],
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.blue,
-                                                  decoration: TextDecoration.underline,
-                                       
-                                                ),
+                                      SizedBox(width: 8.0),
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            expandedStates[subtopic] =
+                                                !(expandedStates[subtopic] ??
+                                                    false);
+                                          });
+                                        },
+                                        child: Row(
+                                          children: [
+                                            Icon(expandedStates[subtopic] ??
+                                                    false
+                                                ? Icons.keyboard_arrow_down
+                                                : Icons.keyboard_arrow_right),
+                                            SizedBox(width: 8.0),
+                                            Text(
+                                              subtopic,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: const Color.fromARGB(
+                                                    255, 81, 81, 81),
                                               ),
-                                            ],
-                                          ),
-                                        );
-                                      }).toList(),
-                                    ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-              },
-            ),
+                                  if (expandedStates[subtopic] ?? false)
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.only(left: 22.0, top: 4.0),
+                                      child: Text(
+                                        pathway.descriptions[index],
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: const Color.fromARGB(
+                                              255, 81, 81, 81),
+                                        ),
+                                      ),
+                                    ),
+
+                                  //resources
+                                  if (expandedStates[subtopic] ?? false)
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.only(left: 22.0, top: 8.0),
+                                      child: Column(
+                                        children:
+                                            resources[index].map((resource) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              launch(resource);
+                                            },
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.link),
+                                                SizedBox(width: 4.0),
+                                                Text(
+                                                  resource,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.blue,
+                                                    decoration: TextDecoration
+                                                        .underline,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
+              ),
               actions: [
                 TextButton(
                   onPressed: () {

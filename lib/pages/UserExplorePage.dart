@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:techxcel11/pages/UserCoursesAndEventsPage.dart';
 import 'package:techxcel11/pages/UserPathways.dart';
 import 'package:techxcel11/pages/reuse.dart';
+//EDIT +CALNDER COMMIT
 
 class UserExplorePage extends StatefulWidget {
   @override

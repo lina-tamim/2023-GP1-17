@@ -16,6 +16,7 @@ import 'package:techxcel11/pages/user_posts_page.dart'; //m
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:techxcel11/pages/start.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+//EDIT +CALNDER COMMIT
 
 class NavBarUser extends StatefulWidget {
   const NavBarUser({super.key});
