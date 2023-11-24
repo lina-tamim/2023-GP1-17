@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:techxcel11/pages/EditProfile2.dart';
+import 'package:techxcel11/pages/UserPages/EditProfile2.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:google_fonts/google_fonts.dart'; //
+import 'package:google_fonts/google_fonts.dart'; 
 import 'dart:math' as math;
-//EDIT +CALNDER COMMIT
 
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({super.key});
@@ -90,25 +89,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
     } else {
       throw 'Could not launch $url';
     }
-  }
-
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).size.height - 80,
-          right: 20,
-          left: 20,
-        ),
-        backgroundColor:
-            Color.fromARGB(255, 63, 12, 118), // Customize the background color
-      ),
-    );
   }
 
   @override

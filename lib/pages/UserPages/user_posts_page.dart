@@ -6,10 +6,9 @@ import 'package:techxcel11/models/cardQview.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:techxcel11/models/cardAview.dart';
-import 'package:techxcel11/pages/answer.dart';
+import 'package:techxcel11/pages/UserPages/answer.dart';
 import 'package:techxcel11/pages/reuse.dart';
-import 'form.dart';
-//EDIT +CALNDER COMMIT
+import 'package:techxcel11/pages/UserPages/form.dart';
 
 class UserPostsPage extends StatefulWidget {
   const UserPostsPage({Key? key}) : super(key: key);

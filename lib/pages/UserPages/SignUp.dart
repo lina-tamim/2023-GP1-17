@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:techxcel11/user_image.dart';
+import 'package:techxcel11/models/user_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:techxcel11/pages/reuse.dart';
@@ -143,7 +143,7 @@ Future<void> signUserUp() async {
     });
 
     // Display a success message to the user
-    _showSnackBar("Please check your email for verification.");
+    toastMessage("Please check your email for verification.");
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -1101,7 +1101,7 @@ Future<void> signUserUp() async {
         _selectedPreference == null ||
         _selectedUser == null
         || _selectedInterests.isEmpty ) {
-      _showSnackBar('Please fill in all the required fields');
+      toastMessage('Please fill in all the required fields');
       return false;
     }
 
@@ -1109,18 +1109,18 @@ Future<void> signUserUp() async {
     //                                   *** username validation ***
     // Check username validity (>6 + no WS)
     if (_userName.text.length < 6) {
-      _showSnackBar('Username should be at least 6 characters long');
+      toastMessage('Username should be at least 6 characters long');
       return false;
     } else if (_userName.text.contains(RegExp(r'\s'))) {
-      _showSnackBar('Username should not contain whitespace');
+      toastMessage('Username should not contain whitespace');
       return false;
     }
     else if (_userName.text.contains(RegExp(r'^\d+$'))) {
-      _showSnackBar('Username should not contain only digits');
+      toastMessage('Username should not contain only digits');
       return false;
     }
     if (await checkAvailableUsername(_userName.text.trim()) == false) {
-      _showSnackBar(
+      toastMessage(
           'This username is already in use. Please try a different username');
       return false;
     }
@@ -1145,19 +1145,19 @@ Future<void> signUserUp() async {
     if (!EmailValidator.validate(email) ||
         !containsValidCharacters(email) ||
         !hasValidTLD(email)) {
-      _showSnackBar('Invalid Email');
+      toastMessage('Invalid Email');
       return false;
     }
 
     if (await checkAvailableEmail(email) == false) {
-      _showSnackBar(
+      toastMessage(
           'This email is already in use. Please try a different email');
       return false;
     }
 
     //                                   *** password validation ***
     if (_password.text.length < 6) {
-      _showSnackBar('Password should be at least 8 characters');
+      toastMessage('Password should be at least 8 characters');
       return false;
     } 
     return true;
@@ -1166,7 +1166,7 @@ Future<void> signUserUp() async {
     //                                   *** skills validation ***
 
     if (_selectedUser == "Freelancer" && _selectedSkills.isEmpty) {
-      _showSnackBar('Skills field is required for Freelancer user type');
+      toastMessage('Skills field is required for Freelancer user type');
       return false;
     }
 
@@ -1174,7 +1174,7 @@ Future<void> signUserUp() async {
     final github = _GitHublink.text;
 
     if (github.isNotEmpty && !github.startsWith("https://github.com/")) {
-      _showSnackBar('Invalid GitHub link');
+      toastMessage('Invalid GitHub link');
       return false;
     }
 
@@ -1189,7 +1189,6 @@ Future<void> signUserUp() async {
         .where('email', isEqualTo: email.toLowerCase())
         .get();
     if (querySnapshot.docs.isNotEmpty) {
-      //_showSnackBar('This email is already in use. Please try a different email');
       return false; // Email already exists
     } else {
       return true; // Email is available
@@ -1204,29 +1203,10 @@ Future<void> signUserUp() async {
         .where('userName', isEqualTo: userName.toLowerCase())
         .get();
     if (querySnapshot.docs.isNotEmpty) {
-      // _showSnackBar('This username is already in use. Please try a different username');
       return false; // Username already exists
     } else {
       return true; // Username is available
     }
   }
 
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).size.height - 80,
-          right: 20,
-          left: 20,
-        ),
-        backgroundColor:
-            Color.fromARGB(255, 63, 12, 118), // Customize the background color
-      ),
-    );
-  }
 }

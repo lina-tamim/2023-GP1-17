@@ -3,16 +3,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:techxcel11/pages/reuse.dart';
-import 'package:techxcel11/pages/Fhome.dart';
+import 'package:techxcel11/pages/UserPages/Fhome.dart';
 import 'package:lottie/lottie.dart';
 import 'package:techxcel11/pages/start.dart';
 import 'package:techxcel11/pages/ForgetPassword.dart';
-import 'package:techxcel11/pages/Admin_home.dart';
+import 'package:techxcel11/pages/AdminPages/Admin_home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
-import 'package:techxcel11/pages/Signup.dart';
+import 'package:techxcel11/pages/UserPages/Signup.dart';
 //EDIT +CALNDER COMMIT
 
 class Login extends StatefulWidget {
@@ -43,16 +43,16 @@ class _Login extends State<Login> {
     });
 
     if (email.isEmpty && password.isEmpty) {
-      _showSnackBar('Please enter an email and password');
+      toastMessage('Please enter an email and password');
       return;
     }
     if (email.isEmpty) {
-      _showSnackBar('Please enter an email');
+      toastMessage('Please enter an email');
       return;
     }
 
     if (password.isEmpty) {
-      _showSnackBar('Please enter a password');
+      toastMessage('Please enter a password');
       return;
     }
 
@@ -90,15 +90,15 @@ class _Login extends State<Login> {
             );
           }
         } else {
-          _showSnackBar("Login failed, please enter correct credentials");
+          toastMessage("Login failed, please enter correct credentials");
         }
       } else {
-        _showSnackBar(
+        toastMessage(
             "Verify your email before logging in.\nIf not found, please check your junk folder.");
       }
     } catch (e) {
       print('$e');
-      _showSnackBar("Login failed, please enter correct credentials");
+      toastMessage("Login failed, please enter correct credentials");
     } finally {
       setState(() {
         _isLoading = false;
@@ -337,21 +337,4 @@ class _Login extends State<Login> {
     return digest.toString(); // Convert the hash to a string
   }
 
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).size.height - 80,
-          right: 20,
-          left: 20,
-        ),
-        backgroundColor: Color.fromARGB(255, 63, 12, 118),
-      ),
-    );
-  }
 }

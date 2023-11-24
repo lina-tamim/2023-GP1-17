@@ -2,17 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techxcel11/pages/AdminProfilePage.dart';
-import 'package:techxcel11/pages/Admin_home.dart';
-import 'package:techxcel11/pages/ChatPage.dart';
-import 'package:techxcel11/pages/UserExplorePage.dart';
-import 'package:techxcel11/pages/Fhome.dart';
-import 'package:techxcel11/pages/FreelancerPage.dart';
-import 'package:techxcel11/pages/UserProfilePage.dart';
-import 'package:techxcel11/pages/aboutus.dart';
-import 'package:techxcel11/pages/bookmark.dart';
-import 'package:techxcel11/pages/CalendarPage.dart';
-import 'package:techxcel11/pages/user_posts_page.dart'; //m
+import 'package:techxcel11/pages/AdminPages/AdminProfilePage.dart';
+import 'package:techxcel11/pages/AdminPages/Admin_home.dart';
+import 'package:techxcel11/pages/UserPages/ChatPage.dart';
+import 'package:techxcel11/pages/UserPages/UserExplorePage.dart';
+import 'package:techxcel11/pages/UserPages/Fhome.dart';
+import 'package:techxcel11/pages/UserPages/FreelancerPage.dart';
+import 'package:techxcel11/pages/UserPages/UserProfilePage.dart';
+import 'package:techxcel11/pages/UserPages/aboutus.dart';
+import 'package:techxcel11/pages/UserPages/bookmark.dart';
+import 'package:techxcel11/pages/UserPages/CalendarPage.dart';
+import 'package:techxcel11/pages/UserPages/user_posts_page.dart'; //m
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:techxcel11/pages/start.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -334,24 +334,6 @@ AppBar buildAppBar(String titleText) {
   );
 }
 
-void showSnackBar(String message, context) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(message),
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-      ),
-      margin: EdgeInsets.only(
-        bottom: MediaQuery.of(context).size.height - 80,
-        right: 20,
-        left: 20,
-      ),
-      backgroundColor: Color.fromARGB(255, 63, 12, 118),
-    ),
-  );
-}
-
 void toastMessage(String message) {
   Fluttertoast.showToast(
     msg: message,
@@ -536,21 +518,11 @@ void logUserOut(BuildContext context) async {
     );
   } catch (e) {
     print('$e');
-    _showSnackBar(context, "Logout failed");
+    toastMessage("Logout failed");
   }
 }
 
-void _showSnackBar(BuildContext context, String message) {
-  final SnackBar snackBar = SnackBar(
-    content: Text(message),
-    //behavior: SnackBarBehavior.floating,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(24),
-    ),
-    backgroundColor: Color.fromARGB(255, 63, 12, 118),
-  );
-  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-}
+
 
 ///
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../models/course.dart';
+import '../../models/course.dart';
 //EDIT +CALNDER COMMIT
 
 const Color mainColor = Color.fromRGBO(37, 6, 81, 0.898);

@@ -4,13 +4,13 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:techxcel11/pages/UserProfilePage.dart';
+import 'package:techxcel11/pages/UserPages/UserProfilePage.dart';
 import "package:csc_picker/csc_picker.dart";
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:techxcel11/pages/start.dart'; 
 import 'package:crypto/crypto.dart';
-import 'package:techxcel11/userEditImagePicker.dart';
+import 'package:techxcel11/models/userEditImagePicker.dart';
 import 'dart:convert';
 
 //EDIT +CALNDER COMMIT
@@ -1082,21 +1082,21 @@ Future<bool> validateUsername() async {
   if (  newUsername == loggedInUsername) {
     return true;
   } else if (newUsername.length < 6 ) {
-    _showSnackBar('Username should be at least 6 characters long.');
+    toastMessage('Username should be at least 6 characters long.');
       return false;
 
   } else if (newUsername.contains(' ')) {
-    _showSnackBar('Username should not contain spaces.');
+    toastMessage('Username should not contain spaces.');
       return false;
 
   } else if (newUsername.contains(RegExp(r'^\d+$'))) {
-      _showSnackBar('Username should not contain only digits');
+      toastMessage('Username should not contain only digits');
       return false;
     }
     else if (newUsername != loggedInUsername) {
     bool usernameExists = await checkUsernameExists(newUsername);
     if (usernameExists) {
-      _showSnackBar('Username is already taken. Please choose a different one.');
+      toastMessage('Username is already taken. Please choose a different one.');
         return false;
     } else {
       // Username is valid and not already taken, perform the save operation
@@ -1151,13 +1151,13 @@ Future<bool> validatePassword() async {
 else
   // Check password length
   if (newPassword.length < 6) {
-    _showSnackBar('Password should not be less than 6 characters.');
+    toastMessage('Password should not be less than 6 characters.');
     return false;
   }
 else
   // Check for white spaces in the password
   if (newPassword.contains(' ')) {
-    _showSnackBar('Password should not contain spaces.');
+    toastMessage('Password should not contain spaces.');
     return false;
   }
 else
@@ -1222,7 +1222,7 @@ Future<bool> validateCSC() async {
   }else
   // Check country is entered length
   if (newCountry.isEmpty) {
-  _showSnackBar( 'Choose your country please');
+  toastMessage( 'Choose your country please');
     return false;
   }else
 if ( await updateCSC() )
@@ -1261,7 +1261,7 @@ Future<bool> validateUserType() async {
   }else
   if ( newUserSkills.isEmpty && newUserType == 'Freelancer' )
   {
-    _showSnackBar('Please enter your skills');
+    toastMessage('Please enter your skills');
     return false;
   }else
 if ( await updateUserType() )
@@ -1337,7 +1337,7 @@ Future<bool> validateInterests() async {
   }else
   if ( newUserInterests.isEmpty)
   {
-    _showSnackBar('Please enter your interests');
+    toastMessage('Please enter your interests');
     return false;
   }
 if ( await updateInterests() ) {
@@ -1378,7 +1378,7 @@ Future<bool> validateSkills() async {
   }else
   if ( newUserSkills.isEmpty && newUserType == 'Freelancer' )
   {
-    _showSnackBar('Please enter your skills');
+    toastMessage('Please enter your skills');
     return false;
   }else
 if ( await updateSkills() )
@@ -1418,7 +1418,7 @@ Future<bool> validateGithubLink() async {
   if (  newGithubLink == loggedInGithub) {
     return true;
   } else if (newGithubLink.isNotEmpty && !newGithubLink.startsWith("https://github.com/")) {
-      _showSnackBar('Invalid GitHub link');
+      toastMessage('Invalid GitHub link');
       return false;
     }
      else {
@@ -1490,7 +1490,7 @@ Future<bool> updateProfilePicture(String userId) async {
 
     return true;
   } catch (e) {
-    _showSnackBar('An error occurred while trying to change your picture');
+    toastMessage('An error occurred while trying to change your picture');
     return false;
   }
 }
@@ -1553,7 +1553,7 @@ Future<bool> isDeleted() async {
   setState(() {
         _isLoading = false;
       });
-  _showSnackBar('An error occurred while trying to delete your account');
+  toastMessage('An error occurred while trying to delete your account');
   return false;
 }
 
@@ -1567,24 +1567,6 @@ void navigateToStartPage() async {
   );
 }
 
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).size.height - 80,
-          right: 20,
-          left: 20,
-        ),
-        backgroundColor:
-            Color.fromARGB(255, 63, 12, 118), // Customize the background color
-      ),
-    );
-  }
 
 void _showSnackBar2(String message) {
   double snackBarHeight = 510; // Customize the height of the snackbar

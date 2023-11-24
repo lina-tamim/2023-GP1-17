@@ -300,13 +300,13 @@ class _AdminEditProfile extends State<AdminEditProfile> {
 else
   // Check password length
   if (newPassword.length < 6) {
-    _showSnackBar('Password should not be less than 6 characters.');
+    toastMessage('Password should not be less than 6 characters.');
     return false;
   }
 else
   // Check for white spaces in the password
   if (newPassword.contains(' ')) {
-    _showSnackBar('Password should not contain spaces.');
+    toastMessage('Password should not contain spaces.');
     return false;
   }
 else
@@ -357,25 +357,7 @@ String hashPassword(String password) {
   var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
   return digest.toString(); // Convert the hash to a string
 }
-
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).size.height - 80,
-          right: 20,
-          left: 20,
-        ),
-        backgroundColor:
-            Color.fromARGB(255, 63, 12, 118), // Customize the background color
-      ),
-    );
-  }
+ 
 
 void _showSnackBar2(String message) {
   double snackBarHeight = 510; // Customize the height of the snackbar

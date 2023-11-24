@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:techxcel11/pages/AdminCoursesAndEventsRequestsPage.dart';
+import 'package:techxcel11/pages/AdminPages/AdminCoursesAndEventsRequestsPage.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:techxcel11/pages/login.dart';
-import 'package:techxcel11/pages/AdminPathways.dart';
+import 'package:techxcel11/pages/AdminPages/AdminPathways.dart';
 
 import 'AdminCoursesAndEventsPage.dart';
 //EDIT +CALNDER COMMIT

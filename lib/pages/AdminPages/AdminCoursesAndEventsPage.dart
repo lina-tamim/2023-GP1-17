@@ -7,40 +7,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techxcel11/courseAndEvent_image.dart';
+import 'package:techxcel11/models/courseAndEvent_image.dart';
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../models/course.dart';
+import '../../models/course.dart';
 //EDIT +CALNDER COMMIT
-
-class UserCoursesAndEventsPage extends StatefulWidget {
-  const UserCoursesAndEventsPage({super.key, required this.searchQuery});
-
-  final String searchQuery;
-
-  @override
-  State<UserCoursesAndEventsPage> createState() =>
-      _UserCoursesAndEventsPageState();
-}
 
 const Color mainColor = Color.fromRGBO(37, 6, 81, 0.898);
 const Color secondaryColor = Color(0xffffffff);
 const Color redColor = Color(0xffbd2727);
 
-int _currentIndex = 0;
+class AdminCoursesAndEventsPage extends StatefulWidget {
+  const AdminCoursesAndEventsPage({Key? key}) : super(key: key);
 
-class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
+  @override
+  State<AdminCoursesAndEventsPage> createState() =>
+      _AdminCoursesAndEventsPageState();
+}
+
+class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
   final titleController = TextEditingController();
   final descController = TextEditingController();
   final locationController = TextEditingController();
   final linkController = TextEditingController();
-  // final searchController = TextEditingController();
+  final searchController = TextEditingController();
   DateTime? courseStartDate;
   DateTime? courseEndDate;
   Course? item;
   File? _selectedImage;
   String defaultImagePath = 'assets/Backgrounds/defaultCoursePic.png';
-  int _currentIndex = 0;
   List<String> courseType = ["Course", "Event"];
   String selectedCourseType = "Course";
   List<String> AttendanceType = ["Onsite", "Online"];
@@ -50,23 +45,80 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // log('MK valid url: ${isValidUrl('f')}');
     return Scaffold(
-      drawer: const NavBarUser(),
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        iconTheme:
+            const IconThemeData(color: Color.fromARGB(255, 255, 255, 255)),
+        backgroundColor: const Color.fromRGBO(37, 6, 81, 0.898),
+        toolbarHeight: showSearchBar ? 120 : 100,
+        automaticallyImplyLeading: false,
+        elevation: 0,
+        shape: const ContinuousRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(80),
+            bottomRight: Radius.circular(80),
+          ),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.arrow_back)),
+                const Text(
+                  'Courses and Events',
+                  style: TextStyle(
+                    fontSize: 18, // Adjust the font size
+                    fontFamily: "Poppins",
+                    color: Colors.white,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        showSearchBar = !showSearchBar;
+                      });
+                    },
+                    icon: Icon(showSearchBar ? Icons.search_off : Icons.search))
+              ],
+            ),
+            if (showSearchBar)
+              TextField(
+                controller: searchController,
+                decoration: const InputDecoration(
+                  hintText: 'Search...',
+                  prefixIcon: Icon(Icons.search),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 0,
+                  ),
+                  isDense: true,
+                ),
+                onChanged: (text) {
+                  setState(() {});
+                  // Handle search input changes
+                },
+              ),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         onPressed: () {
           clearAllFields();
           showInputDialog();
         },
-        backgroundColor: Color.fromARGB(255, 156, 147, 176),
-        child: const Tooltip(
-          message: '  Add a course or event now!   ',
-          child: Icon(
-            Icons.add,
-            color: Color.fromARGB(255, 255, 255, 255),
-            size: 25,
-            //backgroundcolor: Color.fromARGB(255, 255, 255, 255),
-          ),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 25,
         ),
       ),
       body: SingleChildScrollView(
@@ -75,85 +127,18 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
+              const Padding(
+                padding: EdgeInsets.only(top: 20),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "Courses",
                       style: TextStyle(
-                        fontSize: 22,
-                        fontFamily: "Poppins",
-                        color: Colors.black,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    const SizedBox(width: 122),
-                    PopupMenuButton<String>(
-                      onSelected: (value) {
-                        if (value == 'my_requests') {
-                          showRequestList();
-                        } else if (value == 'submit_request') {
-                          showInputDialog();
-                        }
-                      },
-                      offset: const Offset(
-                          -0.5, 43), // Adjust the vertical offset as needed
-                      itemBuilder: (BuildContext context) => [
-                        const PopupMenuItem<String>(
-                          value: 'my_requests',
-                          child: SizedBox(
-                            width: 100,
-                            child: Text(
-                              'My Requests',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Color.fromARGB(255, 0, 0, 2),
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const PopupMenuDivider(),
-                        const PopupMenuItem<String>(
-                          value: 'submit_request',
-                          child: SizedBox(
-                            width: 130,
-                            child: Text(
-                              'Add Course or Event',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                      child: const SizedBox(
-                        width: 169,
-                        child: OutlinedButton(
-                          onPressed: null,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Row(
-                              children: [
-                                Text(
-                                  'My Requests',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: 'Poppins',
-                                    color: Color.fromARGB(255, 7, 0, 101),
-                                    fontWeight: FontWeight.w100,
-                                  ),
-                                ),
-                                SizedBox(width: 4),
-                                Icon(Icons.arrow_drop_down),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                          fontSize: 20,
+                          fontFamily: "Poppins",
+                          color: Colors.black,
+                          fontWeight: FontWeight.w400),
                     ),
                   ],
                 ),
@@ -174,7 +159,8 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     }
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      height: 410,
+                      width: 500,
+                      height: 350,
                       child: ListView.builder(
                           itemCount: list.length,
                           scrollDirection: Axis.horizontal,
@@ -184,6 +170,13 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                                   horizontal: 5, vertical: 5),
                               child: CoursesWidget(
                                 item: list[index],
+                                onEdit: () {
+                                  setData(list[index]);
+                                  showInputDialog();
+                                },
+                                onDelete: () {
+                                  deleteEvent(list[index], 'Course');
+                                },
                               ),
                             );
                           }),
@@ -207,7 +200,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     Text(
                       "Events",
                       style: TextStyle(
-                          fontSize: 22,
+                          fontSize: 20,
                           fontFamily: "Poppins",
                           color: Colors.black,
                           fontWeight: FontWeight.w400),
@@ -231,7 +224,8 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     }
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      height: 410,
+                      width: 500,
+                      height: 350,
                       child: ListView.builder(
                           itemCount: list.length,
                           scrollDirection: Axis.horizontal,
@@ -241,11 +235,21 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                                   horizontal: 5, vertical: 5),
                               child: CoursesWidget(
                                 item: list[index],
+                                onEdit: () {
+                                  setData(list[index]);
+                                  showInputDialog();
+                                },
+                                onDelete: () {
+                                  deleteEvent(list[index], 'Event');
+                                },
                               ),
                             );
                           }),
                     );
                   } else if (snapshot.hasError) {
+                    print(
+                        'Errorrrrrr-----------------------------:${snapshot.error}');
+
                     return Center(
                       child: Text('Error:${snapshot.error}'),
                     );
@@ -256,62 +260,16 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                   }
                 },
               ),
+              SizedBox(
+                height: 60,
+              )
             ],
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
     );
   }
 
-  //CALENDER
-  Future<void> saveToCalendar(Course courseAndEvent) async {
-  try {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final email = prefs.getString('loggedInEmail') ?? '';
-    // Create a reference to the Firestore collection "Calendar"
-    final calendarCollection = FirebaseFirestore.instance.collection('Calendar');
-    //Color purple = Color.fromARGB(255, 230, 230, 250);
-    // Convert the course object to a map
-    final courseAndeventMap = courseAndEvent.toJson2(email);
-
-    // Save the course data to the Firestore collection
-    await calendarCollection.add(courseAndeventMap);
-
-    // Show a success message to the user
-   _showSnackBar("Saved To Calender");
-  } catch (e) {
-    // Show an error message to the user
-    _showSnackBar("Failed to save to cslender$e");
-  }
-}
-
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).size.height - 80,
-          right: 20,
-          left: 20,
-        ),
-        backgroundColor:
-            Color.fromARGB(255, 63, 12, 118), // Customize the background color
-      ),
-    );
-  }
-  
   Future<bool> isValidUrl(String url) async {
     return await canLaunchUrl(Uri.parse(url));
   }
@@ -335,16 +293,58 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
     this.item = item;
   }
 
+  deleteEvent(Course item, type) {
+    if (item.docId == null || item.docId == '') {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Unable to delete this $type')));
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Confirm Deletion'),
+            content: Text('Are you sure you want to delete this $type?'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+                onPressed: () async {
+                  // Delete the document here
+                  await FirebaseFirestore.instance
+                      .collection('Program')
+                      .doc(item.docId)
+                      .delete();
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   Future<void> _submitForm() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('loggedInEmail') ?? '';
     final formCollection = FirebaseFirestore.instance.collection('Program');
+
     final storageRef = FirebaseStorage.instance
         .ref()
         .child('coursesAndEvents_images')
-        .child('${item?.docId}png');
+        .child('${DateTime.now().toIso8601String()}png');
 
-    if (_selectedImage == null) {
+    String? imageURL = item?.imageURL;
+
+    if (_selectedImage == null && (imageURL == null || imageURL == '')) {
       // Load the default image from assets
       final byteData = await rootBundle.load(defaultImagePath);
       final bytes = byteData.buffer.asUint8List();
@@ -356,12 +356,13 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
 
       // Upload the default image to storage
       await storageRef.putFile(File(tempPath));
-    } else {
+      imageURL = await storageRef.getDownloadURL();
+    } else if (_selectedImage != null) {
       // Upload the selected image to storage
       await storageRef.putFile(_selectedImage!);
+      imageURL = await storageRef.getDownloadURL();
     }
-    final imageURL = await storageRef.getDownloadURL();
-
+    // Create a new document with auto-generated ID
     final newFormDoc = formCollection.doc();
     DateTime postDate = DateTime.now();
 
@@ -377,7 +378,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
         'link': linkController.text,
         'location': locationController.text,
         'imageURL': imageURL,
-        'approval': 'Pending',
+        'approval': 'Yes',
       });
     } else {
       await newFormDoc.set({
@@ -392,38 +393,16 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
         'location': locationController.text,
         'created_at': postDate,
         'imageURL': imageURL,
-        'approval': 'Pending',
+        'approval': 'Yes',
       });
     }
-    clearAllFields();
-    Navigator.pop(context);
-    showCourseOrEventSubmissionDialog(context);
-  }
 
-  void showCourseOrEventSubmissionDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            'Request Submitted',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          content: const Text('Your request is pending approval. Stay tuned!'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Ok'),
-            ),
-          ],
-        );
-      },
-    );
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Form submitted successfully!')));
+
+    clearAllFields();
+
+    Navigator.pop(context);
   }
 
   clearAllFields() {
@@ -445,12 +424,13 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
         .where('type', isEqualTo: type)
         .where('approval', isEqualTo: 'Yes');
 
-    if (widget.searchQuery.isNotEmpty) {
+    if (searchController.text.isNotEmpty) {
       query = query
           .where('title',
-              isGreaterThanOrEqualTo: widget.searchQuery.toLowerCase())
+              isGreaterThanOrEqualTo: searchController.text.toLowerCase())
           .where('title',
-              isLessThanOrEqualTo: widget.searchQuery.toLowerCase() + '\uf8ff');
+              isLessThanOrEqualTo:
+                  searchController.text.toLowerCase() + '\uf8ff');
     } else {
       query = query.orderBy('created_at', descending: true);
     }
@@ -491,29 +471,19 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                         color: mainColor,
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 65),
-                      child: const Text(
-                        "Add Course or Event",
-                        style: TextStyle(
-                            fontSize: 17,
-                            fontFamily: "Poppins",
-                            color: mainColor,
-                            fontWeight: FontWeight.w400),
-                      ),
+                    const Spacer(),
+                    const Text(
+                      "Add Course or Event",
+                      style: TextStyle(
+                          fontSize: 17,
+                          fontFamily: "Poppins",
+                          color: mainColor,
+                          fontWeight: FontWeight.w400),
                     ),
+                    const Spacer(),
                   ],
                 ),
-                const SizedBox(
-                  height: 8,
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 7),
-                  child: Text(
-                    'Share the Magic and Unveil Extraordinary Courses and Events from Leading Organizations!',
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+                const Divider(),
                 const Divider(),
                 Padding(
                   padding: const EdgeInsets.only(top: 15, bottom: 5),
@@ -541,11 +511,8 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 10),
-                      child: FormTitleWidget(
-                        title: "Type",
-                      ),
+                    FormTitleWidget(
+                      title: "Type",
                     ),
                   ],
                 ),
@@ -576,12 +543,9 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 25),
-                Padding(
-                  padding: EdgeInsets.only(left: 10),
-                  child: const FormTitleWidget(
-                    title: "Title",
-                  ),
+                const SizedBox(height: 14),
+                const FormTitleWidget(
+                  title: "Title",
                 ),
                 const SizedBox(height: 8),
                 reusableTextField(
@@ -593,12 +557,9 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     titleController,
                     true,
                     maxLines: 1),
-                const SizedBox(height: 25),
-                Padding(
-                  padding: EdgeInsets.only(left: 10),
-                  child: const FormTitleWidget(
-                    title: "Description",
-                  ),
+                const SizedBox(height: 14),
+                const FormTitleWidget(
+                  title: "Description",
                 ),
                 const SizedBox(height: 8),
                 reusableTextField(
@@ -609,8 +570,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     false,
                     descController,
                     true,
-                    maxLines: 5),
-                const SizedBox(height: 25),
+                    maxLines: 1),
                 const Padding(
                   padding: EdgeInsets.only(top: 20),
                   child: Row(
@@ -620,12 +580,9 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Padding(
-                              padding: EdgeInsets.only(left: 10),
-                              child: FormTitleWidget(
-                                title: "Start Date",
-                                isRequired: true,
-                              ),
+                            FormTitleWidget(
+                              title: "Start Date",
+                              isRequired: true,
                             ),
                           ],
                         ),
@@ -711,16 +668,13 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 14),
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 10),
-                      child: FormTitleWidget(
-                        title: "Onsite or Online?",
-                      ),
+                    FormTitleWidget(
+                      title: "Onsite or Online?",
                     ),
                   ],
                 ),
@@ -750,21 +704,18 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 14),
+                const SizedBox(height: 14),
                 Visibility(
                   visible: selectedAttendanceType == 'Onsite',
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 10),
-                      child: FormTitleWidget(
-                        title: "Location",
-                        isRequired: true,
-                      ),
+                    child: FormTitleWidget(
+                      title: "Location",
+                      isRequired: true,
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
                 Visibility(
                   visible: selectedAttendanceType == 'Onsite',
                   child: reusableTextField(
@@ -778,17 +729,12 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     maxLines: 1,
                   ),
                 ),
-                const SizedBox(height: 25),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 10),
-                    child: FormTitleWidget(
-                      title: "Link",
-                    ),
+                  child: FormTitleWidget(
+                    title: "Link",
                   ),
                 ),
-                const SizedBox(height: 10),
                 reusableTextField(
                     selectedCourseType == 'Course'
                         ? "Please enter the course's link"
@@ -878,177 +824,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
     );
   }
 
-  Future<List<Map<String, dynamic>>> fetchCourseEventTitles() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final email = prefs.getString('loggedInEmail') ?? '';
-
-    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
-        .instance
-        .collection('Program')
-        .where('userId', isEqualTo: email)
-        .get();
-
-    // Extract titles, approval values, and reason from the query snapshot
-    List<Map<String, dynamic>> courses = snapshot.docs.map((doc) {
-      String approval = doc.data()['approval'] as String;
-      String reason = '';
-      if (approval.contains(',')) {
-        List<String> approvalSplit = approval.split(',');
-        approval = approvalSplit[0].trim();
-        reason = approvalSplit[1].trim();
-      }
-      return {
-        'title': doc.data()['title'] as String,
-        'approval': approval,
-        'reason': reason,
-      };
-    }).toList();
-
-    return courses;
-  }
-
-  void showRequestList() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return FutureBuilder<List<Map<String, dynamic>>>(
-          future: fetchCourseEventTitles(),
-          builder: (BuildContext context,
-              AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return AlertDialog(
-                title: const Text('My submitted requests'),
-                content: Text('Error: ${snapshot.error}'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Ok'),
-                  ),
-                ],
-              );
-            } else {
-              return AlertDialog(
-                title: const Text('My submitted requests'),
-                content: snapshot.data != null && snapshot.data!.isNotEmpty
-                    ? Container(
-                        width: double.maxFinite,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final course = snapshot.data![index];
-                            return Card(
-                              child: ListTile(
-                                title: Text(
-                                  course['title'],
-                                  style: const TextStyle(
-                                    fontSize: 17,
-                                    color: Color.fromARGB(171, 0, 0, 0),
-                                  ),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    _buildApprovalMessage(course['approval']),
-                                    if (course['approval'].substring(0, 2) ==
-                                        'No')
-                                      Text(
-                                        'Rejection reason: ${course['reason']}',
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          color: Color.fromARGB(171, 66, 0, 0),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                                leading: _buildApprovalDot(course['approval']),
-                              ),
-                            );
-                          },
-                        ),
-                      )
-                    : const Text("You have not added any requests yet!"),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Ok'),
-                  ),
-                ],
-              );
-            }
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildApprovalMessage(String approvalStatus) {
-    String message;
-
-    if (approvalStatus == 'Yes') {
-      message = 'Approved';
-    } else if (approvalStatus == 'Pending') {
-      message = 'Pending';
-    } else {
-      message = 'Rejected';
-      int commaIndex = approvalStatus.indexOf(',');
-      if (commaIndex != -1 && commaIndex < approvalStatus.length - 1) {}
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          message,
-          style: TextStyle(
-            fontSize: 15.5,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildApprovalDot(String approvalStatus) {
-    Color dotColor;
-    IconData icon;
-
-    if (approvalStatus == 'Yes') {
-      dotColor = const Color.fromARGB(255, 0, 148, 5);
-      icon = Icons.check_circle;
-    } else if (approvalStatus == 'No') {
-      dotColor = Color.fromARGB(255, 213, 14, 0);
-      icon = Icons.cancel;
-    } else if (approvalStatus == 'Pending') {
-      dotColor = Color.fromARGB(255, 229, 218, 0);
-      icon = Icons.access_time;
-    } else {
-      dotColor = Colors.grey;
-      icon = Icons.help;
-    }
-
-    return Container(
-      width: 30,
-      height: 30,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: dotColor,
-      ),
-      child: Icon(
-        icon,
-        size: 25,
-        color: Colors.white,
-      ),
-    );
-  }
-
   Future<void> selectDate(BuildContext context, String dateType,
       {type = "normal", initialDate = null}) async {
     // print("dateType$dateType");
@@ -1074,6 +849,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
     if (pickedDate != null) {
       dateType == "start" ? courseStartDate = pickedDate : null;
       dateType == "end" ? courseEndDate = pickedDate : null;
+      // notifyListeners();
     }
   }
 }
@@ -1108,7 +884,6 @@ class FormTitleWidget extends StatelessWidget {
             '*',
             style: TextStyle(color: Colors.red),
           ),
-        if (tooltip != null) ...[]
       ],
     );
   }
@@ -1118,9 +893,15 @@ class CoursesWidget extends StatelessWidget {
   final Course item;
 
   const CoursesWidget({
-    super.key,
+    Key? key,
     required this.item,
-  });
+    this.onDelete,
+    this.onEdit,
+  }) : super(key: key);
+
+  final onDelete;
+  final onEdit;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -1128,89 +909,61 @@ class CoursesWidget extends StatelessWidget {
       child: SingleChildScrollView(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
-        padding: const EdgeInsets.only(top: 10, right: 13, left: 13),
+        padding: const EdgeInsets.only(right: 12, left: 12),
         decoration: BoxDecoration(
           color: secondaryColor,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: ([
+          boxShadow: [
             BoxShadow(
-                color: mainColor.withOpacity(0.2),
-                spreadRadius: 1,
-                blurRadius: 4,
-                offset: const Offset(0, 3))
-          ]),
+              color: mainColor.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 4,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Center(
-              child: Stack(
-                children: [
-                  Center(
-                    child: Container(
-                      width: 325,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color.fromARGB(170, 0, 24, 163)
-                                .withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                        borderRadius: BorderRadius.circular(8),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: item.imageURL != null
+                    ? Image.network(
+                        item.imageURL!,
+                        width: 250,
+                        height: 105,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        'assets/Backgrounds/defaultCoursePic.png',
+                        width: 250,
+                        height: 105,
+                        fit: BoxFit.cover,
                       ),
-                    ),
-                  ),
-                  Center(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      //used when uploadd image failed to download due to unexcpected network issues
-                      // ignore: unnecessary_null_comparison
-                      child: item.imageURL != null
-                          ? Image.network(
-                              item.imageURL,
-                              width: 325,
-                              height: 200,
-                              fit: BoxFit.cover,
-                            )
-                          : Image.asset(
-                              'assets/Backgrounds/defaultCoursePic.png',
-                              width: 325,
-                              height: 200,
-                              fit: BoxFit.cover,
-                            ),
-                    ),
-                  ),
-                ],
               ),
             ),
-            SizedBox(height: 10),
             Text(
               item.title ?? '--',
               style: const TextStyle(
-                  fontSize: 17,
-                  fontFamily: "Poppins",
-                  color: mainColor,
-                  fontWeight: FontWeight.w400),
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width, // Adjust the width as needed
-              child: Text(
-                'Description: ${item.description}',
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontFamily: "Poppins",
-                  color: mainColor,
-                ),
-                softWrap: true,
-                maxLines: null, // Allow multiple lines
+                fontSize: 17,
+                fontFamily: "Poppins",
+                color: mainColor,
+                fontWeight: FontWeight.w400,
               ),
             ),
-            const SizedBox(height: 5),
+            Text(
+              item.description ?? '--',
+              maxLines: null,
+              style: TextStyle(
+                fontSize: 15,
+                fontFamily: "Poppins",
+                color: mainColor.withOpacity(0.6),
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            SizedBox(height: 5),
             Visibility(
               visible: item.attendanceType == 'Onsite',
               child: Row(
@@ -1312,40 +1065,51 @@ class CoursesWidget extends StatelessWidget {
                   ),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  ///////////////CCCCAAALLLLEENNNDDDERRR!!
-                  onPressed: () {
-                    // Add to calendar functionality!!
-                     _UserCoursesAndEventsPageState().saveToCalendar(item);
-                     
-                  },
-                  icon: Icon(
-                    Icons.calendar_today_sharp,
-                    size: 28, // Adjust the size as needed
-                    color: Color.fromARGB(255, 150, 202, 245),
+            SizedBox(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (item.link != null)
+                    TextButton(
+                      onPressed: () async {
+                        if (await canLaunchUrl(Uri.parse(item.link!))) {
+                          await launchUrl(Uri.parse(item.link!));
+                        } else {
+                          toastMessage('Unable to show details');
+                        }
+                      },
+                      child: const Text(
+                        'More Details ->',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontFamily: "Poppins",
+                          color: mainColor,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(
+                    width: 150,
                   ),
-                  tooltip: 'Save to Calendar',
-                ),
-                if (item.link != null)
-                  TextButton(
-                    onPressed: () async {
-                      if (await canLaunchUrl(Uri.parse(item.link!))) {
-                        await launchUrl(Uri.parse(item.link!));
-                      } else {
-                        toastMessage('Unable to show details');
-                      }
-                    },
-                    child: const Text(
-                      'More Details ->',
-                      style: TextStyle(
-                          color: Color.fromARGB(255, 150, 202, 245),
-                          fontWeight: FontWeight.bold),
+                  GestureDetector(
+                    onTap: onEdit,
+                    child: const Icon(
+                      Icons.edit,
+                      color: mainColor,
                     ),
                   ),
-              ],
+                  const SizedBox(
+                    width: 12,
+                  ),
+                  GestureDetector(
+                    onTap: onDelete,
+                    child: const Icon(
+                      Icons.delete,
+                      color: redColor,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -1353,6 +1117,4 @@ class CoursesWidget extends StatelessWidget {
     ),
     );
   }
-
-
 }

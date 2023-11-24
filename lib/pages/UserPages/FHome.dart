@@ -3,11 +3,9 @@ import 'package:techxcel11/models/cardFandT.dart';
 import 'package:techxcel11/models/cardQuestion.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:techxcel11/pages/answer.dart';
+import 'package:techxcel11/pages/UserPages/answer.dart';
 import 'package:techxcel11/pages/reuse.dart';
-
-import 'form.dart';
-//EDIT +CALNDER COMMIT
+import 'package:techxcel11/pages/UserPages/form.dart';
 
 class FHomePage extends StatefulWidget {
   const FHomePage({Key? key}) : super(key: key);
@@ -601,22 +599,4 @@ class __FHomePageState extends State<FHomePage> {
       ),
     );
   }
-}
-
-void _showSnackBar(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(message),
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-      ),
-      margin: EdgeInsets.only(
-        bottom: MediaQuery.of(context).size.height - 80,
-        right: 20,
-        left: 20,
-      ),
-      backgroundColor: Color.fromARGB(255, 63, 12, 118),
-    ),
-  );
 }

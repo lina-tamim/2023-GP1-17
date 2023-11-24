@@ -16,8 +16,8 @@ import 'package:path/path.dart' as path;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../models/resource.dart';
-import '../user_image.dart';
+import '../../models/resource.dart';
+import '../../models/user_image.dart';
 import 'package:lottie/lottie.dart';
 //EDIT +CALNDER COMMIT
 
@@ -2082,12 +2082,6 @@ class _AdminPathwaysState extends State<AdminPathways> {
                             showEditBox = false;
                           });
                         }
-                        //updateTitle(); CALLED IN VALIDATION
-                        //updateProfilePicture();
-                        //updateDescription();
-                        //updateInterests();
-                        //validateTopics();
-                        //updatetitlessub(subtopicControllers,topics2);
                       },
                       child: const Text('Save'),
                     )

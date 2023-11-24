@@ -1,21 +1,11 @@
-import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter/services.dart' show ByteData, rootBundle;
-import 'package:path/path.dart' as path;
-import 'package:google_fonts/google_fonts.dart';
 import 'package:techxcel11/models/pathwayscards.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../user_image.dart';
 import 'package:lottie/lottie.dart';
 import 'package:techxcel11/pages/reuse.dart';
-//EDIT +CALNDER COMMIT
-
-//enum ExerciseFilter { walking, running, cycling, hiking }
 
 class UserPathwaysPage extends StatefulWidget {
   const UserPathwaysPage({super.key, required this.searchQuery});
