@@ -41,6 +41,13 @@ class _UserPostsPageState extends State<UserPostsPage> {
     super.initState();
   }
 
+  void showInputDialog() {
+    showAlertDialog(
+      context,
+      FormWidget(),
+    );
+  }
+
   Future<String> fetchusername() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final username = prefs.getString('username') ?? '';
@@ -468,7 +475,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           onPressed: () async {
-            _toggleFormVisibility();
+           // _toggleFormVisibility();
+            showInputDialog();
           },
           backgroundColor: Color.fromARGB(255, 156, 147, 176),
           child: const Icon(
