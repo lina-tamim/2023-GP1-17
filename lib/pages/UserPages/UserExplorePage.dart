@@ -102,7 +102,6 @@ class _UserExplorePageState extends State<UserExplorePage>
               'Courses and Events',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
                 color: Color.fromARGB(
                     255, 245, 227, 255), // Set the desired color here
               ),
@@ -113,7 +112,6 @@ class _UserExplorePageState extends State<UserExplorePage>
               'Pathways',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
                 color: Color.fromARGB(
                     255, 245, 227, 255), // Set the desired color here
               ),

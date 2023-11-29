@@ -3,17 +3,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:techxcel11/pages/Login.dart';
+import 'package:techxcel11/pages/UserPages/FHome.dart';
 //EDIT +CALNDER COMMIT
 
 class OnboardingScreen extends StatefulWidget {
-const OnboardingScreen({Key? key}) : super(key: key);
+  const OnboardingScreen({Key? key}) : super(key: key);
 
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
 }
+
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final String txlLogo = 'assets/Backgrounds/Xlogo.png'; 
-  final String txlLogo2 = 'assets/Backgrounds/TXLogo.png'; 
+  final String txlLogo = 'assets/Backgrounds/Xlogo.png';
+  final String txlLogo2 = 'assets/Backgrounds/TXLogo.png';
 
   @override
   Widget build(BuildContext context) {
@@ -44,8 +46,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   left: 300,
                   child: Image.asset(
                     txlLogo,
-                    width: 250, 
-                    height: 250, 
+                    width: 250,
+                    height: 250,
                   ),
                 ),
                 const Padding(
@@ -72,17 +74,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 fontStyle: FontStyle.italic,
                                 color: Color.fromARGB(255, 27, 27, 26)),
                           ),
-                          
                         ],
-                        
                       ),
-                      
                     ],
-                    
                   ),
-                  
                 ),
-                    Positioned(
+                Positioned(
                   top: 535,
                   left: 28,
                   child: Image.asset(
@@ -153,4 +150,3 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 }
-

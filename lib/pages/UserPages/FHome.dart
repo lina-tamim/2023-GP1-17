@@ -467,7 +467,6 @@ class __FHomePageState extends State<FHomePage> {
                   'Questions',
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
                     color: Color.fromARGB(
                         255, 245, 227, 255), // Set the desired color here
                   ),
@@ -478,7 +477,6 @@ class __FHomePageState extends State<FHomePage> {
                   'Build Team',
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
                     color: Color.fromARGB(
                         255, 245, 227, 255), // Set the desired color here
                   ),
@@ -489,7 +487,6 @@ class __FHomePageState extends State<FHomePage> {
                   'Projects',
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
                     color: Color.fromARGB(
                         255, 245, 227, 255), // Set the desired color here
                   ),

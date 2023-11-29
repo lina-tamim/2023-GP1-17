@@ -595,7 +595,7 @@ class _FormWidgetState extends State<FormWidget> {
                         _submitForm(email);
                       },
                       style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 198, 180, 247),
+                        primary: Color.fromRGBO(37, 6, 81, 0.898),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
                         ),
@@ -693,6 +693,7 @@ class _FormWidgetState extends State<FormWidget> {
         selectedDate = null;
         _selectedTopics.clear();
       });
+      //toastMessage("Already exists in Calendar");
 
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Form submitted successfully!')));

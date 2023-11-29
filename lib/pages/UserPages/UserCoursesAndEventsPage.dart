@@ -174,7 +174,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     }
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      height: 410,
+                      height: 480, // height fix
                       child: ListView.builder(
                           itemCount: list.length,
                           scrollDirection: Axis.horizontal,
@@ -231,7 +231,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     }
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      height: 410,
+                      height: 470,
                       child: ListView.builder(
                           itemCount: list.length,
                           scrollDirection: Axis.horizontal,
@@ -272,41 +272,42 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
   }
 
 //CALENDER
- Future<void> saveToCalendar(Course courseAndEvent) async {
-  try {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final email = prefs.getString('loggedInEmail') ?? '';
+  Future<void> saveToCalendar(Course courseAndEvent) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final email = prefs.getString('loggedInEmail') ?? '';
 
-    // Create a reference to the Firestore collection "Calendar"
-    final calendarCollection = FirebaseFirestore.instance.collection('Calendar');
+      // Create a reference to the Firestore collection "Calendar"
+      final calendarCollection =
+          FirebaseFirestore.instance.collection('Calendar');
 
-    // Check if a document with matching my_id and docId already exists
-    final existingDocsQuery = calendarCollection
-        .where('my_id', isEqualTo: email)
-        .where('docId', isEqualTo: courseAndEvent.docId)
-        .limit(1);
+      // Check if a document with matching my_id and docId already exists
+      final existingDocsQuery = calendarCollection
+          .where('my_id', isEqualTo: email)
+          .where('docId', isEqualTo: courseAndEvent.docId)
+          .limit(1);
 
-    final existingDocsSnapshot = await existingDocsQuery.get();
+      final existingDocsSnapshot = await existingDocsQuery.get();
 
-    if (existingDocsSnapshot.docs.isNotEmpty) {
-      // A matching document already exists
-      toastMessage("Already exists in Calendar");
-      return;
+      if (existingDocsSnapshot.docs.isNotEmpty) {
+        // A matching document already exists
+        toastMessage("Already exists in Calendar");
+        return;
+      }
+
+      // Convert the course object to a map
+      final courseAndeventMap = courseAndEvent.toJson2(email);
+
+      // Save the course data to the Firestore collection
+      await calendarCollection.add(courseAndeventMap);
+
+      // Show a success message to the user
+      toastMessage("Saved to Calender");
+    } catch (e) {
+      // Show an error message to the user
+      toastMessage("Failed to save to Calendar: $e");
     }
-
-    // Convert the course object to a map
-    final courseAndeventMap = courseAndEvent.toJson2(email);
-
-    // Save the course data to the Firestore collection
-    await calendarCollection.add(courseAndeventMap);
-
-    // Show a success message to the user
-   toastMessage("Saved to Calender");
-  } catch (e) {
-    // Show an error message to the user
-       toastMessage("Failed to save to Calendar: $e");
   }
-}
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -326,7 +327,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       ),
     );
   }
-
 
   Future<bool> isValidUrl(String url) async {
     return await canLaunchUrl(Uri.parse(url));
@@ -482,7 +482,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
     });
   }
 
-    void showInputDialog() {
+  void showInputDialog() {
     showAlertDialog(
       context,
       StatefulBuilder(builder: (context, setstate) {
@@ -519,7 +519,9 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     const Spacer(),
                   ],
                 ),
-                const Divider(),
+                SizedBox(
+                  height: 20,
+                ),
                 const Divider(),
                 Padding(
                   padding: const EdgeInsets.only(top: 15, bottom: 5),
@@ -843,7 +845,8 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                               "Submit",
                               style: TextStyle(
                                 fontSize: 17,
-                                fontFamily: "Poppins",
+                                fontWeight: FontWeight.bold,
+                                //fontFamily: "Poppins",
                                 color: secondaryColor,
                               ),
                             ),
@@ -1100,241 +1103,235 @@ class CoursesWidget extends StatelessWidget {
   final Course item;
 
   const CoursesWidget({
-    super.key,
+    Key? key,
     required this.item,
-  });
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 0),
-      child: SingleChildScrollView(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
-        padding: const EdgeInsets.only(top: 10, right: 13, left: 13),
-        decoration: BoxDecoration(
-          color: secondaryColor,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: ([
-            BoxShadow(
-                color: mainColor.withOpacity(0.2),
-                spreadRadius: 1,
-                blurRadius: 4,
-                offset: const Offset(0, 3))
-          ]),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Center(
-              child: Stack(
-                children: [
-                  Center(
-                    child: Container(
-                      width: 325,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color.fromARGB(197, 68, 58, 58)
-                                .withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      //used when uploadd image failed to download due to unexcpected network issues
-                      // ignore: unnecessary_null_comparison
-                      child: item.imageURL != null
-                          ? Image.network(
-                              item.imageURL,
-                              width: 325,
-                              height: 200,
-                              fit: BoxFit.cover,
-                            )
-                          : Image.asset(
-                              'assets/Backgrounds/defaultCoursePic.png',
-                              width: 325,
-                              height: 200,
-                              fit: BoxFit.cover,
-                            ),
-                    ),
-                  ),
-                ],
+        padding: const EdgeInsets.only(top: 0),
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.9,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Color.fromARGB(95, 92, 92, 92).withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 6,
+                offset: Offset(0, 2), // Set shadow offset
               ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              item.title ?? '--',
-              style: const TextStyle(
-                  fontSize: 17,
-                  fontFamily: "Poppins",
-                  color: mainColor,
-                  fontWeight: FontWeight.w400),
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width, // Adjust the width as needed
-              child: Text(
-                'Description: ${item.description}',
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontFamily: "Poppins",
-                  color: mainColor,
-                ),
-                softWrap: true,
-                maxLines: null, // Allow multiple lines
-              ),
-            ),
-            const SizedBox(height: 5),
-            Visibility(
-              visible: item.attendanceType == 'Onsite',
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.location_on_outlined,
-                    color: mainColor.withOpacity(0.6),
-                    size: 25,
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Expanded(
-                    child: Text(
-                      item.location ?? '--',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontFamily: "Poppins",
-                        color: mainColor.withOpacity(0.6),
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Visibility(
-              visible: item.attendanceType == 'Online',
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.computer,
-                    color: mainColor.withOpacity(0.6),
-                    size: 25,
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Expanded(
-                    child: Text(
-                      'Online',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontFamily: "Poppins",
-                        color: mainColor.withOpacity(0.6),
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Row(
+            ],
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                if (item.startDate != null || item.endDate != null)
-                  Expanded(
+                Center(
+                  child: Stack(
+                    children: [
+                      Center(
+                        child: Container(
+                          width: double.infinity,
+                          height: 200,
+                        ),
+                      ),
+                      Container(
+                        height: 200,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                          ),
+                          image: DecorationImage(
+                            image: NetworkImage(item.imageURL),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    item.title ?? '--',
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Container(
+                    width: double.infinity,
+                    child: Text(
+                      '${item.description}',
+                      style: const TextStyle(
+                          fontSize: 16,
+                          color: const Color.fromARGB(255, 81, 81, 81)),
+                      softWrap: true,
+                      maxLines: null,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Visibility(
+                  visible: item.attendanceType == 'Onsite',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Icon(
-                          Icons.access_time,
-                          color: mainColor.withOpacity(0.5),
+                          Icons.location_on_outlined,
+                          color: mainColor.withOpacity(0.6),
                           size: 25,
                         ),
                         const SizedBox(
-                          width: 8,
+                          width: 5,
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (item.startDate != null)
-                              Text(
-                                DateFormat('MMM dd, yy')
-                                    .format(item.startDate!),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontFamily: "Poppins",
-                                  color: mainColor,
-                                ),
-                              ),
-                            if (item.endDate != null)
-                              Text(
-                                DateFormat('MMM dd, yy').format(item.endDate!),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontFamily: "Poppins",
-                                  color: mainColor,
-                                ),
-                              ),
-                          ],
+                        Expanded(
+                          child: Text(
+                            item.location ?? '--',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: "Poppins",
+                              color: mainColor.withOpacity(0.6),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  ///////////////CCCCAAALLLLEENNNDDDERRR!!
-                  onPressed: () {
-                    // Add to calendar functionality!!
-                     _UserCoursesAndEventsPageState().saveToCalendar(item);
-                     
-                  },
-                  icon: Icon(
-                    Icons.calendar_today_sharp,
-                    size: 28, // Adjust the size as needed
-                    color: Color.fromARGB(255, 150, 202, 245),
-                  ),
-                  tooltip: 'Save to Calendar',
                 ),
-                if (item.link != null)
-                  TextButton(
-                    onPressed: () async {
-                      if (await canLaunchUrl(Uri.parse(item.link!))) {
-                        await launchUrl(Uri.parse(item.link!));
-                      } else {
-                        toastMessage('Unable to show details');
-                      }
-                    },
-                    child: const Text(
-                      'More Details ->',
-                      style: TextStyle(
-                          color: Color.fromARGB(255, 150, 202, 245),
-                          fontWeight: FontWeight.bold),
+                Visibility(
+                  visible: item.attendanceType == 'Online',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.computer,
+                          color: mainColor.withOpacity(0.6),
+                          size: 25,
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Expanded(
+                          child: Text(
+                            'Online',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: "Poppins",
+                              color: mainColor.withOpacity(0.6),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                ),
+                Row(
+                  children: [
+                    if (item.startDate != null || item.endDate != null)
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 20, left: 10),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.access_time,
+                                color: mainColor.withOpacity(0.5),
+                                size: 25,
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (item.startDate != null)
+                                    Text(
+                                      DateFormat('MMM dd, yy')
+                                          .format(item.startDate!),
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontFamily: "Poppins",
+                                        color: mainColor,
+                                      ),
+                                    ),
+                                  if (item.endDate != null)
+                                    Text(
+                                      DateFormat('MMM dd, yy')
+                                          .format(item.endDate!),
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontFamily: "Poppins",
+                                        color: mainColor,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        _UserCoursesAndEventsPageState().saveToCalendar(item);
+                      },
+                      icon: Icon(
+                        Icons.calendar_today_sharp,
+                        size: 28,
+                        color: Color.fromARGB(255, 150, 202, 245),
+                      ),
+                      tooltip: 'Save to Calendar',
+                    ),
+                    if (item.link != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: TextButton(
+                          onPressed: () async {
+                            if (await canLaunchUrl(Uri.parse(item.link!))) {
+                              await launchUrl(Uri.parse(item.link!));
+                            } else {
+                              toastMessage('Unable to show details');
+                            }
+                          },
+                          child: const Text(
+                            'More Details ->',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 150, 202, 245),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ],
             ),
-          ],
-        ),
-      ),
-    ),
-    );
+          ),
+        ));
   }
-
-
 }

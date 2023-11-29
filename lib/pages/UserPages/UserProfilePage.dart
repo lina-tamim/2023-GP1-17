@@ -5,7 +5,7 @@ import 'package:techxcel11/pages/reuse.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:google_fonts/google_fonts.dart'; 
+import 'package:google_fonts/google_fonts.dart';
 import 'dart:math' as math;
 
 class UserProfilePage extends StatefulWidget {
@@ -102,7 +102,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
           child: Column(
             children: [
               SizedBox(
-                width: 150,
+                width: 180,
+                height: 40,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(
@@ -113,13 +114,15 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: const Color.fromARGB(255, 10, 1, 95),
+                    backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
                     side: BorderSide.none,
                     shape: const StadiumBorder(),
                   ),
                   child: const Text('Edit Profile',
-                      style:
-                          TextStyle(color: Color.fromARGB(255, 254, 254, 254))),
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 254, 254, 254),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800)),
                 ),
               ),
 

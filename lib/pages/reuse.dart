@@ -220,22 +220,21 @@ class _NavBarAdminState extends State<NavBarAdmin> {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text(loggedInUsername),
+            accountName: Text(''),
             accountEmail: Text(
               loggedInEmail,
-            ),
-            currentAccountPicture: CircleAvatar(
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/Backgrounds/defaultUserPic.png',
-                  width: 110,
-                  height: 110,
-                  fit: BoxFit.cover,
-                ),
+              style: TextStyle(
+                color: Colors.black,
               ),
             ),
             decoration: BoxDecoration(
-              color: Color.fromARGB(255, 39, 0, 73),
+              color: Color.fromARGB(
+                  255, 62, 0, 61), // Set the desired background color here
+
+              image: DecorationImage(
+                image: AssetImage('assets/Backgrounds/bg11.png'),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           ListTile(
@@ -387,8 +386,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
       case 3:
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) =>  UserExplorePage()),
+          MaterialPageRoute(builder: (context) => UserExplorePage()),
         );
         break;
       default:
@@ -521,8 +519,6 @@ void logUserOut(BuildContext context) async {
     toastMessage("Logout failed");
   }
 }
-
-
 
 ///
 

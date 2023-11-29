@@ -257,17 +257,34 @@ class _Login extends State<Login> {
                       ),
                     ),
                     signUpOption(),
-                    GestureDetector(
-                      onTap: logUserIn,
-                      child: SizedBox(
-                        height: 174,
-                        child: Lottie.network(
-                          'https://lottie.host/702b54d8-e453-4d3b-93c5-f7ebf587554a/bS3nChV9sx.json', // Replace with the actual path to your Lottie animation file
-                          fit: BoxFit.contain,
+                    //GestureDetector( onTap: logUserIn,child: SizedBox(height: 174,child: Lottie.network('https://lottie.host/702b54d8-e453-4d3b-93c5-f7ebf587554a/bS3nChV9sx.json', // Replace with the actual path to your Lottie animation file
+                    //fit: BoxFit.contain,),),),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                      onPressed: logUserIn,
+                      style: ElevatedButton.styleFrom(
+                        primary: Color.fromARGB(255, 198, 180, 247),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        elevation: 10,
+                        shadowColor:
+                            Color.fromARGB(255, 0, 0, 0).withOpacity(1),
+                      ),
+                      child: Text(
+                        'Login',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
                       ),
                     ),
-                    //ElevatedButton(onPressed: logUserIn, child: Text('login')),
+                    SizedBox(
+                      height: 20,
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 0, horizontal: 10),
@@ -336,5 +353,4 @@ class _Login extends State<Login> {
     var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
     return digest.toString(); // Convert the hash to a string
   }
-
 }

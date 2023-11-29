@@ -63,11 +63,6 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
       if (pathway.isEmpty) return [];
 
       // topic filter
-      if (filteredTopics.isNotEmpty) {
-        return pathway
-            .where((path) => filteredTopics.contains(path.Key_topic))
-            .toList();
-      }
 
       return pathway;
     });
@@ -78,9 +73,8 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
 
     return pathways.where((pathway) {
       final titleMatches = pathway.title.toLowerCase().contains(filterText);
-      final topicMatches =
-          filteredTopics.isEmpty || filteredTopics.contains(pathway.Key_topic);
-      return titleMatches && topicMatches;
+
+      return titleMatches;
     }).toList();
   }
 
@@ -96,13 +90,6 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
     }
 
     // Check if the pathway contains any of the selected topics
-    final containsSelectedTopics =
-        filteredTopics.isEmpty || filteredTopics.contains(pathway.Key_topic);
-
-    if (!containsSelectedTopics) {
-      // Return an empty Container if the pathway doesn't match the selected topics
-      return Container();
-    }
 
     return Padding(
       padding: EdgeInsets.all(8.0), // Add space between each card
@@ -130,7 +117,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Container(
-                height: 100,
+                height: 200,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(10),
@@ -150,7 +137,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
                     Text(
                       pathway.title,
                       style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 15.0),
                     Text(
@@ -242,51 +229,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Container(
-          padding: EdgeInsets.only(top: 20),
-          child: Center(
-            child: Column(
-              children: [
-                Text(
-                  'I want to learn...',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 10, left: 10),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Wrap(
-                          spacing: 4.0,
-                          runSpacing: 2.0,
-                          children: _SelectTopicFilter.map(
-                            (topic) => Chip(
-                              label: Text(
-                                topic,
-                                style: TextStyle(fontSize: 12.0),
-                              ),
-                            ),
-                          ).toList(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    _showMultiSelectTopic(context);
-                  },
-                  child: const Text('Select Topics'),
-                ),
-              ],
-            ),
-          ),
-        ),
+        SizedBox(height: 20),
         Expanded(
           child: StreamBuilder<List<PathwayContainer>>(
             stream: readPathway(),
@@ -320,86 +263,6 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
           ),
         ),
       ]),
-
-      /*
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            padding: EdgeInsets.only(top: 20),
-            child: Center(
-              child: Text(
-                'I want to learn...',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              // FilterChipExample(key: UniqueKey()),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 10, left: 10),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Wrap(
-                    spacing: 4.0,
-                    runSpacing: 2.0,
-                    children: _SelectTopicFilter.map(
-                      (topic) => Chip(
-                        label: Text(
-                          topic,
-                          style: TextStyle(fontSize: 12.0),
-                        ),
-                      ),
-                    ).toList(),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            child: StreamBuilder<List<PathwayContainer>>(
-              stream: readPathway(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final q = snapshot.data!;
-                  final filterText = widget.searchQuery.toLowerCase();
-
-                  if (q.isEmpty) {
-                    return Center(
-                      child: Text('No Pathways Yet'),
-                    );
-                  }
-
-                  final filteredQ = filterText.isEmpty
-                      ? q
-                      : q.where((pathway) =>
-                          pathway.title.toLowerCase().contains(filterText));
-
-                  return ListView(
-                    children: [
-                      ...filteredQ.map(buildpathwayCard).toList(),
-                    ],
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                } else {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
-            ),
-          ),
-        ],
-      ),*/
-
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -571,12 +434,6 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
                                   ),
                                 ),
                               ),
-                            ElevatedButton(
-                              onPressed: () {
-                                _showMultiSelectTopic(context);
-                              },
-                              child: const Text('Select Topics'),
-                            ),
                           ],
                         );
                       }).toList(),

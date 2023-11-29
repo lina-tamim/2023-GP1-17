@@ -906,190 +906,216 @@ class CoursesWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 0),
-      child: SingleChildScrollView(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
-        padding: const EdgeInsets.only(right: 12, left: 12),
         decoration: BoxDecoration(
-          color: secondaryColor,
-          borderRadius: BorderRadius.circular(12),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: mainColor.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 4,
-              offset: const Offset(0, 3),
+              color: Color.fromARGB(95, 92, 92, 92).withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 6,
+              offset: Offset(0, 2), // Set shadow offset
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: item.imageURL != null
-                    ? Image.network(
-                        item.imageURL!,
-                        width: 250,
-                        height: 105,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        'assets/Backgrounds/defaultCoursePic.png',
-                        width: 250,
-                        height: 105,
-                        fit: BoxFit.cover,
-                      ),
-              ),
-            ),
-            Text(
-              item.title ?? '--',
-              style: const TextStyle(
-                fontSize: 17,
-                fontFamily: "Poppins",
-                color: mainColor,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            Text(
-              item.description ?? '--',
-              maxLines: null,
-              style: TextStyle(
-                fontSize: 15,
-                fontFamily: "Poppins",
-                color: mainColor.withOpacity(0.6),
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            SizedBox(height: 5),
-            Visibility(
-              visible: item.attendanceType == 'Onsite',
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.location_on_outlined,
-                    color: mainColor.withOpacity(0.6),
-                    size: 25,
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Expanded(
-                    child: Text(
-                      item.location ?? '--',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontFamily: "Poppins",
-                        color: mainColor.withOpacity(0.6),
-                        fontWeight: FontWeight.w400,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Center(
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Container(
+                        width: double.infinity,
+                        height: 200,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Visibility(
-              visible: item.attendanceType == 'Online',
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.computer,
-                    color: mainColor.withOpacity(0.6),
-                    size: 25,
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Expanded(
-                    child: Text(
-                      'Online',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontFamily: "Poppins",
-                        color: mainColor.withOpacity(0.6),
-                        fontWeight: FontWeight.w400,
+                    Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                        ),
+                        image: DecorationImage(
+                          image: NetworkImage(item.imageURL),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Row(
-              children: [
-                if (item.startDate != null || item.endDate != null)
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          color: mainColor.withOpacity(0.5),
-                          size: 25,
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  item.title ?? '--',
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontFamily: "Poppins",
+                    color: mainColor,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Container(
+                  width: double.infinity,
+                  child: Text(
+                    'Description: ${item.description}',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontFamily: "Poppins",
+                      color: mainColor,
+                    ),
+                    softWrap: true,
+                    maxLines: null,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 5),
+              Visibility(
+                visible: item.attendanceType == 'Onsite',
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.location_on_outlined,
+                        color: mainColor.withOpacity(0.6),
+                        size: 25,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Expanded(
+                        child: Text(
+                          item.location ?? '--',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontFamily: "Poppins",
+                            color: mainColor.withOpacity(0.6),
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                        const SizedBox(
-                          width: 8,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: item.attendanceType == 'Online',
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.computer,
+                        color: mainColor.withOpacity(0.6),
+                        size: 25,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Expanded(
+                        child: Text(
+                          'Online',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontFamily: "Poppins",
+                            color: mainColor.withOpacity(0.6),
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  if (item.startDate != null || item.endDate != null)
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 20, left: 20),
+                        child: Row(
                           children: [
-                            if (item.startDate != null)
-                              Text(
-                                DateFormat('MMM dd, yy')
-                                    .format(item.startDate!),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontFamily: "Poppins",
-                                  color: mainColor,
-                                ),
-                              ),
-                            if (item.endDate != null)
-                              Text(
-                                DateFormat('MMM dd, yy').format(item.endDate!),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontFamily: "Poppins",
-                                  color: mainColor,
-                                ),
-                              ),
+                            Icon(
+                              Icons.access_time,
+                              color: mainColor.withOpacity(0.5),
+                              size: 25,
+                            ),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (item.startDate != null)
+                                  Text(
+                                    DateFormat('MMM dd, yy')
+                                        .format(item.startDate!),
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontFamily: "Poppins",
+                                      color: mainColor,
+                                    ),
+                                  ),
+                                if (item.endDate != null)
+                                  Text(
+                                    DateFormat('MMM dd, yy')
+                                        .format(item.endDate!),
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontFamily: "Poppins",
+                                      color: mainColor,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-              ],
-            ),
-            SizedBox(
-              child: Row(
+                ],
+              ),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   if (item.link != null)
-                    TextButton(
-                      onPressed: () async {
-                        if (await canLaunchUrl(Uri.parse(item.link!))) {
-                          await launchUrl(Uri.parse(item.link!));
-                        } else {
-                          toastMessage('Unable to show details');
-                        }
-                      },
-                      child: const Text(
-                        'More Details ->',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontFamily: "Poppins",
-                          color: mainColor,
-                          decoration: TextDecoration.underline,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: TextButton(
+                        onPressed: () async {
+                          if (await canLaunchUrl(Uri.parse(item.link!))) {
+                            await launchUrl(Uri.parse(item.link!));
+                          } else {
+                            toastMessage('Unable to show details');
+                          }
+                        },
+                        child: const Text(
+                          'More Details ->',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 150, 202, 245),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
                   const SizedBox(
-                    width: 150,
+                    width: 100,
                   ),
                   GestureDetector(
                     onTap: onEdit,
@@ -1098,9 +1124,6 @@ class CoursesWidget extends StatelessWidget {
                       color: mainColor,
                     ),
                   ),
-                  const SizedBox(
-                    width: 12,
-                  ),
                   GestureDetector(
                     onTap: onDelete,
                     child: const Icon(
@@ -1108,13 +1131,15 @@ class CoursesWidget extends StatelessWidget {
                       color: redColor,
                     ),
                   ),
+                  const SizedBox(
+                    width: 4,
+                  ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }

@@ -21,8 +21,6 @@ import '../../models/user_image.dart';
 import 'package:lottie/lottie.dart';
 //EDIT +CALNDER COMMIT
 
-
-
 class AdminPathways extends StatefulWidget {
   const AdminPathways({Key? key});
 
@@ -37,14 +35,12 @@ class _AdminPathwaysState extends State<AdminPathways> {
   //hold values retrived from DB
   List<String> subtopicControllers = [];
   List<String> subtopicDescriptionControllers = [];
-    List<List<String>> resources3 = [];
-
+  List<List<String>> resources3 = [];
 
   // hold new values from user
   List<TextEditingController> topics2 = [];
   List<TextEditingController> descriptions2 = [];
   List<List<String>> resourcesnew = [];
-
 
   //Retrived Values From DB
   String dbimage_url = '';
@@ -64,7 +60,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
   List<String> newKey_topic = [];
   List<String> newsubtopics = [];
   List<String> newdescriptions = [];
-  
+
   File? newProfilePicture;
 
   Future<void> fetchData(PathwayContainer pathway) async {
@@ -103,17 +99,13 @@ class _AdminPathwaysState extends State<AdminPathways> {
         dbdescriptions = descriptions;
         pathID = pathway.id;
         dbdocId = pathway.docId;
-        subtopicControllers=pathway.subtopics;
-        subtopicDescriptionControllers=pathway.descriptions;
+        subtopicControllers = pathway.subtopics;
+        subtopicDescriptionControllers = pathway.descriptions;
       });
     }
-   
 
     resources3 = await getResourcesFromFirestore2(dbdocId);
     print("!!!!!!!!!!  $resources3");
-
-    
-
   }
 //Multi select for the edit
 
@@ -419,9 +411,8 @@ class _AdminPathwaysState extends State<AdminPathways> {
 
 //EDIT
   void clear() {
-    
     ///SOMETHING IS BEING WROTE AGAIN
-      if (topics2.length > 1) {
+    if (topics2.length > 1) {
       topics2.removeRange(1, topics2.length);
       descriptions2.removeRange(1, descriptions2.length);
     }
@@ -430,9 +421,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
       print("!!!!  $i topic ${topics2[i]} + description ${descriptions2[i]}");
       topics2[i].clear();
       descriptions2[i].clear();
-     
     }
- 
   }
 
   //EDIT
@@ -446,7 +435,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
   void initState() {
     super.initState();
     _addfieldsub();
- WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       _addField();
       fetchContainerData().then((data) {
         setState(() {
@@ -463,7 +452,6 @@ class _AdminPathwaysState extends State<AdminPathways> {
       descriptions2.add(TextEditingController());
     });
   }
-
 
   //edit
 
@@ -640,21 +628,14 @@ class _AdminPathwaysState extends State<AdminPathways> {
                           ),
                           IconButton(
                             onPressed: () async {
-                                
-                              
                               SharedPreferences pre =
-                              await SharedPreferences.getInstance();
+                                  await SharedPreferences.getInstance();
                               pre.setInt('pathwayId_${pathway.id}', pathway.id);
-                              pre.setString('pathwayIdx', pathway.docId ??'');
+                              pre.setString('pathwayIdx', pathway.docId ?? '');
                               fetchData(pathway);
-                               setState(() {
+                              setState(() {
                                 showEditBox = !showEditBox;
-
                               });
-    
-  
-    
-                             
                             },
                             icon: Icon(Icons.edit),
                           ),
@@ -697,7 +678,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      drawer: const NavBarAdmin(),
+      //drawer: const NavBarAdmin(),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         iconTheme:
@@ -719,9 +700,9 @@ class _AdminPathwaysState extends State<AdminPathways> {
                 Builder(builder: (context) {
                   return IconButton(
                       onPressed: () {
-                        Scaffold.of(context).openDrawer();
+                        Navigator.pop(context);
                       },
-                      icon: Icon(Icons.menu));
+                      icon: Icon(Icons.arrow_back));
                 }),
                 const Text(
                   'Pathway Management ',
@@ -829,11 +810,8 @@ class _AdminPathwaysState extends State<AdminPathways> {
 
           if (showWhiteBox)
             Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
-                ),
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
               ),
             ),
           if (showWhiteBox)
@@ -873,7 +851,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
                             Text(
                               'Add a Pathway ',
                               style: TextStyle(
-                                  fontSize: 24, fontFamily: 'Poppins'),
+                                  fontSize: 20, fontFamily: 'Poppins'),
                             ),
                           ],
                         ),
@@ -1461,8 +1439,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
                                 showEditBox = false;
                               });
 
-
-                             clear();
+                              clear();
                             },
                             child: Icon(
                               Icons.arrow_back,
@@ -1549,7 +1526,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
                               Expanded(
                                 child: TextField(
                                   decoration: InputDecoration(
-                                    prefixIcon: const Icon(Icons.person,
+                                    prefixIcon: const Icon(Icons.title,
                                         color: Color.fromARGB(255, 0, 0, 0)),
                                     labelStyle: const TextStyle(
                                       color: Colors.black54,
@@ -1578,7 +1555,6 @@ class _AdminPathwaysState extends State<AdminPathways> {
                               const SizedBox(width: 5),
                             ],
                           ),
-                          
                           const SizedBox(
                             height: 20,
                           ),
@@ -1735,7 +1711,6 @@ class _AdminPathwaysState extends State<AdminPathways> {
                                           ),
                                         ),
                                         Spacer(),
-                                       
                                         InkWell(
                                           child: const Icon(Icons.add_circle),
                                           onTap: () {
@@ -1775,16 +1750,19 @@ class _AdminPathwaysState extends State<AdminPathways> {
                                       ),
                                     ),
                                     Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ...
-              const SizedBox(height: 8),
-             buildResourceTextField(indexx, resources3), // Add the resource text field
-            ],
-          ),
-        ),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // ...
+                                          const SizedBox(height: 8),
+                                          buildResourceTextField(indexx,
+                                              resources3), // Add the resource text field
+                                        ],
+                                      ),
+                                    ),
                                   ],
                                 );
                               } else {
@@ -1813,40 +1791,54 @@ class _AdminPathwaysState extends State<AdminPathways> {
                                               ),
                                             ),
                                             Spacer(),
-                                            if (indexx > 0) // Conditionally render the remove button for indices greater than 0
-              IconButton(
-                icon: Icon(Icons.remove_circle),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Delete Item'),
-                        content: Text('Are you sure you want to delete this titla and description?'),
-                        actions: [
-                          TextButton(
-                            child: Text('Cancel'),
-                            onPressed: () {
-                              Navigator.of(context).pop(); // Close the dialog
-                            },
-                          ),
-                          TextButton(
-                            child: Text('Delete'),
-                            onPressed: () {
-                              setState(() {
-                                // Remove the text field and corresponding data from the lists
-                                topics2.removeAt(indexx);
-                                descriptions2.removeAt(indexx);
-                              });
-                              Navigator.of(context).pop(); // Close the dialog
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
+                                            if (indexx >=
+                                                0) // Conditionally render the  remove button for indices greater than 0
+                                              IconButton(
+                                                icon: Icon(Icons.remove_circle),
+                                                onPressed: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title:
+                                                            Text('Delete Item'),
+                                                        content: Text(
+                                                            'Are you sure you want to delete this topic?'),
+                                                        actions: [
+                                                          TextButton(
+                                                            child:
+                                                                Text('Cancel'),
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(); // Close the dialog
+                                                            },
+                                                          ),
+                                                          TextButton(
+                                                            child:
+                                                                Text('Delete'),
+                                                            onPressed: () {
+                                                              setState(() {
+                                                                // Remove the text field and corresponding data from the lists
+                                                                topics2
+                                                                    .removeAt(
+                                                                        indexx);
+                                                                descriptions2
+                                                                    .removeAt(
+                                                                        indexx);
+                                                              });
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(); // Close the dialog
+                                                            },
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              ),
                                             InkWell(
                                               child:
                                                   const Icon(Icons.add_circle),
@@ -1885,14 +1877,15 @@ class _AdminPathwaysState extends State<AdminPathways> {
                                               TextField(
                                                 decoration: InputDecoration(
                                                   prefixIcon: const Icon(
-                                                      Icons.person,
+                                                      Icons.title,
                                                       color: Color.fromARGB(
                                                           255, 0, 0, 0)),
                                                   labelStyle: const TextStyle(
                                                     color: Colors.black54,
                                                   ),
                                                   filled: true,
-                                                  labelText: "please enter",
+                                                  labelText:
+                                                      "Please Enter Subtopic Title",
                                                   floatingLabelBehavior:
                                                       FloatingLabelBehavior
                                                           .never,
@@ -1911,18 +1904,17 @@ class _AdminPathwaysState extends State<AdminPathways> {
                                                 readOnly: false,
                                                 onChanged: (value) {
                                                   setState(() {
-
                                                     //!!!SHOULD I ADD VALUES TO TOPIC2 + DESCRIPTUION2 OR IT WORKS?!!!
                                                   });
                                                 },
                                               ),
                                               SizedBox(
-                                                height: 5,
+                                                height: 15,
                                               ),
                                               Padding(
                                                 padding:
                                                     const EdgeInsets.symmetric(
-                                                        horizontal: 20),
+                                                        horizontal: 5),
                                                 child: Column(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
@@ -1988,21 +1980,27 @@ class _AdminPathwaysState extends State<AdminPathways> {
                                                         ),
                                                       ),
                                                     ),
-                                                                                Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ...
-              const SizedBox(height: 8),
-             buildResourceTextField(indexx, resourcesnew), // Add the resource text field
-            ],
-          ),
-        ),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 20),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          // ...
+                                                          const SizedBox(
+                                                              height: 8),
+                                                          buildResourceTextField(
+                                                              indexx,
+                                                              resourcesnew), // Add the resource text field
+                                                        ],
+                                                      ),
+                                                    ),
                                                   ],
                                                 ),
                                               ),
-
                                             ],
                                           ),
                                         ),
@@ -2018,17 +2016,17 @@ class _AdminPathwaysState extends State<AdminPathways> {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                           SharedPreferences pre = await SharedPreferences.getInstance();
-                            final id= pre.getString('pathwayIdx') ??'';
-   
+                        SharedPreferences pre =
+                            await SharedPreferences.getInstance();
+                        final id = pre.getString('pathwayIdx') ?? '';
 
-  
-  
                         if (await validateTitle() &&
                             await validatedescription() &&
                             await validateTopics() &&
-                            await validatesubdescription()&& await validatesubtopics() && await mevalidateResource()) {
-                              updateProfilePicture();
+                            await validatesubdescription() &&
+                            await validatesubtopics() &&
+                            await mevalidateResource()) {
+                          updateProfilePicture();
                           _showSnackBar(
                               "Your information has been changed successfully");
                           setState(() {
@@ -2053,276 +2051,270 @@ class _AdminPathwaysState extends State<AdminPathways> {
     );
   }
 
+  Future<bool> mevalidateResource() async {
+    print("IM BEING CALLED DON'T WORRY");
+    print("&&&& $resources3");
+    print("&&&& $resourcesnew");
+    int startIdx = 0;
+    SharedPreferences pre = await SharedPreferences.getInstance();
+    final id = pre.getString('pathwayIdx') ?? '';
 
+    List<String> mergedList = [];
+    //final List<List<String>> mergedArray = [...resources3, ...resourcesnew];
 
-Future<bool> mevalidateResource() async {
-  print("IM BEING CALLED DON'T WORRY");
-  print("&&&& $resources3");
-  print("&&&& $resourcesnew");
-  int startIdx = 0;
-  SharedPreferences pre = await SharedPreferences.getInstance();
-  final id = pre.getString('pathwayIdx') ?? '';
-
-  List<String> mergedList = [];
-  //final List<List<String>> mergedArray = [...resources3, ...resourcesnew];
-
-  final List<List<String>> mergedArray = [];
+    final List<List<String>> mergedArray = [];
 
 // Save resources3
-for (int i = 0; i < resources3.length; i++) {
-  mergedArray.add(resources3[i]);
-  startIdx = i;
-}
+    for (int i = 0; i < resources3.length; i++) {
+      mergedArray.add(resources3[i]);
+      startIdx = i;
+    }
 
 // Save resourcesnew starting from the last index where resources3 was last saved
-for (int i = startIdx + 1; i < resourcesnew.length; i++) {
-  mergedArray.add(resourcesnew[i]);
-}
-
-  for (int i = 0; i < subtopicControllers.length; i++) {
-    String value = subtopicControllers[i];
-    if (value.isNotEmpty) {
-      mergedList.add(value);
+    for (int i = startIdx + 1; i < resourcesnew.length; i++) {
+      mergedArray.add(resourcesnew[i]);
     }
-  }
 
-  for (int i = 0; i < topics2.length; i++) {
-    String value = topics2[i].text;
-    if (value.isNotEmpty) {
-      mergedList.add(value);
-    }
-  }
-print('@@@@@@@@@@mergedList length: ${mergedList.length}');
-for (int i = 0; i < mergedArray.length; i++) {
-  print('@@@@@@@@@mergedArray[$i] length: ${mergedArray[i].length}');
-}
-  for (int i = 0; i < mergedList.length; i++) {
-    for (int j = 0; j < mergedArray[i].length; j++) {
-      if (mergedArray[i][j].isEmpty) {
-        print("^^^^^^^^ mergedArray[$i][$j] ${mergedArray[i][j]}");
-        print("^^^^^^^^ resources3[$i][$j] ${resources3[i][j]}");
-        _showSnackBar("PLEASE ADD A RESOURCE FOR SUBTOPIC ${i + 1}");
-        return false;
+    for (int i = 0; i < subtopicControllers.length; i++) {
+      String value = subtopicControllers[i];
+      if (value.isNotEmpty) {
+        mergedList.add(value);
       }
     }
-  }
 
-  try {
-    final CollectionReference resourcesCollection =
-        FirebaseFirestore.instance.collection('resources');
-
+    for (int i = 0; i < topics2.length; i++) {
+      String value = topics2[i].text;
+      if (value.isNotEmpty) {
+        mergedList.add(value);
+      }
+    }
+    print('@@@@@@@@@@mergedList length: ${mergedList.length}');
+    for (int i = 0; i < mergedArray.length; i++) {
+      print('@@@@@@@@@mergedArray[$i] length: ${mergedArray[i].length}');
+    }
     for (int i = 0; i < mergedList.length; i++) {
-    for (int j = 0; j < mergedArray[i].length; j++) {
-      final querySnapshot = await resourcesCollection
-          .where('subtopic_id', isEqualTo: i)
-          .where('pathway_id', isEqualTo: id)
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        // Update existing document with new link array
-        final docId = querySnapshot.docs[0].id;
-        await resourcesCollection.doc(docId).update({
-          'link': mergedArray[i],
-        });
-      } 
-      else if (mergedArray[i].isNotEmpty) {
-        // Create a new document with subtopic_id, pathway_id, and link array
-        await resourcesCollection.add({
-          'subtopic_id': i,
-          'pathway_id': id,
-          'link': mergedArray[i],
-        });
-      }}
+      for (int j = 0; j < mergedArray[i].length; j++) {
+        if (mergedArray[i][j].isEmpty) {
+          print("^^^^^^^^ mergedArray[$i][$j] ${mergedArray[i][j]}");
+          print("^^^^^^^^ resources3[$i][$j] ${resources3[i][j]}");
+          _showSnackBar("PLEASE ADD A RESOURCE FOR SUBTOPIC ${i + 1}");
+          return false;
+        }
+      }
     }
 
-    return true; // All values are non-empty and saved successfully
-  } catch (error) {
-    print('Error saving resources: $error');
-    return false; // Failed to save resources
+    try {
+      final CollectionReference resourcesCollection =
+          FirebaseFirestore.instance.collection('resources');
+
+      for (int i = 0; i < mergedList.length; i++) {
+        for (int j = 0; j < mergedArray[i].length; j++) {
+          final querySnapshot = await resourcesCollection
+              .where('subtopic_id', isEqualTo: i)
+              .where('pathway_id', isEqualTo: id)
+              .get();
+
+          if (querySnapshot.docs.isNotEmpty) {
+            // Update existing document with new link array
+            final docId = querySnapshot.docs[0].id;
+            await resourcesCollection.doc(docId).update({
+              'link': mergedArray[i],
+            });
+          } else if (mergedArray[i].isNotEmpty) {
+            // Create a new document with subtopic_id, pathway_id, and link array
+            await resourcesCollection.add({
+              'subtopic_id': i,
+              'pathway_id': id,
+              'link': mergedArray[i],
+            });
+          }
+        }
+      }
+
+      return true; // All values are non-empty and saved successfully
+    } catch (error) {
+      print('Error saving resources: $error');
+      return false; // Failed to save resources
+    }
   }
-}
- 
 
+  Widget buildResourceTextField(int index, List<List<String>> resources) {
+    List<Widget> textFields = [];
 
-Widget buildResourceTextField(int index, List<List<String>> resources) {
-  List<Widget> textFields = [];
+    // Check if the index is within the range of the resources array
+    if (index >= 0 && index < resources.length) {
+      // Iterate over the resources at the given index
+      for (int j = 0; j < resources[index].length; j++) {
+        TextEditingController controller =
+            TextEditingController(text: resources[index][j]);
 
-  // Check if the index is within the range of the resources array
-  if (index >= 0 && index < resources.length) {
-    // Iterate over the resources at the given index
-    for (int j = 0; j < resources[index].length; j++) {
-      TextEditingController controller = TextEditingController(text: resources[index][j]);
-
-      Widget textField = Row(
-        children: [
-          Expanded(
-            child: TextField(
-              enabled: true,
-              controller: controller,
-              maxLines: null,
-              cursorColor: const Color.fromARGB(255, 43, 3, 101),
-              decoration: InputDecoration(
-                prefixIcon: Icon(
-                  Icons.text_decrease,
-                  color: const Color.fromARGB(255, 63, 12, 118),
+        Widget textField = Row(
+          children: [
+            Expanded(
+              child: TextField(
+                enabled: true,
+                controller: controller,
+                maxLines: null,
+                cursorColor: const Color.fromARGB(255, 43, 3, 101),
+                decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.link,
+                    color: const Color.fromARGB(255, 63, 12, 118),
+                  ),
+                  labelText: "Resources",
+                  labelStyle: const TextStyle(
+                    color: Colors.black54,
+                  ),
+                  filled: true,
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  fillColor:
+                      const Color.fromARGB(255, 228, 228, 228).withOpacity(0.3),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(32),
+                  ),
                 ),
-                labelText: "Resources",
-                labelStyle: const TextStyle(
-                  color: Colors.black54,
-                ),
-                filled: true,
-                floatingLabelBehavior: FloatingLabelBehavior.never,
-                fillColor: const Color.fromARGB(255, 228, 228, 228).withOpacity(0.3),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(32),
-                ),
+                onChanged: (value) {
+                  // Handle resource changes if needed
+                  resources[index][j] = value;
+                  resources3[index][j] = value;
+                  print("^^^^ changed $resources");
+                },
               ),
-              onChanged: (value) {
-                // Handle resource changes if needed
-                resources[index][j] = value;
-                resources3[index][j] = value;
-                print("^^^^ changed $resources");
-              },
             ),
-          ),
-           if (j == resources[index].length - 1) // Check if it is the last resource text field
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                // Add a new resource to the list for the given index
-                setState(() {
-                  resources[index].add(''); // Add an empty string
-                  //resources3[index][j] = value;
-                });
-              },
-            ),
-          if (j == resources[index].length - 1 && j != 0) // Check if it is the last resource text field and not the first one
-            IconButton(
-              icon: Icon(Icons.remove),
-              onPressed: () {
-                // Show an alert dialog to confirm deletion
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Confirm Delete'),
-                      content: Text('Are you sure you want to delete this resource?'),
-                      actions: [
-                        TextButton(
-                          child: Text('Cancel'),
-                          onPressed: () {
-                            Navigator.of(context).pop(); // Close the alert dialog
-                          },
-                        ),
-                        TextButton(
-                          child: Text('Delete'),
-                          onPressed: () {
-                            setState(() {
-                              // Remove the resource from the list for the given index
-                              resources[index].removeAt(j);
-                              resources3[index].removeAt(j);
-                            });
-                            Navigator.of(context).pop(); // Close the alert dialog
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            ),
-        ],
-      );
-
-      textFields.add(textField);
-    }
-  } else {
-    // If the index is out of range, add a new sublist to the resources array
-    resources.add(['']); // Add an empty string to a new sublist
-  }
-
-  return Column(
-    children: textFields,
-  );
-}
-
-
-Widget buildnewResourceTextField(int index, List<List<String>> resources) {
-   List<Widget> textFields = [];
-
-  // Check if the index is within the range of the resources array
-  if (index >= 0 && index < resources.length) {
-    // Iterate over the resources at the given index
-    for (int j = 0; j < resources[index].length; j++) {
-      TextEditingController controller = TextEditingController(text: resources[index][j]);
-
-      Widget textField = Row(
-        children: [
-          Expanded(
-            child: TextField(
-              enabled: true,
-              controller: controller,
-              maxLines: null,
-              cursorColor: const Color.fromARGB(255, 43, 3, 101),
-              decoration: InputDecoration(
-                prefixIcon: Icon(
-                  Icons.text_decrease,
-                  color: const Color.fromARGB(255, 63, 12, 118),
-                ),
-                labelText: "Resources",
-                labelStyle: const TextStyle(
-                  color: Colors.black54,
-                ),
-                filled: true,
-                floatingLabelBehavior: FloatingLabelBehavior.never,
-                fillColor: const Color.fromARGB(255, 228, 228, 228).withOpacity(0.3),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(32),
-                ),
+            if (j ==
+                resources[index].length -
+                    1) // Check if it is the last resource text field
+              InkWell(
+                child: const Icon(Icons.add_circle),
+                onTap: () {
+                  setState(() {
+                    resources[index].add(''); // Add an empty string
+                  });
+                },
               ),
-              onChanged: (value) {
-                // Handle resource changes if needed
-                resources[index][j] = value;
-                resourcesnew[index][j] = value;
-                print("^^^^ changed $resources");
-              },
-            ),
-          ),
-           if (j == resources[index].length - 1) // Check if it is the last resource text field
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                // Add a new resource to the list for the given index
-                setState(() {
-                  resources[index].add(''); // Add an empty string
-                });
-              },
-            ),
-          if (j == resources[index].length - 1 && j != 0) // Check if it is the last resource text field and not the first one
-            IconButton(
-              icon: Icon(Icons.remove),
-              onPressed: () {
-                // Remove the resource from the list for the given index
-                setState(() {
-                  resources[index].removeAt(j);
-                  resourcesnew[index].removeAt(j);
-                });
-              },
-            ),
-        ],
-      );
 
-      textFields.add(textField);
+            //OLD FOT SHOSHO
+            //IconButton(
+            // icon: Icon(Icons.add),
+            // onPressed: () {
+            // Add a new resource to the list for the given index
+            //  setState(() {
+            //    resources[index].add(''); // Add an empty string
+            //resources3[index][j] = value;
+            //  });
+            // },
+            //),
+            if (j == resources[index].length - 1 &&
+                j !=
+                    0) // Check if it is the last resource text field and not the first one
+              InkWell(
+                child:
+                    const Icon(Icons.remove_circle), // remove icon for resource
+                onTap: () {
+                  setState(() {
+                    resources[index].removeAt(j);
+                    //resources3[index].removeAt(j);
+                  });
+                },
+              ),
+          ],
+        );
+
+        textFields.add(textField);
+      }
+    } else {
+      // If the index is out of range, add a new sublist to the resources array
+      resources.add(['']); // Add an empty string to a new sublist
     }
-  } else {
-    // If the index is out of range, add a new sublist to the resources array
-    resources.add(['']); // Add an empty string to a new sublist
+
+    return Column(
+      children: textFields,
+    );
   }
 
-  return Column(
-    children: textFields,
-  );
-}
+  Widget buildnewResourceTextField(int index, List<List<String>> resources) {
+    List<Widget> textFields = [];
+
+    // Check if the index is within the range of the resources array
+    if (index >= 0 && index < resources.length) {
+      // Iterate over the resources at the given index
+      for (int j = 0; j < resources[index].length; j++) {
+        TextEditingController controller =
+            TextEditingController(text: resources[index][j]);
+
+        Widget textField = Row(
+          children: [
+            Expanded(
+              child: TextField(
+                enabled: true,
+                controller: controller,
+                maxLines: null,
+                cursorColor: const Color.fromARGB(255, 43, 3, 101),
+                decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.file_copy,
+                    color: const Color.fromARGB(255, 63, 12, 118),
+                  ),
+                  labelText: "Resources",
+                  labelStyle: const TextStyle(
+                    color: Colors.black54,
+                  ),
+                  filled: true,
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  fillColor:
+                      const Color.fromARGB(255, 228, 228, 228).withOpacity(0.3),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(32),
+                  ),
+                ),
+                onChanged: (value) {
+                  // Handle resource changes if needed
+                  resources[index][j] = value;
+                  resourcesnew[index][j] = value;
+                  print("^^^^ changed $resources");
+                },
+              ),
+            ),
+            if (j ==
+                resources[index].length -
+                    1) // Check if it is the last resource text field
+              IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () {
+                  // Add a new resource to the list for the given index
+                  setState(() {
+                    resources[index].add(''); // Add an empty string
+                  });
+                },
+              ),
+            if (j == resources[index].length - 1 &&
+                j !=
+                    0) // Check if it is the last resource text field and not the first one
+              IconButton(
+                icon: Icon(Icons.face),
+                onPressed: () {
+                  // Remove the resource from the list for the given index
+                  setState(() {
+                    resources[index].removeAt(j);
+                    resourcesnew[index].removeAt(j);
+                  });
+                },
+              ),
+          ],
+        );
+
+        textFields.add(textField);
+      }
+    } else {
+      // If the index is out of range, add a new sublist to the resources array
+      resources.add(['']); // Add an empty string to a new sublist
+    }
+
+    return Column(
+      children: textFields,
+    );
+  }
+
 //edit db
   Future<bool> validateTopics() async {
     if (newKey_topic == dbKey_topic) {
@@ -2361,149 +2353,159 @@ Widget buildnewResourceTextField(int index, List<List<String>> resources) {
     return true;
   }
 
-Widget buildTextField(int index) {
-  if (index <= topics2.length) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.person, color: Color.fromARGB(255, 0, 0, 0)),
-                  labelStyle: const TextStyle(
-                    color: Colors.black54,
-                  ),
-                  filled: true,
-                  labelText: "please enter",
-                  floatingLabelBehavior: FloatingLabelBehavior.never,
-                  fillColor: const Color.fromARGB(255, 228, 228, 228).withOpacity(0.3),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                ),
-                controller: TextEditingController(text: subtopicControllers[index]),
-                enabled: true,
-                readOnly: false,
-                onChanged: (value) {
-                  setState(() {
-                    // Handle any changes in the text field
-                    subtopicControllers[index] = value;
-                  });
-                },
-              ),
-            ),
-            if (index > 0) // Conditionally render the remove button for indices greater than 0
-              IconButton(
-                icon: Icon(Icons.remove_circle),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Delete Item'),
-                        content: Text('Are you sure you want to delete this titla and description?'),
-                        actions: [
-                          TextButton(
-                            child: Text('Cancel'),
-                            onPressed: () {
-                              Navigator.of(context).pop(); // Close the dialog
-                            },
-                          ),
-                          TextButton(
-                            child: Text('Delete'),
-                            onPressed: () {
-                              setState(() {
-                                // Remove the text field and corresponding data from the lists
-                                subtopicControllers.removeAt(index);
-                                //topics2.removeAt(index);
-                                subtopicDescriptionControllers.removeAt(index);
-                                //descriptions2.removeAt(index);
-                              });
-                              Navigator.of(context).pop(); // Close the dialog
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  Widget buildTextField(int index) {
+    if (index <= topics2.length) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              const Row(
-                children: [
-                  Text(
-                    'Description',
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    '*',
-                    style: TextStyle(
-                      color: Colors.red,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                enabled: true,
-                controller: TextEditingController(text: subtopicDescriptionControllers[index]),
-                maxLines: 4,
-                cursorColor: const Color.fromARGB(255, 43, 3, 101),
-                decoration: InputDecoration(
-                  prefixIcon: Icon(
-                    Icons.description,
-                    color: const Color.fromARGB(255, 63, 12, 118),
-                  ),
-                  labelText: "Please enter subtopic's\n\nDescription",
-                  labelStyle: const TextStyle(
-                    color: Colors.black54,
-                  ),
-                  filled: true,
-                  floatingLabelBehavior: FloatingLabelBehavior.never,
-                  fillColor: const Color.fromARGB(255, 228, 228, 228).withOpacity(0.3),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(32),
-                  ),
+              if (index > 0)
+                IconButton(
+                  icon: Icon(Icons.ac_unit),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Delete Item'),
+                          content: Text(
+                              'Are you sure you want to delete this titla and description?'),
+                          actions: [
+                            TextButton(
+                              child: Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(context).pop(); // Close the dialog
+                              },
+                            ),
+                            TextButton(
+                              child: Text('Delete'),
+                              onPressed: () {
+                                setState(() {
+                                  // Remove the text field and corresponding data from the lists
+                                  subtopicControllers.removeAt(index);
+                                  //topics2.removeAt(index);
+                                  subtopicDescriptionControllers
+                                      .removeAt(index);
+                                  //descriptions2.removeAt(index);
+                                });
+                                Navigator.of(context).pop(); // Close the dialog
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
                 ),
-                 onChanged: (value) {
-                  setState(() {
-                    // Handle any changes in the text field
-                    subtopicDescriptionControllers[index] = value;
-                  });
-                },
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.person,
+                        color: Color.fromARGB(255, 0, 0, 0)),
+                    labelStyle: const TextStyle(
+                      color: Colors.black54,
+                    ),
+                    filled: true,
+                    labelText: "please enter",
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    fillColor: const Color.fromARGB(255, 228, 228, 228)
+                        .withOpacity(0.3),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(32),
+                    ),
+                  ),
+                  controller:
+                      TextEditingController(text: subtopicControllers[index]),
+                  enabled: true,
+                  readOnly: false,
+                  onChanged: (value) {
+                    setState(() {
+                      // Handle any changes in the text field
+                      subtopicControllers[index] = value;
+                    });
+                  },
+                ),
               ),
+              if (index >
+                  0) // Conditionally render the remove button for indices greater than 0
+                SizedBox() // here
             ],
           ),
-        ),
-      ],
-    );
-  } else {
-    return SizedBox(); // Empty container if the text field should be hidden
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Text(
+                      'Description',
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      '*',
+                      style: TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  enabled: true,
+                  controller: TextEditingController(
+                      text: subtopicDescriptionControllers[index]),
+                  maxLines: 4,
+                  cursorColor: const Color.fromARGB(255, 43, 3, 101),
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(
+                      Icons.description,
+                      color: const Color.fromARGB(255, 63, 12, 118),
+                    ),
+                    labelText: "Please enter subtopic's\n\nDescription",
+                    labelStyle: const TextStyle(
+                      color: Colors.black54,
+                    ),
+                    filled: true,
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    fillColor: const Color.fromARGB(255, 228, 228, 228)
+                        .withOpacity(0.3),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(32),
+                    ),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      // Handle any changes in the text field
+                      subtopicDescriptionControllers[index] = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    } else {
+      return SizedBox(); // Empty container if the text field should be hidden
+    }
   }
-}
 
   addvalue(String s, int i) {
     newsubtopics[++i] = s;
   }
 
-  Future<bool> updatetitlessub(List<String> list1,
-      List<TextEditingController> list2) async {
+  Future<bool> updatetitlessub(
+      List<String> list1, List<TextEditingController> list2) async {
     List<String> mergedList = [];
 
     for (int i = 0; i < list1.length; i++) {
@@ -2543,8 +2545,8 @@ Widget buildTextField(int index) {
     return true;
   }
 
-Future<bool> updatedescriptionssub(List<String> list1,
-      List<TextEditingController> list2) async {
+  Future<bool> updatedescriptionssub(
+      List<String> list1, List<TextEditingController> list2) async {
     List<String> mergedList = [];
 
     for (int i = 0; i < list1.length; i++) {
@@ -2612,7 +2614,7 @@ Future<bool> updatedescriptionssub(List<String> list1,
 
       return true;
     } catch (e) {
-       _showSnackBar('An error occurred while trying to change  picture');
+      _showSnackBar('An error occurred while trying to change  picture');
       return false;
     }
   }
@@ -2638,8 +2640,6 @@ Future<bool> updatedescriptionssub(List<String> list1,
     }
     return false;
   }
-
-  
 
   Future<bool> updateTitle() async {
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
@@ -2684,22 +2684,21 @@ Future<bool> updatedescriptionssub(List<String> list1,
   }
 
   Future<bool> validatedescription() async {
- 
-  if (newpath_description == dbpath_description) {
-    return true;
-  } else if (newpath_description != dbpath_description) {
-    if (newpath_description.isEmpty) {
-      _showSnackBar('Please add a description');
-      return false;
-    } else {
-      if (await updateDescription()) {
-        return true;
+    if (newpath_description == dbpath_description) {
+      return true;
+    } else if (newpath_description != dbpath_description) {
+      if (newpath_description.isEmpty) {
+        _showSnackBar('Please add a description');
+        return false;
+      } else {
+        if (await updateDescription()) {
+          return true;
+        }
       }
     }
+    return false;
   }
-  return false;
-}
-  
+
   Future<bool> validatetopics() async {
     if (newKey_topic == dbKey_topic) {
       return true;
@@ -2714,7 +2713,7 @@ Future<bool> updatedescriptionssub(List<String> list1,
   }
 
   Future<bool> updatetopics() async {
-        final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
         .collection('pathway')
         .where('id', isEqualTo: pathID)
@@ -2733,8 +2732,6 @@ Future<bool> updatedescriptionssub(List<String> list1,
 
     return true;
   }
-
-
 
 /*Future<bool> validatesubtopics() async {
   final List<String> topicList = [];
@@ -2776,33 +2773,36 @@ int len = topics2.length + subtopicControllers.length;
   return false;
 }*/
 
-Future<bool> validatesubtopics() async {
-
-for (int i = 0; i < _topics.length; i++) {
-  if (topics2[i].text.isEmpty  && subtopicControllers[i].isEmpty ) {
-    _showSnackBar('Please fill all fields for topics and descriptions');
-    return false; // Return early if any topic or description field is empty
-  }}
-  
-  if( await updatetitlessub(subtopicControllers,topics2)){
-    return true;
-  }
-  return false; 
-  }
-      
-    Future<bool> validatesubdescription() async {
-        //final int len = descriptions2.length + subtopicDescriptionControllers.length;
+  Future<bool> validatesubtopics() async {
     for (int i = 0; i < _topics.length; i++) {
-      if (descriptions2[i].text.isEmpty && subtopicDescriptionControllers[i].isEmpty) {
+      if (topics2[i].text.isEmpty && subtopicControllers[i].isEmpty) {
+        _showSnackBar('Please fill all fields for topics and descriptions');
+        return false; // Return early if any topic or description field is empty
+      }
+    }
+
+    if (await updatetitlessub(subtopicControllers, topics2)) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> validatesubdescription() async {
+    //final int len = descriptions2.length + subtopicDescriptionControllers.length;
+    for (int i = 0; i < _topics.length; i++) {
+      if (descriptions2[i].text.isEmpty &&
+          subtopicDescriptionControllers[i].isEmpty) {
         _showSnackBar('Please fill all fields for descriptions');
         return false; // Return early if any topic or description field is empty
-      }}
-      
-      if( await updatedescriptionssub(subtopicDescriptionControllers,descriptions2)){
-        return true;
       }
-      return false; 
-      }
+    }
+
+    if (await updatedescriptionssub(
+        subtopicDescriptionControllers, descriptions2)) {
+      return true;
+    }
+    return false;
+  }
 //DONE EDIT DATABASE
   // DB
 
@@ -2925,9 +2925,18 @@ for (int i = 0; i < _topics.length; i++) {
       return false; // Return early if the title field is empty
     }
 
+    if (_pathTitle.text.length > 40) {
+      _showSnackBar('Title should not exceed 40 characters');
+      return false;
+    }
+
     if (_path_descriptions.text.isEmpty) {
       _showSnackBar('Please enter the pathway\'s description');
       return false; // Return early if the title field is empty
+    }
+    if (_path_descriptions.text.length > 250) {
+      _showSnackBar('Title should not exceed 40 characters');
+      return false;
     }
 
     if (_SelectTopic.isEmpty) {
@@ -3071,7 +3080,7 @@ for (int i = 0; i < _topics.length; i++) {
           String matchString = match.group(1)!;
           resourceList.addAll(matchString.split(', '));
         }
-              print("666666666 $resourceList");
+        print("666666666 $resourceList");
 
         return resourceList;
       }).toList();
@@ -3083,8 +3092,7 @@ for (int i = 0; i < _topics.length; i++) {
   }
 
   //
-    Future<List<List<String>>> getResourcesFromFirestore2(
-      String? id) async {
+  Future<List<List<String>>> getResourcesFromFirestore2(String? id) async {
     try {
       //String? idPath = path.docId;
 
@@ -3111,41 +3119,43 @@ for (int i = 0; i < _topics.length; i++) {
       throw error;
     }
   }
-Future<List<List<TextEditingController>>> gettextControllersResourcesFromFirestore(
-    PathwayContainer path) async {
 
-  try {
-    String? idPath = path.docId;
+  Future<List<List<TextEditingController>>>
+      gettextControllersResourcesFromFirestore(PathwayContainer path) async {
+    try {
+      String? idPath = path.docId;
 
-    QuerySnapshot snapshot = await firestore
-        .collection('resources')
-        .where('pathway_id', isEqualTo: idPath)
-        .orderBy('subtopic_id')
-        .get();
+      QuerySnapshot snapshot = await firestore
+          .collection('resources')
+          .where('pathway_id', isEqualTo: idPath)
+          .orderBy('subtopic_id')
+          .get();
 
-    List<List<String>> resources = snapshot.docs.map((doc) {
-      String resourceString = doc['link']?.toString() ?? ''; // Provide default value if field is missing
-      List<String> resourceList = [];
-      RegExp exp = RegExp(r'\[([^\]]+)\]');
-      Iterable<Match> matches = exp.allMatches(resourceString);
-      for (Match match in matches) {
-        String matchString = match.group(1)!;
-        resourceList.addAll(matchString.split(', '));
-      }
-      return resourceList;
-    }).toList();
+      List<List<String>> resources = snapshot.docs.map((doc) {
+        String resourceString = doc['link']?.toString() ??
+            ''; // Provide default value if field is missing
+        List<String> resourceList = [];
+        RegExp exp = RegExp(r'\[([^\]]+)\]');
+        Iterable<Match> matches = exp.allMatches(resourceString);
+        for (Match match in matches) {
+          String matchString = match.group(1)!;
+          resourceList.addAll(matchString.split(', '));
+        }
+        return resourceList;
+      }).toList();
 
-    List<List<TextEditingController>> resourceControllers = resources
-        .map((resourceList) => resourceList
-            .map((resource) => TextEditingController(text: resource))
-            .toList())
-        .toList();
+      List<List<TextEditingController>> resourceControllers = resources
+          .map((resourceList) => resourceList
+              .map((resource) => TextEditingController(text: resource))
+              .toList())
+          .toList();
 
-    return resourceControllers;
-  } catch (error) {
-    throw error;
+      return resourceControllers;
+    } catch (error) {
+      throw error;
+    }
   }
-}
+
   void moreInfo(PathwayContainer pathway) {
     int i = 0;
     showDialog(
@@ -3366,4 +3376,3 @@ Future<List<List<TextEditingController>>> gettextControllersResourcesFromFiresto
     return colors[index % colors.length];
   }*/
 }
-

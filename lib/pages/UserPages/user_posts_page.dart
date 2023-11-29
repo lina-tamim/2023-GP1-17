@@ -356,22 +356,25 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   },
                 ),
                 PostDeleteButton(docId: fandT.docId),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                  decoration: BoxDecoration(
-                    color: Colors.purple.shade200,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Text(
-                    'Deadline: $formattedDate', // Use the formatted date
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12.0,
-                    ),
-                  ),
-                ),
                 SizedBox(height: 5),
               ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 55),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                decoration: BoxDecoration(
+                  color: Colors.purple.shade200,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Text(
+                  'Deadline: $formattedDate', // Use the formatted date
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12.0,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -475,7 +478,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           onPressed: () async {
-           // _toggleFormVisibility();
+            // _toggleFormVisibility();
             showInputDialog();
           },
           backgroundColor: Color.fromARGB(255, 156, 147, 176),

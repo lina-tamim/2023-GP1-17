@@ -4,6 +4,8 @@ import 'package:techxcel11/pages/AdminPages/AdminCoursesAndEventsRequestsPage.da
 import 'package:techxcel11/pages/reuse.dart';
 import 'package:techxcel11/pages/login.dart';
 import 'package:techxcel11/pages/AdminPages/AdminPathways.dart';
+import 'package:techxcel11/pages/AdminPages/ReportedAccount.dart';
+import 'package:techxcel11/pages/AdminPages/ReportedPost.dart';
 
 import 'AdminCoursesAndEventsPage.dart';
 //EDIT +CALNDER COMMIT
@@ -44,7 +46,7 @@ class _AdminHome extends State<AdminHome> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const AdminHome()), // will be changed in sprint2
+                                const ReposrtedPost()), // will be changed in sprint2
                       );
                     },
                     child: itemDashboard(
@@ -59,7 +61,7 @@ class _AdminHome extends State<AdminHome> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const AdminHome()),
+                            builder: (context) => const ReportedAccount()),
                       );
                     },
                     child: itemDashboard(
@@ -119,43 +121,6 @@ class _AdminHome extends State<AdminHome> {
               ),
             ),
           ),
-          InkWell(
-            onTap: showLogoutConfirmationDialog,
-            child: ListTile(
-              leading: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  color: Colors.red,
-                ),
-                child: const Icon(
-                  Icons.logout,
-                  color: Colors.white,
-                ),
-              ),
-              title: Text(
-                'Logout',
-                style: Theme.of(context).textTheme.bodyLarge?.apply(
-                      color: Colors.black87,
-                      fontWeightDelta: 2,
-                    ),
-              ),
-              trailing: Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  color: Colors.grey.withOpacity(0.1),
-                ),
-                child: const Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 18.0,
-                  color: Colors.grey,
-                ),
-              ),
-            ),
-          )
         ],
       ),
     );
