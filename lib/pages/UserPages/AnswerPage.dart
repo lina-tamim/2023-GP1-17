@@ -22,7 +22,7 @@ class _AnswerPageState extends State<AnswerPage> {
     return email;
   }
 
-  late List<CardQuestion> questions = [];
+  late List<CardQuestion> questions = []; 
   final _questionStreamController =
       StreamController<List<CardQuestion>>.broadcast();
 
@@ -41,9 +41,8 @@ class _AnswerPageState extends State<AnswerPage> {
 
   Future<List<CardQuestion>> readQuestion() async {
     final snapshot = await FirebaseFirestore.instance
-        .collection('posts')
-        .where('dropdownValue', isEqualTo: 'Question')
-        .where('id', isEqualTo: widget.questionId)
+        .collection('Question')
+        .where('questionCount', isEqualTo: widget.questionId)
         .limit(1)
         .get();
 
@@ -210,6 +209,7 @@ class _AnswerPageState extends State<AnswerPage> {
                           'Error: ${snapshot.error}'); 
                     } else {
                       currentEmail = snapshot.data!;
+                      print("11111111111 $currentEmail");
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -219,6 +219,8 @@ class _AnswerPageState extends State<AnswerPage> {
                                 : Icons.arrow_circle_up),
                             onPressed: () {
                               setState(() {
+                                
+
                                 if (upvotedUserIds.contains(currentEmail)) {
                                   upvotedUserIds.remove(currentEmail);
                                   upvoteCount--;
@@ -226,12 +228,16 @@ class _AnswerPageState extends State<AnswerPage> {
                                   upvotedUserIds.add(currentEmail);
                                   upvoteCount++;
                                 }
+                                    answer.upvoteCount = upvoteCount;
+    answer.upvotedUserIds = upvotedUserIds;
 
                                 FirebaseFirestore.instance
-                                    .collection('answers')
-                                    .doc(answer.answerId)
+                                    .collection('Answer')
+                                    //CHECK DOES IT WORK AFTER DELETEING docId
+                                    .doc()
                                     .update({
                                   'upvoteCount': upvoteCount,
+                                  ////////!!!!!!
                                   'upvotedUserIds': upvotedUserIds,
                                 }).then((_) {
                                 }).catchError((error) {
@@ -260,11 +266,11 @@ class _AnswerPageState extends State<AnswerPage> {
     if (_formKey.currentState!.validate()) {
       final String answerText = _answerController.text;
 
-      final formCollection = FirebaseFirestore.instance.collection('answers');
+      final formCollection = FirebaseFirestore.instance.collection('Answer');
 
       final newFormDoc = formCollection.doc();
       await newFormDoc.set({
-        'answerId': newFormDoc.id,
+        //'answerId': newFormDoc.id,
         'questionId': widget.questionId,
         'userId': email,
         'answerText': answerText,
@@ -276,7 +282,7 @@ class _AnswerPageState extends State<AnswerPage> {
   }
 
   Stream<List<CardAnswer>> readAnswer() => FirebaseFirestore.instance
-          .collection('answers')
+          .collection('Answer')
           .where('questionId', isEqualTo: widget.questionId)
           .snapshots()
           .asyncMap((snapshot) async {

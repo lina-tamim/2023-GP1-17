@@ -604,9 +604,9 @@ class _FormWidgetState extends State<FormWidget> {
         ),
       );
     } else if (_formKey.currentState!.validate()) {
-      final formCollectionn = FirebaseFirestore.instance.collection('posts');
+      final formCollectionn = FirebaseFirestore.instance.collection('Question');
       final snapshot =
-          await formCollectionn.orderBy('id', descending: true).limit(1).get();
+          await formCollectionn.orderBy('questionCount', descending: true).limit(1).get();
 
       int id;
       if (snapshot.docs.isEmpty) {
@@ -614,45 +614,110 @@ class _FormWidgetState extends State<FormWidget> {
         id = 0;
       } else {
         final lastDocument = snapshot.docs.first;
-        final lastId = lastDocument['id'] as int;
+        final lastId = lastDocument['questionCount'] as int;
         id = lastId + 1;
       }
-      final formCollection = FirebaseFirestore.instance.collection('posts');
-      final newFormDoc = formCollection.doc();
-      DateTime postDate = DateTime.now();
-      if (_selectedPostType == 'Question') {
-        id = id + 1;
-        await newFormDoc.set({
-          'userId': userId,
-          'dropdownValue': _selectedPostType,
-          'textFieldValue': textFieldValue,
-          'largeTextFieldValue': largeTextFieldValue,
-          'selectedInterests': _selectedTopics,
-          'upvotecount': count,
-          'NoOfAnwers': count,
-          'id': id,
-          'postedDate': postDate,
-        });
-      } else {
-        await newFormDoc.set({
-          'userId': userId,
-          'dropdownValue': _selectedPostType,
-          'textFieldValue': textFieldValue,
-          'largeTextFieldValue': largeTextFieldValue,
-          'selectedDate': selectedDate,
-          'selectedInterests': _selectedTopics,
-          'postedDate': postDate,
-        });
-      }
 
-      // Clear the form fields and selected date.
-      setState(() {
-        dropdownValue = null;
-        textFieldValue = '';
-        largeTextFieldValue = '';
-        selectedDate = null;
-        _selectedTopics.clear();
+
+    
+    DateTime postDate = DateTime.now();
+
+    if (_selectedPostType == 'Question') {
+      
+      // Save form in the 'Question' collection
+      final questionCollection = FirebaseFirestore.instance.collection('Question');
+      final newFormDoc = questionCollection.doc();
+     
+      await questionCollection.doc(newFormDoc.id).set({
+        'userId': userId,
+        //'dropdownValue': _selectedPostType,
+        'postTitle': textFieldValue,
+        'postDescription': largeTextFieldValue,
+        'selectedInterests': _selectedTopics,
+        //'upvotecount': count,
+        'noOfAnwers': count,
+        'questionCount': id + 1,
+        'postedDate': postDate,
       });
+      
+
+    } else if (_selectedPostType == 'Team Collaberation') {
+      print("########### INSIDE TEAM ");
+      // Save form in the 'Team Collaboration' collection
+      //final formCollection = FirebaseFirestore.instance.collection('Team');
+      final teamCollabCollection = FirebaseFirestore.instance.collection('Team');
+      final newFormDoc = teamCollabCollection.doc();
+       print("########### INSIDE QUESTION $teamCollabCollection");
+      print("########### INSIDE QUESTION $newFormDoc ");
+      await teamCollabCollection.doc(newFormDoc.id).set({
+        'userId': userId,
+        //'dropdownValue': _selectedPostType,
+        'postTitle': textFieldValue,
+        'postDescription': largeTextFieldValue,
+        'deadlineDate': selectedDate,
+        'selectedInterests': _selectedTopics,
+        'postedDate': postDate,
+      });
+
+      print("########### INSIDE QUESTION $userId");
+      print("########### INSIDE QUESTION $textFieldValue");
+      print("########### INSIDE QUESTION $largeTextFieldValue");
+      print("########### INSIDE QUESTION $_selectedTopics");
+      print("########### INSIDE QUESTION $postDate");
+    } else if (_selectedPostType == 'Project') {
+      // Save form in the 'Project' collection
+      final formCollection = FirebaseFirestore.instance.collection('Project');
+      final newFormDoc = formCollection.doc();
+      final projectCollection = FirebaseFirestore.instance.collection('Project');
+      await projectCollection.doc(newFormDoc.id).set({
+         'userId': userId,
+        //'dropdownValue': _selectedPostType,
+        'postTitle': textFieldValue,
+        'postDescription': largeTextFieldValue,
+        'deadlineDate': selectedDate,
+        'selectedInterests': _selectedTopics,
+        'postedDate': postDate,
+      });
+    }
+
+// Delete the existing documents from the collections
+/*if (_selectedPostType == 'Question') {
+  final formCollection = FirebaseFirestore.instance.collection('Question');
+  await formCollection.get().then((snapshot) {
+    for (DocumentSnapshot doc in snapshot.docs) {
+      doc.reference.delete();
+    }
+  });
+}
+
+if (_selectedPostType == 'Team Collaboration') {
+  final formCollection = FirebaseFirestore.instance.collection('Team');
+  await formCollection.get().then((snapshot) {
+    for (DocumentSnapshot doc in snapshot.docs) {
+      doc.reference.delete();
+    }
+  });
+}
+
+if (_selectedPostType == 'Project') {
+  final formCollection = FirebaseFirestore.instance.collection('Project');
+  await formCollection.get().then((snapshot) {
+    for (DocumentSnapshot doc in snapshot.docs) {
+      doc.reference.delete();
+    }
+  });
+}*/
+
+    // Clear the form fields and selected date.
+    setState(() {
+      dropdownValue = null;
+      textFieldValue = '';
+      largeTextFieldValue = '';
+      selectedDate = null;
+      _selectedTopics.clear();
+    });
+
+    
 
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Form submitted successfully!')));

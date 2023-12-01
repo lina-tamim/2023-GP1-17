@@ -23,10 +23,17 @@ class _CalendarPageState extends State<CalendarPage> {
     _initializeEventColor();
   }
 
-  void _initializeEventColor() {
-    _colorCollection.add(const Color(0xFF0F8644));
-    _colorCollection.add(const Color(0xFF881FA9));
-  }
+ void _initializeEventColor() {
+  _colorCollection.add(const Color(0xFF0F8644));
+  _colorCollection.add(const Color(0xFF881FA9));
+  _colorCollection.add(const Color(0xFF3F51B5));
+  _colorCollection.add(const Color(0xFFD32F2F));
+  _colorCollection.add(const Color(0xFF009688));
+  _colorCollection.add(const Color(0xFF795548));
+  _colorCollection.add(const Color(0xFFC2185B));
+  _colorCollection.add(const Color(0xFF8BC34A));
+  _colorCollection.add(const Color(0xFF607D8B));
+}
 
   @override
   Widget build(BuildContext context) {
@@ -114,10 +121,14 @@ class _CalendarPageState extends State<CalendarPage> {
 
   Widget _buildSelectedDayEvents(List<EventModel> events) {
     final selectedDayEvents = _getSelectedDayEvents(events);
+ 
+
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: selectedDayEvents.map((event) {
+        
+
         return Container(
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.all(10),
@@ -137,7 +148,7 @@ class _CalendarPageState extends State<CalendarPage> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Location: ${event.location}',
+                'Location: ${event.location == '' ? 'Online' : event.location}',
                 style: TextStyle(fontSize: 14),
               ),
               const SizedBox(height: 4),

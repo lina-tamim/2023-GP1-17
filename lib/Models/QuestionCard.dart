@@ -1,7 +1,7 @@
 import 'dart:core';
 class CardQuestion {
   final int id;
-  final String postType;
+  //final String postType;
   final String title;
   final String description;
   final List<String> topics;
@@ -13,7 +13,7 @@ class CardQuestion {
 
   CardQuestion({
     required this.id,
-    required this.postType,
+    //required this.postType,
     required this.title,
     required this.description,
     required this.topics,
@@ -24,10 +24,10 @@ class CardQuestion {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'dropdownValue': postType,
-        'textFieldValue': title,
-        'largeTextFieldValue': description,
+        'questionCount': id,
+        //'dropdownValue': postType,
+        'postTitle': title,
+        'postDescription': description,
         'selectedInterests': topics,
         'userId': userId,
         'docId': docId,
@@ -36,10 +36,10 @@ class CardQuestion {
       };
 
   static CardQuestion fromJson(Map<String, dynamic> json) => CardQuestion(
-        id: json['id'],
-        postType: json['dropdownValue'],
-        title: json['textFieldValue'],
-        description: json['largeTextFieldValue'],
+        id: json['questionCount'],
+        //postType: json['dropdownValue'],
+        title: json['postTitle'],
+        description: json['postDescription'],
         topics: List<String>.from(json['selectedInterests']),
         userId: json['userId'],
         docId: json['docId'] ?? '',

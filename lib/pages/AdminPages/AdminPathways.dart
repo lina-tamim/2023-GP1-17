@@ -67,20 +67,21 @@ int x = 0;
     SharedPreferences pre = await SharedPreferences.getInstance();
     final pathwayId = pre.getInt('pathwayId_${pathway.id}') ?? '';
     final QuerySnapshot<Map<String, dynamic>> snapshot = await firestore
-        .collection('pathway')
-        .where('id', isEqualTo: pathwayId)
+        .collection('Pathway')
+        .where('pathwayNo', isEqualTo: pathwayId)
         .limit(1)
         .get();
 
     if (snapshot.docs.isNotEmpty) {
       final pathwayData = snapshot.docs[0].data();
-      final image_url = pathwayData['image_url'] ?? '';
+      final image_url = pathwayData['imageURL'] ?? '';
       final title = pathwayData['title'] ?? '';
-      final path_description = pathwayData['path_description'] ?? '';
-      final Key_topic = List<String>.from(pathwayData['Key_topic'] ?? []);
+      final path_description = pathwayData['pathwayDescription'] ?? '';
+      final Key_topic = List<String>.from(pathwayData['keyTopic'] ?? []);
       final subtopics = List<String>.from(pathwayData['subtopics'] ?? []);
       final descriptions = List<String>.from(pathwayData['descriptions'] ?? []);
       final resourses = List<String>.from(pathwayData['resources'] ?? []);
+       
 
       newimage_url = image_url;
       newtitle = title;
@@ -92,18 +93,18 @@ int x = 0;
       newResources = resourses;
 
       setState(() {
-        _editSelectTopic = Key_topic;
+        _editSelectTopic = pathway.Key_topic;
         dbimage_url = image_url;
-        dbtitle = title;
-        dbpath_description = path_description;
+        dbtitle = pathway.title;
+        dbpath_description = pathway.path_description;
         dbKey_topic = Key_topic;
         dbsubtopics = subtopics;
         dbdescriptions = descriptions;
         pathID = pathway.id;
-        dbdocId = pathway.docId;
+        //dbdocId = pathway.docId;
         subtopicControllers = pathway.subtopics;
         subtopicDescriptionControllers = pathway.descriptions;
-        subtopicresourseControllers = resourses;
+        subtopicresourseControllers = pathway.resources;
       });
     }
   }
@@ -429,13 +430,14 @@ int x = 0;
   subtopicDescriptionControllers = [];
   subtopicresourseControllers = [];
   x=0;
+      
    
   }
 
   //EDIT
   Future<Map<String, dynamic>> fetchContainerData() async {
     final DocumentSnapshot snapshot =
-        await firestore.collection('pathway').doc('title').get();
+        await firestore.collection('Pathway').doc('title').get();
     return snapshot.data() as Map<String, dynamic>;
   }
 
@@ -497,7 +499,7 @@ int x = 0;
 
   Stream<List<PathwayContainer>> readPathway() {
     Query<Map<String, dynamic>> query =
-        FirebaseFirestore.instance.collection('pathway');
+        FirebaseFirestore.instance.collection('Pathway');
 
     // search
 
@@ -2025,8 +2027,8 @@ int x = 0;
   Future<bool> updateTopics() async {
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('pathway')
-        .where('id', isEqualTo: pathID)
+        .collection('Pathway')
+        .where('pathwayNo', isEqualTo: pathID)
         .limit(1)
         .get();
 
@@ -2036,10 +2038,10 @@ int x = 0;
       final String userId = userDoc.id;
 
       await FirebaseFirestore.instance
-          .collection('pathway')
+          .collection('Pathway')
           .doc(userId)
           .update({
-        'Key_topic': _editSelectTopic,
+        'KeyTopic': _editSelectTopic,
       });
     }
 
@@ -2324,8 +2326,8 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
     }
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('pathway')
-        .where('id', isEqualTo: pathID)
+        .collection('Pathway')
+        .where('pathwayNo', isEqualTo: pathID)
         .limit(1)
         .get();
 
@@ -2334,7 +2336,7 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
           snapshot.docs.first;
       final String id = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('pathway').doc(id).update({
+      await FirebaseFirestore.instance.collection('Pathway').doc(id).update({
         'resources': mergedList,
       });
     }
@@ -2367,8 +2369,8 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
     }
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('pathway')
-        .where('id', isEqualTo: pathID)
+        .collection('Pathway')
+        .where('pathwayNo', isEqualTo: pathID)
         .limit(1)
         .get();
 
@@ -2377,7 +2379,7 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
           snapshot.docs.first;
       final String id = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('pathway').doc(id).update({
+      await FirebaseFirestore.instance.collection('Pathway').doc(id).update({
         'subtopics': mergedList,
       });
     }
@@ -2408,8 +2410,8 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
     }
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('pathway')
-        .where('id', isEqualTo: pathID)
+        .collection('Pathway')
+        .where('pathwayNo', isEqualTo: pathID)
         .limit(1)
         .get();
 
@@ -2418,7 +2420,7 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
           snapshot.docs.first;
       final String id = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('pathway').doc(id).update({
+      await FirebaseFirestore.instance.collection('Pathway').doc(id).update({
         'descriptions': mergedList,
       });
     }
@@ -2437,8 +2439,8 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
       final String downloadURL = await taskSnapshot.ref.getDownloadURL();
       final QuerySnapshot<Map<String, dynamic>> snapshot =
           await FirebaseFirestore.instance
-              .collection('pathway')
-              .where('id', isEqualTo: pathID)
+              .collection('Pathway')
+              .where('pathwayNo', isEqualTo: pathID)
               .limit(1)
               .get();
 
@@ -2446,8 +2448,8 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
         final DocumentSnapshot<Map<String, dynamic>> userDoc =
             snapshot.docs.first;
         final String id = userDoc.id;
-        await FirebaseFirestore.instance.collection('pathway').doc(id).update({
-          'image_url': downloadURL,
+        await FirebaseFirestore.instance.collection('Pathway').doc(id).update({
+          'imageURL': downloadURL,
         });
       }
       dbimage_url = downloadURL;
@@ -2489,8 +2491,8 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
   Future<bool> updateTitle() async {
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('pathway')
-        .where('id', isEqualTo: pathID)
+        .collection('Pathway')
+        .where('pathwayNo', isEqualTo: pathID)
         .limit(1)
         .get();
 
@@ -2499,7 +2501,7 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
           snapshot.docs.first;
       final String id = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('pathway').doc(id).update({
+      await FirebaseFirestore.instance.collection('Pathway').doc(id).update({
         'title': newtitle,
       });
     }
@@ -2510,8 +2512,8 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
   Future<bool> updateDescription() async {
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('pathway')
-        .where('id', isEqualTo: pathID)
+        .collection('Pathway')
+        .where('pathwayNo', isEqualTo: pathID)
         .limit(1)
         .get();
 
@@ -2520,8 +2522,8 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
           snapshot.docs.first;
       final String id = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('pathway').doc(id).update({
-        'path_description': newpath_description,
+      await FirebaseFirestore.instance.collection('Pathway').doc(id).update({
+        'pathwayDescription': newpath_description,
       });
     }
 
@@ -2555,8 +2557,8 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
   Future<bool> updatetopics() async {
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('pathway')
-        .where('id', isEqualTo: pathID)
+        .collection('Pathway')
+        .where('pathwayNo', isEqualTo: pathID)
         .limit(1)
         .get();
 
@@ -2565,8 +2567,8 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
           snapshot.docs.first;
       final String id = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('pathway').doc(id).update({
-        'Key_topic': newKey_topic,
+      await FirebaseFirestore.instance.collection('Pathway').doc(id).update({
+        'keyTopic': newKey_topic,
       });
     }
 
@@ -2704,7 +2706,7 @@ int len = list1.length;
     try {
       // Create a new document reference
       DocumentReference documentReference =
-          firestore.collection('pathway').doc();
+          firestore.collection('Pathway').doc();
       //validation++
       String newTitle = _pathTitle.text.trim();
       bool isUnique = await isTitleUnique(newTitle);
@@ -2748,15 +2750,15 @@ int len = list1.length;
       // Save the flattened resources list to Firestore
       await documentReference.set({
         'title': _pathTitle.text,
-        'path_description': _path_descriptions.text,
-        'Key_topic': _SelectTopic,
+        'pathwayDescription': _path_descriptions.text,
+        'keyTopic': _SelectTopic,
         'subtopics': _topics.map((controller) => controller.text).toList(),
         'descriptions':
             _descriptions.map((controller) => controller.text).toList(),
         'resources':  _resources.map((controller) => controller.text).toList(),
-        'image_url': imageUrl,
-        'id': id,
-        'docId': documentReference.id,
+        'imageURL': imageUrl,
+        'pathwayNo': id,
+        //'docId': documentReference.id,
       });
       id = id + 1;
       return true; 
@@ -2768,7 +2770,7 @@ int len = list1.length;
   /////// VALIDATION
   Future<bool> isTitleUnique(String title) async {
     QuerySnapshot querySnapshot = await firestore
-        .collection('pathway')
+        .collection('Pathway')
         .where('title', isEqualTo: title)
         .get();
 
@@ -2885,7 +2887,7 @@ int len = list1.length;
     if (confirmed == true) {
       final QuerySnapshot<Map<String, dynamic>> snapshot =
           await FirebaseFirestore.instance
-              .collection('pathway')
+              .collection('Pathway')
               .where('title', isEqualTo: Ptitle)
               .limit(1)
               .get();
@@ -2897,7 +2899,7 @@ int len = list1.length;
 
         // Delete pathway document from Firestore
         await FirebaseFirestore.instance
-            .collection('pathway')
+            .collection('Pathway')
             .doc(pathId)
             .delete();
 

@@ -22,7 +22,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   Future<Map<String, dynamic>> fetchContainerData() async {
     final DocumentSnapshot snapshot =
-        await firestore.collection('pathway').doc('title').get();
+        await firestore.collection('Pathway').doc('title').get();
     return snapshot.data() as Map<String, dynamic>;
   }
 
@@ -41,7 +41,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
   bool showSearchtBarPath = false;
   Stream<List<PathwayContainer>> readPathway() {
     Query<Map<String, dynamic>> query =
-        FirebaseFirestore.instance.collection('pathway');
+        FirebaseFirestore.instance.collection('Pathway');
     if (widget.searchQuery.isNotEmpty) {
       query = query
           .where('title', isGreaterThanOrEqualTo: widget.searchQuery)
@@ -424,12 +424,7 @@ void moreInfo(PathwayContainer pathway) {
                                   ),
                                 ),
                               ),
-                            ElevatedButton(
-                              onPressed: () {
-                                _showMultiSelectTopic(context);
-                              },
-                              child: const Text('Select Topics'),
-                            ),
+                            
                           ],
                         );
                       }).toList(),

@@ -1,30 +1,32 @@
 class CardAview {
-  String answerId;
+  //String answerId;
   int questionId;
   String userId;
   String answerText;
   int upvoteCount;
   String? username;
   List<String> upvotedUserIds;
-  final String? docId;
+  final String docId;
   String? userPhotoUrl; 
+  
 
 
   CardAview(
-      {required this.answerId,
+      {
+      //required this.answerId,
       required this.questionId,
       required this.userId,
       required this.answerText,
       required this.upvoteCount,
       this.upvotedUserIds = const [],
-      this.docId ='' ,
+      required this.docId  ,
     required this.username,
     required this.userPhotoUrl,
       
       });
 
   Map<String, dynamic> toJson() => {
-        'answerId': answerId,
+        //'answerId': answerId,
         'questionId': questionId,
         'userId': userId,
         'answerText': answerText,
@@ -32,13 +34,13 @@ class CardAview {
         'username': '',
         'upvotedUserIds': upvotedUserIds,
         'docId': docId,
-                'userPhotoUrl': userPhotoUrl, // Update property name to userPhotoUrl
+         'userPhotoUrl': userPhotoUrl, // Update property name to userPhotoUrl
 
       };
 
   factory CardAview.fromJson(Map<String, dynamic> json) {
     return CardAview(
-        answerId: json['answerId'] as String,
+        //answerId: json['answerId'] as String,
         questionId: json['questionId'] as int,
         userId: json['userId'] as String,
         answerText: json['answerText'] as String,

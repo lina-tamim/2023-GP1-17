@@ -27,11 +27,11 @@ class PathwayContainer extends StatelessWidget {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'imagePath': imagePath,
+        'pathwayNo': id,
+        'imageURL': imagePath,
         'title': title,
-        'path_description': path_description,
-        'Key_topic': Key_topic,
+        'pathwayDescription': path_description,
+        'keyTopic': Key_topic,
         'subtopics': subtopics,
         'descriptions': descriptions,
         'docId':docId,
@@ -40,14 +40,14 @@ class PathwayContainer extends StatelessWidget {
 
   static PathwayContainer fromJson(Map<String, dynamic> json) =>
       PathwayContainer(
-        id: json['id'], // Assuming 'id' is the field for your custom ID
-        imagePath: json['image_url'],
-        title: json['title'],
-        path_description: json['path_description'],
-        Key_topic: List<String>.from(json['Key_topic']),
-        subtopics: List<String>.from(json['subtopics']),
-        descriptions: List<String>.from(json['descriptions']),
-        resources: List<String>.from(json['resources']),
+        id: json['pathwayNo'] ??0, // Assuming 'id' is the field for your custom ID
+        imagePath: json['imageURL']??'',
+        title: json['title']??'',
+        path_description: json['pathwayDescription']??'',
+        Key_topic: List<String>.from(json['keyTopic']??[]),
+        subtopics: List<String>.from(json['subtopics']??[]),
+        descriptions: List<String>.from(json['descriptions']?? []),
+        resources: List<String>.from(json['resources']?? []),
         docId: json['docId'],
       );
 

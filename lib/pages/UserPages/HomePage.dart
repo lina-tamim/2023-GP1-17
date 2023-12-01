@@ -36,13 +36,13 @@ class __FHomePageState extends State<FHomePage> {
 
   Stream<List<CardQuestion>> readQuestion() {
     Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-        .collection('posts')
-        .where('dropdownValue', isEqualTo: 'Question');
+        .collection('Question');
+        //.where('dropdownValue', isEqualTo: 'Question');
 
     if (searchController.text.isNotEmpty) {
       String searchText = searchController.text;
       query = query.where(
-        FieldPath(['largeTextFieldValue']),
+        FieldPath(['postDescription']),
         isGreaterThanOrEqualTo: searchText.toLowerCase(),
         isLessThanOrEqualTo: searchText.toLowerCase() + '\uf8ff',
       );
@@ -92,15 +92,15 @@ class __FHomePageState extends State<FHomePage> {
 
   Stream<List<CardFT>> readTeam() {
     Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-        .collection('posts')
-        .where('dropdownValue', isEqualTo: 'Team Collaberation');
+        .collection('Team');
+        //.where('dropdownValue', isEqualTo: 'Team Collaberation');
 
     if (searchController.text.isNotEmpty) {
       String searchText = searchController.text
           .toLowerCase(); // Convert search text to lowercase
       query = query
-          .where('textFieldValue', isGreaterThanOrEqualTo: searchText)
-          .where('textFieldValue', isLessThanOrEqualTo: searchText + '\uf8ff');
+          .where('postTitle', isGreaterThanOrEqualTo: searchText)
+          .where('postTitle', isLessThanOrEqualTo: searchText + '\uf8ff');
     } else {
       query = query.orderBy('postedDate', descending: true);
     }
@@ -144,15 +144,15 @@ class __FHomePageState extends State<FHomePage> {
 
   Stream<List<CardFT>> readProjects() {
     Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-        .collection('posts')
-        .where('dropdownValue', isEqualTo: 'Project');
+        .collection('Project');
+        //.where('dropdownValue', isEqualTo: 'Project');
 
     if (searchController.text.isNotEmpty) {
       String searchText = searchController.text
           .toLowerCase(); // Convert search text to lowercase
       query = query
-          .where('textFieldValue', isGreaterThanOrEqualTo: searchText)
-          .where('textFieldValue', isLessThanOrEqualTo: searchText + '\uf8ff');
+          .where('postTitle', isGreaterThanOrEqualTo: searchText)
+          .where('postTitle', isLessThanOrEqualTo: searchText + '\uf8ff');
     } else {
       query = query.orderBy('postedDate', descending: true);
     }
@@ -247,12 +247,14 @@ class __FHomePageState extends State<FHomePage> {
                 children: [
                   IconButton(
                     icon: Icon(Icons.bookmark),
+                    color:Colors.grey,
                     onPressed: () {
                       // Add functionality in upcoming sprints
                     },
                   ),
                   IconButton(
                     icon: Icon(Icons.chat_bubble),
+                    color:Colors.grey,
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -264,6 +266,7 @@ class __FHomePageState extends State<FHomePage> {
                   ),
                   IconButton(
                     icon: Icon(Icons.report),
+                    color:Colors.grey,
                     onPressed: () {
                       // Add functionality in upcoming sprints
                     },
@@ -335,12 +338,14 @@ class __FHomePageState extends State<FHomePage> {
             children: [
               IconButton(
                 icon: Icon(Icons.chat_bubble),
+                color:Colors.grey,
                 onPressed: () {
                   // Add your functionality for the button here
                 },
               ),
               IconButton(
                 icon: Icon(Icons.report),
+                color:Colors.grey,
                 onPressed: () {
                   // Add your functionality for the button here
                 },
@@ -548,7 +553,7 @@ class __FHomePageState extends State<FHomePage> {
                   );
                 } else if (snapshot.hasError) {
                   return Center(
-                    child: Text('No Posts Yet '),
+                    child: Text('Error: ${snapshot.error}'),
                   );
                 } else {
                   return Center(
@@ -573,7 +578,7 @@ class __FHomePageState extends State<FHomePage> {
                   );
                 } else if (snapshot.hasError) {
                   return Center(
-                    child: Text('No Posts Yet '),
+                    child: Text('Error: ${snapshot.error}'),
                   );
                 } else {
                   return Center(
