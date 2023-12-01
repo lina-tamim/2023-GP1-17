@@ -3,10 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techxcel11/pages/reuse.dart';
 import 'package:crypto/crypto.dart';
-
-//EDIT +CALNDER COMMIT
+import 'package:techxcel11/Models/ReusedElements.dart';
 
 class AdminProfile extends StatefulWidget {
   const AdminProfile({Key? key}) : super(key: key);
@@ -54,9 +52,7 @@ class _AdminProfile extends State<AdminProfile> {
                 height: 110,
                 fit: BoxFit.cover,
               ),
-              // Username
               const SizedBox(height: 16),
-              // Add your username widget here
               Text(
                 'Your Role: Admin',
                 style: TextStyle(
@@ -89,14 +85,13 @@ class AdminEditProfile extends StatefulWidget {
 }
 
 class _AdminEditProfile extends State<AdminEditProfile> {
-  String loggedInPassword = '';
-  String loggedInEmail = '';
+  String _loggedInPassword = '';
+  String _loggedInEmail = '';
   bool isModified = false;
   bool isPasswordchange = false;
-
-  // MODIFIED BY USER:
+  // Modified by user:
   String newPassword = ''; // changed or not (changed means user wants to edit)
-  bool showPassword = false; // Variable to track the password visibility
+  bool showPassword = false; 
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -110,7 +105,7 @@ class _AdminEditProfile extends State<AdminEditProfile> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('loggedInEmail') ?? '';
     final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
-        .collection('users')
+        .collection('Admin')
         .where('email', isEqualTo: email)
         .limit(1)
         .get();
@@ -122,8 +117,8 @@ class _AdminEditProfile extends State<AdminEditProfile> {
       isPasswordchange = false;
 
       setState(() {
-        loggedInEmail = email;
-        loggedInPassword = password;
+        _loggedInEmail = email;
+        _loggedInPassword = password;
       });
     }
   }
@@ -184,7 +179,7 @@ class _AdminEditProfile extends State<AdminEditProfile> {
                     ),
                     enabled: false,
                     readOnly: true,
-                    controller: TextEditingController(text: loggedInEmail),
+                    controller: TextEditingController(text: _loggedInEmail),
                   ),
                 ),
                 const SizedBox(width: 5),
@@ -244,7 +239,7 @@ class _AdminEditProfile extends State<AdminEditProfile> {
                     ),
                     enabled: true,
                     readOnly: false,
-                    obscureText: !showPassword, // Set obscureText based
+                    obscureText: !showPassword, 
                     onChanged: (value) {
                       setState(() {
                         newPassword = value;
@@ -294,7 +289,7 @@ class _AdminEditProfile extends State<AdminEditProfile> {
 
  Future<bool> validatePassword() async {
   // Check if the new password is equal to the existing password
-  if (newPassword =='' || hashPassword(newPassword) == loggedInPassword ) {
+  if (newPassword =='' || hashPassword(newPassword) == _loggedInPassword ) {
     return true; // Nothing changed (user doesn't want to modify)
   }
 else
@@ -321,8 +316,8 @@ else
 Future<bool> updatePasswordByEmail() async {
   final QuerySnapshot<Map<String, dynamic>> snapshot =
       await FirebaseFirestore.instance
-          .collection('users')
-          .where('email', isEqualTo: loggedInEmail)
+          .collection('Admin')
+          .where('email', isEqualTo: _loggedInEmail)
           .limit(1)
           .get();
 
@@ -332,7 +327,7 @@ Future<bool> updatePasswordByEmail() async {
     final String hashedPassword = hashPassword(newPassword); // Hash the new password
 
     await FirebaseFirestore.instance
-        .collection('users')
+        .collection('Admin')
         .doc(userId)
         .update({'password': hashedPassword});
 
@@ -344,7 +339,6 @@ Future<bool> updatePasswordByEmail() async {
          isModified = true;
         return true;
       } catch (e) {
-        print('Failed to update password in Firebase Authentication: $e');
       }
     }
   }
@@ -353,14 +347,14 @@ Future<bool> updatePasswordByEmail() async {
 }
 
 String hashPassword(String password) {
-  var bytes = utf8.encode(password); // Encode the password as bytes
-  var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
-  return digest.toString(); // Convert the hash to a string
+  var bytes = utf8.encode(password); 
+  var digest = sha256.convert(bytes); 
+  return digest.toString();
 }
  
 
 void _showSnackBar2(String message) {
-  double snackBarHeight = 510; // Customize the height of the snackbar
+  double snackBarHeight = 510; 
 
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
@@ -370,11 +364,11 @@ void _showSnackBar2(String message) {
         borderRadius: BorderRadius.circular(24),
       ),
       margin: EdgeInsets.only(
-        bottom: snackBarHeight + 20, // Add the snackbar height and some additional margin
+          bottom: snackBarHeight + 180 ,
         right: 20,
         left: 20,
       ),
-      backgroundColor: Color.fromARGB(255, 12, 118, 51), // Customize the background color
+      backgroundColor: Color.fromARGB(255, 12, 118, 51), 
     ),
   );
 }

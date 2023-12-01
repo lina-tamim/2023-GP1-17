@@ -1,8 +1,5 @@
-import 'dart:ui';
-//EDIT +CALNDER COMMIT
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Course {
   final DateTime? createdAt;
   final String? description;
@@ -15,9 +12,8 @@ class Course {
   final String? attendanceType;
   final String? userId;
   final String? docId;
-  final String imageURL; // New attribute
+  final String imageURL;
   final String? approval;
-  //final Color color;
 
   Course({
     this.createdAt,
@@ -33,44 +29,42 @@ class Course {
     this.docId,
     required this.imageURL,
     this.approval,
-    //required this.color,
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
-      createdAt: (json['created_at'] as Timestamp).toDate(),
+      createdAt: (json['createdAt'] as Timestamp).toDate(),
       description: json['description'],
-      endDate: json['end_date'] == null
+      endDate: json['endDate'] == null
           ? null
-          : (json['end_date'] as Timestamp).toDate(),
+          : (json['endDate'] as Timestamp).toDate(),
       link: json['link'],
       location: json['location'],
-      startDate: json['start_date'] == null
+      startDate: json['startDate'] == null
           ? null
-          : (json['start_date'] as Timestamp).toDate(),
+          : (json['startDate'] as Timestamp).toDate(),
       title: json['title'],
       type: json['type'],
       attendanceType: json['attendanceType'],
-      userId: json['userId'],
+      userId: json['userEmail'],
       docId: json['docId'],
       imageURL: json['imageURL'],
       approval: json['approval'],
-      //color:json['color'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'created_at': createdAt?.toIso8601String(),
+      'createdAt': createdAt?.toIso8601String(),
       'description': description,
-      'end_date': endDate?.toIso8601String(),
+      'endDate': endDate?.toIso8601String(),
       'link': link,
       'location': location,
-      'start_date': startDate?.toIso8601String(),
+      'startDate': startDate?.toIso8601String(),
       'title': title,
       'type': type,
       'attendanceType': attendanceType,
-      'userId': userId,
+      'userEmail': userId,
       'docId': docId,
       'imageURL': imageURL,
       'approval':approval,
@@ -79,21 +73,17 @@ class Course {
 
   Map<String, dynamic> toJson2(String id) {
     return {
-      //'created_at': createdAt?.toIso8601String(),
       'description': description,
-      'end_date': endDate?.toIso8601String(),
+      'endDate': endDate?.toIso8601String(),
       'link': link,
       'location': location,
-      'start_date': startDate?.toIso8601String(),
+      'startDate': startDate?.toIso8601String(),
       'title': title,
       'type': type,
       'attendanceType': attendanceType,
-      //'userId': userId,
       'docId': docId,
       'imageURL': imageURL,
       'my_id':id,
-      //'color':x,
-      //'approval':approval,
     };
   }
 }

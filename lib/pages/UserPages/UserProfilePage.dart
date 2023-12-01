@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:techxcel11/pages/UserPages/EditProfile2.dart';
-import 'package:techxcel11/pages/reuse.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math' as math;
+import 'package:techxcel11/pages/UserPages/EditUserProfilePage.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
 
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({super.key});
@@ -16,17 +16,17 @@ class UserProfilePage extends StatefulWidget {
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
-  String loggedInUsername = '';
-  String loggedInCountry = '';
-  String loggedInCity = '';
-  String loggedInUserType = '';
-  String loggedInGithub = '';
-  List<String> userSkills = [];
-  List<String> userInterests = [];
-  String loggedInImage = '';
+  String _loggedInUsername = '';
+  String _loggedInCountry = '';
+  String _loggedInCity = '';
+  String _loggedInUserType = '';
+  String _loggedInGithub = '';
+  List<String> _userSkills = [];
+  List<String> _userInterests = [];
+  String _loggedInImage = '';
   bool showSkills = false;
   bool showInterests = false;
-  String url = '';
+  String _url = '';
   int _currentIndex = 0;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -41,7 +41,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('loggedInEmail') ?? '';
     final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
-        .collection('users')
+        .collection('RegularUser')
         .where('email', isEqualTo: email)
         .limit(1)
         .get();
@@ -49,24 +49,24 @@ class _UserProfilePageState extends State<UserProfilePage> {
     if (snapshot.docs.isNotEmpty) {
       final userData = snapshot.docs[0].data();
 
-      final username = userData['userName'] ?? '';
+      final username = userData['username'] ?? '';
       final country = userData['country'] ?? '';
       final city = userData['city'] ?? '';
-      final github = userData['GithubLink'] ?? '';
+      final github = userData['githubLink'] ?? '';
       final skills = List<String>.from(userData['skills'] ?? []);
       final interests = List<String>.from(userData['interests'] ?? []);
       final userType = userData['userType'] ?? '';
-      final imageUrl = userData['imageUrl'] ?? '';
+      final imageURL = userData['imageURL'] ?? '';
 
       setState(() {
-        loggedInUsername = username;
-        loggedInCountry = country;
-        loggedInCity = city;
-        loggedInGithub = github;
-        userSkills = skills;
-        userInterests = interests;
-        loggedInUserType = userType;
-        loggedInImage = imageUrl;
+        _loggedInUsername = username;
+        _loggedInCountry = country;
+        _loggedInCity = city;
+        _loggedInGithub = github;
+        _userSkills = skills;
+        _userInterests = interests;
+        _loggedInUserType = userType;
+        _loggedInImage = imageURL;
       });
     }
   }
@@ -129,14 +129,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
               const SizedBox(height: 5),
               const Divider(),
               const SizedBox(height: 5),
-              if (loggedInImage.isNotEmpty)
+              if (_loggedInImage.isNotEmpty)
                 Container(
                   width: 110,
                   height: 110,
                   child: CircleAvatar(
                     child: ClipOval(
                       child: Image.network(
-                        loggedInImage,
+                        _loggedInImage,
                         width: 110,
                         height: 110,
                         fit: BoxFit.cover,
@@ -149,7 +149,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '$loggedInUsername ',
+                    '$_loggedInUsername ',
                     style: GoogleFonts.orbitron(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -157,12 +157,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  if (loggedInUserType ==
-                      "Freelancer") // Replace "userType" with the actual variable representing the user type
+                  if (_loggedInUserType ==
+                      "Freelancer") 
                     const Icon(
                       Icons.verified,
                       color: Color.fromARGB(255, 0, 91, 228),
-                      size: 25, // Adjust the size of the star icon as desired
+                      size: 25, 
                     ),
                 ],
               ),
@@ -173,9 +173,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 children: [
                   const SizedBox(width: 4),
                   Text(
-                    loggedInCity == 'null'
-                        ? loggedInCountry
-                        : '$loggedInCountry, $loggedInCity',
+                    _loggedInCity == 'null'
+                        ? _loggedInCountry
+                        : '$_loggedInCountry, $_loggedInCity',
                     style: const TextStyle(
                       fontSize: 16,
                       color: Colors.black,
@@ -197,19 +197,19 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   const SizedBox(width: 4),
                   GestureDetector(
                     onTap: () {
-                      url = loggedInGithub;
-                      launchURL(url);
+                      _url = _loggedInGithub;
+                      launchURL(_url);
                     },
                     child: Text(
-                      loggedInGithub.isEmpty
+                      _loggedInGithub.isEmpty
                           ? 'Add your GitHub account now!'
-                          : '   $loggedInGithub',
+                          : '   $_loggedInGithub',
                       style: TextStyle(
                         fontSize: 16,
-                        color: loggedInGithub.isEmpty
+                        color: _loggedInGithub.isEmpty
                             ? const Color.fromARGB(255, 0, 0, 0)
                             : Colors.blueAccent,
-                        decoration: loggedInGithub.isEmpty
+                        decoration: _loggedInGithub.isEmpty
                             ? TextDecoration.none
                             : TextDecoration.none,
                       ),
@@ -244,7 +244,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ),
               if (showInterests)
                 Column(
-                  children: userInterests.map((interest) {
+                  children: _userInterests.map((interest) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 5),
                       child: Text(interest),
@@ -278,13 +278,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
               if (showSkills)
                 Column(
                   children: [
-                    if (userSkills.isEmpty)
+                    if (_userSkills.isEmpty)
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 5),
                         child: Text("You haven't added any skills yet!"),
                       )
                     else
-                      ...userSkills.map((skill) {
+                      ..._userSkills.map((skill) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5),
                           child: Text(skill),

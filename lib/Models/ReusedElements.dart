@@ -2,25 +2,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:techxcel11/pages/AdminPages/AdminProfilePage.dart';
-import 'package:techxcel11/pages/AdminPages/Admin_home.dart';
+import 'package:techxcel11/pages/AdminPages/AdminHomePage.dart';
 import 'package:techxcel11/pages/UserPages/ChatPage.dart';
 import 'package:techxcel11/pages/UserPages/UserExplorePage.dart';
-import 'package:techxcel11/pages/UserPages/Fhome.dart';
+import 'package:techxcel11/pages/UserPages/HomePage.dart';
 import 'package:techxcel11/pages/UserPages/FreelancerPage.dart';
 import 'package:techxcel11/pages/UserPages/UserProfilePage.dart';
-import 'package:techxcel11/pages/UserPages/aboutus.dart';
-import 'package:techxcel11/pages/UserPages/bookmark.dart';
+import 'package:techxcel11/pages/UserPages/AboutUsPage.dart';
+import 'package:techxcel11/pages/UserPages/BookmarkPage.dart';
 import 'package:techxcel11/pages/UserPages/CalendarPage.dart';
-import 'package:techxcel11/pages/UserPages/user_posts_page.dart'; //m
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:techxcel11/pages/start.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-//EDIT +CALNDER COMMIT
+import 'package:techxcel11/pages/UserPages/UserInteractionPage.dart'; //m
+import 'package:techxcel11/pages/StartPage.dart';
+
 
 class NavBarUser extends StatefulWidget {
   const NavBarUser({super.key});
-
   @override
   _NavBarUserState createState() => _NavBarUserState();
 }
@@ -29,6 +28,7 @@ class _NavBarUserState extends State<NavBarUser> {
   String loggedInUsername = '';
   String loggedInEmail = '';
   String loggedImage = '';
+  String loggedInAdminEmail = '';
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -42,7 +42,7 @@ class _NavBarUserState extends State<NavBarUser> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('loggedInEmail') ?? '';
     final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
-        .collection('users')
+        .collection('RegularUser')
         .where('email', isEqualTo: email)
         .limit(1)
         .get();
@@ -50,17 +50,32 @@ class _NavBarUserState extends State<NavBarUser> {
     if (snapshot.docs.isNotEmpty) {
       final userData = snapshot.docs[0].data();
 
-      final username = userData['userName'] ?? '';
-      final imageUrl = userData['imageUrl'] ?? '';
+      final username = userData['username'] ?? '';
+      final imageURL = userData['imageURL'] ?? '';
 
       setState(() {
         loggedInUsername = username;
         loggedInEmail = email;
-        loggedImage = imageUrl;
+        loggedImage = imageURL;
       });
     }
   }
 
+  Future<void> fetchAdminData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('loggedInEmail') ?? '';
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+        .collection('Admin')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      setState(() {
+        loggedInAdminEmail = email;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -144,10 +159,10 @@ class _NavBarUserState extends State<NavBarUser> {
           ),
           ListTile(
             leading: Container(
-              width: 30, // Adjust the width as needed
-              height: 100, // Adjust the height as needed
+              width: 30, 
+              height: 100, 
               child: Image.asset(
-                  'assets/Backgrounds/Xlogo.png'), // Replace 'image_name.png' with the actual image file name and extension
+                  'assets/Backgrounds/Xlogo.png'), 
             ),
             title: const Text('About Us'),
             onTap: () => Navigator.push(
@@ -179,9 +194,7 @@ class NavBarAdmin extends StatefulWidget {
 }
 
 class _NavBarAdminState extends State<NavBarAdmin> {
-  String loggedInUsername = '';
-  String loggedInEmail = '';
-  String loggedImage = '';
+String loggedInAdminEmail ='';
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -195,20 +208,16 @@ class _NavBarAdminState extends State<NavBarAdmin> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('loggedInEmail') ?? '';
     final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
-        .collection('users')
+        .collection('Admin')
         .where('email', isEqualTo: email)
         .limit(1)
         .get();
 
     if (snapshot.docs.isNotEmpty) {
       final userData = snapshot.docs[0].data();
-      final username = userData['userName'] ?? '';
-      final imageUrl = userData['imageUrl'] ?? '';
 
       setState(() {
-        loggedInUsername = username;
-        loggedInEmail = email;
-        loggedImage = imageUrl;
+        loggedInAdminEmail = email;
       });
     }
   }
@@ -222,9 +231,19 @@ class _NavBarAdminState extends State<NavBarAdmin> {
           UserAccountsDrawerHeader(
             accountName: Text(''),
             accountEmail: Text(
-              loggedInEmail,
+              loggedInAdminEmail,
               style: TextStyle(
                 color: Colors.black,
+              ),
+            ),
+             currentAccountPicture: CircleAvatar(
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/Backgrounds/defaultUserPic.png',
+                  width: 110,
+                  height: 110,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             decoration: BoxDecoration(
@@ -314,8 +333,8 @@ AppBar buildAppBar(String titleText) {
   return AppBar(
     iconTheme: const IconThemeData(color: Color.fromARGB(255, 255, 255, 255)),
     backgroundColor: const Color.fromRGBO(37, 6, 81, 0.898),
-    toolbarHeight: 100, // Adjust the height of the AppBar
-    elevation: 0, // Adjust the position of the AppBar
+    toolbarHeight: 100, 
+    elevation: 0, 
     shape: const ContinuousRectangleBorder(
       borderRadius: BorderRadius.only(
         bottomLeft: Radius.circular(130),
@@ -325,7 +344,7 @@ AppBar buildAppBar(String titleText) {
     title: Text(
       titleText,
       style: const TextStyle(
-        fontSize: 18, // Adjust the font size
+        fontSize: 18, 
         fontFamily: "Poppins",
         color: Colors.white,
       ),
@@ -515,12 +534,9 @@ void logUserOut(BuildContext context) async {
       MaterialPageRoute(builder: (context) => const OnboardingScreen()),
     );
   } catch (e) {
-    print('$e');
     toastMessage("Logout failed");
   }
 }
-
-///
 
 class DropDownWidget extends StatefulWidget {
   DropDownWidget({
@@ -546,7 +562,7 @@ class DropDownMenu extends StatelessWidget {
     required this.option,
     required this.onTap,
     required this.items,
-    required this.isMenuOpen, // Add isMenuOpen parameter
+    required this.isMenuOpen, 
     this.fontSize = 12,
   }) : super(key: key);
 
@@ -554,7 +570,7 @@ class DropDownMenu extends StatelessWidget {
   final List<String> items;
   final double fontSize;
   final ValueChanged<String?> onTap;
-  final bool isMenuOpen; // Declare isMenuOpen property
+  final bool isMenuOpen; 
 
   @override
   Widget build(BuildContext context) {
@@ -567,7 +583,7 @@ class DropDownMenu extends StatelessWidget {
             return DropdownMenuItem<String>(
               value: value,
               child: SizedBox(
-                width: 120, // Adjust the width of the dropdown list
+                width: 120, 
                 child: Text(
                   value,
                   style: TextStyle(
@@ -582,7 +598,7 @@ class DropDownMenu extends StatelessWidget {
           onChanged: onTap,
           onTap: () {
             if (isMenuOpen) {
-              onTap(null); // Close the menu when tapped outside the options
+              onTap(null); 
             }
           },
         ),
@@ -592,12 +608,12 @@ class DropDownMenu extends StatelessWidget {
 }
 
 class _DropDownWidgetState extends State<DropDownWidget> {
-  bool isMenuOpen = false; // Track the menu open/closed state
+  bool isMenuOpen = false; 
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: isMenuOpen ? 90 : 58, // Adjust the height based on the menu state
+      height: isMenuOpen ? 90 : 58, 
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
       child: Stack(
         children: [
@@ -605,7 +621,7 @@ class _DropDownWidgetState extends State<DropDownWidget> {
             child: GestureDetector(
               onTap: () {
                 setState(() {
-                  isMenuOpen = !isMenuOpen; // Toggle the menu state
+                  isMenuOpen = !isMenuOpen; 
                 });
               },
               child: DropDownMenu(
@@ -613,7 +629,7 @@ class _DropDownWidgetState extends State<DropDownWidget> {
                 onTap: widget.onItemSelected,
                 fontSize: widget.fontSize,
                 items: widget.list,
-                isMenuOpen: isMenuOpen, // Pass the menu state to DropDownMenu
+                isMenuOpen: isMenuOpen, 
               ),
             ),
           ),
@@ -622,8 +638,6 @@ class _DropDownWidgetState extends State<DropDownWidget> {
     );
   }
 }
-
-//////Pop to show in Events Post Screen
 showAlertDialog(context, Widget child,
     {okButtonText = 'Ok',
     onPress = null,

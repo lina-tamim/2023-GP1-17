@@ -1,7 +1,3 @@
-//Full code, m S
-//GP discussion
-//EDIT +CALNDER COMMIT
-
 import 'dart:core';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -50,5 +46,3 @@ class CardFT {
       userPhotoUrl: json['userPhotoUrl'] as String?,
       docId: json['docId'] ?? '');
 }
-
-//TECHXCEL

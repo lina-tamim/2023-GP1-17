@@ -7,11 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techxcel11/models/courseAndEvent_image.dart';
-import 'package:techxcel11/pages/reuse.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../models/course.dart';
-//EDIT +CALNDER COMMIT
+import 'package:techxcel11/Models/CourseEventImage.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
+import 'package:techxcel11/Models/CourseModel.dart';
 
 class UserCoursesAndEventsPage extends StatefulWidget {
   const UserCoursesAndEventsPage({super.key, required this.searchQuery});
@@ -34,7 +33,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
   final descController = TextEditingController();
   final locationController = TextEditingController();
   final linkController = TextEditingController();
-  // final searchController = TextEditingController();
   DateTime? courseStartDate;
   DateTime? courseEndDate;
   Course? item;
@@ -65,7 +63,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
             Icons.add,
             color: Color.fromARGB(255, 255, 255, 255),
             size: 25,
-            //backgroundcolor: Color.fromARGB(255, 255, 255, 255),
           ),
         ),
       ),
@@ -92,7 +89,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     PopupMenuButton<String>(
                       onSelected: (value) {
                         if (value == 'my_requests') {
-                          showRequestList();
+                          checkRequests();
                         } else if (value == 'submit_request') {
                           showInputDialog();
                         }
@@ -174,7 +171,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     }
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      height: 480, // height fix
+                      height: 420, 
                       child: ListView.builder(
                           itemCount: list.length,
                           scrollDirection: Axis.horizontal,
@@ -231,7 +228,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     }
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      height: 470,
+                      height: 420,
                       child: ListView.builder(
                           itemCount: list.length,
                           scrollDirection: Axis.horizontal,
@@ -383,13 +380,13 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
 
     if (item?.docId != null) {
       await formCollection.doc(item!.docId).update({
-        'userId': email,
+        'userEmail': email,
         'type': selectedCourseType,
         'attendanceType': selectedAttendanceType,
         'title': titleController.text,
         'description': descController.text,
-        'start_date': courseStartDate,
-        'end_date': courseEndDate,
+        'startDate': courseStartDate,
+        'endDate': courseEndDate,
         'link': linkController.text,
         'location': locationController.text,
         'imageURL': imageURL,
@@ -397,16 +394,16 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       });
     } else {
       await newFormDoc.set({
-        'userId': email,
+        'userEmail': email,
         'type': selectedCourseType,
         'attendanceType': selectedAttendanceType,
         'title': titleController.text,
         'description': descController.text,
-        'start_date': courseStartDate,
-        'end_date': courseEndDate,
+        'startDate': courseStartDate,
+        'endDate': courseEndDate,
         'link': linkController.text,
         'location': locationController.text,
-        'created_at': postDate,
+        'createdAt': postDate,
         'imageURL': imageURL,
         'approval': 'Pending',
       });
@@ -468,7 +465,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
           .where('title',
               isLessThanOrEqualTo: widget.searchQuery.toLowerCase() + '\uf8ff');
     } else {
-      query = query.orderBy('created_at', descending: true);
+      query = query.orderBy('createdAt', descending: true);
     }
 
     return query.snapshots().asyncMap((snapshot) async {
@@ -573,7 +570,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                           onItemSelected: (value) {
                             setstate(() {
                               selectedCourseType = value!;
-                              print("courseType$selectedCourseType");
                             });
                           },
                         ),
@@ -870,7 +866,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
     QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
         .collection('Program')
-        .where('userId', isEqualTo: email)
+        .where('userEmail', isEqualTo: email)
         .get();
 
     // Extract titles, approval values, and reason from the query snapshot
@@ -892,7 +888,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
     return courses;
   }
 
-  void showRequestList() {
+  void checkRequests() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -1036,7 +1032,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
 
   Future<void> selectDate(BuildContext context, String dateType,
       {type = "normal", initialDate = null}) async {
-    // print("dateType$dateType");
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),

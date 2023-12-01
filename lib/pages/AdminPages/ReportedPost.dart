@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:techxcel11/pages/reuse.dart';
 
 class ReposrtedPost extends StatefulWidget {
   const ReposrtedPost({super.key});
@@ -16,14 +15,13 @@ class _ReposrtedPostState extends State<ReposrtedPost> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //drawer: const NavBarAdmin(),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         iconTheme:
             IconThemeData(color: const Color.fromARGB(255, 255, 255, 255)),
         backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
-        toolbarHeight: 100, // Adjust the height of the AppBar
-        elevation: 0, // Adjust the position of the AppBar
+        toolbarHeight: 100, 
+        elevation: 0, 
         shape: ContinuousRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(130),

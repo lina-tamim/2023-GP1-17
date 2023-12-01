@@ -1,10 +1,10 @@
  import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:techxcel11/models/calendar.dart';
-import 'package:techxcel11/pages/reuse.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:techxcel11/Models/CalendarModel.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);
@@ -38,12 +38,11 @@ class _CalendarPageState extends State<CalendarPage> {
       appBar: buildAppBar('Calendar'),
       body: Padding(
         padding: const EdgeInsets.all(13),
-
-child: SingleChildScrollView(
-  child: Column(
-    children: [
-      const SizedBox(height: 10),
-      FutureBuilder<List<EventModel>>(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+              FutureBuilder<List<EventModel>>(
                 future: _getEvents(firstDayOfMonth, lastDayOfMonth),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
@@ -51,59 +50,38 @@ child: SingleChildScrollView(
                     return Column(
                       children: [
                         // Calendar section
-                      
-                    Container(
-  height: 390, // Set your desired height here
-  child: SfCalendar(
-    view: CalendarView.month,
-    initialDisplayDate: firstDayOfMonth,
-    minDate: firstDayOfMonth,
-    maxDate: lastDayOfMonth,
-    showNavigationArrow: true,
-    onSelectionChanged: _onSelectionChanged,
-    headerStyle: CalendarHeaderStyle(
-      textStyle: TextStyle(
-        color: Colors.white,
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-      ),
-      backgroundColor: Color.fromARGB(255, 14, 1, 65),
-    ),
-    /* monthViewSettings: MonthViewSettings(
-     showAgenda: false,
-      agendaStyle: AgendaStyle(
-        backgroundColor: Colors.transparent,
-        appointmentTextStyle: TextStyle(
-          fontSize: 14,
-          fontStyle: FontStyle.italic,
-          color: Colors.black,
-        ),
-        dateTextStyle: TextStyle(
-          fontStyle: FontStyle.normal,
-          fontSize: 12,
-          fontWeight: FontWeight.w300,
-          color: Colors.black,
-        ),
-        dayTextStyle: TextStyle(
-          fontStyle: FontStyle.normal,
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-          color: Colors.black,
-        ),
-      ),
-    ), */
-    backgroundColor: Colors.transparent,
-    dataSource: _getCalendarDataSource(events),
-    appointmentBuilder: (
-      BuildContext context,
-      CalendarAppointmentDetails details,
-    ) {
-      return Container();
-    },
-  ),
-),
 
-    SizedBox(height: 10,),
+                        Container(
+                          height: 390, // Set your desired height here
+                          child: SfCalendar(
+                            view: CalendarView.month,
+                            initialDisplayDate: firstDayOfMonth,
+                            minDate: firstDayOfMonth,
+                            maxDate: lastDayOfMonth,
+                            showNavigationArrow: true,
+                            onSelectionChanged: _onSelectionChanged,
+                            headerStyle: CalendarHeaderStyle(
+                              textStyle: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              backgroundColor: Color.fromARGB(255, 14, 1, 65),
+                            ),
+                            backgroundColor: Colors.transparent,
+                            dataSource: _getCalendarDataSource(events),
+                            appointmentBuilder: (
+                              BuildContext context,
+                              CalendarAppointmentDetails details,
+                            ) {
+                              return Container();
+                            },
+                          ),
+                        ),
+
+                        SizedBox(
+                          height: 10,
+                        ),
 
                         // Display information about events for the selected day
                         Container(
@@ -163,12 +141,6 @@ child: SingleChildScrollView(
                 style: TextStyle(fontSize: 14),
               ),
               const SizedBox(height: 4),
-                            Text(
-                'Know more: ',
-                style: TextStyle(fontSize: 14),
-              ),
-                            const SizedBox(height: 4),
-
               Text(
                 'Start Date: ${DateFormat.yMd().format(event.startDate)}',
                 style: TextStyle(fontSize: 14),
@@ -182,7 +154,6 @@ child: SingleChildScrollView(
                 children: [
                   TextButton(
                     onPressed: () {
-                      print("@@@@ YOU PRESSED DELETE");
                       deleteEvent(event);
                     },
                     child: Text("Delete"),
@@ -200,9 +171,14 @@ child: SingleChildScrollView(
     final selectedDate = _selectedDate ?? DateTime.now();
 
     return events.where((event) {
-      return event.startDate.year == selectedDate.year &&
-          event.startDate.month == selectedDate.month &&
-          event.startDate.day == selectedDate.day;
+      return event.startDate.isBefore(selectedDate) &&
+              event.endDate.isAfter(selectedDate) ||
+          (event.startDate.year == selectedDate.year &&
+              event.startDate.month == selectedDate.month &&
+              event.startDate.day == selectedDate.day) ||
+          (event.endDate.year == selectedDate.year &&
+              event.endDate.month == selectedDate.month &&
+              event.endDate.day == selectedDate.day);
     }).toList();
   }
 
@@ -218,13 +194,15 @@ child: SingleChildScrollView(
 
       if (snapshot.docs.isNotEmpty) {
         final docId = snapshot.docs[0].id;
-        await FirebaseFirestore.instance.collection('Calendar').doc(docId).delete();
+        await FirebaseFirestore.instance
+            .collection('Calendar')
+            .doc(docId)
+            .delete();
         setState(() {
           // Update the UI or reload the events after deletion
         });
       }
     } catch (e) {
-      print('********Error deleting event: $e');
     }
   }
 
@@ -236,14 +214,14 @@ child: SingleChildScrollView(
         _selectedDate = selectedEvent;
         _selectedDayEvents = selectedDayEvents;
       });
-      print("Selected Date: $selectedEvent");
     }
   }
 
   DateTime? _selectedDate;
   List<EventModel> _selectedDayEvents = [];
 
-  Future<List<EventModel>> _getEvents(DateTime startDate, DateTime endDate) async {
+  Future<List<EventModel>> _getEvents(
+      DateTime startDate, DateTime endDate) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final email = prefs.getString('loggedInEmail') ?? '';
@@ -252,15 +230,13 @@ child: SingleChildScrollView(
               .collection('Calendar')
               .where('my_id', isEqualTo: email)
               .get();
-
-      print('*******Retrieved ${snapshot.docs.length} events');
       final List<EventModel> events = snapshot.docs.map((doc) {
         final Map<String, dynamic> data = doc.data();
 
         return EventModel(
           title: data['title'],
-          startDate: DateTime.parse(data['start_date']),
-          endDate: DateTime.parse(data['end_date']),
+          startDate: DateTime.parse(data['startDate']),
+          endDate: DateTime.parse(data['endDate']),
           location: data['location'],
           docId: data['docId'],
         );
@@ -268,7 +244,6 @@ child: SingleChildScrollView(
 
       return events;
     } catch (e) {
-      print('Error retrieving events: $e');
       return [];
     }
   }
@@ -287,14 +262,14 @@ child: SingleChildScrollView(
     }).toList();
   }
 
-  _DataSource _getCalendarDataSource(List<EventModel> events) {
+  DataSource _getCalendarDataSource(List<EventModel> events) {
     final List<Appointment> appointments = _getAppointments(events);
-    return _DataSource(appointments);
+    return DataSource(appointments);
   }
 }
 
-class _DataSource extends CalendarDataSource {
-  _DataSource(List<Appointment> source) {
+class DataSource extends CalendarDataSource {
+  DataSource(List<Appointment> source) {
     appointments = source;
   }
 

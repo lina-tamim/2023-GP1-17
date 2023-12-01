@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:techxcel11/pages/reuse.dart';
-//EDIT +CALNDER COMMIT
+import 'package:techxcel11/Models/ReusedElements.dart';
 
 class FreelancerPage extends StatefulWidget {
   const FreelancerPage({super.key});

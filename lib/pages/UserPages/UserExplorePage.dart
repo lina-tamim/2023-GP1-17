@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:techxcel11/pages/UserPages/UserCoursesAndEventsPage.dart';
-import 'package:techxcel11/pages/UserPages/UserPathways.dart';
-import 'package:techxcel11/pages/reuse.dart';
-//EDIT +CALNDER COMMIT
+import 'package:techxcel11/pages/UserPages/UserPathwaysPage.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
 
 class UserExplorePage extends StatefulWidget {
   @override
@@ -32,8 +31,8 @@ class _UserExplorePageState extends State<UserExplorePage>
       automaticallyImplyLeading: false,
       iconTheme: IconThemeData(color: const Color.fromARGB(255, 255, 255, 255)),
       backgroundColor: const Color.fromRGBO(37, 6, 81, 0.898),
-      toolbarHeight: 100, // Adjust the height of the AppBar
-      elevation: 0, // Adjust the position of the AppBar
+      toolbarHeight: 100, 
+      elevation: 0, 
       shape: const ContinuousRectangleBorder(
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(130),
@@ -88,22 +87,21 @@ class _UserExplorePageState extends State<UserExplorePage>
               ),
               onChanged: (text) {
                 setState(() {});
-                // Handle search input changes
               },
             ),
         ],
       ),
       bottom: TabBar(
-        controller: tabController, // Pass the TabController here
+        controller: tabController, 
         indicator: BoxDecoration(),
         tabs: [
-          Tab(
+           Tab(
             child: Text(
               'Courses and Events',
               style: TextStyle(
                 fontSize: 16,
                 color: Color.fromARGB(
-                    255, 245, 227, 255), // Set the desired color here
+                    255, 245, 227, 255), 
               ),
             ),
           ),
@@ -113,7 +111,7 @@ class _UserExplorePageState extends State<UserExplorePage>
               style: TextStyle(
                 fontSize: 16,
                 color: Color.fromARGB(
-                    255, 245, 227, 255), // Set the desired color here
+                    255, 245, 227, 255), 
               ),
             ),
           ),
@@ -124,7 +122,6 @@ class _UserExplorePageState extends State<UserExplorePage>
 
   @override
   Widget build(BuildContext context) {
-    print('MK: main of explore: ${searchController.text}');
     return Scaffold(
       appBar: buildAppBarWithTabs('Explore', _tabController),
       drawer: NavBarUser(),

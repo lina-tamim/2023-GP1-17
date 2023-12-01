@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-//EDIT +CALNDER COMMIT
 
-///RESOURCES 
-///
-///
 class ResourceContainer extends StatelessWidget{
 
 final int subtopic_id;

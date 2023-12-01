@@ -2,18 +2,16 @@ import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
-import 'package:techxcel11/pages/reuse.dart';
-import 'package:techxcel11/pages/UserPages/Fhome.dart';
-import 'package:lottie/lottie.dart';
-import 'package:techxcel11/pages/start.dart';
-import 'package:techxcel11/pages/ForgetPassword.dart';
-import 'package:techxcel11/pages/AdminPages/Admin_home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
-import 'package:techxcel11/pages/UserPages/Signup.dart';
-//EDIT +CALNDER COMMIT
+import 'package:techxcel11/pages/UserPages/SignUpPage.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
+import 'package:techxcel11/pages/UserPages/HomePage.dart';
+import 'package:techxcel11/pages/StartPage.dart';
+import 'package:techxcel11/pages/ForgetPasswordPage.dart';
+import 'package:techxcel11/pages/AdminPages/AdminHomePage.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -33,87 +31,110 @@ class _Login extends State<Login> {
     _password.dispose();
     super.dispose();
   }
+  
+void logUserIn() async {
+  final String email = _email.text.toLowerCase();
+  final String password = _password.text.trim();
 
-  void logUserIn() async {
-    final String email = _email.text.toLowerCase();
-    final String password = _password.text.trim();
+  setState(() {
+    _isLoading = true;
+  });
 
-    setState(() {
-      _isLoading = true;
-    });
-
-    if (email.isEmpty && password.isEmpty) {
-      toastMessage('Please enter an email and password');
-      return;
-    }
-    if (email.isEmpty) {
-      toastMessage('Please enter an email');
-      return;
-    }
-
-    if (password.isEmpty) {
-      toastMessage('Please enter a password');
-      return;
-    }
-
-    try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      // Email and password match a user in the database
-      final uid = userCredential.user!.uid;
-      if (userCredential.user!.emailVerified) {
-        // Fetch the user document from Firestore based on the uid
-        final DocumentSnapshot<Map<String, dynamic>> snapshot =
-            await FirebaseFirestore.instance.collection('users').doc(uid).get();
-
-        if (snapshot.exists) {
-          final user = snapshot.data()!;
-
-          // Save the user's email in shared preferences
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('loggedInEmail', email);
-
-          // Redirect the user based on the user type
-          if (user['userType'] == 'Admin') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AdminHome()),
-            );
-          } else {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const FHomePage()),
-            );
-          }
-        } else {
-          toastMessage("Login failed, please enter correct credentials");
-        }
-      } else {
-        toastMessage(
-            "Verify your email before logging in.\nIf not found, please check your junk folder.");
-      }
-    } catch (e) {
-      print('$e');
-      toastMessage("Login failed, please enter correct credentials");
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+  if (email.isEmpty && password.isEmpty) {
+    toastMessage('Please enter an email and password');
+    return;
   }
+  if (email.isEmpty) {
+    toastMessage('Please enter an email');
+    return;
+  }
+
+  if (password.isEmpty) {
+    toastMessage('Please enter a password');
+    return;
+  }
+
+  try {
+    UserCredential userCredential = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password);
+
+    if (!userCredential.user!.emailVerified) {
+      toastMessage(
+          "Verify your email before logging in.\nIf not found, please check your junk folder.");
+      return;
+    }
+
+    final uid = userCredential.user!.uid;
+
+    // Check RegularUser collection
+    DocumentSnapshot<Map<String, dynamic>> regularUserSnapshot =
+        await FirebaseFirestore.instance.collection('RegularUser').doc(uid).get();
+
+    if (regularUserSnapshot.exists) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('loggedInEmail', email);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const FHomePage()),
+      );
+    } else {
+      // Check Admin collection
+      logUserInAdmin();
+    }
+  } catch (e) {
+    toastMessage("Login failed, please enter correct credentials");
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
+
+void logUserInAdmin() async {
+  final String email = _email.text.toLowerCase();
+  final String password = _password.text.trim();
+
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    UserCredential userCredential = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password);
+
+    final uid = userCredential.user!.uid;
+
+    // Check Admin collection
+    DocumentSnapshot<Map<String, dynamic>> adminSnapshot =
+        await FirebaseFirestore.instance.collection('Admin').doc(uid).get();
+
+    if (adminSnapshot.exists) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('loggedInEmail', email);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const AdminHome()),
+      );
+    } else {
+      toastMessage("Login failed, user not found");
+    }
+  } catch (e) {
+    toastMessage("Login failed, please enter correct credentials");
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset:
-          false, // Prevent screen resize when keyboard appears
+          false,
       body: Stack(
         children: [
-          //BG
           Positioned(
             left: 100,
             child: Image.asset('assets/Backgrounds/Spline.png'),
@@ -257,8 +278,6 @@ class _Login extends State<Login> {
                       ),
                     ),
                     signUpOption(),
-                    //GestureDetector( onTap: logUserIn,child: SizedBox(height: 174,child: Lottie.network('https://lottie.host/702b54d8-e453-4d3b-93c5-f7ebf587554a/bS3nChV9sx.json', // Replace with the actual path to your Lottie animation file
-                    //fit: BoxFit.contain,),),),
                     SizedBox(
                       height: 20,
                     ),
@@ -349,8 +368,8 @@ class _Login extends State<Login> {
   }
 
   String hashPassword(String password) {
-    var bytes = utf8.encode(password); // Encode the password as bytes
-    var digest = sha256.convert(bytes); // Hash the bytes using SHA-256
-    return digest.toString(); // Convert the hash to a string
+    var bytes = utf8.encode(password); 
+    var digest = sha256.convert(bytes); 
+    return digest.toString(); 
   }
 }

@@ -1,7 +1,3 @@
-//Full code, m s
-//GP discussion
-//EDIT +CALNDER COMMIT
-
 class CardAview {
   String answerId;
   int questionId;

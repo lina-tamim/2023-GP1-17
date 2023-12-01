@@ -2,10 +2,10 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:techxcel11/models/pathwayscards.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:lottie/lottie.dart';
-import 'package:techxcel11/pages/reuse.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
+import 'package:techxcel11/Models/PathwaysCard.dart';
 
 class UserPathwaysPage extends StatefulWidget {
   const UserPathwaysPage({super.key, required this.searchQuery});
@@ -30,10 +30,8 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      //_addField();
       fetchContainerData().then((data) {
         setState(() {
-          // Update the container data once retrieved from the database
         });
       });
     });
@@ -41,14 +39,9 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
 
   List<String> filteredTopics = [];
   bool showSearchtBarPath = false;
-
-  // TextEditingController searchpathController = TextEditingController();
-
   Stream<List<PathwayContainer>> readPathway() {
     Query<Map<String, dynamic>> query =
         FirebaseFirestore.instance.collection('pathway');
-
-    // search
     if (widget.searchQuery.isNotEmpty) {
       query = query
           .where('title', isGreaterThanOrEqualTo: widget.searchQuery)
@@ -89,8 +82,6 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
       imageWidget = Image.network(pathway.imagePath);
     }
 
-    // Check if the pathway contains any of the selected topics
-
     return Padding(
       padding: EdgeInsets.all(8.0), // Add space between each card
       child: FractionallySizedBox(
@@ -101,7 +92,6 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Container(
-            //width: 200, // Adjust the width of the card as per your requirement
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -182,7 +172,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
                       children: [
                         IconButton(
                           onPressed: () {
-                            // Delete button logic
+                          // Add functionality next sprints
                           },
                           icon: Icon(
                             Icons.bookmark_add,
@@ -212,7 +202,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
                         ],
                       ),
                       icon:
-                          SizedBox(), // Empty SizedBox to maintain proper alignment
+                      SizedBox(), 
                     ),
                   ],
                 ),
@@ -274,7 +264,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
     );
   }
 
-  void moreInfo(PathwayContainer pathway) {
+void moreInfo(PathwayContainer pathway) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -410,20 +400,20 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
                                   ),
                                 ),
                               ),
-                            if (expandedStates[subtopic] ?? false)
+                           if (expandedStates[subtopic] ?? false)
                               Padding(
                                 padding: EdgeInsets.only(left: 22.0, top: 8.0),
                                 child: GestureDetector(
                                   onTap: () {
                                     launch(
-                                        'http://example.com'); // Replace with the actual URL
+                                        pathway.resources[index]); // Replace with the actual URL
                                   },
                                   child: Row(
                                     children: [
                                       Icon(Icons.link),
                                       SizedBox(width: 4.0),
                                       Text(
-                                        'here resource',
+                                        'Click here for resource',
                                         style: TextStyle(
                                           fontSize: 14,
                                           color: Colors.blue,
@@ -434,6 +424,12 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
                                   ),
                                 ),
                               ),
+                            ElevatedButton(
+                              onPressed: () {
+                                _showMultiSelectTopic(context);
+                              },
+                              child: const Text('Select Topics'),
+                            ),
                           ],
                         );
                       }).toList(),
@@ -603,17 +599,4 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
       });
     }
   }
-}
-
-
-
-  
-
-
-
-
-//TECHXCEL-LINA
-
-
-
-
+} 

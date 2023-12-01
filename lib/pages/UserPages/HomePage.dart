@@ -1,11 +1,11 @@
 import 'package:intl/intl.dart';
-import 'package:techxcel11/models/cardFandT.dart';
-import 'package:techxcel11/models/cardQuestion.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:techxcel11/pages/UserPages/answer.dart';
-import 'package:techxcel11/pages/reuse.dart';
-import 'package:techxcel11/pages/UserPages/form.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
+import 'package:techxcel11/Models/FormCard.dart';
+import 'package:techxcel11/Models/PostCard.dart';
+import 'package:techxcel11/Models/QuestionCard.dart';
+import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
 
 class FHomePage extends StatefulWidget {
   const FHomePage({Key? key}) : super(key: key);
@@ -59,7 +59,7 @@ class __FHomePageState extends State<FHomePage> {
 
       final userIds = questions.map((question) => question.userId).toList();
       final userDocs = await FirebaseFirestore.instance
-          .collection('users')
+          .collection('RegularUser')
           .where('email', whereIn: userIds)
           .get();
 
@@ -69,13 +69,12 @@ class __FHomePageState extends State<FHomePage> {
 
       questions.forEach((question) {
         final userDoc = userMap[question.userId];
-        final username = userDoc?['userName'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
       });
 
-      // Check if any userIds were not found in the 'users' collection
       final userIdsNotFound =
           userIds.where((userId) => !userMap.containsKey(userId)).toList();
       userIdsNotFound.forEach((userId) {
@@ -113,7 +112,7 @@ class __FHomePageState extends State<FHomePage> {
       if (questions.isEmpty) return [];
       final userIds = questions.map((question) => question.userId).toList();
       final userDocs = await FirebaseFirestore.instance
-          .collection('users')
+          .collection('RegularUser')
           .where('email', whereIn: userIds)
           .get();
 
@@ -123,13 +122,12 @@ class __FHomePageState extends State<FHomePage> {
 
       questions.forEach((question) {
         final userDoc = userMap[question.userId];
-        final username = userDoc?['userName'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
       });
 
-      // Check if any userIds were not found in the 'users' collection
       final userIdsNotFound =
           userIds.where((userId) => !userMap.containsKey(userId)).toList();
       userIdsNotFound.forEach((userId) {
@@ -166,7 +164,7 @@ class __FHomePageState extends State<FHomePage> {
       if (questions.isEmpty) return [];
       final userIds = questions.map((question) => question.userId).toList();
       final userDocs = await FirebaseFirestore.instance
-          .collection('users')
+          .collection('RegularUser')
           .where('email', whereIn: userIds)
           .get();
 
@@ -176,13 +174,12 @@ class __FHomePageState extends State<FHomePage> {
 
       questions.forEach((question) {
         final userDoc = userMap[question.userId];
-        final username = userDoc?['userName'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
       });
 
-      // Check if any userIds were not found in the 'users' collection
       final userIdsNotFound =
           userIds.where((userId) => !userMap.containsKey(userId)).toList();
       userIdsNotFound.forEach((userId) {
@@ -336,12 +333,6 @@ class __FHomePageState extends State<FHomePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              IconButton(
-                icon: Icon(Icons.bookmark),
-                onPressed: () {
-                  // Add your functionality for the button here
-                },
-              ),
               IconButton(
                 icon: Icon(Icons.chat_bubble),
                 onPressed: () {

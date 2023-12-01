@@ -3,15 +3,11 @@ import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:techxcel11/models/user_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
-import 'package:techxcel11/pages/reuse.dart';
 import 'package:lottie/lottie.dart';
-import 'package:techxcel11/pages/start.dart';
-import 'package:techxcel11/pages/Login.dart';
-import "package:csc_picker/csc_picker.dart"; // city
-import 'package:email_validator/email_validator.dart'; // email
+import "package:csc_picker/csc_picker.dart"; 
+import 'package:email_validator/email_validator.dart'; 
 import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,7 +16,10 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
-//EDIT +CALNDER COMMIT
+import 'package:techxcel11/Models/UserImage.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
+import 'package:techxcel11/pages/StartPage.dart';
+import 'package:techxcel11/pages/LoginPage.dart';
 
 class ValidationAnimation extends StatelessWidget {
   @override
@@ -32,14 +31,11 @@ class ValidationAnimation extends StatelessWidget {
           'https://lottie.host/372c319f-2c25-4ea3-887a-04025f2c3c34/8YBJTLVI68.json', // Replace with your Lottie animation file path
           width: 300,
           height: 300,
-          //assets
         ),
       ),
     );
   }
 }
-
-// the class for skills
 
 class Signup extends StatefulWidget {
   const Signup({Key? key}) : super(key: key);
@@ -54,10 +50,10 @@ class _Signup extends State<Signup> {
   TextEditingController _userName = TextEditingController();
   TextEditingController _GitHublink = TextEditingController();
 
-  List<String> typeOfUser = ['Regular User', 'Freelancer'];
+  List<String> _typeOfUser = ['Regular User', 'Freelancer'];
   String _selectedUser = 'Regular User';
 
-  List<String> typeOfPreference = ['Online', 'Onsite'];
+  List<String> _typeOfPreference = ['Online', 'Onsite'];
   String _selectedPreference = 'Online';
 
   String _selectedCountry = '';
@@ -77,11 +73,6 @@ class _Signup extends State<Signup> {
     _password.dispose();
     super.dispose();
   }
-
-
-
-
-// ...
 
 Future<void> signUserUp() async {
 
@@ -127,8 +118,8 @@ Future<void> signUserUp() async {
     final imageURL = await storageRef.getDownloadURL();
     String uid = userCredential.user!.uid;
 
-    await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        'userName': _userName.text.trim().toLowerCase(),
+    await FirebaseFirestore.instance.collection('RegularUser').doc(uid).set({
+        'username': _userName.text.trim().toLowerCase(),
         'userType': _selectedUser,
         'attendancePreference': _selectedPreference,
         'country': _selectedCountry,
@@ -136,10 +127,10 @@ Future<void> signUserUp() async {
         'city': _selectedCity,
         'email': _email.text.trim().toLowerCase(),
         'password': hashPassword(_password.text.trim()),
-        'GithubLink': _GitHublink.text.trim(),
+        'githubLink': _GitHublink.text.trim(),
         'interests': _selectedInterests,
         'skills': _selectedSkills,
-        'imageUrl': imageURL,
+        'imageURL': imageURL,
     });
 
     // Display a success message to the user
@@ -167,7 +158,6 @@ Future<void> signUserUp() async {
     });
   } catch (e) {
     // Handle sign-up errors here
-    print('Sign-up error: $e');
   }
    finally {
       setState(() {
@@ -175,8 +165,6 @@ Future<void> signUserUp() async {
       });
     }
   }
-
-
 
   void _showMultiSelectSkills() async {
     final Map<String, List<String>> skillGroups = {
@@ -620,7 +608,7 @@ Future<void> signUserUp() async {
                             ],
                           ),
                           const SizedBox(height: 8),
-                          reusableTextField("Please Enter Your UserName",
+                          reusableTextField("Please Enter Your Username",
                               Icons.person, false, _userName, true),
                         ],
                       ),
@@ -719,7 +707,7 @@ Future<void> signUserUp() async {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20), // space
+                    const SizedBox(height: 20), 
                     // Country and city
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -769,7 +757,6 @@ Future<void> signUserUp() async {
                     ),
                     // Type of User
                     const SizedBox(height: 30),
-
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
@@ -810,7 +797,7 @@ Future<void> signUserUp() async {
                           ),
                           const SizedBox(height: 2),
                           Column(
-                            children: typeOfUser.map((String user) {
+                            children: _typeOfUser.map((String user) {
                               return RadioListTile<String>(
                                 title: Text(user),
                                 value: user,
@@ -825,9 +812,7 @@ Future<void> signUserUp() async {
                               );
                             }).toList(),
                           ),
-
                           // Preference in Attendance
-
                           const SizedBox(height: 10),
                           const Row(
                             children: [
@@ -866,7 +851,7 @@ Future<void> signUserUp() async {
                           ),
                           const SizedBox(height: 2),
                           Column(
-                            children: typeOfPreference.map((String preference) {
+                            children: _typeOfPreference.map((String preference) {
                               return RadioListTile<String>(
                                 title: Text(preference),
                                 value: preference,
@@ -1028,7 +1013,7 @@ Future<void> signUserUp() async {
                       ),
                     ),
                     const SizedBox(height: 10), // space
-    if (_isLoading)
+                    if (_isLoading)
                         IgnorePointer(
                           child: Opacity(
                             opacity: 1,
@@ -1089,8 +1074,7 @@ Future<void> signUserUp() async {
     return digest.toString(); // Convert the hash to a string
   }
 
-  // validation 1
-  // validation of empty fields
+  // validation 
   Future<bool> _createAccount1() async {
     if (_userName.text.isEmpty ||
         _email.text.isEmpty ||
@@ -1184,7 +1168,7 @@ Future<void> signUserUp() async {
   // Check email existence
   Future<bool> checkAvailableEmail(String email) async {
     CollectionReference usersCollection =
-        FirebaseFirestore.instance.collection('users');
+        FirebaseFirestore.instance.collection('RegularUser');
     QuerySnapshot querySnapshot = await usersCollection
         .where('email', isEqualTo: email.toLowerCase())
         .get();
@@ -1198,14 +1182,14 @@ Future<void> signUserUp() async {
   // Check username existence
   Future<bool> checkAvailableUsername(String userName) async {
     CollectionReference usersCollection =
-        FirebaseFirestore.instance.collection('users');
+        FirebaseFirestore.instance.collection('RegularUser');
     QuerySnapshot querySnapshot = await usersCollection
-        .where('userName', isEqualTo: userName.toLowerCase())
+        .where('username', isEqualTo: userName.toLowerCase())
         .get();
     if (querySnapshot.docs.isNotEmpty) {
-      return false; // Username already exists
+      return false; 
     } else {
-      return true; // Username is available
+      return true; 
     }
   }
 

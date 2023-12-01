@@ -1,14 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
+import 'package:techxcel11/pages/LoginPage.dart';
 import 'package:techxcel11/pages/AdminPages/AdminCoursesAndEventsRequestsPage.dart';
-import 'package:techxcel11/pages/reuse.dart';
-import 'package:techxcel11/pages/login.dart';
 import 'package:techxcel11/pages/AdminPages/AdminPathways.dart';
 import 'package:techxcel11/pages/AdminPages/ReportedAccount.dart';
 import 'package:techxcel11/pages/AdminPages/ReportedPost.dart';
+import 'package:techxcel11/pages/AdminPages/AdminCoursesAndEventsPage.dart';
 
-import 'AdminCoursesAndEventsPage.dart';
-//EDIT +CALNDER COMMIT
 
 class AdminHome extends StatefulWidget {
   const AdminHome({Key? key}) : super(key: key);
@@ -41,12 +40,11 @@ class _AdminHome extends State<AdminHome> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const ReposrtedPost()), // will be changed in sprint2
+                                const ReposrtedPost()),
                       );
                     },
                     child: itemDashboard(
@@ -57,7 +55,6 @@ class _AdminHome extends State<AdminHome> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -72,7 +69,6 @@ class _AdminHome extends State<AdminHome> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -88,7 +84,6 @@ class _AdminHome extends State<AdminHome> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -103,7 +98,6 @@ class _AdminHome extends State<AdminHome> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigate to another page when the box is clicked
                       Navigator.push(
                         context,
                         MaterialPageRoute(

@@ -2,10 +2,9 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techxcel11/models/cardQuestion.dart';
-import 'package:techxcel11/models/cardanswer.dart';
-import 'package:techxcel11/pages/reuse.dart';
-//EDIT +CALNDER COMMIT
+import 'package:techxcel11/Models/QuestionCard.dart';
+import 'package:techxcel11/Models/AnswerCard.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
 
 class AnswerPage extends StatefulWidget {
   final int questionId;
@@ -52,7 +51,7 @@ class _AnswerPageState extends State<AnswerPage> {
         snapshot.docs.map((doc) => CardQuestion.fromJson(doc.data())).toList();
     final userIds = questions.map((question) => question.userId).toList();
     final userDocs = await FirebaseFirestore.instance
-        .collection('users')
+        .collection('RegularUser')
         .where('email', whereIn: userIds)
         .get();
 
@@ -62,14 +61,14 @@ class _AnswerPageState extends State<AnswerPage> {
 
     questions.forEach((question) {
       final userDoc = userMap[question.userId];
-      final username = userDoc?['userName'] as String? ?? '';
-      final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+      final username = userDoc?['username'] as String? ?? '';
+      final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
       question.username = username;
       question.userPhotoUrl = userPhotoUrl;
     });
 
-    // Check if any userIds were not found in the 'users' collection
+    // Check if any userIds were not found in the 'User' collection
     final userIdsNotFound =
         userIds.where((userId) => !userMap.containsKey(userId)).toList();
     userIdsNotFound.forEach((userId) {
@@ -89,14 +88,14 @@ class _AnswerPageState extends State<AnswerPage> {
             backgroundImage: question.userPhotoUrl != ''
                 ? NetworkImage(question.userPhotoUrl!)
                 : AssetImage('assets/Backgrounds/defaultUserPic.png')
-                    as ImageProvider<Object>, // Cast to ImageProvider<Object>
+                    as ImageProvider<Object>, 
           ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
               Text(
-                question.username ?? '', // Display the username
+                question.username ?? '', 
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 0, 0, 0)),
@@ -135,7 +134,7 @@ class _AnswerPageState extends State<AnswerPage> {
                   IconButton(
                     icon: Icon(Icons.bookmark),
                     onPressed: () {
-                      // Add your functionality for the button here
+                      // Add functionality next sprints
                     },
                   ),
                   IconButton(
@@ -152,7 +151,7 @@ class _AnswerPageState extends State<AnswerPage> {
                   IconButton(
                     icon: Icon(Icons.report),
                     onPressed: () {
-                      // Add your functionality for the button here
+                      // Add functionality next sprints
                     },
                   ),
                 ],
@@ -178,14 +177,14 @@ class _AnswerPageState extends State<AnswerPage> {
           backgroundImage: answer.userPhotoUrl != ''
               ? NetworkImage(answer.userPhotoUrl!)
               : AssetImage('assets/Backgrounds/defaultUserPic.png')
-                  as ImageProvider<Object>, // Cast to ImageProvider<Object>
+                  as ImageProvider<Object>, 
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 5),
             Text(
-              answer.username ?? '', // Display the username
+              answer.username ?? '', 
               style: TextStyle(
                   fontWeight: FontWeight.bold, color: Colors.deepPurple),
             ),
@@ -205,10 +204,10 @@ class _AnswerPageState extends State<AnswerPage> {
                   future: getCurrentUserEmail(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator(); // Show a loading indicator while retrieving the email
+                      return CircularProgressIndicator(); 
                     } else if (snapshot.hasError) {
                       return Text(
-                          'Error: ${snapshot.error}'); // Show an error message if email retrieval fails
+                          'Error: ${snapshot.error}'); 
                     } else {
                       currentEmail = snapshot.data!;
                       return Row(
@@ -221,16 +220,13 @@ class _AnswerPageState extends State<AnswerPage> {
                             onPressed: () {
                               setState(() {
                                 if (upvotedUserIds.contains(currentEmail)) {
-                                  // Undo the upvote
                                   upvotedUserIds.remove(currentEmail);
                                   upvoteCount--;
                                 } else {
-                                  // Perform the upvote
                                   upvotedUserIds.add(currentEmail);
                                   upvoteCount++;
                                 }
 
-                                // Update the upvote count and upvoted user IDs in Firestore
                                 FirebaseFirestore.instance
                                     .collection('answers')
                                     .doc(answer.answerId)
@@ -238,11 +234,7 @@ class _AnswerPageState extends State<AnswerPage> {
                                   'upvoteCount': upvoteCount,
                                   'upvotedUserIds': upvotedUserIds,
                                 }).then((_) {
-                                  print('Upvote count updated successfully');
                                 }).catchError((error) {
-                                  print(
-                                      'Failed to update upvote count: $error');
-                                  // Handle error if the update fails
                                 });
                               });
                             },
@@ -293,7 +285,7 @@ class _AnswerPageState extends State<AnswerPage> {
             .toList();
         final userIds = answers.map((answer) => answer.userId).toList();
         final userDocs = await FirebaseFirestore.instance
-            .collection('users')
+            .collection('RegularUser')
             .where('email', whereIn: userIds)
             .get();
 
@@ -303,12 +295,10 @@ class _AnswerPageState extends State<AnswerPage> {
 
         answers.forEach((answer) {
           final userDoc = userMap[answer.userId];
-          final username = userDoc?['userName'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+          final username = userDoc?['username'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
           answer.username = username;
           answer.userPhotoUrl = userPhotoUrl;
-
-          // Check if any userIds were not found in the 'users' collection
           final userIdsNotFound =
               userIds.where((userId) => !userMap.containsKey(userId)).toList();
           userIdsNotFound.forEach((userId) {
@@ -339,20 +329,20 @@ class _AnswerPageState extends State<AnswerPage> {
             padding: const EdgeInsets.all(8.0),
             child: StreamBuilder<List<CardQuestion>>(
               stream:
-                  questionStream, // Use the questionStream from _questionStreamController
+                  questionStream, 
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator(); // Display a loading indicator while waiting for data
+                  return CircularProgressIndicator(); 
                 }
 
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return Text(
-                      'No questions available.'); // Display a message if there are no questions
+                      'No questions available.'); 
                 }
 
                 final questions = snapshot.data!;
                 return buildQuestionCard(
-                    questions[0]); // Display the first question
+                    questions[0]); 
               },
             ),
           ),
@@ -415,16 +405,16 @@ class _AnswerPageState extends State<AnswerPage> {
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                              10), // Adjust the value to control the roundness
+                              10), 
                         ),
                       ),
                     ),
                     child: Text(
                       'Submit',
                       style: TextStyle(
-                        color: Colors.white, // Set the font color
-                        fontWeight: FontWeight.bold, // Set the font weight
-                        fontSize: 16, // Set the font size
+                        color: Colors.white, 
+                        fontWeight: FontWeight.bold, 
+                        fontSize: 16, 
                       ),
                     ),
                   )

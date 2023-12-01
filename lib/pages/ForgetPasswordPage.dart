@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rive/rive.dart';
 import 'dart:ui';
-import 'package:techxcel11/pages/Login.dart';
-//EDIT +CALNDER COMMIT
+import 'package:techxcel11/pages/LoginPage.dart';
 
 class ForgetPassword extends StatefulWidget {
   const ForgetPassword({Key? key}) : super(key: key);
@@ -76,7 +75,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      Login(), // Replace Login with your actual Login screen
+                                      Login(), 
                                 ),
                               );
                             },
@@ -106,7 +105,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                       ),
                     ),
                     Container(
-                      width: 300, // Adjust the width as needed
+                      width: 300, 
                       child: Divider(
                         color: const Color.fromARGB(255, 211, 211, 211),
                         thickness: 1,
@@ -205,7 +204,6 @@ class _ForgetPasswordState extends State<ForgetPassword> {
     },
   );
     } catch (e) {
-     print('Error: $e');
      showDialog(
      context: context,
      builder: (BuildContext context) {
@@ -228,16 +226,25 @@ class _ForgetPasswordState extends State<ForgetPassword> {
     }
   }
 }
-Future<bool> doesEmailExists(String email) async {
-  CollectionReference usersCollection =
-      FirebaseFirestore.instance.collection('users');
-  QuerySnapshot querySnapshot = await usersCollection
-      .where('email', isEqualTo: email.toLowerCase())
-      .get();
-  if (querySnapshot.docs.isNotEmpty) {
-    return true; // Email already exists
-  } else {
-    return false; // Email does not exist
+  Future<bool> doesEmailExists(String email) async {
+    // Check in 'RegularUser' collection
+    CollectionReference usersCollection =
+        FirebaseFirestore.instance.collection('RegularUser');
+    QuerySnapshot querySnapshot = await usersCollection
+        .where('email', isEqualTo: email.toLowerCase())
+        .get();
+    if (querySnapshot.docs.isNotEmpty) {
+      return true;
+    }
+    // Check in 'Admin' collection
+    CollectionReference adminCollection =
+        FirebaseFirestore.instance.collection('Admin');
+    querySnapshot = await adminCollection
+        .where('email', isEqualTo: email.toLowerCase())
+        .get();
+    if (querySnapshot.docs.isNotEmpty) {
+      return true;
+    }
+    return false;
   }
-}
 }

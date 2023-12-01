@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'package:techxcel11/pages/UserPages/FHome.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-//EDIT +CALNDER COMMIT
+import 'package:techxcel11/pages/UserPages/HomePage.dart';
+
 
 class FormWidget extends StatefulWidget {
   const FormWidget({Key? key}) : super(key: key);
@@ -25,8 +25,6 @@ class _FormWidgetState extends State<FormWidget> {
   DateTime? selectedDate;
 
   String? _selectedPostType = 'Question';
-  String _postTypeDescription = 'Question';
-  String _postTypeTopic = 'Question';
   Map<String, String> postTypeData = {
     'Question': 'Enter Question Title',
     'Team Collaberation': 'Enter Team Collaboration Title',
@@ -78,7 +76,6 @@ class _FormWidgetState extends State<FormWidget> {
   Completer<List<String>> _selectedTopicCompleter = Completer<List<String>>();
   List<String> _selectedTopics = [];
 
-//topics method
   void _showMultiSelectTopics() async {
     final Map<String, List<String>> topicGroups = {
       'Data Science': [
@@ -250,7 +247,6 @@ class _FormWidgetState extends State<FormWidget> {
                         color: Color.fromARGB(255, 1, 9, 111).withOpacity(0.9),
                       ),
                     ),
-                    //const Spacer(),
                     Padding(
                       padding: EdgeInsets.only(left: 85),
                       child: Text(
@@ -310,28 +306,6 @@ class _FormWidgetState extends State<FormWidget> {
                       textStyle: TextStyle(color: Colors.white),
                       preferBelow: false,
                     ),
-                    /*IconButton(
-                      icon: Icon(
-                        Icons.live_help_rounded,
-                        size: 18,
-                        color: Color.fromARGB(255, 178, 178, 178),
-                      ),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            content: Text(
-                                '\nQuestions: Ask TechXcel community.\n\nTeam collaberation: Find and build your team.\n\nProjects: Post your projects to get help from TechXcel community.'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: Text('OK'),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),*/
                   ],
                 ),
 
@@ -516,9 +490,7 @@ class _FormWidgetState extends State<FormWidget> {
                 ),
                 const Divider(
                   height: 10,
-                  //_selectedPreference
                 ),
-                // Display the selected items
                 Wrap(
                   children: _selectedTopics
                       .map((e) => Chip(
@@ -625,11 +597,6 @@ class _FormWidgetState extends State<FormWidget> {
   void _submitForm(String userId) async {
     final String? interestsValidation = validateTopics(_selectedTopics);
     if (_selectedTopics.isEmpty) {
-      // ... Perform your form submission logic here
-
-      // Selected interests are valid, continue with form submission
-
-      // ... Perform your form submission logic here
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(interestsValidation!),
@@ -650,17 +617,11 @@ class _FormWidgetState extends State<FormWidget> {
         final lastId = lastDocument['id'] as int;
         id = lastId + 1;
       }
-
-      // Create a Firestore document reference
       final formCollection = FirebaseFirestore.instance.collection('posts');
-
-      // Create a new document with auto-generated ID
       final newFormDoc = formCollection.doc();
       DateTime postDate = DateTime.now();
       if (_selectedPostType == 'Question') {
         id = id + 1;
-
-        // Set the form data
         await newFormDoc.set({
           'userId': userId,
           'dropdownValue': _selectedPostType,
@@ -668,7 +629,6 @@ class _FormWidgetState extends State<FormWidget> {
           'largeTextFieldValue': largeTextFieldValue,
           'selectedInterests': _selectedTopics,
           'upvotecount': count,
-          //number of answers
           'NoOfAnwers': count,
           'id': id,
           'postedDate': postDate,
@@ -693,7 +653,6 @@ class _FormWidgetState extends State<FormWidget> {
         selectedDate = null;
         _selectedTopics.clear();
       });
-      //toastMessage("Already exists in Calendar");
 
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Form submitted successfully!')));

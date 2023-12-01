@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:techxcel11/pages/reuse.dart';
 import 'package:lottie/lottie.dart';
-
-//EDIT +CALNDER COMMIT
+import 'package:techxcel11/Models/ReusedElements.dart';
 
 class AboutUsPage extends StatefulWidget {
   const AboutUsPage({Key? key}) : super(key: key);
@@ -36,7 +34,6 @@ class _AboutUsPageState extends State<AboutUsPage> {
                     'https://lottie.host/623f88bb-cb70-413c-bb1a-0003d0b7e3d6/RnPQM25m8I.json',
                   ),
                 ),
-                // Brief description of the platform
                 SizedBox(
                   height: 30,
                 ),
@@ -47,7 +44,6 @@ class _AboutUsPageState extends State<AboutUsPage> {
                 Text(
                   'enthusiasts, professionals, and lifelong learners.',
                   style: GoogleFonts.satisfy(
-                    // chakraPetch blackOpsOne orbitron
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: const Color.fromARGB(221, 62, 17, 17),
@@ -65,7 +61,6 @@ class _AboutUsPageState extends State<AboutUsPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Ways to communicate with us
                 const Text(
                   'Reach out to us!',
                   style: TextStyle(

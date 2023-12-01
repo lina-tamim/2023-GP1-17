@@ -2,9 +2,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
-import 'package:techxcel11/pages/Login.dart';
-import 'package:techxcel11/pages/UserPages/FHome.dart';
-//EDIT +CALNDER COMMIT
+import 'package:techxcel11/pages/LoginPage.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({Key? key}) : super(key: key);
@@ -84,8 +82,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   left: 28,
                   child: Image.asset(
                     txlLogo2,
-                    width: 230, // Adjust the width of the logo as desired
-                    height: 230, // Adjust the height of the logo as desired
+                    width: 230, 
+                    height: 230, 
                   ),
                 ),
                 Positioned(

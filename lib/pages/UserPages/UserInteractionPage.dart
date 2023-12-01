@@ -1,14 +1,13 @@
-import 'dart:developer';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techxcel11/models/cardFTview.dart';
-import 'package:techxcel11/models/cardQview.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:techxcel11/models/cardAview.dart';
-import 'package:techxcel11/pages/UserPages/answer.dart';
-import 'package:techxcel11/pages/reuse.dart';
-import 'package:techxcel11/pages/UserPages/form.dart';
+import 'package:techxcel11/Models/ViewAnswerCard.dart';
+import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
+import 'package:techxcel11/Models/FormCard.dart';
+import 'package:techxcel11/Models/PostCardView.dart';
+import 'package:techxcel11/Models/ViewQCard.dart';
 
 class UserPostsPage extends StatefulWidget {
   const UserPostsPage({Key? key}) : super(key: key);
@@ -35,7 +34,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
       String? email = prefs.getString('loggedInEmail');
       setState(() {
         this.email = email;
-        log('******************************MK: user email is $email');
       });
     });
     super.initState();
@@ -85,7 +83,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
       if (questions.isEmpty) return [];
       final userIds = questions.map((question) => question.userId).toList();
       final userDocs = await FirebaseFirestore.instance
-          .collection('users')
+          .collection('RegularUser')
           .where('email', whereIn: userIds)
           .get();
 
@@ -95,8 +93,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
 
       questions.forEach((question) {
         final userDoc = userMap[question.userId];
-        final username = userDoc?['userName'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
       });
@@ -118,7 +116,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
             children: [
               SizedBox(height: 5),
               Text(
-                question.username ?? '', // Display the username
+                question.username ?? '', 
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.deepPurple),
               ),
@@ -156,7 +154,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   IconButton(
                     icon: Icon(Icons.bookmark),
                     onPressed: () {
-                      // Add your functionality for the button here
+                      // Add functionality next sprints
                     },
                   ),
                   IconButton(
@@ -166,7 +164,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                AnswerPage(questionId: question.id)),
+                            AnswerPage(questionId: question.id)),
                       );
                     },
                   ),
@@ -198,7 +196,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
       if (questions.isEmpty) return [];
       final userIds = questions.map((question) => question.userId).toList();
       final userDocs = await FirebaseFirestore.instance
-          .collection('users')
+          .collection('RegularUser')
           .where('email', whereIn: userIds)
           .get();
 
@@ -208,8 +206,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
 
       questions.forEach((question) {
         final userDoc = userMap[question.userId];
-        final username = userDoc?['userName'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
       });
@@ -233,7 +231,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
       if (questions.isEmpty) return [];
       final userIds = questions.map((question) => question.userId).toList();
       final userDocs = await FirebaseFirestore.instance
-          .collection('users')
+          .collection('RegularUser')
           .where('email', whereIn: userIds)
           .get();
 
@@ -243,8 +241,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
 
       questions.forEach((question) {
         final userDoc = userMap[question.userId];
-        final username = userDoc?['userName'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
       });
@@ -266,7 +264,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
         if (answers.isEmpty) return [];
         final userIds = answers.map((answer) => answer.userId).toList();
         final userDocs = await FirebaseFirestore.instance
-            .collection('users')
+            .collection('RegularUser')
             .where('email', whereIn: userIds)
             .get();
 
@@ -276,8 +274,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
 
         answers.forEach((answer) {
           final userDoc = userMap[answer.userId];
-          final username = userDoc?['userName'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageUrl'] as String? ?? '';
+          final username = userDoc?['username'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
           answer.username = username;
           answer.userPhotoUrl = userPhotoUrl;
         });
@@ -302,7 +300,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
           children: [
             SizedBox(height: 5),
             Text(
-              fandT.username ?? '', // Display the username
+              fandT.username ?? '', 
               style: TextStyle(
                   fontWeight: FontWeight.bold, color: Colors.deepPurple),
             ),
@@ -338,21 +336,15 @@ class _UserPostsPageState extends State<UserPostsPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 IconButton(
-                  icon: Icon(Icons.bookmark),
-                  onPressed: () {
-                    // Add your functionality for the button here
-                  },
-                ),
-                IconButton(
                   icon: Icon(Icons.report),
                   onPressed: () {
-                    // Add your functionality for the button here
+                      // Add functionality next sprints
                   },
                 ),
                 IconButton(
                   icon: Icon(Icons.chat_bubble),
                   onPressed: () {
-                    // Add your functionality for the button here
+                      // Add functionality next sprints
                   },
                 ),
                 PostDeleteButton(docId: fandT.docId),
@@ -368,7 +360,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Text(
-                  'Deadline: $formattedDate', // Use the formatted date
+                  'Deadline: $formattedDate', 
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12.0,
@@ -489,14 +481,11 @@ class _UserPostsPageState extends State<UserPostsPage> {
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        //CARDS DISPLAY
-
         body: TabBarView(
           children: [
             if (email == null || email == '')
               SizedBox()
             else
-              // Display Question Cards
               StreamBuilder<List<CardQview>>(
                 stream: readQuestion(),
                 builder: (context, snapshot) {
@@ -683,10 +672,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                                   'upvoteCount': upvoteCount,
                                   'upvotedUserIds': upvotedUserIds,
                                 }).then((_) {
-                                  print('Upvote count updated successfully');
                                 }).catchError((error) {
-                                  print(
-                                      'Failed to update upvote count: $error');
                                   // Handle error if the update fails
                                 });
                               });
@@ -749,12 +735,11 @@ class PostDeleteButton extends StatelessWidget {
                       style: TextStyle(color: Colors.red),
                     ),
                     onPressed: () async {
-                      // Delete the document here
                       await FirebaseFirestore.instance
                           .collection(type == 'answer' ? 'answers' : 'posts')
                           .doc(docId)
                           .delete();
-                      Navigator.of(context).pop(); // Close the dialog
+                      Navigator.of(context).pop(); 
                     },
                   ),
                 ],

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserEditImagePicker extends StatefulWidget {
@@ -20,7 +19,7 @@ class UserEditImagePicker extends StatefulWidget {
 class _UserEditImagePickerState extends State<UserEditImagePicker> {
   File? _pickedImageFile;
   bool _isLoading = false;
-  String loggedInimageUrl = '';
+  String _loggedInimageURL = '';
   String defaultPhotoUrl = '';
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -57,18 +56,18 @@ class _UserEditImagePickerState extends State<UserEditImagePicker> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('loggedInEmail') ?? '';
     final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
-        .collection('users')
+        .collection('RegularUser')
         .where('email', isEqualTo: email)
         .limit(1)
         .get();
 
     if (snapshot.docs.isNotEmpty) {
       final userData = snapshot.docs[0].data();
-      final imageUrl = userData['imageUrl'] ?? '';
+      final imageURL = userData['imageURL'] ?? '';
 
       setState(() {
-        loggedInimageUrl = imageUrl;
-        defaultPhotoUrl = imageUrl;
+        _loggedInimageURL = imageURL;
+        defaultPhotoUrl = imageURL;
       });
     }
 

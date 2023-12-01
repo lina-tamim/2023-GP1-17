@@ -7,11 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techxcel11/models/courseAndEvent_image.dart';
-import 'package:techxcel11/pages/reuse.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../models/course.dart';
-//EDIT +CALNDER COMMIT
+import 'package:techxcel11/Models/CourseEventImage.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
+import 'package:techxcel11/Models/CourseModel.dart';
 
 const Color mainColor = Color.fromRGBO(37, 6, 81, 0.898);
 const Color secondaryColor = Color(0xffffffff);
@@ -45,7 +44,6 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // log('MK valid url: ${isValidUrl('f')}');
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -75,7 +73,7 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                 const Text(
                   'Courses and Events',
                   style: TextStyle(
-                    fontSize: 18, // Adjust the font size
+                    fontSize: 18, 
                     fontFamily: "Poppins",
                     color: Colors.white,
                   ),
@@ -103,7 +101,6 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                 ),
                 onChanged: (text) {
                   setState(() {});
-                  // Handle search input changes
                 },
               ),
           ],
@@ -247,9 +244,6 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                           }),
                     );
                   } else if (snapshot.hasError) {
-                    print(
-                        'Errorrrrrr-----------------------------:${snapshot.error}');
-
                     return Center(
                       child: Text('Error:${snapshot.error}'),
                     );
@@ -317,12 +311,11 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                   style: TextStyle(color: Colors.red),
                 ),
                 onPressed: () async {
-                  // Delete the document here
                   await FirebaseFirestore.instance
                       .collection('Program')
                       .doc(item.docId)
                       .delete();
-                  Navigator.of(context).pop(); // Close the dialog
+                  Navigator.of(context).pop(); 
                 },
               ),
             ],
@@ -368,13 +361,13 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
 
     if (item?.docId != null) {
       await formCollection.doc(item!.docId).update({
-        'userId': email,
+        'userEmail': email,
         'type': selectedCourseType,
         'attendanceType': selectedAttendanceType,
         'title': titleController.text,
         'description': descController.text,
-        'start_date': courseStartDate,
-        'end_date': courseEndDate,
+        'startDate': courseStartDate,
+        'endDate': courseEndDate,
         'link': linkController.text,
         'location': locationController.text,
         'imageURL': imageURL,
@@ -382,16 +375,16 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
       });
     } else {
       await newFormDoc.set({
-        'userId': email,
+        'userEmail': email,
         'type': selectedCourseType,
         'attendanceType': selectedAttendanceType,
         'title': titleController.text,
         'description': descController.text,
-        'start_date': courseStartDate,
-        'end_date': courseEndDate,
+        'startDate': courseStartDate,
+        'endDate': courseEndDate,
         'link': linkController.text,
         'location': locationController.text,
-        'created_at': postDate,
+        'createdAt': postDate,
         'imageURL': imageURL,
         'approval': 'Yes',
       });
@@ -432,7 +425,7 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
               isLessThanOrEqualTo:
                   searchController.text.toLowerCase() + '\uf8ff');
     } else {
-      query = query.orderBy('created_at', descending: true);
+      query = query.orderBy('createdAt', descending: true);
     }
 
     return query.snapshots().asyncMap((snapshot) async {
@@ -535,7 +528,6 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                           onItemSelected: (value) {
                             setstate(() {
                               selectedCourseType = value!;
-                              print("courseType$selectedCourseType");
                             });
                           },
                         ),
@@ -826,7 +818,6 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
 
   Future<void> selectDate(BuildContext context, String dateType,
       {type = "normal", initialDate = null}) async {
-    // print("dateType$dateType");
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -849,7 +840,6 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
     if (pickedDate != null) {
       dateType == "start" ? courseStartDate = pickedDate : null;
       dateType == "end" ? courseEndDate = pickedDate : null;
-      // notifyListeners();
     }
   }
 }
@@ -916,7 +906,7 @@ class CoursesWidget extends StatelessWidget {
               color: Color.fromARGB(95, 92, 92, 92).withOpacity(0.5),
               spreadRadius: 2,
               blurRadius: 6,
-              offset: Offset(0, 2), // Set shadow offset
+              offset: Offset(0, 2),
             ),
           ],
         ),

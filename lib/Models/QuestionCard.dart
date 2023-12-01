@@ -1,6 +1,4 @@
 import 'dart:core';
-//EDIT +CALNDER COMMIT
-
 class CardQuestion {
   final int id;
   final String postType;
@@ -23,7 +21,6 @@ class CardQuestion {
     this.docId = '',
     required this.username,
     required this.userPhotoUrl,
-    //required this.anwersNo,
   });
 
   Map<String, dynamic> toJson() => {
@@ -36,7 +33,6 @@ class CardQuestion {
         'docId': docId,
         'username': '',
         'userPhotoUrl': userPhotoUrl,
-        //'anwersNo':anwersNo,
       };
 
   static CardQuestion fromJson(Map<String, dynamic> json) => CardQuestion(
@@ -49,8 +45,5 @@ class CardQuestion {
         docId: json['docId'] ?? '',
         username: json['username'] ?? '',
         userPhotoUrl: json['userPhotoUrl'] as String?,
-        //anwersNo:json['anwersNo']
       );
 }
-
-//TECHXCEL

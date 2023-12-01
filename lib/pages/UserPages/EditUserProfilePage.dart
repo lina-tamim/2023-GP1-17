@@ -4,14 +4,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:techxcel11/pages/UserPages/UserProfilePage.dart';
 import "package:csc_picker/csc_picker.dart";
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:techxcel11/pages/reuse.dart';
-import 'package:techxcel11/pages/start.dart';
 import 'package:crypto/crypto.dart';
-import 'package:techxcel11/models/userEditImagePicker.dart';
 import 'dart:convert';
+import 'package:techxcel11/Models/UserEditProfileImage.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
+import 'package:techxcel11/pages/UserPages/UserProfilePage.dart';
+import 'package:techxcel11/pages/StartPage.dart';
 
 //EDIT +CALNDER COMMIT
 
@@ -24,22 +24,21 @@ class EditProfile2 extends StatefulWidget {
 
 class _EditProfile2State extends State<EditProfile2> {
 /////////// RETRIVED FROM DATABASE:
-  String loggedInUID = '';
-  String loggedInUsername = '';
-  String loggedInPassword = '';
-  String loggedInEmail = '';
-  String loggedInCountry = '';
-  String loggedInState = '';
-  String loggedInCity = '';
-  String loggedInUserType = '';
-  String LoggedInPreference = '';
-  String loggedInGithub = '';
-  List<String> loggedInInterests = [];
-  List<String> loggedInSkills = [];
-
-  String loggedInimageUrl = '';
-  bool showSkills = false;
-  bool showInterests = false;
+  String _loggedInUID = '';
+  String _loggedInUsername = '';
+  String _loggedInPassword = '';
+  String _loggedInEmail = '';
+  String _loggedInCountry = '';
+  String _loggedInState = '';
+  String _loggedInCity = '';
+  String _loggedInUserType = '';
+  String _LoggedInPreference = '';
+  String _loggedInGithub = '';
+  List<String> _loggedInInterests = [];
+  List<String> _loggedInSkills = [];
+  String _loggedInimageURL = '';
+  bool _showSkills = false;
+  bool _showInterests = false;
   bool isModified = false;
   bool isPasswordchange = false;
   bool _isLoading = false;
@@ -76,25 +75,25 @@ class _EditProfile2State extends State<EditProfile2> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('loggedInEmail') ?? '';
     final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
-        .collection('users')
+        .collection('RegularUser')
         .where('email', isEqualTo: email)
         .limit(1)
         .get();
 
     if (snapshot.docs.isNotEmpty) {
       final userData = snapshot.docs[0].data();
-      final username = userData['userName'] ?? '';
+      final username = userData['username'] ?? '';
       final country = userData['country'] ?? '';
       final state = userData['state'] ?? '';
       final city = userData['city'] ?? '';
       final userType = userData['userType'] ?? '';
       final userPreference =
           userData['attendancePreference'] ?? ''; //CORRECT SPELLING
-      final github = userData['GithubLink'] ?? '';
+      final github = userData['githubLink'] ?? '';
       final skills = List<String>.from(userData['skills'] ?? []);
       final interests = List<String>.from(userData['interests'] ?? []);
       final password = userData['password'] ?? '';
-      final imageUrl = userData['imageUrl'] ?? '';
+      final imageURL = userData['imageURL'] ?? '';
       newUsername = username;
       newPassword = '';
       isPasswordchange = false;
@@ -111,20 +110,20 @@ class _EditProfile2State extends State<EditProfile2> {
       newGithubLink = github;
 
       setState(() {
-        loggedInUID = snapshot.docs[0].id;
-        loggedInUsername = username;
-        loggedInCountry = country;
-        loggedInState = state;
-        loggedInCity = city;
-        loggedInUserType = userType;
-        LoggedInPreference = userPreference;
-        loggedInGithub = github;
-        loggedInSkills = skills;
-        loggedInInterests = interests;
-        loggedInEmail = email;
-        loggedInPassword = password;
-        loggedInGithub = github;
-        loggedInimageUrl = imageUrl;
+        _loggedInUID = snapshot.docs[0].id;
+        _loggedInUsername = username;
+        _loggedInCountry = country;
+        _loggedInState = state;
+        _loggedInCity = city;
+        _loggedInUserType = userType;
+        _LoggedInPreference = userPreference;
+        _loggedInGithub = github;
+        _loggedInSkills = skills;
+        _loggedInInterests = interests;
+        _loggedInEmail = email;
+        _loggedInPassword = password;
+        _loggedInGithub = github;
+        _loggedInimageURL = imageURL;
       });
     }
     setState(() {
@@ -269,7 +268,7 @@ class _EditProfile2State extends State<EditProfile2> {
                     ),
                     enabled: false,
                     readOnly: true,
-                    controller: TextEditingController(text: loggedInEmail),
+                    controller: TextEditingController(text: _loggedInEmail),
                   ),
                 ),
                 const SizedBox(width: 5),
@@ -899,7 +898,7 @@ class _EditProfile2State extends State<EditProfile2> {
     final List<String> items = interestGroups.keys.toList();
 
     final List<String> selectedInterests = List<String>.from(
-        loggedInInterests); // Store the selected interests outside of the dialog
+        _loggedInInterests); // Store the selected interests outside of the dialog
 
     final List<String>? result = await showDialog<List<String>>(
       context: context,
@@ -1040,7 +1039,7 @@ class _EditProfile2State extends State<EditProfile2> {
     final List<String> items = skillGroups.keys.toList();
 
     final List<String> selectedSkills = List<String>.from(
-        loggedInSkills); // Store the selected skills outside of the dialog
+        _loggedInSkills); // Store the selected skills outside of the dialog
 
     final List<String>? result = await showDialog<List<String>>(
       context: context,
@@ -1115,7 +1114,7 @@ class _EditProfile2State extends State<EditProfile2> {
 
 // Function to validate and save the username
   Future<bool> validateUsername() async {
-    if (newUsername == loggedInUsername) {
+    if (newUsername == _loggedInUsername) {
       return true;
     } else if (newUsername.length < 6) {
       toastMessage('Username should be at least 6 characters long.');
@@ -1126,7 +1125,7 @@ class _EditProfile2State extends State<EditProfile2> {
     } else if (newUsername.contains(RegExp(r'^\d+$'))) {
       toastMessage('Username should not contain only digits');
       return false;
-    } else if (newUsername != loggedInUsername) {
+    } else if (newUsername != _loggedInUsername) {
       bool usernameExists = await checkUsernameExists(newUsername);
       if (usernameExists) {
         toastMessage(
@@ -1144,8 +1143,8 @@ class _EditProfile2State extends State<EditProfile2> {
 
   Future<bool> checkUsernameExists(String username) async {
     final querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .where('userName', isEqualTo: username.toLowerCase())
+        .collection('RegularUser')
+        .where('username', isEqualTo: username.toLowerCase())
         .limit(1)
         .get();
 
@@ -1158,8 +1157,8 @@ class _EditProfile2State extends State<EditProfile2> {
     });
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('users')
-        .where('email', isEqualTo: loggedInEmail)
+        .collection('RegularUser')
+        .where('email', isEqualTo: _loggedInEmail)
         .limit(1)
         .get();
 
@@ -1168,8 +1167,8 @@ class _EditProfile2State extends State<EditProfile2> {
           snapshot.docs.first;
       final String userId = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'userName': newUsername,
+      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
+        'username': newUsername,
       });
     }
     setState(() {
@@ -1181,7 +1180,7 @@ class _EditProfile2State extends State<EditProfile2> {
 
   Future<bool> validatePassword() async {
     // Check if the new password is equal to the existing password
-    if (newPassword == '' || hashPassword(newPassword) == loggedInPassword) {
+    if (newPassword == '' || hashPassword(newPassword) == _loggedInPassword) {
       return true; // Nothing changed (user doesn't want to modify)
     } else
     // Check password length
@@ -1208,8 +1207,8 @@ class _EditProfile2State extends State<EditProfile2> {
     });
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('users')
-        .where('email', isEqualTo: loggedInEmail)
+        .collection('RegularUser')
+        .where('email', isEqualTo: _loggedInEmail)
         .limit(1)
         .get();
 
@@ -1221,7 +1220,7 @@ class _EditProfile2State extends State<EditProfile2> {
           hashPassword(newPassword); // Hash the new password
 
       await FirebaseFirestore.instance
-          .collection('users')
+          .collection('RegularUser')
           .doc(userId)
           .update({'password': hashedPassword});
 
@@ -1236,7 +1235,6 @@ class _EditProfile2State extends State<EditProfile2> {
           isModified = true;
           return true;
         } catch (e) {
-          print('Failed to update password in Firebase Authentication: $e');
         }
       }
     }
@@ -1252,9 +1250,9 @@ class _EditProfile2State extends State<EditProfile2> {
 
   Future<bool> validateCSC() async {
     // Check if the new password is equal to the existing password
-    if (newCountry == loggedInCountry &&
-        newState == loggedInState &&
-        newCity == loggedInCity) {
+    if (newCountry == _loggedInCountry &&
+        newState == _loggedInState &&
+        newCity == _loggedInCity) {
       return true;
     } else
     // Check country is entered length
@@ -1271,8 +1269,8 @@ class _EditProfile2State extends State<EditProfile2> {
     });
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('users')
-        .where('email', isEqualTo: loggedInEmail)
+        .collection('RegularUser')
+        .where('email', isEqualTo: _loggedInEmail)
         .limit(1)
         .get();
 
@@ -1281,7 +1279,7 @@ class _EditProfile2State extends State<EditProfile2> {
           snapshot.docs.first;
       final String userId = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
         'country': newCountry,
         'city': newCity,
         'state': newState,
@@ -1295,7 +1293,7 @@ class _EditProfile2State extends State<EditProfile2> {
   }
 
   Future<bool> validateUserType() async {
-    if (newUserType == loggedInUserType) {
+    if (newUserType == _loggedInUserType) {
       return true;
     } else if (newUserSkills.isEmpty && newUserType == 'Freelancer') {
       toastMessage('Please enter your skills');
@@ -1310,8 +1308,8 @@ class _EditProfile2State extends State<EditProfile2> {
     });
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('users')
-        .where('email', isEqualTo: loggedInEmail)
+        .collection('RegularUser')
+        .where('email', isEqualTo: _loggedInEmail)
         .limit(1)
         .get();
 
@@ -1320,7 +1318,7 @@ class _EditProfile2State extends State<EditProfile2> {
           snapshot.docs.first;
       final String userId = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
         'userType': newUserType,
       });
     }
@@ -1332,7 +1330,7 @@ class _EditProfile2State extends State<EditProfile2> {
   }
 
   Future<bool> validateUserPreference() async {
-    if (newUserPreference == LoggedInPreference) {
+    if (newUserPreference == _LoggedInPreference) {
       return true;
     } else if (await updateUserPreference()) return true;
     return false;
@@ -1344,8 +1342,8 @@ class _EditProfile2State extends State<EditProfile2> {
     });
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('users')
-        .where('email', isEqualTo: loggedInEmail)
+        .collection('RegularUser')
+        .where('email', isEqualTo: _loggedInEmail)
         .limit(1)
         .get();
 
@@ -1354,7 +1352,7 @@ class _EditProfile2State extends State<EditProfile2> {
           snapshot.docs.first;
       final String userId = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
         'attendancePreference': newUserPreference,
       });
     }
@@ -1366,7 +1364,7 @@ class _EditProfile2State extends State<EditProfile2> {
   }
 
   Future<bool> validateInterests() async {
-    if (newUserInterests == loggedInInterests) {
+    if (newUserInterests == _loggedInInterests) {
       return true;
     } else if (newUserInterests.isEmpty) {
       toastMessage('Please enter your interests');
@@ -1384,8 +1382,8 @@ class _EditProfile2State extends State<EditProfile2> {
     });
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('users')
-        .where('email', isEqualTo: loggedInEmail)
+        .collection('RegularUser')
+        .where('email', isEqualTo: _loggedInEmail)
         .limit(1)
         .get();
 
@@ -1394,7 +1392,7 @@ class _EditProfile2State extends State<EditProfile2> {
           snapshot.docs.first;
       final String userId = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
         'interests': newUserInterests,
       });
     }
@@ -1406,7 +1404,7 @@ class _EditProfile2State extends State<EditProfile2> {
   }
 
   Future<bool> validateSkills() async {
-    if (newUserSkills == loggedInSkills) {
+    if (newUserSkills == _loggedInSkills) {
       return true;
     } else if (newUserSkills.isEmpty && newUserType == 'Freelancer') {
       toastMessage('Please enter your skills');
@@ -1423,8 +1421,8 @@ class _EditProfile2State extends State<EditProfile2> {
     });
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('users')
-        .where('email', isEqualTo: loggedInEmail)
+        .collection('RegularUser')
+        .where('email', isEqualTo: _loggedInEmail)
         .limit(1)
         .get();
 
@@ -1433,7 +1431,7 @@ class _EditProfile2State extends State<EditProfile2> {
           snapshot.docs.first;
       final String userId = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
         'skills': newUserSkills,
       });
     }
@@ -1445,7 +1443,7 @@ class _EditProfile2State extends State<EditProfile2> {
   }
 
   Future<bool> validateGithubLink() async {
-    if (newGithubLink == loggedInGithub) {
+    if (newGithubLink == _loggedInGithub) {
       return true;
     } else if (newGithubLink.isNotEmpty &&
         !newGithubLink.startsWith("https://github.com/")) {
@@ -1465,8 +1463,8 @@ class _EditProfile2State extends State<EditProfile2> {
     });
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('users')
-        .where('email', isEqualTo: loggedInEmail)
+        .collection('RegularUser')
+        .where('email', isEqualTo: _loggedInEmail)
         .limit(1)
         .get();
 
@@ -1475,8 +1473,8 @@ class _EditProfile2State extends State<EditProfile2> {
           snapshot.docs.first;
       final String userId = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'GithubLink': newGithubLink,
+      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
+        'githubLink': newGithubLink,
       });
     }
     setState(() {
@@ -1490,7 +1488,7 @@ class _EditProfile2State extends State<EditProfile2> {
     if (newProfilePicture == null) {
       return true;
     } else {
-      return await updateProfilePicture(loggedInUID);
+      return await updateProfilePicture(_loggedInUID);
     }
   }
 
@@ -1507,16 +1505,16 @@ class _EditProfile2State extends State<EditProfile2> {
           await uploadTask.whenComplete(() => null);
       final String downloadURL = await taskSnapshot.ref.getDownloadURL();
 
-      // Update the imageUrl field in Firebase Firestore
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'imageUrl': downloadURL,
+      // Update the imageURL field in Firebase Firestore
+      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
+        'imageURL': downloadURL,
       });
 
       // Update the local user object
       setState(() {
         _isLoading = false;
       });
-      loggedInimageUrl = downloadURL;
+      _loggedInimageURL = downloadURL;
       isModified = true;
 
       return true;
@@ -1539,8 +1537,8 @@ class _EditProfile2State extends State<EditProfile2> {
 
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('users')
-        .where('email', isEqualTo: loggedInEmail)
+        .collection('RegularUser')
+        .where('email', isEqualTo: _loggedInEmail)
         .limit(1)
         .get();
 
@@ -1550,12 +1548,12 @@ class _EditProfile2State extends State<EditProfile2> {
       final String userId = userDoc.id;
 
       // Delete user document from Firestore
-      await FirebaseFirestore.instance.collection('users').doc(userId).delete();
+      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).delete();
 
       // Delete user's name questions, team requests, and projects
       await FirebaseFirestore.instance
           .collection('posts')
-          .where('userId', isEqualTo: loggedInEmail)
+          .where('userId', isEqualTo: _loggedInEmail)
           .get()
           .then((querySnapshot) {
         querySnapshot.docs.forEach((doc) {
@@ -1567,7 +1565,7 @@ class _EditProfile2State extends State<EditProfile2> {
       // Delete user's name questions, team requests, and projects
       await FirebaseFirestore.instance
           .collection('answers')
-          .where('userId', isEqualTo: loggedInEmail)
+          .where('userId', isEqualTo: _loggedInEmail)
           .get()
           .then((querySnapshot) {
         querySnapshot.docs.forEach((doc) {
@@ -1608,8 +1606,7 @@ class _EditProfile2State extends State<EditProfile2> {
           borderRadius: BorderRadius.circular(24),
         ),
         margin: EdgeInsets.only(
-          bottom: snackBarHeight +
-              20, // Add the snackbar height and some additional margin
+          bottom: snackBarHeight + 180 , // Add the snackbar height and some additional margin
           right: 20,
           left: 20,
         ),

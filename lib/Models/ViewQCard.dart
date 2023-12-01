@@ -1,53 +1,50 @@
 import 'dart:core';
-import 'package:cloud_firestore/cloud_firestore.dart';
-//EDIT +CALNDER COMMIT
 
-class CardFTview {
+class CardQview {
+  final int id;
   final String postType;
   final String title;
   final String description;
-  final DateTime date;
   final List<String> topics;
   final String userId;
-  final String docId;
+  String? docId;
   String? username;
-  String? userPhotoUrl;
+  String? userPhotoUrl; 
 
-  CardFTview({
+  CardQview({
+    required this.id,
     required this.postType,
     required this.title,
     required this.description,
-    required this.date,
     required this.topics,
     required this.userId,
-    this.docId = '',
+    this.docId ='' ,
     required this.username,
     required this.userPhotoUrl,
   });
 
   Map<String, dynamic> toJson() => {
+        'id': id,
         'dropdownValue': postType,
         'textFieldValue': title,
         'largeTextFieldValue': description,
-        'selectedDate': date,
         'selectedInterests': topics,
         'userId': userId,
         'docId': docId,
-        'username': '',
-        'userPhotoUrl': userPhotoUrl, // Update property name to userPhotoUrl
+        'username': username,
+        'userPhotoUrl': userPhotoUrl, 
       };
 
-  static CardFTview fromJson(Map<String, dynamic> json) => CardFTview(
+  static CardQview fromJson(Map<String, dynamic> json) => CardQview(
+        id: json['id'],
         postType: json['dropdownValue'],
         title: json['textFieldValue'],
         description: json['largeTextFieldValue'],
         topics: List<String>.from(json['selectedInterests']),
-        date: (json['selectedDate'] as Timestamp).toDate(),
         userId: json['userId'],
+        docId: json['docId'] ?? '',
         username: json['username'] ?? '',
-        docId: json['docId'],
-        userPhotoUrl: json['userPhotoUrl'] as String?,
+        userPhotoUrl: json['userPhotoUrl'] as String?, 
       );
 }
 
-//TECHXCEL
