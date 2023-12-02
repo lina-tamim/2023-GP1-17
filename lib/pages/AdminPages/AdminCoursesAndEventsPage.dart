@@ -71,9 +71,9 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                     },
                     icon: const Icon(Icons.arrow_back)),
                 const Text(
-                  'Courses and Events',
+                  'Courses and Events Manegment',
                   style: TextStyle(
-                    fontSize: 18, 
+                    fontSize: 17,
                     fontFamily: "Poppins",
                     color: Colors.white,
                   ),
@@ -112,6 +112,7 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
           clearAllFields();
           showInputDialog();
         },
+        backgroundColor: Color.fromARGB(255, 156, 147, 176),
         child: const Icon(
           Icons.add,
           color: Colors.white,
@@ -300,12 +301,6 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
             content: Text('Are you sure you want to delete this $type?'),
             actions: <Widget>[
               TextButton(
-                child: const Text('Cancel'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
                 child: const Text(
                   'Delete',
                   style: TextStyle(color: Colors.red),
@@ -315,7 +310,13 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                       .collection('Program')
                       .doc(item.docId)
                       .delete();
-                  Navigator.of(context).pop(); 
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop();
                 },
               ),
             ],
@@ -461,7 +462,7 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                       },
                       child: const Icon(
                         Icons.arrow_back_outlined,
-                        color: mainColor,
+                        color: Colors.black,
                       ),
                     ),
                     const Spacer(),
@@ -470,13 +471,15 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                       style: TextStyle(
                           fontSize: 17,
                           fontFamily: "Poppins",
-                          color: mainColor,
+                          color: Colors.black,
                           fontWeight: FontWeight.w400),
                     ),
                     const Spacer(),
                   ],
                 ),
-                const Divider(),
+                SizedBox(
+                  height: 20,
+                ),
                 const Divider(),
                 Padding(
                   padding: const EdgeInsets.only(top: 15, bottom: 5),
@@ -562,7 +565,7 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                     false,
                     descController,
                     true,
-                    maxLines: 1),
+                    maxLines: 5),
                 const Padding(
                   padding: EdgeInsets.only(top: 20),
                   child: Row(
@@ -702,9 +705,29 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                   visible: selectedAttendanceType == 'Onsite',
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
-                    child: FormTitleWidget(
-                      title: "Location",
-                      isRequired: true,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const SizedBox(width: 8),
+                            FormTitleWidget(
+                              title: "Location",
+                              isRequired: true,
+                            ),
+                            Tooltip(
+                              message:
+                                  'To accept your request,Add location of the course or event as country and city',
+                              child: Icon(
+                                Icons.live_help_rounded,
+                                size: 18,
+                                color: Color.fromARGB(255, 178, 178, 178),
+                              ),
+                            ),
+                          ],
+                        ),
+                        // Rest of your code...
+                      ],
                     ),
                   ),
                 ),
@@ -724,7 +747,7 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: FormTitleWidget(
-                    title: "Link",
+                    title: "Platform Link",
                   ),
                 ),
                 reusableTextField(
@@ -1135,4 +1158,4 @@ class CoursesWidget extends StatelessWidget {
 }
 
 
-//LinaFri
+//LinaFri-new
