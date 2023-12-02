@@ -391,7 +391,7 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
       });
     }
 
-toastMessage('Form submitted successfully!');
+    toastMessage('Form submitted successfully!');
 
     clearAllFields();
 
@@ -968,11 +968,7 @@ class CoursesWidget extends StatelessWidget {
                 child: Text(
                   item.title ?? '--',
                   style: const TextStyle(
-                    fontSize: 17,
-                    fontFamily: "Poppins",
-                    color: mainColor,
-                    fontWeight: FontWeight.w400,
-                  ),
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
               Padding(
@@ -980,12 +976,10 @@ class CoursesWidget extends StatelessWidget {
                 child: Container(
                   width: double.infinity,
                   child: Text(
-                    'Description: ${item.description}',
+                    '${item.description}',
                     style: const TextStyle(
-                      fontSize: 15,
-                      fontFamily: "Poppins",
-                      color: mainColor,
-                    ),
+                        fontSize: 16,
+                        color: const Color.fromARGB(255, 81, 81, 81)),
                     softWrap: true,
                     maxLines: null,
                   ),
@@ -1061,7 +1055,7 @@ class CoursesWidget extends StatelessWidget {
                   if (item.startDate != null || item.endDate != null)
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.only(right: 20, left: 20),
+                        padding: const EdgeInsets.only(right: 20, left: 10),
                         child: Row(
                           children: [
                             Icon(
@@ -1143,7 +1137,9 @@ class CoursesWidget extends StatelessWidget {
                       color: redColor,
                     ),
                   ),
-                  const SizedBox(width: 4,),
+                  const SizedBox(
+                    width: 4,
+                  ),
                 ],
               ),
             ],

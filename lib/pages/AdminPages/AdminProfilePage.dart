@@ -12,37 +12,41 @@ class AdminProfile extends StatefulWidget {
   @override
   State<AdminProfile> createState() => _AdminProfile();
 }
- 
+
 class _AdminProfile extends State<AdminProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavBarAdmin(),
-      appBar:buildAppBar('My profile'),
+      appBar: buildAppBar('My profile'),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-                SizedBox(
+              SizedBox(
                 width: 150,
                 child: ElevatedButton(
-                  
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>  AdminEditProfile()),
+                      MaterialPageRoute(
+                          builder: (context) => AdminEditProfile()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 10, 1, 95),
-                    side: BorderSide.none ,
+                    foregroundColor: Colors.white,
+                    backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
+                    side: BorderSide.none,
                     shape: const StadiumBorder(),
                   ),
-                  child: const Text('Edit Profile', style: TextStyle(color: Color.fromARGB(255, 254, 254, 254))),
-                  
+                  child: const Text('Edit Profile',
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 254, 254, 254),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800)),
                 ),
-              ), 
+              ),
               const SizedBox(height: 20),
               const Divider(),
               const SizedBox(height: 10),
@@ -76,7 +80,6 @@ class _AdminProfile extends State<AdminProfile> {
   }
 }
 
-
 class AdminEditProfile extends StatefulWidget {
   const AdminEditProfile({Key? key}) : super(key: key);
 
@@ -91,7 +94,7 @@ class _AdminEditProfile extends State<AdminEditProfile> {
   bool isPasswordchange = false;
   // Modified by user:
   String newPassword = ''; // changed or not (changed means user wants to edit)
-  bool showPassword = false; 
+  bool showPassword = false;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -164,8 +167,8 @@ class _AdminEditProfile extends State<AdminEditProfile> {
                 Expanded(
                   child: TextField(
                     decoration: InputDecoration(
-                      prefixIcon:
-                          const Icon(Icons.email, color: Color.fromARGB(255, 0, 0, 0)),
+                      prefixIcon: const Icon(Icons.email,
+                          color: Color.fromARGB(255, 0, 0, 0)),
                       labelStyle: const TextStyle(
                         color: Colors.black54,
                       ),
@@ -218,18 +221,22 @@ class _AdminEditProfile extends State<AdminEditProfile> {
                 Expanded(
                   child: TextField(
                     decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.lock, color: Color.fromARGB(255, 0, 0, 0)),
+                      prefixIcon: const Icon(Icons.lock,
+                          color: Color.fromARGB(255, 0, 0, 0)),
                       labelStyle: const TextStyle(
                         color: Colors.black54,
                       ),
                       filled: true,
                       floatingLabelBehavior: FloatingLabelBehavior.auto,
-                      fillColor: const Color.fromARGB(255, 228, 228, 228).withOpacity(0.3),
+                      fillColor: const Color.fromARGB(255, 228, 228, 228)
+                          .withOpacity(0.3),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(32),
                       ),
                       suffixIcon: IconButton(
-                        icon: Icon(showPassword ? Icons.visibility : Icons.visibility_off),
+                        icon: Icon(showPassword
+                            ? Icons.visibility
+                            : Icons.visibility_off),
                         onPressed: () {
                           setState(() {
                             showPassword = !showPassword;
@@ -239,7 +246,7 @@ class _AdminEditProfile extends State<AdminEditProfile> {
                     ),
                     enabled: true,
                     readOnly: false,
-                    obscureText: !showPassword, 
+                    obscureText: !showPassword,
                     onChanged: (value) {
                       setState(() {
                         newPassword = value;
@@ -255,29 +262,30 @@ class _AdminEditProfile extends State<AdminEditProfile> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-           onPressed: () async {
-    if ( await validatePassword())
-      if ( isModified == true ) {
-        _showSnackBar2("Your information has been changed successfully");
-          Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const AdminProfile()),
-                    );
-      }
-      else{
-          Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const AdminProfile()),
-                    );
-      }
-  },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromARGB(255, 6, 107, 10), 
-            padding: const EdgeInsets.symmetric(horizontal: 35), 
-            alignment: Alignment.centerLeft, 
-          ),
-          child: const Text('Save'),
-        ),
+                  onPressed: () async {
+                    if (await validatePassword()) if (isModified == true) {
+                      _showSnackBar2(
+                          "Your information has been changed successfully");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const AdminProfile()),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const AdminProfile()),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 6, 107, 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 35),
+                    alignment: Alignment.centerLeft,
+                  ),
+                  child: const Text('Save'),
+                ),
               ],
             ),
           ],
@@ -286,96 +294,85 @@ class _AdminEditProfile extends State<AdminEditProfile> {
     );
   }
 
- Future<bool> validatePassword() async {
-  // Check if the new password is equal to the existing password
-  if (newPassword =='' || hashPassword(newPassword) == _loggedInPassword ) {
-    return true; // Nothing changed (user doesn't want to modify)
-  }
-else
-  // Check password length
-  if (newPassword.length < 6) {
-    toastMessage('Password should not be less than 6 characters.');
+  Future<bool> validatePassword() async {
+    // Check if the new password is equal to the existing password
+    if (newPassword == '' || hashPassword(newPassword) == _loggedInPassword) {
+      return true; // Nothing changed (user doesn't want to modify)
+    } else
+    // Check password length
+    if (newPassword.length < 6) {
+      toastMessage('Password should not be less than 6 characters.');
+      return false;
+    } else
+    // Check for white spaces in the password
+    if (newPassword.contains(' ')) {
+      toastMessage('Password should not contain spaces.');
+      return false;
+    } else
+    // Update the password in the database and Firebase Authentication
+    if (await updatePasswordByEmail()) {
+      return true;
+    }
+
     return false;
   }
-else
-  // Check for white spaces in the password
-  if (newPassword.contains(' ')) {
-    toastMessage('Password should not contain spaces.');
-    return false;
-  }
-else
-  // Update the password in the database and Firebase Authentication
-  if (await updatePasswordByEmail()) {
-    return true;
-  }
 
-  return false;
-}
+  Future<bool> updatePasswordByEmail() async {
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('Admin')
+        .where('email', isEqualTo: _loggedInEmail)
+        .limit(1)
+        .get();
 
-Future<bool> updatePasswordByEmail() async {
-  final QuerySnapshot<Map<String, dynamic>> snapshot =
+    if (snapshot.docs.isNotEmpty) {
+      final DocumentSnapshot<Map<String, dynamic>> userDoc =
+          snapshot.docs.first;
+      final String userId = userDoc.id;
+      final String hashedPassword =
+          hashPassword(newPassword); // Hash the new password
+
       await FirebaseFirestore.instance
           .collection('Admin')
-          .where('email', isEqualTo: _loggedInEmail)
-          .limit(1)
-          .get();
+          .doc(userId)
+          .update({'password': hashedPassword});
 
-  if (snapshot.docs.isNotEmpty) {
-    final DocumentSnapshot<Map<String, dynamic>> userDoc = snapshot.docs.first;
-    final String userId = userDoc.id;
-    final String hashedPassword = hashPassword(newPassword); // Hash the new password
-
-    await FirebaseFirestore.instance
-        .collection('Admin')
-        .doc(userId)
-        .update({'password': hashedPassword});
-
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      try {
-        await user.updatePassword(newPassword);
-         isModified = true;
-        return true;
-      } catch (e) {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        try {
+          await user.updatePassword(newPassword);
+          isModified = true;
+          return true;
+        } catch (e) {}
       }
     }
+
+    return false;
   }
 
-  return false;
-}
+  String hashPassword(String password) {
+    var bytes = utf8.encode(password);
+    var digest = sha256.convert(bytes);
+    return digest.toString();
+  }
 
-String hashPassword(String password) {
-  var bytes = utf8.encode(password); 
-  var digest = sha256.convert(bytes); 
-  return digest.toString();
-}
- 
+  void _showSnackBar2(String message) {
+    double snackBarHeight = 510;
 
-void _showSnackBar2(String message) {
-  double snackBarHeight = 510; 
-
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(message),
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        margin: EdgeInsets.only(
+          bottom: snackBarHeight + 180,
+          right: 20,
+          left: 20,
+        ),
+        backgroundColor: Color.fromARGB(255, 12, 118, 51),
       ),
-      margin: EdgeInsets.only(
-          bottom: snackBarHeight + 180 ,
-        right: 20,
-        left: 20,
-      ),
-      backgroundColor: Color.fromARGB(255, 12, 118, 51), 
-    ),
-  );
+    );
+  }
 }
-
-
-
-
-}
-
-
-
- 

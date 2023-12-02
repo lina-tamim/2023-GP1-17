@@ -64,7 +64,7 @@ class _AdminCoursesAndEventsRequestsPageState
                 const Text(
                   'Courses and Events Requests',
                   style: TextStyle(
-                    fontSize: 18, 
+                    fontSize: 18,
                     fontFamily: "Poppins",
                     color: Colors.white,
                   ),
@@ -116,7 +116,7 @@ class _AdminCoursesAndEventsRequestsPageState
                         style: TextStyle(
                           fontSize: 15,
                           color: mainColor,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w300,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -126,8 +126,9 @@ class _AdminCoursesAndEventsRequestsPageState
                       style: TextStyle(
                         fontSize: 15,
                         color: Colors.red,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w700,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
@@ -279,7 +280,7 @@ class _AdminCoursesAndEventsRequestsPageState
       return courses;
     });
   }
-    }
+}
 
 class CoursesWidget extends StatelessWidget {
   final Course item;
@@ -303,7 +304,7 @@ class CoursesWidget extends StatelessWidget {
               color: Color.fromARGB(95, 92, 92, 92).withOpacity(0.5),
               spreadRadius: 2,
               blurRadius: 6,
-              offset: Offset(0, 2), 
+              offset: Offset(0, 2),
             ),
           ],
         ),
@@ -329,9 +330,9 @@ class CoursesWidget extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Text(
-                'Title: ${item.title}',
-                style: const TextStyle(
-                    fontSize: 17, fontFamily: "Poppins", color: mainColor),
+                '${item.title}',
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
@@ -339,12 +340,10 @@ class CoursesWidget extends StatelessWidget {
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 child: Text(
-                  'Description: ${item.description}',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontFamily: "Poppins",
-                    color: mainColor,
-                  ),
+                  '${item.description}',
+                  style: const TextStyle(
+                      fontSize: 16,
+                      color: const Color.fromARGB(255, 81, 81, 81)),
                   softWrap: true,
                   maxLines: null,
                 ),
@@ -428,7 +427,7 @@ class CoursesWidget extends StatelessWidget {
                             children: [
                               if (item.startDate != null)
                                 Text(
-                                  'Start date:  ${DateFormat('MMM dd, yy').format(item.startDate!)}',
+                                  '   Start date:  ${DateFormat('MMM dd, yy').format(item.startDate!)}',
                                   style: const TextStyle(
                                     fontSize: 15,
                                     fontFamily: "Poppins",
@@ -437,7 +436,7 @@ class CoursesWidget extends StatelessWidget {
                                 ),
                               if (item.endDate != null)
                                 Text(
-                                  'End date:     ${DateFormat('MMM dd, yy').format(item.endDate!)}',
+                                  '   End date:     ${DateFormat('MMM dd, yy').format(item.endDate!)}',
                                   style: const TextStyle(
                                     fontSize: 15,
                                     fontFamily: "Poppins",
@@ -467,8 +466,7 @@ class CoursesWidget extends StatelessWidget {
                         }
                       },
                       child: Container(
-                        width: MediaQuery.of(context).size.width *
-                            0.7,
+                        width: MediaQuery.of(context).size.width * 0.7,
                         child: Text(
                           'Link for more details: ${item.link}',
                           softWrap: true,
@@ -501,8 +499,8 @@ class CoursesWidget extends StatelessWidget {
                     shape: const StadiumBorder(),
                   ),
                   child: const Text('Accept',
-                      style: TextStyle(
-                          color: Color.fromARGB(255, 254, 254, 254))),
+                      style:
+                          TextStyle(color: Color.fromARGB(255, 254, 254, 254))),
                 ),
                 SizedBox(width: 120),
                 ElevatedButton(
@@ -551,8 +549,7 @@ class CoursesWidget extends StatelessWidget {
                   ),
                   child: const Text(
                     'Reject',
-                    style: TextStyle(
-                        color: Color.fromARGB(255, 254, 254, 254)),
+                    style: TextStyle(color: Color.fromARGB(255, 254, 254, 254)),
                   ),
                 ),
               ],
@@ -581,6 +578,3 @@ class CoursesWidget extends StatelessWidget {
     }
   }
 }
-
-
- 

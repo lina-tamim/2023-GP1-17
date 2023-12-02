@@ -23,15 +23,13 @@ class AdminPathways extends StatefulWidget {
 
 class _AdminPathwaysState extends State<AdminPathways> {
   //EDIT
-int x = 0;
+  int x = 0;
   //to hold values of key topics selected
   List<String> _editSelectTopic = [];
   //hold values retrived from DB
   List<String> subtopicControllers = [];
   List<String> subtopicDescriptionControllers = [];
   List<String> subtopicresourseControllers = [];
-
-  
 
   // hold new values from user
   List<TextEditingController> topics2 = [];
@@ -81,7 +79,6 @@ int x = 0;
       final subtopics = List<String>.from(pathwayData['subtopics'] ?? []);
       final descriptions = List<String>.from(pathwayData['descriptions'] ?? []);
       final resourses = List<String>.from(pathwayData['resources'] ?? []);
-       
 
       newimage_url = image_url;
       newtitle = title;
@@ -175,8 +172,7 @@ int x = 0;
 
     final List<String> items = edittopicGroups.keys.toList();
 
-    final List<String> selectededitTopics = List<String>.from(
-        _editSelectTopic); 
+    final List<String> selectededitTopics = List<String>.from(_editSelectTopic);
 
     final List<String>? result = await showDialog<List<String>>(
       context: context,
@@ -423,15 +419,13 @@ int x = 0;
       descriptions2[i].clear();
       resourse2[i].clear();
     }
-   
+
     _editSelectTopic = [];
-  
-   subtopicControllers = [];
-  subtopicDescriptionControllers = [];
-  subtopicresourseControllers = [];
-  x=0;
-      
-   
+
+    subtopicControllers = [];
+    subtopicDescriptionControllers = [];
+    subtopicresourseControllers = [];
+    x = 0;
   }
 
   //EDIT
@@ -462,8 +456,6 @@ int x = 0;
       descriptions2.add(TextEditingController());
       resourse2.add(TextEditingController());
       x++;
-    
-      
     });
   }
 
@@ -474,8 +466,6 @@ int x = 0;
       _topics.add(TextEditingController());
       _descriptions.add(TextEditingController());
       _resources.add(TextEditingController());
-
-   
     });
   }
 
@@ -485,7 +475,6 @@ int x = 0;
         _topics.removeAt(index);
         _descriptions.removeAt(index);
         _resources.removeAt(index);
-
       }
     });
   }
@@ -558,7 +547,7 @@ int x = 0;
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  height: 100,
+                  height: 200,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10),
@@ -708,16 +697,16 @@ int x = 0;
             Row(
               children: [
                 Builder(builder: (context) {
-               return IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(Icons.arrow_back));
+                  return IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.arrow_back));
                 }),
                 const Text(
                   'Pathway Management ',
                   style: TextStyle(
-                    fontSize: 18, 
+                    fontSize: 18,
                     fontFamily: "Poppins",
                     color: Colors.white,
                   ),
@@ -1307,7 +1296,6 @@ int x = 0;
                                         ),
                                       ),
                                       const SizedBox(height: 8),
-                                      
                                     ],
                                   );
                                 },
@@ -1412,7 +1400,6 @@ int x = 0;
                               });
 
                               clear();
-                           
                             },
                             child: Icon(
                               Icons.arrow_back,
@@ -1669,14 +1656,12 @@ int x = 0;
                               if (indexx < subtopicControllers.length) {
                                 return Column(
                                   children: [
-                                   
                                     const SizedBox(height: 0),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 20),
                                       child: buildNewfield(indexx),
                                     ),
-                                    
                                   ],
                                 );
                               } else {
@@ -1710,18 +1695,13 @@ int x = 0;
                                               IconButton(
                                                 icon: Icon(Icons.remove_circle),
                                                 onPressed: () {
-                                                setState(() {
-                                                                // Remove the text field and corresponding data from the lists
-                                                                topics2
-                                                                    .removeAt(
-                                                                        indexx);
-                                                                descriptions2
-                                                                    .removeAt(
-                                                                        indexx);
-                                                                        resourse2
-                                                                    .removeAt(
-                                                                        indexx);
-                                                              });
+                                                  setState(() {
+                                                    // Remove the text field and corresponding data from the lists
+                                                    topics2.removeAt(indexx);
+                                                    descriptions2
+                                                        .removeAt(indexx);
+                                                    resourse2.removeAt(indexx);
+                                                  });
                                                 },
                                               ),
                                             InkWell(
@@ -1788,7 +1768,8 @@ int x = 0;
                                                 readOnly: false,
                                                 onChanged: (value) {
                                                   setState(() {
-                                                    topics2[indexx].text = value;
+                                                    topics2[indexx].text =
+                                                        value;
                                                   });
                                                 },
                                               ),
@@ -1863,101 +1844,149 @@ int x = 0;
                                                                   .circular(32),
                                                         ),
                                                       ),
-                                                       onChanged: (value) {
-                                                  setState(() {
-                                                    descriptions2[indexx].text = value;
-                                                  });
-                                                },
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          descriptions2[indexx]
+                                                              .text = value;
+                                                        });
+                                                      },
                                                     ),
-                                                          const SizedBox(height: 0),
-                                      ////
-                                      
+                                                    const SizedBox(height: 0),
+                                                    ////
+
                                                     Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Row(
-                  children: [
-                    Text(
-                      'Resource',
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      '*',
-                      style: TextStyle(
-                        color: Colors.red,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                      Tooltip(
-                                                  child: Icon(
-                                                    Icons.live_help_rounded,
-                                                    size: 18,
-                                                    color: Color.fromARGB(
-                                                        255, 178, 178, 178),
-                                                  ),
-                                                  message:
-                                                      'Note: The resource for learning can be any of the following types:\n'
-                                                      '- Online courses or websites (e.g., Coursera, Udemy)\n'
-                                                      '- YouTube content such as playlists or channels\n'
-                                                      '- Research papers and articles',
-                                                  padding: EdgeInsets.all(20),
-                                                  showDuration:
-                                                      Duration(seconds: 3),
-                                                  textStyle: TextStyle(
-                                                      color: Colors.white),
-                                                  preferBelow: false,
-                                                ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  enabled: true,
-                  controller: TextEditingController(
-                      text: resourse2[indexx].text),
-                  
-                  cursorColor: const Color.fromARGB(255, 43, 3, 101),
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(
-                      Icons.link_sharp,
-                      color: const Color.fromARGB(255, 63, 12, 118),
-                    ),
-                    labelText: "Please enter subtopic's Resource",
-                    labelStyle: const TextStyle(
-                      color: Colors.black54,
-                    ),
-                    filled: true,
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    fillColor: const Color.fromARGB(255, 228, 228, 228)
-                        .withOpacity(0.3),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32),
-                    ),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      // Handle any changes in the text field
-                      resourse2[indexx].text = value;
-                    });
-                  },
-                ),
-           
-              ],
-            ),
-          ),
-                                                    
-                                            
-                                                    
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 20),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          const Row(
+                                                            children: [
+                                                              Text(
+                                                                'Resource',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: 16,
+                                                                ),
+                                                              ),
+                                                              SizedBox(
+                                                                width: 5,
+                                                              ),
+                                                              Text(
+                                                                '*',
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .red,
+                                                                ),
+                                                              ),
+                                                              SizedBox(
+                                                                width: 5,
+                                                              ),
+                                                              Tooltip(
+                                                                child: Icon(
+                                                                  Icons
+                                                                      .live_help_rounded,
+                                                                  size: 18,
+                                                                  color: Color
+                                                                      .fromARGB(
+                                                                          255,
+                                                                          178,
+                                                                          178,
+                                                                          178),
+                                                                ),
+                                                                message:
+                                                                    'Note: The resource for learning can be any of the following types:\n'
+                                                                    '- Online courses or websites (e.g., Coursera, Udemy)\n'
+                                                                    '- YouTube content such as playlists or channels\n'
+                                                                    '- Research papers and articles',
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(
+                                                                            20),
+                                                                showDuration:
+                                                                    Duration(
+                                                                        seconds:
+                                                                            3),
+                                                                textStyle: TextStyle(
+                                                                    color: Colors
+                                                                        .white),
+                                                                preferBelow:
+                                                                    false,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          const SizedBox(
+                                                              height: 8),
+                                                          TextField(
+                                                            enabled: true,
+                                                            controller:
+                                                                TextEditingController(
+                                                                    text: resourse2[
+                                                                            indexx]
+                                                                        .text),
+                                                            cursorColor:
+                                                                const Color
+                                                                    .fromARGB(
+                                                                    255,
+                                                                    43,
+                                                                    3,
+                                                                    101),
+                                                            decoration:
+                                                                InputDecoration(
+                                                              prefixIcon: Icon(
+                                                                Icons
+                                                                    .link_sharp,
+                                                                color: const Color
+                                                                    .fromARGB(
+                                                                    255,
+                                                                    63,
+                                                                    12,
+                                                                    118),
+                                                              ),
+                                                              labelText:
+                                                                  "Please enter subtopic's Resource",
+                                                              labelStyle:
+                                                                  const TextStyle(
+                                                                color: Colors
+                                                                    .black54,
+                                                              ),
+                                                              filled: true,
+                                                              floatingLabelBehavior:
+                                                                  FloatingLabelBehavior
+                                                                      .never,
+                                                              fillColor: const Color
+                                                                      .fromARGB(
+                                                                      255,
+                                                                      228,
+                                                                      228,
+                                                                      228)
+                                                                  .withOpacity(
+                                                                      0.3),
+                                                              border:
+                                                                  OutlineInputBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            32),
+                                                              ),
+                                                            ),
+                                                            onChanged: (value) {
+                                                              setState(() {
+                                                                // Handle any changes in the text field
+                                                                resourse2[indexx]
+                                                                        .text =
+                                                                    value;
+                                                              });
+                                                            },
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
                                                   ],
-                                                 
                                                 ),
                                               ),
                                             ],
@@ -1978,23 +2007,25 @@ int x = 0;
                         SharedPreferences pre =
                             await SharedPreferences.getInstance();
                         final id = pre.getString('pathwayIdx') ?? '';
-                        if ( await validateTitle() &&
+                        if (await validateTitle() &&
                             await validatedescription() &&
                             await validateTopics() &&
-                            await validatesubtopics(subtopicControllers, topics2) &&
-                            await validatesubdescription(subtopicDescriptionControllers, descriptions2) &&
-                            await validateResource(subtopicresourseControllers,resourse2)) {
+                            await validatesubtopics(
+                                subtopicControllers, topics2) &&
+                            await validatesubdescription(
+                                subtopicDescriptionControllers,
+                                descriptions2) &&
+                            await validateResource(
+                                subtopicresourseControllers, resourse2)) {
                           updateTitle();
                           updateProfilePicture();
                           _showSnackBar(
                               "Your information has been changed successfully");
-                            clear();
+                          clear();
                           setState(() {
                             showEditBox = false;
                           });
-                          
                         }
-                        
                       },
                       child: const Text('Save'),
                     )
@@ -2007,9 +2038,6 @@ int x = 0;
     );
   }
 
-
-
-  
 //edit db
   Future<bool> validateTopics() async {
     if (newKey_topic == dbKey_topic) {
@@ -2072,21 +2100,19 @@ int x = 0;
                   icon: Icon(Icons.remove_circle),
                   onPressed: () {
                     setState(() {
-                                  // Remove the text field and corresponding data from the lists
-                                  // Remove the text field and corresponding data from the lists
-                                  subtopicControllers.removeAt(index);
-                                  //topics2.removeAt(index);
-                                  subtopicDescriptionControllers
-                                      .removeAt(index);
-                                      subtopicresourseControllers.removeAt(index);
-                                });
+                      // Remove the text field and corresponding data from the lists
+                      // Remove the text field and corresponding data from the lists
+                      subtopicControllers.removeAt(index);
+                      //topics2.removeAt(index);
+                      subtopicDescriptionControllers.removeAt(index);
+                      subtopicresourseControllers.removeAt(index);
+                    });
                   },
                 ),
               InkWell(
                 child: const Icon(Icons.add_circle),
                 onTap: () {
                   _addfieldsub();
-                 
                 },
               ),
             ],
@@ -2144,150 +2170,145 @@ int x = 0;
                 SizedBox(
                   height: 5,
                 ),
-              Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Row(
-                  children: [
-                    Text(
-                      'Description',
-                      style: TextStyle(
-                        fontSize: 16,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Row(
+                        children: [
+                          Text(
+                            'Description',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            '*',
+                            style: TextStyle(
+                              color: Colors.red,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      '*',
-                      style: TextStyle(
-                        color: Colors.red,
+                      const SizedBox(height: 8),
+                      TextField(
+                        enabled: true,
+                        controller: TextEditingController(
+                            text: subtopicDescriptionControllers[index]),
+                        maxLines: 4,
+                        cursorColor: const Color.fromARGB(255, 43, 3, 101),
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(
+                            Icons.description,
+                            color: const Color.fromARGB(255, 63, 12, 118),
+                          ),
+                          labelText: "Please enter subtopic's\n\nDescription",
+                          labelStyle: const TextStyle(
+                            color: Colors.black54,
+                          ),
+                          filled: true,
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          fillColor: const Color.fromARGB(255, 228, 228, 228)
+                              .withOpacity(0.3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(32),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            // Handle any changes in the text field
+                            subtopicDescriptionControllers[index] = value;
+                          });
+                        },
                       ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  enabled: true,
-                  controller: TextEditingController(
-                      text: subtopicDescriptionControllers[index]),
-                  maxLines: 4,
-                  cursorColor: const Color.fromARGB(255, 43, 3, 101),
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(
-                      Icons.description,
-                      color: const Color.fromARGB(255, 63, 12, 118),
-                    ),
-                    labelText: "Please enter subtopic's\n\nDescription",
-                    labelStyle: const TextStyle(
-                      color: Colors.black54,
-                    ),
-                    filled: true,
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    fillColor: const Color.fromARGB(255, 228, 228, 228)
-                        .withOpacity(0.3),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32),
-                    ),
+                    ],
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      // Handle any changes in the text field
-                      subtopicDescriptionControllers[index] = value;
-                    });
-                  },
                 ),
-              ],
-            ),
-          ),
 
-
-
-          //new resourse
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Row(
-                  children: [
-                    Text(
-                      'Resource',
-                      style: TextStyle(
-                        fontSize: 16,
+                //new resourse
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Row(
+                        children: [
+                          Text(
+                            'Resource',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            '*',
+                            style: TextStyle(
+                              color: Colors.red,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Tooltip(
+                            child: Icon(
+                              Icons.live_help_rounded,
+                              size: 18,
+                              color: Color.fromARGB(255, 178, 178, 178),
+                            ),
+                            message:
+                                'Note: The resource for learning can be any of the following types:\n'
+                                '- Online courses or websites (e.g., Coursera, Udemy)\n'
+                                '- YouTube content such as playlists or channels\n'
+                                '- Research papers and articles',
+                            padding: EdgeInsets.all(20),
+                            showDuration: Duration(seconds: 3),
+                            textStyle: TextStyle(color: Colors.white),
+                            preferBelow: false,
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      '*',
-                      style: TextStyle(
-                        color: Colors.red,
+                      const SizedBox(height: 8),
+                      TextField(
+                        enabled: true,
+                        controller: TextEditingController(
+                            text: subtopicresourseControllers[index]),
+                        cursorColor: const Color.fromARGB(255, 43, 3, 101),
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(
+                            Icons.link_sharp,
+                            color: const Color.fromARGB(255, 63, 12, 118),
+                          ),
+                          labelText: "Please enter subtopic's Resource",
+                          labelStyle: const TextStyle(
+                            color: Colors.black54,
+                          ),
+                          filled: true,
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          fillColor: const Color.fromARGB(255, 228, 228, 228)
+                              .withOpacity(0.3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(32),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            // Handle any changes in the text field
+                            subtopicresourseControllers[index] = value;
+                          });
+                        },
                       ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                     Tooltip(
-                                                  child: Icon(
-                                                    Icons.live_help_rounded,
-                                                    size: 18,
-                                                    color: Color.fromARGB(
-                                                        255, 178, 178, 178),
-                                                  ),
-                                                  message:
-                                                      'Note: The resource for learning can be any of the following types:\n'
-                                                      '- Online courses or websites (e.g., Coursera, Udemy)\n'
-                                                      '- YouTube content such as playlists or channels\n'
-                                                      '- Research papers and articles',
-                                                  padding: EdgeInsets.all(20),
-                                                  showDuration:
-                                                      Duration(seconds: 3),
-                                                  textStyle: TextStyle(
-                                                      color: Colors.white),
-                                                  preferBelow: false,
-                                                ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  enabled: true,
-                  controller: TextEditingController(
-                      text: subtopicresourseControllers[index]),
-                  cursorColor: const Color.fromARGB(255, 43, 3, 101),
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(
-                      Icons.link_sharp,
-                      color: const Color.fromARGB(255, 63, 12, 118),
-                    ),
-                    labelText: "Please enter subtopic's Resource",
-                    labelStyle: const TextStyle(
-                      color: Colors.black54,
-                    ),
-                    filled: true,
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    fillColor: const Color.fromARGB(255, 228, 228, 228)
-                        .withOpacity(0.3),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32),
-                    ),
+                    ],
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      // Handle any changes in the text field
-                      subtopicresourseControllers[index] = value;
-                    });
-                  },
                 ),
-              ],
-            ),
-          ),
               ],
             ),
           ),
@@ -2298,14 +2319,13 @@ int x = 0;
     }
   }
 
-  
-
   addvalue(String s, int i) {
     newsubtopics[++i] = s;
   }
-Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController> list2) async {
 
-        List<String> mergedList = [];
+  Future<bool> updateresoursesssub(
+      List<String> list1, List<TextEditingController> list2) async {
+    List<String> mergedList = [];
 
     for (int i = 0; i < list1.length; i++) {
       String value = list1[i];
@@ -2342,8 +2362,8 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
     }
 
     return true;
+  }
 
-      }
   Future<bool> updatetitlessub(
       List<String> list1, List<TextEditingController> list2) async {
     List<String> mergedList = [];
@@ -2354,8 +2374,6 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
         mergedList.add(value);
       }
     }
-
-
 
     for (int i = 0; i < list2.length; i++) {
       String value = list2[i].text;
@@ -2473,13 +2491,12 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
       if (newtitle == '') {
         _showSnackBar('Please enter a pathway title.');
         return false;
-      } 
+      }
       if (newtitle.length > 40) {
-       _showSnackBar('Title should not exceed 40 characters');
+        _showSnackBar('Title should not exceed 40 characters');
 
         return false;
-      }
-      else {
+      } else {
         // Username is valid and not already taken, perform the save operation
 
         return true;
@@ -2537,13 +2554,12 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
       if (newpath_description.isEmpty) {
         _showSnackBar('Please add pathway description');
         return false;
-      } 
-       if (newpath_description.length > 250) {
+      }
+      if (newpath_description.length > 250) {
         _showSnackBar('Description should not exceed 250 characters');
 
         return false;
-      }
-      else {
+      } else {
         if (await updateDescription()) {
           return true;
         }
@@ -2551,8 +2567,6 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
     }
     return false;
   }
-
-
 
   Future<bool> updatetopics() async {
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
@@ -2575,10 +2589,10 @@ Future<bool> updateresoursesssub (List<String> list1, List<TextEditingController
     return true;
   }
 
-
-Future<bool> validateResource (List<String> list1, List<TextEditingController> list2) async {
-   List<String> mergedList = [];
-int len = list1.length;
+  Future<bool> validateResource(
+      List<String> list1, List<TextEditingController> list2) async {
+    List<String> mergedList = [];
+    int len = list1.length;
 
     for (int i = 0; i < list1.length; i++) {
       String value = list1[i];
@@ -2590,12 +2604,10 @@ int len = list1.length;
         mergedList.add(value);
       }
     }
- 
-
 
     for (int i = len; i < list2.length; i++) {
       String value = list2[i].text;
-       if (value.isEmpty) {
+      if (value.isEmpty) {
         _showSnackBar('Please fill all resource');
         return false;
       }
@@ -2604,24 +2616,23 @@ int len = list1.length;
       }
     }
 
-     for (int i = 0; i < mergedList.length; i++) {
+    for (int i = 0; i < mergedList.length; i++) {
       //String value = list2[i].text;
       if (mergedList[i].isEmpty) {
-         _showSnackBar('Please fill all resource');
-         return false;
+        _showSnackBar('Please fill all resource');
+        return false;
       }
     }
- if (await updateresoursesssub(subtopicresourseControllers, resourse2)) {
+    if (await updateresoursesssub(subtopicresourseControllers, resourse2)) {
       return true;
     }
     return false;
-}
+  }
 
-
-  Future<bool> validatesubtopics(List<String> list1, List<TextEditingController> list2) async {
-
-     List<String> mergedList = [];
-int len = list1.length;
+  Future<bool> validatesubtopics(
+      List<String> list1, List<TextEditingController> list2) async {
+    List<String> mergedList = [];
+    int len = list1.length;
     for (int i = 0; i < list1.length; i++) {
       String value = list1[i];
       if (value.isEmpty) {
@@ -2635,21 +2646,20 @@ int len = list1.length;
 
     for (int i = len; i < list2.length; i++) {
       String value = list2[i].text;
-       if (value.isEmpty) {
+      if (value.isEmpty) {
         _showSnackBar('Please fill all subtopic title');
         return false;
       }
       if (value.isNotEmpty) {
         mergedList.add(value);
-
       }
     }
 
-     for (int i = 0; i < mergedList.length; i++) {
+    for (int i = 0; i < mergedList.length; i++) {
       //String value = list2[i].text;
       if (mergedList[i].isEmpty) {
-         _showSnackBar('Please fill all subtopic title');
-         return false;
+        _showSnackBar('Please fill all subtopic title');
+        return false;
       }
     }
     if (await updatetitlessub(subtopicControllers, topics2)) {
@@ -2658,16 +2668,17 @@ int len = list1.length;
     return false;
   }
 
-  Future<bool> validatesubdescription(List<String> list1, List<TextEditingController> list2) async {
-int len = list1.length;
+  Future<bool> validatesubdescription(
+      List<String> list1, List<TextEditingController> list2) async {
+    int len = list1.length;
 
-       List<String> mergedList = [];
+    List<String> mergedList = [];
 
     for (int i = 0; i < list1.length; i++) {
       String value = list1[i];
       if (value.isEmpty) {
         _showSnackBar('Please fill all description');
-         return false;
+        return false;
       }
       if (value.isNotEmpty) {
         mergedList.add(value);
@@ -2678,21 +2689,21 @@ int len = list1.length;
       String value = list2[i].text;
       if (value.isEmpty) {
         _showSnackBar('Please fill all description');
-         return false;
+        return false;
       }
       if (value.isNotEmpty) {
         mergedList.add(value);
       }
     }
 
-     for (int i = 0; i < mergedList.length; i++) {
+    for (int i = 0; i < mergedList.length; i++) {
       //String value = list2[i].text;
       if (mergedList[i].isEmpty) {
-         _showSnackBar('Please fill all description');
-         return false;
+        _showSnackBar('Please fill all description');
+        return false;
       }
     }
-    
+
     if (await updatedescriptionssub(
         subtopicDescriptionControllers, descriptions2)) {
       return true;
@@ -2755,15 +2766,15 @@ int len = list1.length;
         'subtopics': _topics.map((controller) => controller.text).toList(),
         'descriptions':
             _descriptions.map((controller) => controller.text).toList(),
-        'resources':  _resources.map((controller) => controller.text).toList(),
+        'resources': _resources.map((controller) => controller.text).toList(),
         'imageURL': imageUrl,
         'pathwayNo': id,
         //'docId': documentReference.id,
       });
       id = id + 1;
-      return true; 
+      return true;
     } catch (error) {
-      return false; 
+      return false;
     }
   }
 
@@ -2793,7 +2804,7 @@ int len = list1.length;
       _showSnackBar('Please enter the pathway\'s description');
       return false; // Return early if the title field is empty
     }
- if (_path_descriptions.text.length > 250) {
+    if (_path_descriptions.text.length > 250) {
       _showSnackBar('Description should not exceed 250 characters');
       return false;
     }
@@ -2805,12 +2816,12 @@ int len = list1.length;
 
     // Validate the topics, descriptions, and resources
     for (int i = 0; i < _topics.length; i++) {
-      if (_topics[i].text.isEmpty || _descriptions[i].text.isEmpty || _resources[i].text.isEmpty) {
+      if (_topics[i].text.isEmpty ||
+          _descriptions[i].text.isEmpty ||
+          _resources[i].text.isEmpty) {
         _showSnackBar('Please fill all fields for topic ${i + 1}');
         return false; // Return early if any topic or description field is empty
       }
-
-    
     }
 
     return true;
@@ -2827,14 +2838,12 @@ int len = list1.length;
       _descriptions.removeRange(1, _descriptions.length);
       _resources.removeRange(1, _resources.length);
     }
-  
 
     // Clear the topics, descriptions, and resources
     for (int i = 0; i < _topics.length; i++) {
       _topics[i].clear();
       _descriptions[i].clear();
       _resources[i].clear();
-     
     }
   }
 
@@ -2910,7 +2919,6 @@ int len = list1.length;
     return false;
   }
 
-
   void moreInfo(PathwayContainer pathway) {
     int i = 0;
     showDialog(
@@ -2922,145 +2930,140 @@ int len = list1.length;
             return AlertDialog(
               insetPadding: EdgeInsets.symmetric(horizontal: 16),
               backgroundColor: Color.fromARGB(255, 255, 255, 255),
-              content:  SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Center(
-                            child: Text(
-                              pathway.title,
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          SizedBox(height: 15.0),
-                          Center(
-                            child: Lottie.network(
-                                'https://lottie.host/623f88bb-cb70-413c-bb1a-0003d0b7e3d6/RnPQM25m8I.json'),
-                          ),
-                          Center(
-                            child: Text(
-                              pathway.path_description,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: const Color.fromARGB(255, 81, 81, 81),
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 300,
-                            child: Divider(
-                              color: Color.fromARGB(255, 211, 211, 211),
-                              thickness: 1,
-                            ),
-                          ),
-                          SizedBox(height: 8.0),
-                          Center(
-                            child: Text(
-                              'Get ready to embark on an exciting journey of learning and growth!',
-                              style: TextStyle(
-                                  color: Color.fromARGB(255, 169, 0, 157)),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Text(
-                            'SubTopics:',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 8.0),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children:
-                                pathway.subtopics.asMap().entries.map((entry) {
-                              final index = entry.key;
-                              final subtopic = entry.value;
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Text(
+                        pathway.title,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    SizedBox(height: 15.0),
+                    Center(
+                      child: Lottie.network(
+                          'https://lottie.host/623f88bb-cb70-413c-bb1a-0003d0b7e3d6/RnPQM25m8I.json'),
+                    ),
+                    Center(
+                      child: Text(
+                        pathway.path_description,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: const Color.fromARGB(255, 81, 81, 81),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 300,
+                      child: Divider(
+                        color: Color.fromARGB(255, 211, 211, 211),
+                        thickness: 1,
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Center(
+                      child: Text(
+                        'Get ready to embark on an exciting journey of learning and growth!',
+                        style:
+                            TextStyle(color: Color.fromARGB(255, 169, 0, 157)),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Text(
+                      'SubTopics:',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: pathway.subtopics.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final subtopic = entry.value;
 
-                              int x = index;
-                              if (expandedStates[subtopic] == null) {
-                                expandedStates[subtopic] = false;
-                              }
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(height: 8.0),
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.amber,
-                                        ),
-                                        child: Icon(
-                                          Icons.star,
-                                          color: Colors.white,
-                                          size: 16,
-                                        ),
-                                      ),
-                                      SizedBox(width: 8.0),
-                                      GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            expandedStates[subtopic] =
-                                                !(expandedStates[subtopic] ??
-                                                    false);
-                                          });
-                                        },
-                                        child: Row(
-                                          children: [
-                                            Icon(expandedStates[subtopic] ??
-                                                    false
-                                                ? Icons.keyboard_arrow_down
-                                                : Icons.keyboard_arrow_right),
-                                            SizedBox(width: 8.0),
-                                            Text(
-                                              subtopic,
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                color: const Color.fromARGB(
-                                                    255, 81, 81, 81),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
+                        int x = index;
+                        if (expandedStates[subtopic] == null) {
+                          expandedStates[subtopic] = false;
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 8.0),
+                            Row(
+                              children: [
+                                Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.amber,
                                   ),
-                                  if (expandedStates[subtopic] ?? false)
-                                    Padding(
-                                      padding:
-                                          EdgeInsets.only(left: 22.0, top: 4.0),
-                                      child: Text(
-                                        pathway.descriptions[index],
+                                  child: Icon(
+                                    Icons.star,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                ),
+                                SizedBox(width: 8.0),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      expandedStates[subtopic] =
+                                          !(expandedStates[subtopic] ?? false);
+                                    });
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Icon(expandedStates[subtopic] ?? false
+                                          ? Icons.keyboard_arrow_down
+                                          : Icons.keyboard_arrow_right),
+                                      SizedBox(width: 8.0),
+                                      Text(
+                                        subtopic,
                                         style: TextStyle(
-                                          fontSize: 14,
+                                          fontSize: 16,
                                           color: const Color.fromARGB(
                                               255, 81, 81, 81),
                                         ),
                                       ),
-                                    ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (expandedStates[subtopic] ?? false)
+                              Padding(
+                                padding: EdgeInsets.only(left: 22.0, top: 4.0),
+                                child: Text(
+                                  pathway.descriptions[index],
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color:
+                                        const Color.fromARGB(255, 81, 81, 81),
+                                  ),
+                                ),
+                              ),
 
-                                  //resources
-                                 
+                            //resources
 
-                               if (expandedStates[subtopic] ?? false)
+                            if (expandedStates[subtopic] ?? false)
                               Padding(
                                 padding: EdgeInsets.only(left: 22.0, top: 8.0),
                                 child: GestureDetector(
                                   onTap: () {
-                                    launch(
-                                        pathway.resources[index]); // Replace with the actual URL
+                                    launch(pathway.resources[
+                                        index]); // Replace with the actual URL
                                   },
                                   child: Row(
                                     children: [
@@ -3078,19 +3081,17 @@ int len = list1.length;
                                   ),
                                 ),
                               ),
-
-                                ],
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      ),
+                          ],
+                        );
+                      }).toList(),
                     ),
-                
+                  ],
+                ),
+              ),
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context); 
+                    Navigator.pop(context);
                   },
                   child: Text('Close'),
                 ),
@@ -3101,7 +3102,4 @@ int len = list1.length;
       },
     );
   }
-
 }
-
- 
