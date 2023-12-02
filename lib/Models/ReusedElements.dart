@@ -355,7 +355,7 @@ void toastMessage(String message) {
   Fluttertoast.showToast(
     msg: message,
     toastLength: Toast.LENGTH_LONG,
-    backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
+    backgroundColor: Color.fromRGBO(98, 96, 100, 0.89),
     textColor: Color(0xffffffff),
     gravity: ToastGravity.TOP,
   );
@@ -700,5 +700,3 @@ showAlertDialog(context, Widget child,
         );
       });
 }
-
- 
