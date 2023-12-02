@@ -1351,4 +1351,3 @@ class CoursesWidget extends StatelessWidget {
   }
 }
 
-//LinaFri-new

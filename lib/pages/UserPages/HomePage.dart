@@ -25,8 +25,10 @@ class __FHomePageState extends State<FHomePage> {
     );
   }
 
-  bool showSearchBar = false;
-  TextEditingController searchController = TextEditingController();
+ bool showSearchBar = false;
+ TextEditingController searchController = TextEditingController();
+
+
 
   void showInputDialog() {
     showAlertDialog(
@@ -277,8 +279,11 @@ class __FHomePageState extends State<FHomePage> {
       );
 
   Widget buildTeamCard(CardFT team) {
+  DateTime deadlineDate = team.date as DateTime; 
+  DateTime currentDate = DateTime.now();
+
     final formattedDate =
-        DateFormat.yMMMMd().format(team.date); // Format the date
+        DateFormat.yMMMMd().format(team.date); 
 
     return Card(
       child: Column(
@@ -340,31 +345,31 @@ class __FHomePageState extends State<FHomePage> {
                   size: 18.5,
                 ),
                 onPressed: () {
-                  // Add your functionality for the button here
+                  // Add your functionality next sprints
                 },
               ),
               IconButton(
                 icon: Icon(Icons.report),
                 onPressed: () {
-                  // Add your functionality for the button here
+                  // Add your functionality next sprints
                 },
               ),
             ],
           ),
           Container(
-            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            decoration: BoxDecoration(
-              color: Colors.purple.shade200,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Text(
-              'Deadline: $formattedDate', // Use the formatted date
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12.0,
+              padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+              decoration: BoxDecoration(
+                color: deadlineDate.isBefore(currentDate) ? Colors.red : Color.fromARGB(255, 11, 0, 135),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Text(
+                'Deadline: $formattedDate', 
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12.0,
+                ),
               ),
             ),
-          ),
           SizedBox(height: 5),
         ],
       ),
@@ -591,6 +596,7 @@ class __FHomePageState extends State<FHomePage> {
       ),
     );
   }
+
 }
 
-//LinaFri
+ 

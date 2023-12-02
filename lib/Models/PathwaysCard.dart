@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class PathwayContainer extends StatelessWidget {
-  final int id; // Existing field for your custom ID
+  final int id; 
   final String imagePath;
   final String title;
   final String path_description;
@@ -23,7 +23,7 @@ class PathwayContainer extends StatelessWidget {
     required this.subtopics,
     required this.descriptions,
      this.docId,
-    required this.resources, // Updated parameter
+    required this.resources, 
   });
 
   Map<String, dynamic> toJson() => {
@@ -40,7 +40,7 @@ class PathwayContainer extends StatelessWidget {
 
   static PathwayContainer fromJson(Map<String, dynamic> json) =>
       PathwayContainer(
-        id: json['pathwayNo'] ??0, // Assuming 'id' is the field for your custom ID
+        id: json['pathwayNo'] ??0, 
         imagePath: json['imageURL']??'',
         title: json['title']??'',
         path_description: json['pathwayDescription']??'',
@@ -53,8 +53,7 @@ class PathwayContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use the docId as needed
     return Card();
   }
 }
-//LinaFri
+ 

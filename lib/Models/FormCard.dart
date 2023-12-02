@@ -520,19 +520,6 @@ class _FormWidgetState extends State<FormWidget> {
                       await _selectDate(context);
                     },
                     validator: (value) {
-                      // if (_dateController.text.isEmpty) {
-                      //   return 'Please select a date';
-                      // }
-                      // DateTime selectedDate =
-                      //     DateTime.parse(_dateController.text);
-
-                      // // Get the current date
-                      // DateTime currentDate = DateTime.now();
-
-                      //         toastMessage("Please enter a valid date");
-                      // if (selectedDate.isBefore(currentDate)) {
-                      //   return 'Wrong deadline, choose a deadline in the future';
-                      // }
                       return null;
                     },
                     decoration: InputDecoration(
@@ -653,14 +640,12 @@ class _FormWidgetState extends State<FormWidget> {
           'postedDate': postDate,
         });
       } else if (_selectedPostType == 'Team Collaberation') {
-        print("########### INSIDE TEAM ");
         // Save form in the 'Team Collaboration' collection
         //final formCollection = FirebaseFirestore.instance.collection('Team');
         final teamCollabCollection =
             FirebaseFirestore.instance.collection('Team');
         final newFormDoc = teamCollabCollection.doc();
-        print("########### INSIDE QUESTION $teamCollabCollection");
-        print("########### INSIDE QUESTION $newFormDoc ");
+
         await teamCollabCollection.doc(newFormDoc.id).set({
           'userId': userId,
           //'dropdownValue': _selectedPostType,
@@ -671,20 +656,13 @@ class _FormWidgetState extends State<FormWidget> {
           'postedDate': postDate,
         });
 
-        print("########### INSIDE QUESTION $userId");
-        print("########### INSIDE QUESTION $textFieldValue");
-        print("########### INSIDE QUESTION $largeTextFieldValue");
-        print("########### INSIDE QUESTION $_selectedTopics");
-        print("########### INSIDE QUESTION $postDate");
       } else if (_selectedPostType == 'Project') {
-        // Save form in the 'Project' collection
         final formCollection = FirebaseFirestore.instance.collection('Project');
         final newFormDoc = formCollection.doc();
         final projectCollection =
             FirebaseFirestore.instance.collection('Project');
         await projectCollection.doc(newFormDoc.id).set({
           'userId': userId,
-          //'dropdownValue': _selectedPostType,
           'postTitle': textFieldValue,
           'postDescription': largeTextFieldValue,
           'deadlineDate': selectedDate,
@@ -692,36 +670,6 @@ class _FormWidgetState extends State<FormWidget> {
           'postedDate': postDate,
         });
       }
-
-// Delete the existing documents from the collections
-/*if (_selectedPostType == 'Question') {
-  final formCollection = FirebaseFirestore.instance.collection('Question');
-  await formCollection.get().then((snapshot) {
-    for (DocumentSnapshot doc in snapshot.docs) {
-      doc.reference.delete();
-    }
-  });
-}
-
-if (_selectedPostType == 'Team Collaboration') {
-  final formCollection = FirebaseFirestore.instance.collection('Team');
-  await formCollection.get().then((snapshot) {
-    for (DocumentSnapshot doc in snapshot.docs) {
-      doc.reference.delete();
-    }
-  });
-}
-
-if (_selectedPostType == 'Project') {
-  final formCollection = FirebaseFirestore.instance.collection('Project');
-  await formCollection.get().then((snapshot) {
-    for (DocumentSnapshot doc in snapshot.docs) {
-      doc.reference.delete();
-    }
-  });
-}*/
-
-      // Clear the form fields and selected date.
       setState(() {
         dropdownValue = null;
         textFieldValue = '';
@@ -730,10 +678,6 @@ if (_selectedPostType == 'Project') {
         _selectedTopics.clear();
       });
       toastMessage(interestsValidation ?? 'Form submitted successfully!');
-
-      //ScaffoldMessenger.of(context).showSnackBar(
-      //SnackBar(content: Text('Form submitted successfully!')));
-
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => FHomePage()),
@@ -742,4 +686,4 @@ if (_selectedPostType == 'Project') {
   }
 }
 
-//LinaFri
+ 

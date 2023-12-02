@@ -2,7 +2,6 @@ import 'dart:core';
 
 class CardQview {
   final int id;
-  //final String postType;
   final String title;
   final String description;
   final List<String> topics;
@@ -13,7 +12,6 @@ class CardQview {
 
   CardQview({
     required this.id,
-    //required this.postType,
     required this.title,
     required this.description,
     required this.topics,
@@ -25,7 +23,6 @@ class CardQview {
 
   Map<String, dynamic> toJson() => {
         'questionCount': id,
-        //'dropdownValue': postType,
         'postTitle': title,
         'postDescription': description,
         'selectedInterests': topics,
@@ -37,7 +34,6 @@ class CardQview {
 
   static CardQview fromJson(Map<String, dynamic> json) => CardQview(
         id: json['questionCount'],
-        //postType: json['dropdownValue'],
         title: json['postTitle'],
         description: json['postDescription'],
         topics: List<String>.from(json['selectedInterests']),
@@ -48,4 +44,4 @@ class CardQview {
       );
 }
 
-//LinaFri
+ 

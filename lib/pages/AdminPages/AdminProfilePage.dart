@@ -331,7 +331,6 @@ Future<bool> updatePasswordByEmail() async {
         .doc(userId)
         .update({'password': hashedPassword});
 
-    // Update password in Firebase Authentication
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
@@ -380,4 +379,4 @@ void _showSnackBar2(String message) {
 
 
 
-//LinaFri
+ 

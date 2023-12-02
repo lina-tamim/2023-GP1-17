@@ -1,5 +1,4 @@
 class CardAview {
-  //String answerId;
   int questionId;
   String userId;
   String answerText;
@@ -13,7 +12,6 @@ class CardAview {
 
   CardAview(
       {
-      //required this.answerId,
       required this.questionId,
       required this.userId,
       required this.answerText,
@@ -26,7 +24,6 @@ class CardAview {
       });
 
   Map<String, dynamic> toJson() => {
-        //'answerId': answerId,
         'questionId': questionId,
         'userId': userId,
         'answerText': answerText,
@@ -34,13 +31,12 @@ class CardAview {
         'username': '',
         'upvotedUserIds': upvotedUserIds,
         'docId': docId,
-         'userPhotoUrl': userPhotoUrl, // Update property name to userPhotoUrl
+         'userPhotoUrl': userPhotoUrl, 
 
       };
 
   factory CardAview.fromJson(Map<String, dynamic> json) {
     return CardAview(
-        //answerId: json['answerId'] as String,
         questionId: json['questionId'] as int,
         userId: json['userId'] as String,
         answerText: json['answerText'] as String,
@@ -48,9 +44,9 @@ class CardAview {
         upvotedUserIds: List<String>.from(json['upvotedUserIds'] ?? []),
 docId: json['docId'] ?? '',
         username: json['username'] ?? '',
-                        userPhotoUrl: json['userPhotoUrl'] as String?, // Update property name to userPhotoUrl
+                        userPhotoUrl: json['userPhotoUrl'] as String?, 
 );
   }
 }
 
-//LinaFri
+ 

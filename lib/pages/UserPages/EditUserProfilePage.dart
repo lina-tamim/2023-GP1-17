@@ -401,7 +401,7 @@ class _EditProfile2State extends State<EditProfile2> {
             const Divider(),
             const SizedBox(height: 10),
 
-//USER TYPE
+          //USER TYPE
             const Row(
               children: [
                 Text(
@@ -1611,7 +1611,17 @@ class _EditProfile2State extends State<EditProfile2> {
 
       // Delete user's name questions, team requests, and projects
       await FirebaseFirestore.instance
-          .collection('posts')
+          .collection('Project')
+          .where('userId', isEqualTo: _loggedInEmail)
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          doc.reference.update({'userId': 'DeactivatedUser'});
+        });
+      });
+            // Delete user's name questions, team requests, and projects
+      await FirebaseFirestore.instance
+          .collection('Question')
           .where('userId', isEqualTo: _loggedInEmail)
           .get()
           .then((querySnapshot) {
@@ -1620,10 +1630,20 @@ class _EditProfile2State extends State<EditProfile2> {
         });
       });
 
-      // Delete user answers
       // Delete user's name questions, team requests, and projects
       await FirebaseFirestore.instance
-          .collection('answers')
+          .collection('Team')
+          .where('userId', isEqualTo: _loggedInEmail)
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          doc.reference.update({'userId': 'DeactivatedUser'});
+        });
+      });
+
+      // Delete user's name questions, team requests, and projects
+      await FirebaseFirestore.instance
+          .collection('Answer')
           .where('userId', isEqualTo: _loggedInEmail)
           .get()
           .then((querySnapshot) {
@@ -1675,6 +1695,6 @@ class _EditProfile2State extends State<EditProfile2> {
       ),
     );
   }
-} // end page
+}
 
-//LinaFri
+ 

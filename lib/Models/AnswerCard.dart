@@ -1,5 +1,4 @@
 class CardAnswer {
-  //String answerId;
   int questionId;
   String userId;
   String answerText;
@@ -10,7 +9,6 @@ List<String>? upvotedUserIds;
   final String docId;
 
   CardAnswer({
-   // required this.answerId,
     required this.questionId,
     required this.userId,
     required this.answerText,
@@ -22,7 +20,6 @@ List<String>? upvotedUserIds;
   });
 
   Map<String, dynamic> toJson() => {
-        //'answerId': answerId,
         'questionId': questionId,
         'userId': userId,
         'answerText': answerText,
@@ -35,7 +32,6 @@ List<String>? upvotedUserIds;
 
   factory CardAnswer.fromJson(Map<String, dynamic> json) {
     return CardAnswer(
-     // answerId: json['answerId'] as String,
       questionId: json['questionId'] as int,
       userId: json['userId'] as String,
       answerText: json['answerText'] as String,
@@ -48,4 +44,4 @@ List<String>? upvotedUserIds;
     );
   }
 }
-//LinaFri
+ 
