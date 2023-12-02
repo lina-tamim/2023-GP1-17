@@ -53,14 +53,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
     return username;
   }
 
-  Future<int> getPostCount(String dropdownValue) async {
-    final QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('posts')
-        .where('dropdownvalue', isEqualTo: dropdownValue)
-        .get();
-
-    return snapshot.size;
-  }
 
   void _toggleFormVisibility() async {
     final result = await Navigator.push(

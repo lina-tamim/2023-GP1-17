@@ -316,9 +316,9 @@ class _FormWidgetState extends State<FormWidget> {
                     });
                   },
                   validator: (value) {
-                    if (value == null) {
-                      return 'Please select an option.';
-                    }
+                    // if (value == null) {
+                    //   return 'Please select an option.';
+                    // }
                     return null;
                   },
                   items: postTypeData.keys.map((String postType) {
@@ -371,9 +371,6 @@ class _FormWidgetState extends State<FormWidget> {
                     });
                   },
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'This field is required.';
-                    }
                     return null;
                   },
                   cursorColor: const Color.fromARGB(255, 43, 3, 101),
@@ -421,12 +418,6 @@ class _FormWidgetState extends State<FormWidget> {
                     });
                   },
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'This field is required.';
-                    }
-                    if (value.length > 1024) {
-                      return 'Maximum character limit exceeded (1024 characters).';
-                    }
                     return null;
                   },
                   maxLines: 5,
@@ -585,25 +576,29 @@ class _FormWidgetState extends State<FormWidget> {
   void _submitForm(String userId) async {
     final String? interestsValidation = validateTopics(_selectedTopics);
 
-    // DateTime selectedDate = DateTime.parse(_dateController.text);
+    bool isDateRequired = _selectedPostType == 'Team Collaberation' ||
+        _selectedPostType == 'Project';
 
     // Get the current date
     DateTime currentDate = DateTime.now();
 
-    if (_selectedTopics.isEmpty) {
-      toastMessage(interestsValidation ?? 'Invalid data');
-
-      /*ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(interestsValidation!),
-          duration: Duration(seconds: 2),
-        ),
-      );*/
-    } else if (_dateController.text.isEmpty) {
+    if (_selectedPostType == null) {
+      toastMessage('Please select an option.');
+    } else if (textFieldValue.isEmpty) {
+      toastMessage('Please enter a title');
+    } else if (largeTextFieldValue.isEmpty) {
+      toastMessage('Description is required');
+    } else if (largeTextFieldValue.length > 1024) {
+      toastMessage(
+          'Maximum character limit exceeded (1024 characters) in description.');
+    } else if (isDateRequired && _dateController.text.isEmpty) {
       toastMessage('Please select a date');
-    } else if (selectedDate == null || selectedDate!.isBefore(currentDate)) {
+    } else if (isDateRequired &&
+        (selectedDate == null || selectedDate!.isBefore(currentDate))) {
       toastMessage("Please enter a valid date");
-    } else if (_formKey.currentState!.validate()) {
+    } else if (_selectedTopics.isEmpty) {
+      toastMessage(interestsValidation ?? 'Invalid data');
+    } else {
       final formCollectionn = FirebaseFirestore.instance.collection('Question');
       final snapshot = await formCollectionn
           .orderBy('questionCount', descending: true)
@@ -640,15 +635,15 @@ class _FormWidgetState extends State<FormWidget> {
           'postedDate': postDate,
         });
       } else if (_selectedPostType == 'Team Collaberation') {
+        print("########### INSIDE TEAM ");
         // Save form in the 'Team Collaboration' collection
-        //final formCollection = FirebaseFirestore.instance.collection('Team');
         final teamCollabCollection =
             FirebaseFirestore.instance.collection('Team');
         final newFormDoc = teamCollabCollection.doc();
-
+        print("########### INSIDE QUESTION $teamCollabCollection");
+        print("########### INSIDE QUESTION $newFormDoc ");
         await teamCollabCollection.doc(newFormDoc.id).set({
           'userId': userId,
-          //'dropdownValue': _selectedPostType,
           'postTitle': textFieldValue,
           'postDescription': largeTextFieldValue,
           'deadlineDate': selectedDate,
@@ -656,7 +651,13 @@ class _FormWidgetState extends State<FormWidget> {
           'postedDate': postDate,
         });
 
+        print("########### INSIDE QUESTION $userId");
+        print("########### INSIDE QUESTION $textFieldValue");
+        print("########### INSIDE QUESTION $largeTextFieldValue");
+        print("########### INSIDE QUESTION $_selectedTopics");
+        print("########### INSIDE QUESTION $postDate");
       } else if (_selectedPostType == 'Project') {
+        // Save form in the 'Project' collection
         final formCollection = FirebaseFirestore.instance.collection('Project');
         final newFormDoc = formCollection.doc();
         final projectCollection =
@@ -670,6 +671,8 @@ class _FormWidgetState extends State<FormWidget> {
           'postedDate': postDate,
         });
       }
+
+      // Clear the form fields and selected date.
       setState(() {
         dropdownValue = null;
         textFieldValue = '';
@@ -678,6 +681,7 @@ class _FormWidgetState extends State<FormWidget> {
         _selectedTopics.clear();
       });
       toastMessage(interestsValidation ?? 'Form submitted successfully!');
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => FHomePage()),
@@ -685,5 +689,3 @@ class _FormWidgetState extends State<FormWidget> {
     }
   }
 }
-
- 

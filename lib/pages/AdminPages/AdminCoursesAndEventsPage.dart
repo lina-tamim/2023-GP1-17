@@ -391,8 +391,7 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
       });
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Form submitted successfully!')));
+toastMessage('Form submitted successfully!');
 
     clearAllFields();
 
