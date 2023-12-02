@@ -75,14 +75,9 @@ class Course {
     return {
       'description': description,
       'endDate': endDate?.toIso8601String(),
-      //'link': link,
       'location': location,
       'startDate': startDate?.toIso8601String(),
       'title': title,
-      //'type': type,
-      //'attendanceType': attendanceType,
-      //'docId': docId,
-      //'imageURL': imageURL,
       'my_id':id,
     };
   }

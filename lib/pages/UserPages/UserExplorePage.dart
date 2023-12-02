@@ -96,8 +96,7 @@ class _UserExplorePageState extends State<UserExplorePage>
         indicator: BoxDecoration(),
         tabs: [
            Tab(
-            child: Text(
-              'Courses and Events',
+            child: Text('Courses and Events',
               style: TextStyle(
                 fontSize: 16,
                 color: Color.fromARGB(

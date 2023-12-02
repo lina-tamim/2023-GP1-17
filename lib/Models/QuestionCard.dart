@@ -6,7 +6,6 @@ class CardQuestion {
   final List<String> topics;
   final String userId;
   String? userPhotoUrl;
-
   final String? docId;
   String? username;
 

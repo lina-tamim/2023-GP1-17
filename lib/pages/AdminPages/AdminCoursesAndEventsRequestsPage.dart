@@ -64,7 +64,7 @@ class _AdminCoursesAndEventsRequestsPageState
                 const Text(
                   'Courses and Events Requests',
                   style: TextStyle(
-                    fontSize: 18, // Adjust the font size
+                    fontSize: 18, 
                     fontFamily: "Poppins",
                     color: Colors.white,
                   ),

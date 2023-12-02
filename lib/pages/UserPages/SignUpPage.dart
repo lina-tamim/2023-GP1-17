@@ -1171,13 +1171,12 @@ class _Signup extends State<Signup> {
         .where('email', isEqualTo: email.toLowerCase())
         .get();
     if (querySnapshot.docs.isNotEmpty) {
-      return false; // Email already exists
+      return false; 
     } else {
-      return true; // Email is available
+      return true; 
     }
   }
 
-  // Check username existence
   Future<bool> checkAvailableUsername(String userName) async {
     CollectionReference usersCollection =
         FirebaseFirestore.instance.collection('RegularUser');

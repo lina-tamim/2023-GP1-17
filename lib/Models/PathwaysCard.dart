@@ -12,8 +12,6 @@ class PathwayContainer extends StatelessWidget {
   final List<String> resources;
 
    final String? docId;
-
-
    PathwayContainer({
     required this.id,
     required this.imagePath,

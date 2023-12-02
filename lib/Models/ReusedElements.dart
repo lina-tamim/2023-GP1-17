@@ -28,7 +28,6 @@ class _NavBarUserState extends State<NavBarUser> {
   String loggedInEmail = '';
   String loggedImage = '';
   String loggedInAdminEmail = '';
-
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override

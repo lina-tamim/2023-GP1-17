@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+
 class CardFTview {
   final String title;
   final String description;
@@ -23,7 +24,6 @@ class CardFTview {
   });
 
   Map<String, dynamic> toJson() => {
-        //'dropdownValue': postType,
         'postTitle': title,
         'postDescription': description,
         'deadlineDate': date,

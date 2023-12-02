@@ -72,8 +72,7 @@ class _AdminHome extends State<AdminHome> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                const AdminCoursesAndEventsPage()),
+                            builder: (context) => const AdminCoursesAndEventsPage()),
                       );
                     },
                     child: itemDashboard(
@@ -183,5 +182,3 @@ class _AdminHome extends State<AdminHome> {
     );
   }
 }
-
- 

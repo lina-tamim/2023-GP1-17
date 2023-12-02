@@ -21,7 +21,6 @@ class _UserEditImagePickerState extends State<UserEditImagePicker> {
   bool _isLoading = false;
   String _loggedInimageURL = '';
   String defaultPhotoUrl = '';
-
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override

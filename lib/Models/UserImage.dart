@@ -7,7 +7,6 @@ const UserImagePicker({Key? key, required this.onPickImage})
       : super(key: key);
 
   final void Function(File pickedImage) onPickImage;
-
   @override
   State<UserImagePicker> createState() {
     return _UserImagePickerState();

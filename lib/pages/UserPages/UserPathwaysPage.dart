@@ -574,8 +574,6 @@ void moreInfo(PathwayContainer pathway) {
                   onPressed: () {
                     Navigator.of(context).pop(chosenTopics);
                     setState(() {
-                      // Update filteredTopics with chosenTopics
-                      // Make sure chosenTopics is a List<String> containing selected topics
                       filteredTopics = chosenTopics;
                     });
                   },

@@ -8,8 +8,6 @@ class CardAview {
   final String docId;
   String? userPhotoUrl; 
   
-
-
   CardAview(
       {
       required this.questionId,

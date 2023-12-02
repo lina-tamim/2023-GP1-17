@@ -176,7 +176,7 @@ int x = 0;
     final List<String> items = edittopicGroups.keys.toList();
 
     final List<String> selectededitTopics = List<String>.from(
-        _editSelectTopic); // Store the selected topics outside of the dialog
+        _editSelectTopic); 
 
     final List<String>? result = await showDialog<List<String>>(
       context: context,

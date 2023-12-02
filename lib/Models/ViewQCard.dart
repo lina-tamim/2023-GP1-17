@@ -32,6 +32,7 @@ class CardQview {
         'userPhotoUrl': userPhotoUrl, 
       };
 
+
   static CardQview fromJson(Map<String, dynamic> json) => CardQview(
         id: json['questionCount'],
         title: json['postTitle'],

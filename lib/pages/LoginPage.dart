@@ -106,8 +106,6 @@ class _Login extends State<Login> {
           .signInWithEmailAndPassword(email: email, password: password);
 
       final uid = userCredential.user!.uid;
-
-      // Check Admin collection
       DocumentSnapshot<Map<String, dynamic>> adminSnapshot =
           await FirebaseFirestore.instance.collection('Admin').doc(uid).get();
 

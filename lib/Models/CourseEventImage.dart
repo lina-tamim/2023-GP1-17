@@ -18,7 +18,6 @@ class _CourseAndEventImagePickerState extends State<CourseAndEventImagePicker> {
   File? _pickedImageFile;
   final String defaultPhotoUrl =
       'assets/Backgrounds/defaultCoursePic.png';
-
   void _pickImage() async {
     final pickedImage = await ImagePicker().pickImage(
       source: ImageSource.gallery,

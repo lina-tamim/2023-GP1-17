@@ -501,7 +501,6 @@ class __FHomePageState extends State<FHomePage> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           onPressed: () async {
             showInputDialog();
-            // _toggleFormVisibility();
           },
           backgroundColor: Color.fromARGB(255, 156, 147, 176),
           child: const Icon(

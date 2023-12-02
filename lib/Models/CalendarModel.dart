@@ -3,7 +3,7 @@ class EventModel {
   final DateTime startDate;
   final DateTime endDate;
   final String location;
-   String? docId;
+  String? docId;
 
   EventModel({
     required this.title,

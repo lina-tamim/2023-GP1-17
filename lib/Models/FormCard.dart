@@ -635,13 +635,10 @@ class _FormWidgetState extends State<FormWidget> {
           'postedDate': postDate,
         });
       } else if (_selectedPostType == 'Team Collaberation') {
-        print("########### INSIDE TEAM ");
-        // Save form in the 'Team Collaboration' collection
+
         final teamCollabCollection =
             FirebaseFirestore.instance.collection('Team');
         final newFormDoc = teamCollabCollection.doc();
-        print("########### INSIDE QUESTION $teamCollabCollection");
-        print("########### INSIDE QUESTION $newFormDoc ");
         await teamCollabCollection.doc(newFormDoc.id).set({
           'userId': userId,
           'postTitle': textFieldValue,
@@ -651,11 +648,6 @@ class _FormWidgetState extends State<FormWidget> {
           'postedDate': postDate,
         });
 
-        print("########### INSIDE QUESTION $userId");
-        print("########### INSIDE QUESTION $textFieldValue");
-        print("########### INSIDE QUESTION $largeTextFieldValue");
-        print("########### INSIDE QUESTION $_selectedTopics");
-        print("########### INSIDE QUESTION $postDate");
       } else if (_selectedPostType == 'Project') {
         // Save form in the 'Project' collection
         final formCollection = FirebaseFirestore.instance.collection('Project');
@@ -672,7 +664,6 @@ class _FormWidgetState extends State<FormWidget> {
         });
       }
 
-      // Clear the form fields and selected date.
       setState(() {
         dropdownValue = null;
         textFieldValue = '';

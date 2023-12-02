@@ -1143,9 +1143,7 @@ class CoursesWidget extends StatelessWidget {
                       color: redColor,
                     ),
                   ),
-                  const SizedBox(
-                    width: 4,
-                  ),
+                  const SizedBox(width: 4,),
                 ],
               ),
             ],

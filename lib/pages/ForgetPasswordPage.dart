@@ -182,7 +182,6 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       );
     } else {
       try {
-        // Email is registered, send password reset link
         await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
         showDialog(
           context: context,

@@ -43,5 +43,3 @@ class CardFT {
       userPhotoUrl: json['userPhotoUrl'] as String?,
       docId: json['docId'] ?? '');
 }
-
- 

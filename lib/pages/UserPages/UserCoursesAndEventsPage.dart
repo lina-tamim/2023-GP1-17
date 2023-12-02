@@ -268,7 +268,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
     );
   }
 
-//CALENDER
   Future<void> saveToCalendar(Course courseAndEvent) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();

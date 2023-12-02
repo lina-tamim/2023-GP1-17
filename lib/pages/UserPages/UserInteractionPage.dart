@@ -554,13 +554,10 @@ class _UserPostsPageState extends State<UserPostsPage> {
           ),
         ),
 
-        //drawer: NavBar(),
-
         floatingActionButton: FloatingActionButton(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           onPressed: () async {
-            // _toggleFormVisibility();
             showInputDialog();
           },
           backgroundColor: Color.fromARGB(255, 156, 147, 176),

@@ -265,8 +265,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       ),
                     ),
                     const SizedBox(width: 5),
-                    const Text(
-                      'Skills',
+                    const Text( 'Skills',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

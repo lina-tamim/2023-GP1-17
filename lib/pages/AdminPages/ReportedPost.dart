@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ReposrtedPost extends StatefulWidget {
-  const ReposrtedPost({super.key});
+const ReposrtedPost({super.key});
 
   @override
   State<ReposrtedPost> createState() => _ReposrtedPostState();

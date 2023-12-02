@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 class ReportedAccount extends StatefulWidget {
   const ReportedAccount({Key? key}) : super(key: key);
-
   @override
   State<ReportedAccount> createState() => _ReportedAccountState();
 }

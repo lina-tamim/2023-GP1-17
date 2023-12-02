@@ -210,7 +210,6 @@ class _CalendarPageState extends State<CalendarPage> {
             .doc(docId)
             .delete();
         setState(() {
-          // Update the UI or reload the events after deletion
         });
       }
     } catch (e) {

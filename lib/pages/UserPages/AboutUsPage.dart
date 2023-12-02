@@ -61,8 +61,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'Reach out to us!',
+                const Text( 'Reach out to us!',
                   style: TextStyle(
                     fontSize: 14,
                     color: Color.fromRGBO(37, 6, 81, 0.898),

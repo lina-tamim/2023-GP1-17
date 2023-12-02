@@ -32,8 +32,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
               ),
               Image.asset('assets/Backgrounds/XlogoSmall.png'),
               const SizedBox(height: 30),
-              Text(
-                'Coming soon !',
+              Text( 'Coming soon !',
                 style: TextStyle(
                     fontFamily: AutofillHints.familyName,
                     fontSize: 20,

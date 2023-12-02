@@ -351,7 +351,7 @@ class _EditProfile2State extends State<EditProfile2> {
                     enabled: true,
                     readOnly: false,
                     obscureText:
-                        !showPassword, // Set obscureText based on the toggle state
+                        !showPassword, 
                     onChanged: (value) {
                       newPassword = value;
                     },

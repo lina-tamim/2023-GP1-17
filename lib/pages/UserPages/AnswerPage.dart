@@ -66,8 +66,6 @@ class _AnswerPageState extends State<AnswerPage> {
       question.username = username;
       question.userPhotoUrl = userPhotoUrl;
     });
-
-    // Check if any userIds were not found in the 'User' collection
     final userIdsNotFound =
         userIds.where((userId) => !userMap.containsKey(userId)).toList();
     userIdsNotFound.forEach((userId) {
