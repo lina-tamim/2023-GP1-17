@@ -171,7 +171,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     }
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      height: 420, 
+                      height: 420,
                       child: ListView.builder(
                           itemCount: list.length,
                           scrollDirection: Axis.horizontal,
@@ -501,7 +501,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                       },
                       child: const Icon(
                         Icons.arrow_back_outlined,
-                        color: mainColor,
+                        color: Colors.black,
                       ),
                     ),
                     const Spacer(),
@@ -510,7 +510,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                       style: TextStyle(
                           fontSize: 17,
                           fontFamily: "Poppins",
-                          color: mainColor,
+                          color: Colors.black,
                           fontWeight: FontWeight.w400),
                     ),
                     const Spacer(),
@@ -604,7 +604,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     false,
                     descController,
                     true,
-                    maxLines: 1),
+                    maxLines: 5),
                 const Padding(
                   padding: EdgeInsets.only(top: 20),
                   child: Row(
@@ -744,9 +744,29 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                   visible: selectedAttendanceType == 'Onsite',
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
-                    child: FormTitleWidget(
-                      title: "Location",
-                      isRequired: true,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const SizedBox(width: 8),
+                            FormTitleWidget(
+                              title: "Location",
+                              isRequired: true,
+                            ),
+                            Tooltip(
+                              message:
+                                  'To accept your request,Add location of the course or event as country and city',
+                              child: Icon(
+                                Icons.live_help_rounded,
+                                size: 18,
+                                color: Color.fromARGB(255, 178, 178, 178),
+                              ),
+                            ),
+                          ],
+                        ),
+                        // Rest of your code...
+                      ],
                     ),
                   ),
                 ),
@@ -766,7 +786,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: FormTitleWidget(
-                    title: "Link",
+                    title: "Platform Link",
                   ),
                 ),
                 reusableTextField(
@@ -1331,4 +1351,4 @@ class CoursesWidget extends StatelessWidget {
   }
 }
 
-//LinaFri
+//LinaFri-new
