@@ -1,3 +1,4 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,9 +36,9 @@ class __FHomePageState extends State<FHomePage> {
   }
 
   Stream<List<CardQuestion>> readQuestion() {
-    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-        .collection('Question');
-        //.where('dropdownValue', isEqualTo: 'Question');
+    Query<Map<String, dynamic>> query =
+        FirebaseFirestore.instance.collection('Question');
+    //.where('dropdownValue', isEqualTo: 'Question');
 
     if (searchController.text.isNotEmpty) {
       String searchText = searchController.text;
@@ -91,9 +92,9 @@ class __FHomePageState extends State<FHomePage> {
   }
 
   Stream<List<CardFT>> readTeam() {
-    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-        .collection('Team');
-        //.where('dropdownValue', isEqualTo: 'Team Collaberation');
+    Query<Map<String, dynamic>> query =
+        FirebaseFirestore.instance.collection('Team');
+    //.where('dropdownValue', isEqualTo: 'Team Collaberation');
 
     if (searchController.text.isNotEmpty) {
       String searchText = searchController.text
@@ -143,9 +144,9 @@ class __FHomePageState extends State<FHomePage> {
   }
 
   Stream<List<CardFT>> readProjects() {
-    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-        .collection('Project');
-        //.where('dropdownValue', isEqualTo: 'Project');
+    Query<Map<String, dynamic>> query =
+        FirebaseFirestore.instance.collection('Project');
+    //.where('dropdownValue', isEqualTo: 'Project');
 
     if (searchController.text.isNotEmpty) {
       String searchText = searchController.text
@@ -247,14 +248,12 @@ class __FHomePageState extends State<FHomePage> {
                 children: [
                   IconButton(
                     icon: Icon(Icons.bookmark),
-                    color:Colors.grey,
                     onPressed: () {
                       // Add functionality in upcoming sprints
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.chat_bubble),
-                    color:Colors.grey,
+                    icon: Icon(Icons.comment),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -266,7 +265,6 @@ class __FHomePageState extends State<FHomePage> {
                   ),
                   IconButton(
                     icon: Icon(Icons.report),
-                    color:Colors.grey,
                     onPressed: () {
                       // Add functionality in upcoming sprints
                     },
@@ -337,15 +335,16 @@ class __FHomePageState extends State<FHomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
-                icon: Icon(Icons.chat_bubble),
-                color:Colors.grey,
+                icon: Icon(
+                  FontAwesomeIcons.solidMessage,
+                  size: 18.5,
+                ),
                 onPressed: () {
                   // Add your functionality for the button here
                 },
               ),
               IconButton(
                 icon: Icon(Icons.report),
-                color:Colors.grey,
                 onPressed: () {
                   // Add your functionality for the button here
                 },
@@ -593,3 +592,5 @@ class __FHomePageState extends State<FHomePage> {
     );
   }
 }
+
+//LinaFri

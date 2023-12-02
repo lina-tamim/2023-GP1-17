@@ -31,108 +31,109 @@ class _Login extends State<Login> {
     _password.dispose();
     super.dispose();
   }
-  
-void logUserIn() async {
-  final String email = _email.text.toLowerCase();
-  final String password = _password.text.trim();
 
-  setState(() {
-    _isLoading = true;
-  });
+  void logUserIn() async {
+    final String email = _email.text.toLowerCase();
+    final String password = _password.text.trim();
 
-  if (email.isEmpty && password.isEmpty) {
-    toastMessage('Please enter an email and password');
-    return;
-  }
-  if (email.isEmpty) {
-    toastMessage('Please enter an email');
-    return;
-  }
+    setState(() {
+      _isLoading = true;
+    });
 
-  if (password.isEmpty) {
-    toastMessage('Please enter a password');
-    return;
-  }
-
-  try {
-    UserCredential userCredential = await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: email, password: password);
-
-    if (!userCredential.user!.emailVerified) {
-      toastMessage(
-          "Verify your email before logging in.\nIf not found, please check your junk folder.");
+    if (email.isEmpty && password.isEmpty) {
+      toastMessage('Please enter an email and password');
+      return;
+    }
+    if (email.isEmpty) {
+      toastMessage('Please enter an email');
       return;
     }
 
-    final uid = userCredential.user!.uid;
+    if (password.isEmpty) {
+      toastMessage('Please enter a password');
+      return;
+    }
 
-    // Check RegularUser collection
-    DocumentSnapshot<Map<String, dynamic>> regularUserSnapshot =
-        await FirebaseFirestore.instance.collection('RegularUser').doc(uid).get();
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
 
-    if (regularUserSnapshot.exists) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('loggedInEmail', email);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const FHomePage()),
-      );
-    } else {
+      if (!userCredential.user!.emailVerified) {
+        toastMessage(
+            "Verify your email before logging in.\nIf not found, please check your junk folder.");
+        return;
+      }
+
+      final uid = userCredential.user!.uid;
+
+      // Check RegularUser collection
+      DocumentSnapshot<Map<String, dynamic>> regularUserSnapshot =
+          await FirebaseFirestore.instance
+              .collection('RegularUser')
+              .doc(uid)
+              .get();
+
+      if (regularUserSnapshot.exists) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('loggedInEmail', email);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const FHomePage()),
+        );
+      } else {
+        // Check Admin collection
+        logUserInAdmin();
+      }
+    } catch (e) {
+      toastMessage("Login failed, please enter correct credentials");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void logUserInAdmin() async {
+    final String email = _email.text.toLowerCase();
+    final String password = _password.text.trim();
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+
+      final uid = userCredential.user!.uid;
+
       // Check Admin collection
-      logUserInAdmin();
+      DocumentSnapshot<Map<String, dynamic>> adminSnapshot =
+          await FirebaseFirestore.instance.collection('Admin').doc(uid).get();
+
+      if (adminSnapshot.exists) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('loggedInEmail', email);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const AdminHome()),
+        );
+      } else {
+        toastMessage("Login failed, user not found");
+      }
+    } catch (e) {
+      toastMessage("Login failed, please enter correct credentials");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
-  } catch (e) {
-    toastMessage("Login failed, please enter correct credentials");
-  } finally {
-    setState(() {
-      _isLoading = false;
-    });
   }
-}
-
-void logUserInAdmin() async {
-  final String email = _email.text.toLowerCase();
-  final String password = _password.text.trim();
-
-  setState(() {
-    _isLoading = true;
-  });
-
-  try {
-    UserCredential userCredential = await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: email, password: password);
-
-    final uid = userCredential.user!.uid;
-
-    // Check Admin collection
-    DocumentSnapshot<Map<String, dynamic>> adminSnapshot =
-        await FirebaseFirestore.instance.collection('Admin').doc(uid).get();
-
-    if (adminSnapshot.exists) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('loggedInEmail', email);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const AdminHome()),
-      );
-    } else {
-      toastMessage("Login failed, user not found");
-    }
-  } catch (e) {
-    toastMessage("Login failed, please enter correct credentials");
-  } finally {
-    setState(() {
-      _isLoading = false;
-    });
-  }
-}
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset:
-          false,
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           Positioned(
@@ -156,12 +157,13 @@ void logUserInAdmin() async {
               ),
             ),
           ),
-
           Positioned(
             left: MediaQuery.of(context).size.width * 0.05,
             right: MediaQuery.of(context).size.width * 0.05,
             top: MediaQuery.of(context).size.height * 0.1,
-            bottom: MediaQuery.of(context).size.height * 0.1,
+            bottom: MediaQuery.of(context).viewInsets.bottom > 0
+                ? 0
+                : MediaQuery.of(context).size.height * 0.1,
             child: SingleChildScrollView(
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.7,
@@ -368,8 +370,10 @@ void logUserInAdmin() async {
   }
 
   String hashPassword(String password) {
-    var bytes = utf8.encode(password); 
-    var digest = sha256.convert(bytes); 
-    return digest.toString(); 
+    var bytes = utf8.encode(password);
+    var digest = sha256.convert(bytes);
+    return digest.toString();
   }
 }
+
+//LinaFri

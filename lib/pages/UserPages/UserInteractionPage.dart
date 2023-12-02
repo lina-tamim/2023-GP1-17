@@ -1,3 +1,4 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -116,7 +117,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
             children: [
               SizedBox(height: 5),
               Text(
-                question.username ?? '', 
+                question.username ?? '',
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.deepPurple),
               ),
@@ -153,110 +154,107 @@ class _UserPostsPageState extends State<UserPostsPage> {
                 children: [
                   IconButton(
                     icon: Icon(Icons.bookmark),
-                     color:Colors.grey,
                     onPressed: () {
                       // Add functionality next sprints
                     },
                   ),
                   IconButton(
                     icon: Icon(Icons.comment),
-                     color:Colors.grey,
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            AnswerPage(questionId: question.id)),
+                                AnswerPage(questionId: question.id)),
                       );
                     },
                   ),
                   IconButton(
                     icon: Icon(Icons.report),
-                     color:Colors.grey,
                     onPressed: () {
                       // Add functionality next sprints
                     },
                   ),
-                  PostDeleteButton(docId: question.docId, type:'question'),
+                  PostDeleteButton(docId: question.docId, type: 'question'),
                 ],
               ),
             ],
           ),
         ),
       );
-Stream<List<CardFTview>> readTeam() {
-  return FirebaseFirestore.instance
-      .collection('Team')
-      .where('userId', isEqualTo: email)
-      .snapshots()
-      .asyncMap((snapshot) async {
-    final questions = snapshot.docs.map((doc) {
-      Map<String, dynamic> data = doc.data();
-      data['docId'] = doc.id;
-      return CardFTview.fromJson(data);
-    }).toList();
-    if (questions.isEmpty) return [];
-    final userIds = questions.map((question) => question.userId).toList();
-    final userDocs = await FirebaseFirestore.instance
-        .collection('RegularUser')
-        .where('email', whereIn: userIds)
-        .get();
+  Stream<List<CardFTview>> readTeam() {
+    return FirebaseFirestore.instance
+        .collection('Team')
+        .where('userId', isEqualTo: email)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      final questions = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        data['docId'] = doc.id;
+        return CardFTview.fromJson(data);
+      }).toList();
+      if (questions.isEmpty) return [];
+      final userIds = questions.map((question) => question.userId).toList();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .where('email', whereIn: userIds)
+          .get();
 
-    final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
         userDocs.docs.map((doc) => MapEntry(
-            doc.data()['email'] as String,
-            doc.data() as Map<String, dynamic>,
-        )),
-    );
+              doc.data()['email'] as String,
+              doc.data() as Map<String, dynamic>,
+            )),
+      );
 
-    questions.forEach((question) {
-      final userDoc = userMap[question.userId];
-      final username = userDoc?['username'] as String? ??'';
-      final userPhotoUrl = userDoc?['imageURL'] as String? ??'';
-      question.username = username ;
-      question.userPhotoUrl = userPhotoUrl ;
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
+      });
+
+      return questions;
     });
+  }
 
-    return questions;
-  });
-}
+  Stream<List<CardFTview>> readProject() {
+    return FirebaseFirestore.instance
+        .collection('Project')
+        .where('userId', isEqualTo: email)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      final questions = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        data['docId'] = doc.id;
+        return CardFTview.fromJson(data);
+      }).toList();
+      if (questions.isEmpty) return [];
+      final userIds = questions.map((question) => question.userId).toList();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .where('email', whereIn: userIds)
+          .get();
 
-Stream<List<CardFTview>> readProject() {
-  return FirebaseFirestore.instance
-      .collection('Project')
-      .where('userId', isEqualTo: email)
-      .snapshots()
-      .asyncMap((snapshot) async {
-    final questions = snapshot.docs.map((doc) {
-      Map<String, dynamic> data = doc.data();
-      data['docId'] = doc.id;
-      return CardFTview.fromJson(data);
-    }).toList();
-    if (questions.isEmpty) return [];
-    final userIds = questions.map((question) => question.userId).toList();
-    final userDocs = await FirebaseFirestore.instance
-        .collection('RegularUser')
-        .where('email', whereIn: userIds)
-        .get();
-
-    final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
         userDocs.docs.map((doc) => MapEntry(
-            doc.data()!['email'] as String,
-            doc.data()! as Map<String, dynamic>,
-        )),
-    );
+              doc.data()!['email'] as String,
+              doc.data()! as Map<String, dynamic>,
+            )),
+      );
 
-    questions.forEach((question) {
-      final userDoc = userMap[question.userId];
-      final username = userDoc?['username'] as String?;
-      final userPhotoUrl = userDoc?['imageURL'] as String?;
-      question.username = username ?? '';
-      question.userPhotoUrl = userPhotoUrl ?? '';
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['username'] as String?;
+        final userPhotoUrl = userDoc?['imageURL'] as String?;
+        question.username = username ?? '';
+        question.userPhotoUrl = userPhotoUrl ?? '';
+      });
+
+      return questions;
     });
-
-    return questions;
-  });
-}
+  }
 
   Stream<List<CardAview>> readAnswer() => FirebaseFirestore.instance
           .collection('Answer')
@@ -290,188 +288,189 @@ Stream<List<CardFTview>> readProject() {
         return answers;
       });
 
-Widget buildTeamCard(CardFTview fandT) {
-  final formattedDate = DateFormat.yMMMMd().format(fandT.date);
+  Widget buildTeamCard(CardFTview fandT) {
+    final formattedDate = DateFormat.yMMMMd().format(fandT.date);
 
-  return Card(
-    child: ListTile(
-      leading: CircleAvatar(
-        backgroundImage: fandT.userPhotoUrl != null
-            ? NetworkImage(fandT.userPhotoUrl!)
-            : null,
-      ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 5),
-          Text(
-            fandT.username ?? '',
-            style:
-                TextStyle(fontWeight: FontWeight.bold, color: Colors.deepPurple),
-          ),
-          SizedBox(height: 5),
-          Text(
-            fandT.title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
+    return Card(
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundImage: fandT.userPhotoUrl != null
+              ? NetworkImage(fandT.userPhotoUrl!)
+              : null,
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 5),
+            Text(
+              fandT.username ?? '',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.deepPurple),
             ),
-          ),
-          SizedBox(height: 5),
-          Text(fandT.description),
-        ],
-      ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Wrap(
-            spacing: 4.0,
-            runSpacing: 2.0,
-            children: fandT.topics
-                .map(
-                  (topic) => Chip(
-                    label: Text(
-                      topic,
-                      style: TextStyle(fontSize: 12.0),
+            SizedBox(height: 5),
+            Text(
+              fandT.title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(fandT.description),
+          ],
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: 4.0,
+              runSpacing: 2.0,
+              children: fandT.topics
+                  .map(
+                    (topic) => Chip(
+                      label: Text(
+                        topic,
+                        style: TextStyle(fontSize: 12.0),
+                      ),
                     ),
+                  )
+                  .toList(),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.report),
+                  onPressed: () {
+                    // Add functionality next sprints
+                  },
+                ),
+                IconButton(
+                  icon: Icon(
+                    FontAwesomeIcons.solidMessage,
+                    size: 18.5,
                   ),
-                )
-                .toList(),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                icon: Icon(Icons.report),
-                color: Colors.grey,
-                onPressed: () {
-                  // Add functionality next sprints
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.chat_bubble),
-                color: Colors.grey,
-                onPressed: () {
-                  // Add functionality next sprints
-                },
-              ),
-              PostDeleteButton(docId: fandT.docId, type:'team'),
-              SizedBox(height: 5),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 55),
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-              decoration: BoxDecoration(
-                color: Colors.purple.shade200,
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Text(
-                'Deadline: $formattedDate',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12.0,
+                  onPressed: () {
+                    // Add functionality next sprints
+                  },
+                ),
+                PostDeleteButton(docId: fandT.docId, type: 'team'),
+                SizedBox(height: 5),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 55),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                decoration: BoxDecoration(
+                  color: Colors.purple.shade200,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Text(
+                  'Deadline: $formattedDate',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12.0,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
+
   Widget buildProjectCard(CardFTview fandT) {
-  final formattedDate = DateFormat.yMMMMd().format(fandT.date);
+    final formattedDate = DateFormat.yMMMMd().format(fandT.date);
 
-  return Card(
-    child: ListTile(
-      leading: CircleAvatar(
-        backgroundImage: fandT.userPhotoUrl != null
-            ? NetworkImage(fandT.userPhotoUrl!)
-            : null,
-      ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 5),
-          Text(
-            fandT.username ?? '',
-            style:
-                TextStyle(fontWeight: FontWeight.bold, color: Colors.deepPurple),
-          ),
-          SizedBox(height: 5),
-          Text(
-            fandT.title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
+    return Card(
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundImage: fandT.userPhotoUrl != null
+              ? NetworkImage(fandT.userPhotoUrl!)
+              : null,
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 5),
+            Text(
+              fandT.username ?? '',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.deepPurple),
             ),
-          ),
-          SizedBox(height: 5),
-          Text(fandT.description),
-        ],
-      ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Wrap(
-            spacing: 4.0,
-            runSpacing: 2.0,
-            children: fandT.topics
-                .map(
-                  (topic) => Chip(
-                    label: Text(
-                      topic,
-                      style: TextStyle(fontSize: 12.0),
+            SizedBox(height: 5),
+            Text(
+              fandT.title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(fandT.description),
+          ],
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: 4.0,
+              runSpacing: 2.0,
+              children: fandT.topics
+                  .map(
+                    (topic) => Chip(
+                      label: Text(
+                        topic,
+                        style: TextStyle(fontSize: 12.0),
+                      ),
                     ),
+                  )
+                  .toList(),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.report),
+                  onPressed: () {
+                    // Add functionality next sprints
+                  },
+                ),
+                IconButton(
+                  icon: Icon(
+                    FontAwesomeIcons.solidMessage,
+                    size: 18.5,
                   ),
-                )
-                .toList(),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                icon: Icon(Icons.report),
-                color: Colors.grey,
-                onPressed: () {
-                  // Add functionality next sprints
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.chat_bubble),
-                color: Colors.grey,
-                onPressed: () {
-                  // Add functionality next sprints
-                },
-              ),
-              PostDeleteButton(docId: fandT.docId, type:'project'),
-              SizedBox(height: 5),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 55),
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-              decoration: BoxDecoration(
-                color: Colors.purple.shade200,
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Text(
-                'Deadline: $formattedDate',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12.0,
+                  onPressed: () {
+                    // Add functionality next sprints
+                  },
+                ),
+                PostDeleteButton(docId: fandT.docId, type: 'project'),
+                SizedBox(height: 5),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 55),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                decoration: BoxDecoration(
+                  color: Colors.purple.shade200,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Text(
+                  'Deadline: $formattedDate',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12.0,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
-
-
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -675,7 +674,7 @@ Widget buildTeamCard(CardFTview fandT) {
                       return Center(
                         child: Text('You didn’t post anything yet'),
                       );
-                    } 
+                    }
                     return ListView(
                       children: p.map(buildProjectCard).toList(),
                     );
@@ -762,19 +761,20 @@ Widget buildTeamCard(CardFTview fandT) {
                                   upvotedUserIds.add(currentEmail);
                                   upvoteCount++;
                                 }
-                          answer.upvoteCount = upvoteCount;
-                           answer.upvotedUserIds = upvotedUserIds;
+                                answer.upvoteCount = upvoteCount;
+                                answer.upvotedUserIds = upvotedUserIds;
                                 // Update the upvote count and upvoted user IDs in Firestore
                                 FirebaseFirestore.instance
                                     .collection('Answer')
                                     .doc()
                                     .update({
-                                  'upvoteCount': upvoteCount,
-                                  'upvotedUserIds': upvotedUserIds,
-                                }).then((_) {
-                                }).catchError((error) {
-                                  // Handle error if the update fails
-                                });
+                                      'upvoteCount': upvoteCount,
+                                      'upvotedUserIds': upvotedUserIds,
+                                    })
+                                    .then((_) {})
+                                    .catchError((error) {
+                                      // Handle error if the update fails
+                                    });
                               });
                             },
                           ),
@@ -806,71 +806,73 @@ class PostDeleteButton extends StatelessWidget {
   final String? docId;
   final String type;
 
- @override
-Widget build(BuildContext context) {
-  return IconButton(
-    color: Colors.red,
-    icon: Icon(Icons.delete),
-    onPressed: () {
-      if (docId == null || docId == '') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Unable to delete this $type')));
-      } else {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Confirm Deletion'),
-              content: Text('Are you sure you want to delete this $type?'),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: Text(
-                    'Delete',
-                    style: TextStyle(color: Colors.red),
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      color: Colors.red,
+      icon: Icon(Icons.delete),
+      onPressed: () {
+        if (docId == null || docId == '') {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Unable to delete this $type')));
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Confirm Deletion'),
+                content: Text('Are you sure you want to delete this $type?'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text(
+                      'Delete',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onPressed: () async {
+                      String collectionName;
+                      switch (type) {
+                        case 'answer':
+                          collectionName = 'Answer';
+                          break;
+                        case 'question':
+                          collectionName = 'Question';
+                          break;
+                        case 'team':
+                          collectionName = 'Team';
+                          break;
+                        case 'project':
+                          collectionName = 'Project';
+                          break;
+                        default:
+                          collectionName = '';
+                          break;
+                      }
+                      if (collectionName.isNotEmpty) {
+                        await FirebaseFirestore.instance
+                            .collection(collectionName)
+                            .doc(docId)
+                            .delete();
+                        Navigator.of(context).pop();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Invalid type')));
+                      }
+                    },
                   ),
-                  onPressed: () async {
-                    String collectionName;
-                    switch (type) {
-                      case 'answer':
-                        collectionName = 'Answer';
-                        break;
-                      case 'question':
-                        collectionName = 'Question';
-                        break;
-                      case 'team':
-                        collectionName = 'Team';
-                        break;
-                      case 'project':
-                        collectionName = 'Project';
-                        break;
-                      default:
-                        collectionName = '';
-                        break;
-                    }
-                    if (collectionName.isNotEmpty) {
-                      await FirebaseFirestore.instance
-                          .collection(collectionName)
-                          .doc(docId)
-                          .delete();
+                  TextButton(
+                    child: Text('Cancel'),
+                    onPressed: () {
                       Navigator.of(context).pop();
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Invalid type')));
-                    }
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      }
-    },
-  );
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      },
+    );
+  }
 }
-}
+
+//LinaFri

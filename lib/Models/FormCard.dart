@@ -5,7 +5,6 @@ import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/pages/UserPages/HomePage.dart';
 
-
 class FormWidget extends StatefulWidget {
   const FormWidget({Key? key}) : super(key: key);
 
@@ -68,7 +67,7 @@ class _FormWidgetState extends State<FormWidget> {
 
   String? validateTopics(List<String> selectedTopics) {
     if (selectedTopics.isEmpty) {
-      return 'Please select at least one Category';
+      return 'Please select at least one topic';
     }
     return null;
   }
@@ -244,7 +243,7 @@ class _FormWidgetState extends State<FormWidget> {
                       },
                       child: Icon(
                         Icons.arrow_back_outlined,
-                        color: Color.fromARGB(255, 1, 9, 111).withOpacity(0.9),
+                        color: Color.fromARGB(255, 0, 0, 0).withOpacity(0.9),
                       ),
                     ),
                     Padding(
@@ -255,7 +254,7 @@ class _FormWidgetState extends State<FormWidget> {
                             fontSize: 20,
                             fontFamily: "Poppins",
                             color:
-                                Color.fromARGB(255, 1, 9, 111).withOpacity(0.9),
+                                Color.fromARGB(255, 0, 0, 0).withOpacity(0.9),
                             fontWeight: FontWeight.w400),
                       ),
                     ),
@@ -278,8 +277,7 @@ class _FormWidgetState extends State<FormWidget> {
                     Text(
                       'Post Type',
                       style: TextStyle(
-                        color: const Color.fromARGB(255, 1, 9, 111)
-                            .withOpacity(0.9),
+                        color: Color.fromARGB(255, 0, 0, 0).withOpacity(0.9),
                         fontSize: 16,
                       ),
                     ),
@@ -308,7 +306,6 @@ class _FormWidgetState extends State<FormWidget> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
                   value: _selectedPostType,
@@ -346,7 +343,6 @@ class _FormWidgetState extends State<FormWidget> {
                     hintText: "Post",
                   ),
                 ),
-
                 const SizedBox(height: 25),
                 Row(
                   children: [
@@ -367,7 +363,6 @@ class _FormWidgetState extends State<FormWidget> {
                   ],
                 ),
                 const SizedBox(height: 8),
-
                 TextFormField(
                   onChanged: (value) {
                     setState(() {
@@ -398,7 +393,6 @@ class _FormWidgetState extends State<FormWidget> {
                     hintText: "Title",
                   ),
                 ),
-
                 const SizedBox(height: 25),
                 Row(
                   children: [
@@ -418,7 +412,6 @@ class _FormWidgetState extends State<FormWidget> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 8),
                 TextFormField(
                   onChanged: (value) {
@@ -458,7 +451,7 @@ class _FormWidgetState extends State<FormWidget> {
                 Row(
                   children: [
                     Text(
-                      'Categories',
+                      'Skill/s',
                       style: TextStyle(
                         color: Color.fromARGB(255, 0, 0, 0).withOpacity(0.9),
                         fontSize: 16,
@@ -474,7 +467,6 @@ class _FormWidgetState extends State<FormWidget> {
                   ],
                 ),
                 const SizedBox(height: 8),
-
                 ElevatedButton(
                   onPressed: () async {
                     _showMultiSelectTopics();
@@ -498,7 +490,6 @@ class _FormWidgetState extends State<FormWidget> {
                           ))
                       .toList(),
                 ),
-
                 if (_selectedPostType == 'Team Collaberation' ||
                     _selectedPostType == 'Project') ...[
                   const SizedBox(height: 16),
@@ -531,6 +522,15 @@ class _FormWidgetState extends State<FormWidget> {
                       if (_dateController.text.isEmpty) {
                         return 'Please select a date';
                       }
+                      DateTime selectedDate =
+                          DateTime.parse(_dateController.text);
+
+                      // Get the current date
+                      DateTime currentDate = DateTime.now();
+
+                      if (selectedDate.isBefore(currentDate)) {
+                        return 'Wrong deadline, choose a deadline in the future';
+                      }
                       return null;
                     },
                     decoration: InputDecoration(
@@ -553,7 +553,6 @@ class _FormWidgetState extends State<FormWidget> {
                     ),
                   ),
                 ],
-
                 SizedBox(height: 16.0),
                 Center(
                   child: SizedBox(
@@ -605,8 +604,10 @@ class _FormWidgetState extends State<FormWidget> {
       );
     } else if (_formKey.currentState!.validate()) {
       final formCollectionn = FirebaseFirestore.instance.collection('Question');
-      final snapshot =
-          await formCollectionn.orderBy('questionCount', descending: true).limit(1).get();
+      final snapshot = await formCollectionn
+          .orderBy('questionCount', descending: true)
+          .limit(1)
+          .get();
 
       int id;
       if (snapshot.docs.isEmpty) {
@@ -618,67 +619,65 @@ class _FormWidgetState extends State<FormWidget> {
         id = lastId + 1;
       }
 
+      DateTime postDate = DateTime.now();
 
-    
-    DateTime postDate = DateTime.now();
+      if (_selectedPostType == 'Question') {
+        // Save form in the 'Question' collection
+        final questionCollection =
+            FirebaseFirestore.instance.collection('Question');
+        final newFormDoc = questionCollection.doc();
 
-    if (_selectedPostType == 'Question') {
-      
-      // Save form in the 'Question' collection
-      final questionCollection = FirebaseFirestore.instance.collection('Question');
-      final newFormDoc = questionCollection.doc();
-     
-      await questionCollection.doc(newFormDoc.id).set({
-        'userId': userId,
-        //'dropdownValue': _selectedPostType,
-        'postTitle': textFieldValue,
-        'postDescription': largeTextFieldValue,
-        'selectedInterests': _selectedTopics,
-        //'upvotecount': count,
-        'noOfAnwers': count,
-        'questionCount': id + 1,
-        'postedDate': postDate,
-      });
-      
+        await questionCollection.doc(newFormDoc.id).set({
+          'userId': userId,
+          //'dropdownValue': _selectedPostType,
+          'postTitle': textFieldValue,
+          'postDescription': largeTextFieldValue,
+          'selectedInterests': _selectedTopics,
+          //'upvotecount': count,
+          'noOfAnwers': count,
+          'questionCount': id + 1,
+          'postedDate': postDate,
+        });
+      } else if (_selectedPostType == 'Team Collaberation') {
+        print("########### INSIDE TEAM ");
+        // Save form in the 'Team Collaboration' collection
+        //final formCollection = FirebaseFirestore.instance.collection('Team');
+        final teamCollabCollection =
+            FirebaseFirestore.instance.collection('Team');
+        final newFormDoc = teamCollabCollection.doc();
+        print("########### INSIDE QUESTION $teamCollabCollection");
+        print("########### INSIDE QUESTION $newFormDoc ");
+        await teamCollabCollection.doc(newFormDoc.id).set({
+          'userId': userId,
+          //'dropdownValue': _selectedPostType,
+          'postTitle': textFieldValue,
+          'postDescription': largeTextFieldValue,
+          'deadlineDate': selectedDate,
+          'selectedInterests': _selectedTopics,
+          'postedDate': postDate,
+        });
 
-    } else if (_selectedPostType == 'Team Collaberation') {
-      print("########### INSIDE TEAM ");
-      // Save form in the 'Team Collaboration' collection
-      //final formCollection = FirebaseFirestore.instance.collection('Team');
-      final teamCollabCollection = FirebaseFirestore.instance.collection('Team');
-      final newFormDoc = teamCollabCollection.doc();
-       print("########### INSIDE QUESTION $teamCollabCollection");
-      print("########### INSIDE QUESTION $newFormDoc ");
-      await teamCollabCollection.doc(newFormDoc.id).set({
-        'userId': userId,
-        //'dropdownValue': _selectedPostType,
-        'postTitle': textFieldValue,
-        'postDescription': largeTextFieldValue,
-        'deadlineDate': selectedDate,
-        'selectedInterests': _selectedTopics,
-        'postedDate': postDate,
-      });
-
-      print("########### INSIDE QUESTION $userId");
-      print("########### INSIDE QUESTION $textFieldValue");
-      print("########### INSIDE QUESTION $largeTextFieldValue");
-      print("########### INSIDE QUESTION $_selectedTopics");
-      print("########### INSIDE QUESTION $postDate");
-    } else if (_selectedPostType == 'Project') {
-      // Save form in the 'Project' collection
-      final formCollection = FirebaseFirestore.instance.collection('Project');
-      final newFormDoc = formCollection.doc();
-      final projectCollection = FirebaseFirestore.instance.collection('Project');
-      await projectCollection.doc(newFormDoc.id).set({
-         'userId': userId,
-        //'dropdownValue': _selectedPostType,
-        'postTitle': textFieldValue,
-        'postDescription': largeTextFieldValue,
-        'deadlineDate': selectedDate,
-        'selectedInterests': _selectedTopics,
-        'postedDate': postDate,
-      });
-    }
+        print("########### INSIDE QUESTION $userId");
+        print("########### INSIDE QUESTION $textFieldValue");
+        print("########### INSIDE QUESTION $largeTextFieldValue");
+        print("########### INSIDE QUESTION $_selectedTopics");
+        print("########### INSIDE QUESTION $postDate");
+      } else if (_selectedPostType == 'Project') {
+        // Save form in the 'Project' collection
+        final formCollection = FirebaseFirestore.instance.collection('Project');
+        final newFormDoc = formCollection.doc();
+        final projectCollection =
+            FirebaseFirestore.instance.collection('Project');
+        await projectCollection.doc(newFormDoc.id).set({
+          'userId': userId,
+          //'dropdownValue': _selectedPostType,
+          'postTitle': textFieldValue,
+          'postDescription': largeTextFieldValue,
+          'deadlineDate': selectedDate,
+          'selectedInterests': _selectedTopics,
+          'postedDate': postDate,
+        });
+      }
 
 // Delete the existing documents from the collections
 /*if (_selectedPostType == 'Question') {
@@ -708,16 +707,14 @@ if (_selectedPostType == 'Project') {
   });
 }*/
 
-    // Clear the form fields and selected date.
-    setState(() {
-      dropdownValue = null;
-      textFieldValue = '';
-      largeTextFieldValue = '';
-      selectedDate = null;
-      _selectedTopics.clear();
-    });
-
-    
+      // Clear the form fields and selected date.
+      setState(() {
+        dropdownValue = null;
+        textFieldValue = '';
+        largeTextFieldValue = '';
+        selectedDate = null;
+        _selectedTopics.clear();
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Form submitted successfully!')));
@@ -729,3 +726,5 @@ if (_selectedPostType == 'Project') {
     }
   }
 }
+
+//LinaFri

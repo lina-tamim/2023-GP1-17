@@ -163,8 +163,9 @@ class _EditProfile2State extends State<EditProfile2> {
               height: 10,
             ),
             const Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(width: 30),
+                SizedBox(width: 10),
                 Text(
                   'Username',
                   style: TextStyle(
@@ -172,6 +173,13 @@ class _EditProfile2State extends State<EditProfile2> {
                   ),
                 ),
                 SizedBox(width: 5),
+                Text(
+                  '*',
+                  style: TextStyle(color: Colors.red),
+                ),
+                SizedBox(
+                  width: 5,
+                ),
                 Tooltip(
                   message:
                       'Username should be at least 6 characters long\nand No white spaces are allawed',
@@ -224,12 +232,17 @@ class _EditProfile2State extends State<EditProfile2> {
             // Email
             const Row(
               children: [
-                SizedBox(width: 30),
+                SizedBox(width: 10),
                 Text(
                   'Email',
                   style: TextStyle(
                     fontSize: 16,
                   ),
+                ),
+                SizedBox(width: 5),
+                Text(
+                  '*',
+                  style: TextStyle(color: Colors.red),
                 ),
                 SizedBox(width: 5),
                 Tooltip(
@@ -278,12 +291,17 @@ class _EditProfile2State extends State<EditProfile2> {
             // Password
             const Row(
               children: [
-                SizedBox(width: 30),
+                SizedBox(width: 10),
                 Text(
                   'Password',
                   style: TextStyle(
                     fontSize: 16,
                   ),
+                ),
+                SizedBox(width: 5),
+                Text(
+                  '*',
+                  style: TextStyle(color: Colors.red),
                 ),
                 SizedBox(width: 5),
                 Tooltip(
@@ -392,6 +410,11 @@ class _EditProfile2State extends State<EditProfile2> {
                     fontSize: 16,
                   ),
                 ),
+                SizedBox(width: 5),
+                Text(
+                  '*',
+                  style: TextStyle(color: Colors.red),
+                ),
                 SizedBox(
                   width: 5,
                 ),
@@ -437,6 +460,11 @@ class _EditProfile2State extends State<EditProfile2> {
                   style: TextStyle(
                     fontSize: 16,
                   ),
+                ),
+                SizedBox(width: 5),
+                Text(
+                  '*',
+                  style: TextStyle(color: Colors.red),
                 ),
                 SizedBox(
                   width: 5,
@@ -488,6 +516,11 @@ class _EditProfile2State extends State<EditProfile2> {
                   style: TextStyle(
                     fontSize: 16,
                   ),
+                ),
+                SizedBox(width: 5),
+                Text(
+                  '*',
+                  style: TextStyle(color: Colors.red),
                 ),
                 SizedBox(
                   width: 5,
@@ -576,7 +609,7 @@ class _EditProfile2State extends State<EditProfile2> {
 
 //Github
             const Text(
-              'Github',
+              'Github link',
               style: TextStyle(
                 fontSize: 16,
               ),
@@ -1167,7 +1200,10 @@ class _EditProfile2State extends State<EditProfile2> {
           snapshot.docs.first;
       final String userId = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
+      await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .doc(userId)
+          .update({
         'username': newUsername,
       });
     }
@@ -1234,8 +1270,7 @@ class _EditProfile2State extends State<EditProfile2> {
           });
           isModified = true;
           return true;
-        } catch (e) {
-        }
+        } catch (e) {}
       }
     }
 
@@ -1279,7 +1314,10 @@ class _EditProfile2State extends State<EditProfile2> {
           snapshot.docs.first;
       final String userId = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
+      await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .doc(userId)
+          .update({
         'country': newCountry,
         'city': newCity,
         'state': newState,
@@ -1318,7 +1356,10 @@ class _EditProfile2State extends State<EditProfile2> {
           snapshot.docs.first;
       final String userId = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
+      await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .doc(userId)
+          .update({
         'userType': newUserType,
       });
     }
@@ -1352,7 +1393,10 @@ class _EditProfile2State extends State<EditProfile2> {
           snapshot.docs.first;
       final String userId = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
+      await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .doc(userId)
+          .update({
         'attendancePreference': newUserPreference,
       });
     }
@@ -1392,7 +1436,10 @@ class _EditProfile2State extends State<EditProfile2> {
           snapshot.docs.first;
       final String userId = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
+      await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .doc(userId)
+          .update({
         'interests': newUserInterests,
       });
     }
@@ -1431,7 +1478,10 @@ class _EditProfile2State extends State<EditProfile2> {
           snapshot.docs.first;
       final String userId = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
+      await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .doc(userId)
+          .update({
         'skills': newUserSkills,
       });
     }
@@ -1473,7 +1523,10 @@ class _EditProfile2State extends State<EditProfile2> {
           snapshot.docs.first;
       final String userId = userDoc.id;
 
-      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
+      await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .doc(userId)
+          .update({
         'githubLink': newGithubLink,
       });
     }
@@ -1506,7 +1559,10 @@ class _EditProfile2State extends State<EditProfile2> {
       final String downloadURL = await taskSnapshot.ref.getDownloadURL();
 
       // Update the imageURL field in Firebase Firestore
-      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).update({
+      await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .doc(userId)
+          .update({
         'imageURL': downloadURL,
       });
 
@@ -1548,7 +1604,10 @@ class _EditProfile2State extends State<EditProfile2> {
       final String userId = userDoc.id;
 
       // Delete user document from Firestore
-      await FirebaseFirestore.instance.collection('RegularUser').doc(userId).delete();
+      await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .doc(userId)
+          .delete();
 
       // Delete user's name questions, team requests, and projects
       await FirebaseFirestore.instance
@@ -1606,7 +1665,8 @@ class _EditProfile2State extends State<EditProfile2> {
           borderRadius: BorderRadius.circular(24),
         ),
         margin: EdgeInsets.only(
-          bottom: snackBarHeight + 180 , // Add the snackbar height and some additional margin
+          bottom: snackBarHeight +
+              180, // Add the snackbar height and some additional margin
           right: 20,
           left: 20,
         ),
@@ -1616,3 +1676,5 @@ class _EditProfile2State extends State<EditProfile2> {
     );
   }
 } // end page
+
+//LinaFri

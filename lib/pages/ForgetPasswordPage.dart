@@ -65,7 +65,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 10),
+                      padding: const EdgeInsets.only(top: 10, right: 30),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -74,8 +74,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      Login(), 
+                                  builder: (context) => Login(),
                                 ),
                               );
                             },
@@ -84,7 +83,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                               size: 30,
                             ),
                           ),
-                          const SizedBox(width: 30),
+                          const SizedBox(width: 20),
                           Text(
                             'No Worries!',
                             style:
@@ -105,7 +104,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                       ),
                     ),
                     Container(
-                      width: 300, 
+                      width: 300,
                       child: Divider(
                         color: const Color.fromARGB(255, 211, 211, 211),
                         thickness: 1,
@@ -159,73 +158,76 @@ class _ForgetPasswordState extends State<ForgetPassword> {
   }
 
   Future<void> resetPassword(BuildContext context) async {
-  String email = emailController.text.trim();
-  if (await doesEmailExists(email) == false) {
-   showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: const Text('This email does not exist! Please enter a valid one'),
-        actions: [
-          TextButton(
-            onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => Login()),
+    String email = emailController.text.trim();
+    if (await doesEmailExists(email) == false) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: const Text(
+                'This email does not exist! Please enter a valid one'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => Login()),
+                  );
+                },
+                child: const Text('Ok'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      try {
+        // Email is registered, send password reset link
+        await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: const Text(
+                  'Password reset link has been sent! Check your email'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => Login()),
+                    );
+                  },
+                  child: const Text('Ok'),
+                ),
+              ],
             );
           },
-            child: const Text('Ok'),
-          ),
-        ],
-      );
-    },
-  );
-  } else {
-    try {
-      // Email is registered, send password reset link
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: const Text('Password reset link has been sent! Check your email'),
-        actions: [
-          TextButton(
-            onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => Login()),
+        );
+      } catch (e) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: const Text('An error occured. Please try again later.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => Login()),
+                    );
+                  },
+                  child: const Text('Ok'),
+                ),
+              ],
             );
           },
-            child: const Text('Ok'),
-          ),
-        ],
-      );
-    },
-  );
-    } catch (e) {
-     showDialog(
-     context: context,
-     builder: (BuildContext context) {
-      return AlertDialog(
-        content: const Text('An error occured. Please try again later.'),
-        actions: [
-          TextButton(
-            onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => Login()),
-            );
-          },
-            child: const Text('Ok'),
-          ),
-        ],
-      );
-    },
-  );
+        );
+      }
     }
   }
-}
+
   Future<bool> doesEmailExists(String email) async {
     // Check in 'RegularUser' collection
     CollectionReference usersCollection =
@@ -248,3 +250,5 @@ class _ForgetPasswordState extends State<ForgetPassword> {
     return false;
   }
 }
+
+//LinaFri

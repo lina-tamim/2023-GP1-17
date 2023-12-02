@@ -48,3 +48,5 @@ class CardFTview {
         userPhotoUrl: json['userPhotoUrl'] as String?,
       );
 }
+
+//LinaFri

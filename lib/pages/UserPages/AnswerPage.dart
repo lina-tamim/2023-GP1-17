@@ -22,7 +22,7 @@ class _AnswerPageState extends State<AnswerPage> {
     return email;
   }
 
-  late List<CardQuestion> questions = []; 
+  late List<CardQuestion> questions = [];
   final _questionStreamController =
       StreamController<List<CardQuestion>>.broadcast();
 
@@ -87,17 +87,16 @@ class _AnswerPageState extends State<AnswerPage> {
             backgroundImage: question.userPhotoUrl != ''
                 ? NetworkImage(question.userPhotoUrl!)
                 : AssetImage('assets/Backgrounds/defaultUserPic.png')
-                    as ImageProvider<Object>, 
+                    as ImageProvider<Object>,
           ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
               Text(
-                question.username ?? '', 
+                question.username ?? '',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 0, 0, 0)),
+                    fontWeight: FontWeight.bold, color: Colors.deepPurple),
               ),
               SizedBox(height: 5),
               Text(
@@ -176,14 +175,14 @@ class _AnswerPageState extends State<AnswerPage> {
           backgroundImage: answer.userPhotoUrl != ''
               ? NetworkImage(answer.userPhotoUrl!)
               : AssetImage('assets/Backgrounds/defaultUserPic.png')
-                  as ImageProvider<Object>, 
+                  as ImageProvider<Object>,
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 5),
             Text(
-              answer.username ?? '', 
+              answer.username ?? '',
               style: TextStyle(
                   fontWeight: FontWeight.bold, color: Colors.deepPurple),
             ),
@@ -203,24 +202,23 @@ class _AnswerPageState extends State<AnswerPage> {
                   future: getCurrentUserEmail(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator(); 
+                      return CircularProgressIndicator();
                     } else if (snapshot.hasError) {
-                      return Text(
-                          'Error: ${snapshot.error}'); 
+                      return Text('Error: ${snapshot.error}');
                     } else {
                       currentEmail = snapshot.data!;
                       print("11111111111 $currentEmail");
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
+                          //Opacity(
+                          //opacity: upvotedUserIds != currentEmail ? 1.0 : 0.0,
                           IconButton(
                             icon: Icon(upvotedUserIds.contains(currentEmail)
                                 ? Icons.arrow_circle_down
                                 : Icons.arrow_circle_up),
                             onPressed: () {
                               setState(() {
-                                
-
                                 if (upvotedUserIds.contains(currentEmail)) {
                                   upvotedUserIds.remove(currentEmail);
                                   upvoteCount--;
@@ -228,23 +226,24 @@ class _AnswerPageState extends State<AnswerPage> {
                                   upvotedUserIds.add(currentEmail);
                                   upvoteCount++;
                                 }
-                                    answer.upvoteCount = upvoteCount;
-    answer.upvotedUserIds = upvotedUserIds;
+                                answer.upvoteCount = upvoteCount;
+                                answer.upvotedUserIds = upvotedUserIds;
 
                                 FirebaseFirestore.instance
                                     .collection('Answer')
                                     //CHECK DOES IT WORK AFTER DELETEING docId
                                     .doc()
                                     .update({
-                                  'upvoteCount': upvoteCount,
-                                  ////////!!!!!!
-                                  'upvotedUserIds': upvotedUserIds,
-                                }).then((_) {
-                                }).catchError((error) {
-                                });
+                                      'upvoteCount': upvoteCount,
+                                      ////////!!!!!!
+                                      'upvotedUserIds': upvotedUserIds,
+                                    })
+                                    .then((_) {})
+                                    .catchError((error) {});
                               });
                             },
                           ),
+                          // ),
                           Text('Upvotes: $upvoteCount'),
                         ],
                       );
@@ -334,21 +333,18 @@ class _AnswerPageState extends State<AnswerPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: StreamBuilder<List<CardQuestion>>(
-              stream:
-                  questionStream, 
+              stream: questionStream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator(); 
+                  return CircularProgressIndicator();
                 }
 
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Text(
-                      'No questions available.'); 
+                  return Text('No questions available.');
                 }
 
                 final questions = snapshot.data!;
-                return buildQuestionCard(
-                    questions[0]); 
+                return buildQuestionCard(questions[0]);
               },
             ),
           ),
@@ -410,17 +406,16 @@ class _AnswerPageState extends State<AnswerPage> {
                       minimumSize: MaterialStateProperty.all(Size(100, 60)),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              10), 
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                     ),
                     child: Text(
                       'Submit',
                       style: TextStyle(
-                        color: Colors.white, 
-                        fontWeight: FontWeight.bold, 
-                        fontSize: 16, 
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
                       ),
                     ),
                   )
@@ -433,3 +428,5 @@ class _AnswerPageState extends State<AnswerPage> {
     );
   }
 }
+
+//LinaFri

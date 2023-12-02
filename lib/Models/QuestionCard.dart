@@ -47,3 +47,5 @@ class CardQuestion {
         userPhotoUrl: json['userPhotoUrl'] as String?,
       );
 }
+
+//LinaFri

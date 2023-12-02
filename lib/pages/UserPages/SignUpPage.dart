@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -6,8 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:lottie/lottie.dart';
-import "package:csc_picker/csc_picker.dart"; 
-import 'package:email_validator/email_validator.dart'; 
+import "package:csc_picker/csc_picker.dart";
+import 'package:email_validator/email_validator.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -63,10 +62,9 @@ class _Signup extends State<Signup> {
   String defaultImagePath = 'assets/Backgrounds/defaultUserPic.png';
   bool _isLoading = false;
 
-
   List<String> _selectedSkills = [];
   List<String> _selectedInterests = [];
-  
+
   @override
   void dispose() {
     _email.dispose();
@@ -74,51 +72,48 @@ class _Signup extends State<Signup> {
     super.dispose();
   }
 
-Future<void> signUserUp() async {
-
-  try {
+  Future<void> signUserUp() async {
+    try {
       setState(() {
-      _isLoading = true;
-    });
+        _isLoading = true;
+      });
 
-    UserCredential userCredential =
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: _email.text.trim(),
-      password: _password.text.trim(),
-    );
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _email.text.trim(),
+        password: _password.text.trim(),
+      );
 
-    final storageRef = FirebaseStorage.instance
-        .ref()
-        .child('user_images')
-        .child('${userCredential.user!.uid}jpg');
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('user_images')
+          .child('${userCredential.user!.uid}jpg');
 
-    // Send email verification to the user
-    await userCredential.user?.sendEmailVerification();
+      // Send email verification to the user
+      await userCredential.user?.sendEmailVerification();
 
- if (_selectedImage == null) {
- 
-      // Load the default image from assets
-      final byteData = await rootBundle.load(defaultImagePath);
-      final bytes = byteData.buffer.asUint8List();
+      if (_selectedImage == null) {
+        // Load the default image from assets
+        final byteData = await rootBundle.load(defaultImagePath);
+        final bytes = byteData.buffer.asUint8List();
 
-      // Save the default image to a temporary file
-      final tempDir = await getTemporaryDirectory();
-      final tempPath = path.join(tempDir.path, 'default_image.png');
-      await File(tempPath).writeAsBytes(bytes);
+        // Save the default image to a temporary file
+        final tempDir = await getTemporaryDirectory();
+        final tempPath = path.join(tempDir.path, 'default_image.png');
+        await File(tempPath).writeAsBytes(bytes);
 
-      // Upload the default image to storage
-      await storageRef.putFile(File(tempPath));
-    } else {
-      // Upload the selected image to storage
-      await storageRef.putFile(_selectedImage!);
-    
-    }
+        // Upload the default image to storage
+        await storageRef.putFile(File(tempPath));
+      } else {
+        // Upload the selected image to storage
+        await storageRef.putFile(_selectedImage!);
+      }
 
-    // Get the download URL of the uploaded image
-    final imageURL = await storageRef.getDownloadURL();
-    String uid = userCredential.user!.uid;
+      // Get the download URL of the uploaded image
+      final imageURL = await storageRef.getDownloadURL();
+      String uid = userCredential.user!.uid;
 
-    await FirebaseFirestore.instance.collection('RegularUser').doc(uid).set({
+      await FirebaseFirestore.instance.collection('RegularUser').doc(uid).set({
         'username': _userName.text.trim().toLowerCase(),
         'userType': _selectedUser,
         'attendancePreference': _selectedPreference,
@@ -131,35 +126,34 @@ Future<void> signUserUp() async {
         'interests': _selectedInterests,
         'skills': _selectedSkills,
         'imageURL': imageURL,
-    });
+      });
 
-    // Display a success message to the user
-    toastMessage("Please check your email for verification.");
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          child: ValidationAnimation(),
-        );
-      },
-    );
-
-    // Delay the navigation to the login page using a Timer
-    Timer(const Duration(seconds: 6), () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const Login(),
-        ),
+      // Display a success message to the user
+      toastMessage("Please check your email for verification.");
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Dialog(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            child: ValidationAnimation(),
+          );
+        },
       );
-    });
-  } catch (e) {
-    // Handle sign-up errors here
-  }
-   finally {
+
+      // Delay the navigation to the login page using a Timer
+      Timer(const Duration(seconds: 6), () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const Login(),
+          ),
+        );
+      });
+    } catch (e) {
+      // Handle sign-up errors here
+    } finally {
       setState(() {
         _isLoading = false;
       });
@@ -455,7 +449,7 @@ Future<void> signUserUp() async {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           Positioned(
@@ -483,7 +477,9 @@ Future<void> signUserUp() async {
             left: MediaQuery.of(context).size.width * 0.05,
             right: MediaQuery.of(context).size.width * 0.05,
             top: MediaQuery.of(context).size.height * 0.1,
-            bottom: MediaQuery.of(context).size.height * 0.1,
+            bottom: MediaQuery.of(context).viewInsets.bottom > 0
+                ? 0
+                : MediaQuery.of(context).size.height * 0.1,
             child: SingleChildScrollView(
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.7,
@@ -599,7 +595,7 @@ Future<void> signUserUp() async {
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
                                 message:
-                              'Username should be at least 6 characters long\nand No white spaces are allowed',
+                                    'Username should be at least 6 characters long\nand No white spaces are allowed',
                                 padding: EdgeInsets.all(20),
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
@@ -687,8 +683,7 @@ Future<void> signUserUp() async {
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
                                 message:
-                        'Password must be at least 6 characters long\nand No white spaces are allowed', 
-
+                                    'Password must be at least 6 characters long\nand No white spaces are allowed',
                                 padding: EdgeInsets.all(20),
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
@@ -707,7 +702,7 @@ Future<void> signUserUp() async {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20), 
+                    const SizedBox(height: 20),
                     // Country and city
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -839,7 +834,7 @@ Future<void> signUserUp() async {
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
                                 message:
-                                 'Find the best option for courses and events that suits your preference:\n'
+                                    'Find the best option for courses and events that suits your preference:\n'
                                     '- Physical attendance available for on-site experiences\n'
                                     '- Remote participation offered through online platforms\n',
                                 padding: EdgeInsets.all(20),
@@ -851,7 +846,8 @@ Future<void> signUserUp() async {
                           ),
                           const SizedBox(height: 2),
                           Column(
-                            children: _typeOfPreference.map((String preference) {
+                            children:
+                                _typeOfPreference.map((String preference) {
                               return RadioListTile<String>(
                                 title: Text(preference),
                                 value: preference,
@@ -898,7 +894,7 @@ Future<void> signUserUp() async {
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
                                 message:
-                                'Showcase what you can do based on your acquired abilities and experience.',
+                                    'Showcase what you can do based on your acquired abilities and experience.',
                                 padding: EdgeInsets.all(20),
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
@@ -959,7 +955,7 @@ Future<void> signUserUp() async {
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
                                 message:
-                               'Share your passions with us, and we will ensure you receive the finest content recommendations!',
+                                    'Share your passions with us, and we will ensure you receive the finest content recommendations!',
                                 padding: EdgeInsets.all(20),
                                 showDuration: Duration(seconds: 3),
                                 textStyle: TextStyle(color: Colors.white),
@@ -1014,17 +1010,17 @@ Future<void> signUserUp() async {
                     ),
                     const SizedBox(height: 10), // space
                     if (_isLoading)
-                        IgnorePointer(
-                          child: Opacity(
-                            opacity: 1,
-                            child: Container(
-                              child: Center(
-                                child: CircularProgressIndicator(),
-                              ),
+                      IgnorePointer(
+                        child: Opacity(
+                          opacity: 1,
+                          child: Container(
+                            child: Center(
+                              child: CircularProgressIndicator(),
                             ),
                           ),
                         ),
-                       const SizedBox(height: 10), // space
+                      ),
+                    const SizedBox(height: 30), // space
                     SizedBox(
                       width: 200,
                       height: 50,
@@ -1074,7 +1070,7 @@ Future<void> signUserUp() async {
     return digest.toString(); // Convert the hash to a string
   }
 
-  // validation 
+  // validation
   Future<bool> _createAccount1() async {
     if (_userName.text.isEmpty ||
         _email.text.isEmpty ||
@@ -1083,12 +1079,11 @@ Future<void> signUserUp() async {
         _selectedCountry == '' ||
         _selectedState == '' ||
         _selectedPreference == null ||
-        _selectedUser == null
-        || _selectedInterests.isEmpty ) {
+        _selectedUser == null ||
+        _selectedInterests.isEmpty) {
       toastMessage('Please fill in all the required fields');
       return false;
     }
-
 
     //                                   *** username validation ***
     // Check username validity (>6 + no WS)
@@ -1098,8 +1093,7 @@ Future<void> signUserUp() async {
     } else if (_userName.text.contains(RegExp(r'\s'))) {
       toastMessage('Username should not contain whitespace');
       return false;
-    }
-    else if (_userName.text.contains(RegExp(r'^\d+$'))) {
+    } else if (_userName.text.contains(RegExp(r'^\d+$'))) {
       toastMessage('Username should not contain only digits');
       return false;
     }
@@ -1141,11 +1135,15 @@ Future<void> signUserUp() async {
 
     //                                   *** password validation ***
     if (_password.text.length < 6) {
-      toastMessage('Password should be at least 8 characters');
+      toastMessage('Password should be at least 6 characters');
       return false;
-    } 
+    } else if (_password.text.contains(RegExp(r'\s'))) {
+      toastMessage('Password should not contain whitespace');
+      return false;
+    }
     return true;
-  } 
+  }
+
   bool _createAccount2() {
     //                                   *** skills validation ***
 
@@ -1187,10 +1185,11 @@ Future<void> signUserUp() async {
         .where('username', isEqualTo: userName.toLowerCase())
         .get();
     if (querySnapshot.docs.isNotEmpty) {
-      return false; 
+      return false;
     } else {
-      return true; 
+      return true;
     }
   }
-
 }
+
+//LinaFri
