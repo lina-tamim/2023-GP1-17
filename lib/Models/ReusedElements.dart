@@ -17,7 +17,6 @@ import 'package:techxcel11/pages/UserPages/CalendarPage.dart';
 import 'package:techxcel11/pages/UserPages/UserInteractionPage.dart'; //m
 import 'package:techxcel11/pages/StartPage.dart';
 
-
 class NavBarUser extends StatefulWidget {
   const NavBarUser({super.key});
   @override
@@ -76,6 +75,7 @@ class _NavBarUserState extends State<NavBarUser> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -159,10 +159,9 @@ class _NavBarUserState extends State<NavBarUser> {
           ),
           ListTile(
             leading: Container(
-              width: 30, 
-              height: 100, 
-              child: Image.asset(
-                  'assets/Backgrounds/Xlogo.png'), 
+              width: 30,
+              height: 100,
+              child: Image.asset('assets/Backgrounds/Xlogo.png'),
             ),
             title: const Text('About Us'),
             onTap: () => Navigator.push(
@@ -194,7 +193,7 @@ class NavBarAdmin extends StatefulWidget {
 }
 
 class _NavBarAdminState extends State<NavBarAdmin> {
-String loggedInAdminEmail ='';
+  String loggedInAdminEmail = '';
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -236,7 +235,7 @@ String loggedInAdminEmail ='';
                 color: Colors.black,
               ),
             ),
-             currentAccountPicture: CircleAvatar(
+            currentAccountPicture: CircleAvatar(
               child: ClipOval(
                 child: Image.asset(
                   'assets/Backgrounds/defaultUserPic.png',
@@ -333,8 +332,8 @@ AppBar buildAppBar(String titleText) {
   return AppBar(
     iconTheme: const IconThemeData(color: Color.fromARGB(255, 255, 255, 255)),
     backgroundColor: const Color.fromRGBO(37, 6, 81, 0.898),
-    toolbarHeight: 100, 
-    elevation: 0, 
+    toolbarHeight: 100,
+    elevation: 0,
     shape: const ContinuousRectangleBorder(
       borderRadius: BorderRadius.only(
         bottomLeft: Radius.circular(130),
@@ -344,7 +343,7 @@ AppBar buildAppBar(String titleText) {
     title: Text(
       titleText,
       style: const TextStyle(
-        fontSize: 18, 
+        fontSize: 18,
         fontFamily: "Poppins",
         color: Colors.white,
       ),
@@ -562,7 +561,7 @@ class DropDownMenu extends StatelessWidget {
     required this.option,
     required this.onTap,
     required this.items,
-    required this.isMenuOpen, 
+    required this.isMenuOpen,
     this.fontSize = 12,
   }) : super(key: key);
 
@@ -570,7 +569,7 @@ class DropDownMenu extends StatelessWidget {
   final List<String> items;
   final double fontSize;
   final ValueChanged<String?> onTap;
-  final bool isMenuOpen; 
+  final bool isMenuOpen;
 
   @override
   Widget build(BuildContext context) {
@@ -583,7 +582,7 @@ class DropDownMenu extends StatelessWidget {
             return DropdownMenuItem<String>(
               value: value,
               child: SizedBox(
-                width: 120, 
+                width: 120,
                 child: Text(
                   value,
                   style: TextStyle(
@@ -598,7 +597,7 @@ class DropDownMenu extends StatelessWidget {
           onChanged: onTap,
           onTap: () {
             if (isMenuOpen) {
-              onTap(null); 
+              onTap(null);
             }
           },
         ),
@@ -608,12 +607,12 @@ class DropDownMenu extends StatelessWidget {
 }
 
 class _DropDownWidgetState extends State<DropDownWidget> {
-  bool isMenuOpen = false; 
+  bool isMenuOpen = false;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: isMenuOpen ? 90 : 58, 
+      height: isMenuOpen ? 90 : 58,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
       child: Stack(
         children: [
@@ -621,7 +620,7 @@ class _DropDownWidgetState extends State<DropDownWidget> {
             child: GestureDetector(
               onTap: () {
                 setState(() {
-                  isMenuOpen = !isMenuOpen; 
+                  isMenuOpen = !isMenuOpen;
                 });
               },
               child: DropDownMenu(
@@ -629,7 +628,7 @@ class _DropDownWidgetState extends State<DropDownWidget> {
                 onTap: widget.onItemSelected,
                 fontSize: widget.fontSize,
                 items: widget.list,
-                isMenuOpen: isMenuOpen, 
+                isMenuOpen: isMenuOpen,
               ),
             ),
           ),
@@ -638,6 +637,7 @@ class _DropDownWidgetState extends State<DropDownWidget> {
     );
   }
 }
+
 showAlertDialog(context, Widget child,
     {okButtonText = 'Ok',
     onPress = null,

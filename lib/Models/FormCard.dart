@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
 import 'package:techxcel11/pages/UserPages/HomePage.dart';
 
 class FormWidget extends StatefulWidget {
@@ -519,18 +520,19 @@ class _FormWidgetState extends State<FormWidget> {
                       await _selectDate(context);
                     },
                     validator: (value) {
-                      if (_dateController.text.isEmpty) {
-                        return 'Please select a date';
-                      }
-                      DateTime selectedDate =
-                          DateTime.parse(_dateController.text);
+                      // if (_dateController.text.isEmpty) {
+                      //   return 'Please select a date';
+                      // }
+                      // DateTime selectedDate =
+                      //     DateTime.parse(_dateController.text);
 
-                      // Get the current date
-                      DateTime currentDate = DateTime.now();
+                      // // Get the current date
+                      // DateTime currentDate = DateTime.now();
 
-                      if (selectedDate.isBefore(currentDate)) {
-                        return 'Wrong deadline, choose a deadline in the future';
-                      }
+                      //         toastMessage("Please enter a valid date");
+                      // if (selectedDate.isBefore(currentDate)) {
+                      //   return 'Wrong deadline, choose a deadline in the future';
+                      // }
                       return null;
                     },
                     decoration: InputDecoration(
@@ -595,13 +597,25 @@ class _FormWidgetState extends State<FormWidget> {
 
   void _submitForm(String userId) async {
     final String? interestsValidation = validateTopics(_selectedTopics);
+
+    // DateTime selectedDate = DateTime.parse(_dateController.text);
+
+    // Get the current date
+    DateTime currentDate = DateTime.now();
+
     if (_selectedTopics.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      toastMessage(interestsValidation ?? 'Invalid data');
+
+      /*ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(interestsValidation!),
           duration: Duration(seconds: 2),
         ),
-      );
+      );*/
+    } else if (_dateController.text.isEmpty) {
+      toastMessage('Please select a date');
+    } else if (selectedDate == null || selectedDate!.isBefore(currentDate)) {
+      toastMessage("Please enter a valid date");
     } else if (_formKey.currentState!.validate()) {
       final formCollectionn = FirebaseFirestore.instance.collection('Question');
       final snapshot = await formCollectionn
@@ -715,9 +729,10 @@ if (_selectedPostType == 'Project') {
         selectedDate = null;
         _selectedTopics.clear();
       });
+      toastMessage(interestsValidation ?? 'Form submitted successfully!');
 
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Form submitted successfully!')));
+      //ScaffoldMessenger.of(context).showSnackBar(
+      //SnackBar(content: Text('Form submitted successfully!')));
 
       Navigator.pushReplacement(
         context,
