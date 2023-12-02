@@ -273,6 +273,9 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
     if (start == null || end == null) {
       return false;
     }
+    if (start.isAfter(end)) {
+      return false;
+    }
     return end.isAfter(DateTime.now());
   }
 
@@ -820,10 +823,9 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                             child: const Text(
                               "Submit",
                               style: TextStyle(
-                                fontSize: 17,
-                                fontFamily: "Poppins",
-                                color: secondaryColor,
-                              ),
+                                  fontSize: 17,
+                                  color: secondaryColor,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),

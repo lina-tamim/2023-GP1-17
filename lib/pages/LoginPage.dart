@@ -373,5 +373,3 @@ class _Login extends State<Login> {
     return digest.toString();
   }
 }
-
- 

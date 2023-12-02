@@ -1034,7 +1034,7 @@ class _Signup extends State<Signup> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Color.fromARGB(255, 198, 180, 247),
+                          primary: Color.fromRGBO(37, 6, 81, 0.898),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
@@ -1171,9 +1171,9 @@ class _Signup extends State<Signup> {
         .where('email', isEqualTo: email.toLowerCase())
         .get();
     if (querySnapshot.docs.isNotEmpty) {
-      return false; 
+      return false;
     } else {
-      return true; 
+      return true;
     }
   }
 
@@ -1190,5 +1190,3 @@ class _Signup extends State<Signup> {
     }
   }
 }
-
- 

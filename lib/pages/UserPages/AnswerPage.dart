@@ -66,6 +66,8 @@ class _AnswerPageState extends State<AnswerPage> {
       question.username = username;
       question.userPhotoUrl = userPhotoUrl;
     });
+
+    // Check if any userIds were not found in the 'User' collection
     final userIdsNotFound =
         userIds.where((userId) => !userMap.containsKey(userId)).toList();
     userIdsNotFound.forEach((userId) {
@@ -94,7 +96,8 @@ class _AnswerPageState extends State<AnswerPage> {
               Text(
                 question.username ?? '',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 0, 0, 0)),
               ),
               SizedBox(height: 5),
               Text(
@@ -166,7 +169,8 @@ class _AnswerPageState extends State<AnswerPage> {
 
     int upvoteCount = answer.upvoteCount ?? 0;
     List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
-
+    String doc = answer.docId;
+    print("7777777777777 $doc");
     return Card(
       child: ListTile(
         leading: CircleAvatar(
@@ -182,7 +186,9 @@ class _AnswerPageState extends State<AnswerPage> {
             Text(
               answer.username ?? '',
               style: TextStyle(
-                  fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                fontWeight: FontWeight.bold,
+                color: Colors.deepPurple,
+              ),
             ),
             SizedBox(height: 5),
             ListTile(
@@ -206,17 +212,22 @@ class _AnswerPageState extends State<AnswerPage> {
                     } else {
                       currentEmail = snapshot.data!;
                       print("11111111111 $currentEmail");
+
+                      if (answer.docId == null) {
+                        return Text('No document ID');
+                      }
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          //Opacity(
-                          //opacity: upvotedUserIds != currentEmail ? 1.0 : 0.0,
                           IconButton(
                             icon: Icon(upvotedUserIds.contains(currentEmail)
                                 ? Icons.arrow_circle_down
                                 : Icons.arrow_circle_up),
                             onPressed: () {
                               setState(() {
+                                print("______ IM INT $upvotedUserIds");
+                                print("______ IM INT ${answer.docId}");
+
                                 if (upvotedUserIds.contains(currentEmail)) {
                                   upvotedUserIds.remove(currentEmail);
                                   upvoteCount--;
@@ -224,24 +235,24 @@ class _AnswerPageState extends State<AnswerPage> {
                                   upvotedUserIds.add(currentEmail);
                                   upvoteCount++;
                                 }
+
                                 answer.upvoteCount = upvoteCount;
                                 answer.upvotedUserIds = upvotedUserIds;
 
                                 FirebaseFirestore.instance
                                     .collection('Answer')
-                                    //CHECK DOES IT WORK AFTER DELETEING docId
-                                    .doc()
+                                    .doc(answer.docId)
                                     .update({
-                                      'upvoteCount': upvoteCount,
-                                      ////////!!!!!!
-                                      'upvotedUserIds': upvotedUserIds,
-                                    })
-                                    .then((_) {})
-                                    .catchError((error) {});
+                                  'upvoteCount': upvoteCount,
+                                  'upvotedUserIds': upvotedUserIds,
+                                }).then((_) {
+                                  // Update successful
+                                }).catchError((error) {
+                                  // Handle error if the update fails
+                                });
                               });
                             },
                           ),
-                          // ),
                           Text('Upvotes: $upvoteCount'),
                         ],
                       );
@@ -283,9 +294,11 @@ class _AnswerPageState extends State<AnswerPage> {
           .where('questionId', isEqualTo: widget.questionId)
           .snapshots()
           .asyncMap((snapshot) async {
-        final answers = snapshot.docs
-            .map((doc) => CardAnswer.fromJson(doc.data()))
-            .toList();
+        final answers = snapshot.docs.map((doc) {
+          final data = doc.data();
+          data['docId'] = doc.id; // Set the 'docId' field to the document ID
+          return CardAnswer.fromJson(data);
+        }).toList();
         final userIds = answers.map((answer) => answer.userId).toList();
         final userDocs = await FirebaseFirestore.instance
             .collection('RegularUser')
@@ -426,5 +439,3 @@ class _AnswerPageState extends State<AnswerPage> {
     );
   }
 }
-
- 

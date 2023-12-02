@@ -1,4 +1,5 @@
 class CardAview {
+  //String answerId;
   int questionId;
   String userId;
   String answerText;
@@ -6,22 +7,22 @@ class CardAview {
   String? username;
   List<String> upvotedUserIds;
   final String docId;
-  String? userPhotoUrl; 
-  
-  CardAview(
-      {
-      required this.questionId,
-      required this.userId,
-      required this.answerText,
-      required this.upvoteCount,
-      this.upvotedUserIds = const [],
-      required this.docId  ,
+  String? userPhotoUrl;
+
+  CardAview({
+    //required this.answerId,
+    required this.questionId,
+    required this.userId,
+    required this.answerText,
+    required this.upvoteCount,
+    this.upvotedUserIds = const [],
+    required this.docId,
     required this.username,
     required this.userPhotoUrl,
-      
-      });
+  });
 
   Map<String, dynamic> toJson() => {
+        //'answerId': answerId,
         'questionId': questionId,
         'userId': userId,
         'answerText': answerText,
@@ -29,22 +30,23 @@ class CardAview {
         'username': '',
         'upvotedUserIds': upvotedUserIds,
         'docId': docId,
-         'userPhotoUrl': userPhotoUrl, 
-
+        'userPhotoUrl': userPhotoUrl, // Update property name to userPhotoUrl
       };
 
   factory CardAview.fromJson(Map<String, dynamic> json) {
     return CardAview(
-        questionId: json['questionId'] as int,
-        userId: json['userId'] as String,
-        answerText: json['answerText'] as String,
-        upvoteCount: json['upvoteCount'] as int,
-        upvotedUserIds: List<String>.from(json['upvotedUserIds'] ?? []),
-docId: json['docId'] ?? '',
-        username: json['username'] ?? '',
-                        userPhotoUrl: json['userPhotoUrl'] as String?, 
-);
+      //answerId: json['answerId'] as String,
+      questionId: json['questionId'] as int,
+      userId: json['userId'] as String,
+      answerText: json['answerText'] as String,
+      upvoteCount: json['upvoteCount'] as int,
+      upvotedUserIds: List<String>.from(json['upvotedUserIds'] ?? []),
+      docId: json['docId'],
+      username: json['username'] ?? '',
+      userPhotoUrl: json['userPhotoUrl']
+          as String?, // Update property name to userPhotoUrl
+    );
   }
 }
 
- 
+//TECHXCEL

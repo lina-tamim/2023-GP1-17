@@ -1,46 +1,52 @@
 class CardAnswer {
+  //String answerId;
   int questionId;
   String userId;
   String answerText;
   int upvoteCount;
   String? username;
-List<String>? upvotedUserIds;
-  String? userPhotoUrl;
+  List<String> upvotedUserIds;
   final String docId;
+  String? userPhotoUrl;
 
   CardAnswer({
+    //required this.answerId,
     required this.questionId,
     required this.userId,
     required this.answerText,
     required this.upvoteCount,
+    this.upvotedUserIds = const [],
+    this.docId = '',
     required this.username,
-    this.upvotedUserIds ,
     required this.userPhotoUrl,
-    required this.docId ,
   });
 
   Map<String, dynamic> toJson() => {
+        //'answerId': answerId,
         'questionId': questionId,
         'userId': userId,
         'answerText': answerText,
         'upvoteCount': upvoteCount,
-        'username': '',
+        'username': username,
         'upvotedUserIds': upvotedUserIds,
-        'userPhotoUrl': userPhotoUrl,
-        'docId':docId,
+        'docId': docId,
+        'userPhotoUrl': userPhotoUrl, // Update property name to userPhotoUrl
       };
 
   factory CardAnswer.fromJson(Map<String, dynamic> json) {
     return CardAnswer(
+      //answerId: json['answerId'] as String,
       questionId: json['questionId'] as int,
       userId: json['userId'] as String,
       answerText: json['answerText'] as String,
       upvoteCount: json['upvoteCount'] as int,
-      username: json['username'] ?? '', // Parse the value as an int directly
       upvotedUserIds: List<String>.from(json['upvotedUserIds'] ?? []),
-      userPhotoUrl: json['userPhotoUrl'] as String?,
-       docId: json['docId'] ??'',
-
+      docId: json['docId'] ?? '',
+      username: json['username'] ?? '',
+      userPhotoUrl: json['userPhotoUrl']
+          as String?, // Update property name to userPhotoUrl
     );
   }
 }
+
+//TECHXCEL

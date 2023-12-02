@@ -1,4 +1,3 @@
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +52,14 @@ class _UserPostsPageState extends State<UserPostsPage> {
     return username;
   }
 
+  Future<int> getPostCount(String dropdownValue) async {
+    final QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('posts')
+        .where('dropdownvalue', isEqualTo: dropdownValue)
+        .get();
+
+    return snapshot.size;
+  }
 
   void _toggleFormVisibility() async {
     final result = await Navigator.push(
@@ -282,6 +289,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
 
   Widget buildTeamCard(CardFTview fandT) {
     final formattedDate = DateFormat.yMMMMd().format(fandT.date);
+    DateTime deadlineDate = fandT.date as DateTime;
+    DateTime currentDate = DateTime.now();
 
     return Card(
       child: ListTile(
@@ -337,10 +346,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   },
                 ),
                 IconButton(
-                  icon: Icon(
-                    FontAwesomeIcons.solidMessage,
-                    size: 18.5,
-                  ),
+                  icon: Icon(Icons.chat_bubble),
                   onPressed: () {
                     // Add functionality next sprints
                   },
@@ -350,11 +356,13 @@ class _UserPostsPageState extends State<UserPostsPage> {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 55),
+              padding: const EdgeInsets.only(left: 40),
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
                 decoration: BoxDecoration(
-                  color: Colors.purple.shade200,
+                  color: deadlineDate.isBefore(currentDate)
+                      ? Colors.red
+                      : Color.fromARGB(255, 11, 0, 135),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Text(
@@ -374,6 +382,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
 
   Widget buildProjectCard(CardFTview fandT) {
     final formattedDate = DateFormat.yMMMMd().format(fandT.date);
+    DateTime deadlineDate = fandT.date as DateTime;
+    DateTime currentDate = DateTime.now();
 
     return Card(
       child: ListTile(
@@ -429,10 +439,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   },
                 ),
                 IconButton(
-                  icon: Icon(
-                    FontAwesomeIcons.solidMessage,
-                    size: 18.5,
-                  ),
+                  icon: Icon(Icons.chat_bubble),
                   onPressed: () {
                     // Add functionality next sprints
                   },
@@ -442,11 +449,13 @@ class _UserPostsPageState extends State<UserPostsPage> {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 55),
+              padding: const EdgeInsets.only(left: 40),
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
                 decoration: BoxDecoration(
-                  color: Colors.purple.shade200,
+                  color: deadlineDate.isBefore(currentDate)
+                      ? Colors.red
+                      : Color.fromARGB(255, 11, 0, 135),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Text(
@@ -554,10 +563,13 @@ class _UserPostsPageState extends State<UserPostsPage> {
           ),
         ),
 
+        //drawer: NavBar(),
+
         floatingActionButton: FloatingActionButton(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           onPressed: () async {
+            // _toggleFormVisibility();
             showInputDialog();
           },
           backgroundColor: Color.fromARGB(255, 156, 147, 176),
@@ -741,6 +753,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
                                 : Icons.arrow_circle_up),
                             onPressed: () {
                               setState(() {
+                                print("______ IM INTyyyy ${answer.docId}");
+
                                 if (upvotedUserIds.contains(currentEmail)) {
                                   // Undo the upvote
                                   upvotedUserIds.remove(currentEmail);
@@ -755,7 +769,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                                 // Update the upvote count and upvoted user IDs in Firestore
                                 FirebaseFirestore.instance
                                     .collection('Answer')
-                                    .doc()
+                                    .doc(answer.docId)
                                     .update({
                                       'upvoteCount': upvoteCount,
                                       'upvotedUserIds': upvotedUserIds,
@@ -813,6 +827,12 @@ class PostDeleteButton extends StatelessWidget {
                 content: Text('Are you sure you want to delete this $type?'),
                 actions: <Widget>[
                   TextButton(
+                    child: Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
                     child: Text(
                       'Delete',
                       style: TextStyle(color: Colors.red),
@@ -848,12 +868,6 @@ class PostDeleteButton extends StatelessWidget {
                       }
                     },
                   ),
-                  TextButton(
-                    child: Text('Cancel'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
                 ],
               );
             },
@@ -863,5 +877,3 @@ class PostDeleteButton extends StatelessWidget {
     );
   }
 }
-
- 

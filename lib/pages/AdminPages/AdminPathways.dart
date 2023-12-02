@@ -676,7 +676,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       drawer: const NavBarAdmin(),
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -821,7 +821,9 @@ class _AdminPathwaysState extends State<AdminPathways> {
               left: MediaQuery.of(context).size.width * 0.05,
               right: MediaQuery.of(context).size.width * 0.05,
               top: MediaQuery.of(context).size.height * 0.07,
-              bottom: MediaQuery.of(context).size.height * 0.06,
+              bottom: MediaQuery.of(context).viewInsets.bottom > 0
+                  ? 0
+                  : MediaQuery.of(context).size.height * 0.1,
               child: SingleChildScrollView(
                 child: Container(
                   decoration: BoxDecoration(
@@ -1042,7 +1044,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
                               });
                             },
                             style: ElevatedButton.styleFrom(
-                              primary: Color.fromARGB(255, 198, 180, 247),
+                              primary: Color.fromRGBO(37, 6, 81, 0.898),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25),
                               ),
@@ -1061,6 +1063,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
                           ),
                         ),
                       ),
+
                       // Move the ListView here inside the white box
                       Visibility(
                         visible: !_isHidden,
@@ -1100,7 +1103,8 @@ class _AdminPathwaysState extends State<AdminPathways> {
                                         // MainAxisAlignment.end,
                                         children: [
                                           Padding(
-                                            padding: const EdgeInsets.all(18.0),
+                                            padding: const EdgeInsets.only(
+                                                left: 18.0),
                                             child: Text(
                                               'SubTopic - ${index + 1}',
                                               style: TextStyle(
@@ -1138,9 +1142,9 @@ class _AdminPathwaysState extends State<AdminPathways> {
                                             const Row(
                                               children: [
                                                 Text(
-                                                  'Sub-Topic Title',
+                                                  'SubTopic Title',
                                                   style: TextStyle(
-                                                    fontSize: 16,
+                                                    fontSize: 16, // add
                                                   ),
                                                 ),
                                                 SizedBox(
@@ -1330,7 +1334,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              primary: Color.fromARGB(255, 198, 180, 247),
+                              primary: Color.fromRGBO(37, 6, 81, 0.898),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25),
                               ),
@@ -1378,7 +1382,9 @@ class _AdminPathwaysState extends State<AdminPathways> {
               left: MediaQuery.of(context).size.width * 0.05,
               right: MediaQuery.of(context).size.width * 0.05,
               top: MediaQuery.of(context).size.height * 0.07,
-              bottom: MediaQuery.of(context).size.height * 0.06,
+              bottom: MediaQuery.of(context).viewInsets.bottom > 0
+                  ? 0
+                  : MediaQuery.of(context).size.height * 0.1,
               child: SingleChildScrollView(
                   child: Container(
                 decoration: BoxDecoration(
@@ -1677,8 +1683,8 @@ class _AdminPathwaysState extends State<AdminPathways> {
                                         Row(
                                           children: [
                                             Padding(
-                                              padding:
-                                                  const EdgeInsets.all(18.0),
+                                              padding: const EdgeInsets.only(
+                                                  left: 18.0),
                                               child: Text(
                                                 'SubTopic - ${indexx + 1}',
                                                 style: TextStyle(
@@ -1724,7 +1730,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
                                               const Row(
                                                 children: [
                                                   Text(
-                                                    'Sub-Topic Title',
+                                                    'SubTopic Title',
                                                     style: TextStyle(
                                                       fontSize: 16,
                                                     ),
@@ -1746,10 +1752,12 @@ class _AdminPathwaysState extends State<AdminPathways> {
                                                       color: Color.fromARGB(
                                                           255, 0, 0, 0)),
                                                   labelStyle: const TextStyle(
-                                                    color: Colors.black54,
+                                                    color: const Color.fromARGB(
+                                                        255, 43, 3, 101),
                                                   ),
                                                   filled: true,
-                                                  labelText: "please enter",
+                                                  labelText:
+                                                      "please enter subtopic's title",
                                                   floatingLabelBehavior:
                                                       FloatingLabelBehavior
                                                           .never,
@@ -1779,7 +1787,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
                                               Padding(
                                                 padding:
                                                     const EdgeInsets.symmetric(
-                                                        horizontal: 20),
+                                                        horizontal: 3),
                                                 child: Column(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
@@ -1851,13 +1859,13 @@ class _AdminPathwaysState extends State<AdminPathways> {
                                                         });
                                                       },
                                                     ),
-                                                    const SizedBox(height: 0),
+                                                    const SizedBox(height: 15),
                                                     ////
 
                                                     Padding(
                                                       padding: const EdgeInsets
                                                           .symmetric(
-                                                          horizontal: 20),
+                                                          horizontal: 3),
                                                       child: Column(
                                                         crossAxisAlignment:
                                                             CrossAxisAlignment
@@ -2002,6 +2010,8 @@ class _AdminPathwaysState extends State<AdminPathways> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 25),
+
                     ElevatedButton(
                       onPressed: () async {
                         SharedPreferences pre =
@@ -2027,8 +2037,27 @@ class _AdminPathwaysState extends State<AdminPathways> {
                           });
                         }
                       },
-                      child: const Text('Save'),
-                    )
+                      style: ElevatedButton.styleFrom(
+                        primary: Color.fromRGBO(37, 6, 81, 0.898),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        elevation: 10,
+                        shadowColor:
+                            Color.fromARGB(255, 0, 0, 0).withOpacity(1),
+                      ),
+                      child: Text(
+                        'Save',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
                   ],
                 ),
               )),
@@ -2083,7 +2112,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
           Row(
             children: [
               Padding(
-                padding: const EdgeInsets.all(18.0),
+                padding: const EdgeInsets.only(left: 0.0),
                 child: Text(
                   'SubTopic - ${index + 1}',
                   style: TextStyle(
@@ -2119,14 +2148,14 @@ class _AdminPathwaysState extends State<AdminPathways> {
           ),
           const SizedBox(height: 0),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Row(
                   children: [
                     Text(
-                      'Sub-Topic Title',
+                      'SubTopic Title',
                       style: TextStyle(
                         fontSize: 16,
                       ),
@@ -2171,7 +2200,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
                   height: 5,
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -2231,10 +2260,12 @@ class _AdminPathwaysState extends State<AdminPathways> {
                     ],
                   ),
                 ),
-
+                SizedBox(
+                  height: 14,
+                ),
                 //new resourse
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
