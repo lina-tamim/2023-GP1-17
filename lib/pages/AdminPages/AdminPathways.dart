@@ -22,6 +22,7 @@ class AdminPathways extends StatefulWidget {
 }
 
 class _AdminPathwaysState extends State<AdminPathways> {
+  bool _isLoading = false;
   //EDIT
   int x = 0;
   //to hold values of key topics selected
@@ -1299,51 +1300,73 @@ class _AdminPathwaysState extends State<AdminPathways> {
                           ],
                         ),
                       ),
-                      SizedBox(
-                        height: 30,
-                      ),
+                      SizedBox(height: 20),
+
+                      if (_isLoading)
+                        IgnorePointer(
+                          child: Opacity(
+                            opacity: 1,
+                            child: Container(
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          ),
+                        ),
                       SizedBox(
                         width: 200,
                         height: 50,
                         child: Visibility(
                           visible: !_isHidden,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              //firebase++
-                              if (await _validateFields()) {
-                                if (await saveDataToFirestore()) {
-                                  _showSnackBar('Pathway added successfully!');
-                                  setState(() {
-                                    showWhiteBox = false;
-                                    _isHidden = true;
-                                  });
-                                  cleareFields();
-                                } else {
-                                  _showSnackBar(
-                                      'Failed to save data to Firestore!');
-                                }
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              primary: Color.fromRGBO(37, 6, 81, 0.898),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              elevation: 10,
-                              shadowColor:
-                                  Color.fromARGB(255, 0, 0, 0).withOpacity(1),
-                            ),
-                            child: Text(
-                              'Add Pathway',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
+                          child: Expanded(
+                            child: Column(
+                              children: [
+                                IgnorePointer(
+                                  ignoring:
+                                      _isLoading, // Ignore pointer events if _loading is true
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+//firebase++
+                                      if (await _validateFields()) {
+                                        if (await saveDataToFirestore()) {
+                                          _showSnackBar(
+                                              'Pathway added successfully!');
+                                          setState(() {
+                                            showWhiteBox = false;
+                                            _isHidden = true;
+                                          });
+                                          cleareFields();
+                                        } else {
+                                          _showSnackBar(
+                                              'Failed to save data to Firestore!');
+                                        }
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Color.fromRGBO(37, 6, 81, 0.898),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(25),
+                                      ),
+                                      elevation: 10,
+                                      shadowColor: Color.fromARGB(255, 0, 0, 0)
+                                          .withOpacity(1),
+                                    ),
+                                    child: Text(
+                                      'Add Pathway',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ),
+                      SizedBox(height: 20),
                       SizedBox(
                         height: 30,
                       ),
@@ -2742,6 +2765,9 @@ class _AdminPathwaysState extends State<AdminPathways> {
   // DB
 
   Future<bool> saveDataToFirestore() async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
       // Create a new document reference
       DocumentReference documentReference =
@@ -2791,6 +2817,9 @@ class _AdminPathwaysState extends State<AdminPathways> {
         'pathwayNo': pathID,
       });
       id = id + 1;
+      setState(() {
+        _isLoading = true;
+      });
       return true;
     } catch (error) {
       return false;

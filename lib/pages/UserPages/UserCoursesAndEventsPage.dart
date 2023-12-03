@@ -332,8 +332,9 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
     if (start == null || end == null) {
       return false;
     }
-    if ( start.isAfter(end))
-    { return false;}
+    if (start.isAfter(end)) {
+      return false;
+    }
     return end.isAfter(DateTime.now());
   }
 
@@ -1351,4 +1352,3 @@ class CoursesWidget extends StatelessWidget {
         ));
   }
 }
-
