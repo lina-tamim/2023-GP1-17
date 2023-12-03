@@ -14,7 +14,6 @@ import 'package:techxcel11/Models/PathwaysCard.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
 import 'package:techxcel11/Models/PathwayImage.dart';
 
-
 class AdminPathways extends StatefulWidget {
   const AdminPathways({Key? key});
 
@@ -100,7 +99,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
         dbsubtopics = subtopics;
         dbdescriptions = descriptions;
         pathID = pathway.id;
-        //dbdocId = pathway.docId;
+        dbdocId = pathway.docId;
         subtopicControllers = pathway.subtopics;
         subtopicDescriptionControllers = pathway.descriptions;
         subtopicresourseControllers = pathway.resources;
@@ -1428,9 +1427,9 @@ class _AdminPathwaysState extends State<AdminPathways> {
                     SizedBox(
                       height: 10,
                     ),
-                    //image++ 
+                    //image++
                     PathwayImagePicker(
-                    onPickImage: (pickedImage) {
+                      onPickImage: (pickedImage) {
                         newProfilePicture = pickedImage;
                       },
                     ),
@@ -1498,7 +1497,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
                                   readOnly: false,
                                   controller: TextEditingController(
                                       text:
-                                          newtitle), // Use newUsername variable as the initial value
+                                          dbtitle), // Use newUsername variable as the initial value
                                   onChanged: (value) {
                                     newtitle =
                                         value; // Update newUsername when the value changes
@@ -1536,7 +1535,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
                             enabled: true,
                             controller: TextEditingController(
                                 text:
-                                    newpath_description), // Use newUsername variable as the initial value
+                                    dbpath_description), // Use newUsername variable as the initial value
                             onChanged: (value) {
                               newpath_description =
                                   value; // Update newUsername when the value changes
@@ -2068,6 +2067,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
     }
     return false;
   }
+
   Future<bool> updateTopics() async {
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
@@ -2607,7 +2607,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
     return true;
   }
 
-Future<bool> validateResource(
+  Future<bool> validateResource(
       List<String> list1, List<TextEditingController> list2) async {
     List<String> mergedList = [];
     int len = list1.length;
@@ -2742,7 +2742,6 @@ Future<bool> validateResource(
   // DB
 
   Future<bool> saveDataToFirestore() async {
-
     try {
       // Create a new document reference
       DocumentReference documentReference =
@@ -2756,29 +2755,29 @@ Future<bool> validateResource(
         return false; // Data save failed
       }
 
-    final storageRef = FirebaseStorage.instance
-        .ref()
-        .child('pathways_images')
-        .child('${documentReference?.id}png');
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('pathways_images')
+          .child('${documentReference?.id}png');
 
-    if (_selectedImage == null) {
-      // Load the default image from assets
-      final byteData = await rootBundle.load(defaultImagePath);
-      final bytes = byteData.buffer.asUint8List();
+      if (_selectedImage == null) {
+        // Load the default image from assets
+        final byteData = await rootBundle.load(defaultImagePath);
+        final bytes = byteData.buffer.asUint8List();
 
-      // Save the default image to a temporary file
-      final tempDir = await getTemporaryDirectory();
-      final tempPath = path.join(tempDir.path, 'default_image.png');
-      await File(tempPath).writeAsBytes(bytes);
+        // Save the default image to a temporary file
+        final tempDir = await getTemporaryDirectory();
+        final tempPath = path.join(tempDir.path, 'default_image.png');
+        await File(tempPath).writeAsBytes(bytes);
 
-      // Upload the default image to storage
-      await storageRef.putFile(File(tempPath));
-    } else {
-      // Upload the selected image to storage
-      await storageRef.putFile(_selectedImage!);
-    }
-    final imageURL = await storageRef.getDownloadURL();
-
+        // Upload the default image to storage
+        await storageRef.putFile(File(tempPath));
+      } else {
+        // Upload the selected image to storage
+        await storageRef.putFile(_selectedImage!);
+      }
+      final imageURL = await storageRef.getDownloadURL();
+      pathID = pathID + 1;
       // Save the flattened resources list to Firestore
       await documentReference.set({
         'title': _pathTitle.text,
@@ -2789,7 +2788,7 @@ Future<bool> validateResource(
             _descriptions.map((controller) => controller.text).toList(),
         'resources': _resources.map((controller) => controller.text).toList(),
         'imageURL': imageURL,
-        'pathwayNo': id,
+        'pathwayNo': pathID,
       });
       id = id + 1;
       return true;
@@ -2799,7 +2798,7 @@ Future<bool> validateResource(
   }
 
   /////// VALIDATION
-  
+
   Future<bool> isTitleUnique(String title) async {
     QuerySnapshot querySnapshot = await firestore
         .collection('Pathway')
@@ -2809,7 +2808,8 @@ Future<bool> validateResource(
     return querySnapshot
         .docs.isEmpty; // Return true if no matching title exists
   }
-Future<bool> isTitleUnique2(String title) async {
+
+  Future<bool> isTitleUnique2(String title) async {
     QuerySnapshot querySnapshot = await firestore
         .collection('Pathway')
         .where('title', isEqualTo: title)
@@ -2819,7 +2819,7 @@ Future<bool> isTitleUnique2(String title) async {
         .docs.isEmpty; // Return true if no matching title exists
   }
 
-Future<bool> _validateFields() async {
+  Future<bool> _validateFields() async {
     // Validate the title field
     if (_pathTitle.text.isEmpty) {
       _showSnackBar('Please enter the title');
