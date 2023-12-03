@@ -24,7 +24,7 @@ class _FreelancerPageState extends State<FreelancerPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'TechXcel',
+                'TeXel',
                 style: GoogleFonts.orbitron(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,

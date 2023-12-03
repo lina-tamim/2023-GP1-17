@@ -59,7 +59,7 @@ class _ReposrtedPostState extends State<ReposrtedPost> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'TechXcel',
+                'TeXel',
                 style: GoogleFonts.orbitron(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,

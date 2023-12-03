@@ -58,7 +58,7 @@ class _ReportedAccountState extends State<ReportedAccount> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'TechXcel',
+                'TeXel',
                 style: GoogleFonts.orbitron(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,

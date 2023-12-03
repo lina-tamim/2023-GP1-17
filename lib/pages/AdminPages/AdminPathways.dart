@@ -12,7 +12,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:lottie/lottie.dart';
 import 'package:techxcel11/Models/PathwaysCard.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
-import 'package:techxcel11/Models/UserImage.dart';
+import 'package:techxcel11/Models/PathwayImage.dart';
+
 
 class AdminPathways extends StatefulWidget {
   const AdminPathways({Key? key});
@@ -49,6 +50,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
   int lenghtOftopics = 0;
   int pathID = 0;
   String? dbdocId = '';
+  File? _selectedImage;
 
 //Modified by user
   String newimage_url = '';
@@ -58,8 +60,8 @@ class _AdminPathwaysState extends State<AdminPathways> {
   List<String> newsubtopics = [];
   List<String> newdescriptions = [];
   List<String> newResources = [];
-
   File? newProfilePicture;
+  String defaultImagePath = 'assets/Backgrounds/defaultPathwayImage.png';
 
   Future<void> fetchData(PathwayContainer pathway) async {
     SharedPreferences pre = await SharedPreferences.getInstance();
@@ -260,7 +262,6 @@ class _AdminPathwaysState extends State<AdminPathways> {
   final List<TextEditingController> _topics = [];
   final List<TextEditingController> _descriptions = [];
   final List<TextEditingController> _resources = [];
-  File? _selectedImage;
   final TextEditingController _path_descriptions = TextEditingController();
 
   List<String> _SelectTopic = [];
@@ -511,15 +512,6 @@ class _AdminPathwaysState extends State<AdminPathways> {
   }
 
   Widget buildpathwayCard(PathwayContainer pathway) {
-    Widget imageWidget;
-
-    if (pathway.imagePath == 'assets/Backgrounds/navbarbg2.png') {
-      // Display the default image
-      imageWidget = Image.asset(pathway.imagePath);
-    } else {
-      // Display the image from URL
-      imageWidget = Image.network(pathway.imagePath);
-    }
     return Padding(
       padding: EdgeInsets.all(8.0), // Add space between each card
       child: FractionallySizedBox(
@@ -882,7 +874,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
                         height: 10,
                       ),
                       //image++
-                      UserImagePicker(
+                      PathwayImagePicker(
                         onPickImage: (pickedImage) {
                           _selectedImage = pickedImage;
                         },
@@ -1361,12 +1353,6 @@ class _AdminPathwaysState extends State<AdminPathways> {
                 ),
               ),
             ),
-          //////////////////// END FORM
-          ///
-          ///
-          ///
-          ///
-          ///
           if (showEditBox)
             Positioned.fill(
               child: BackdropFilter(
@@ -1442,12 +1428,13 @@ class _AdminPathwaysState extends State<AdminPathways> {
                     SizedBox(
                       height: 10,
                     ),
-                    //image++
-                    UserImagePicker(
-                      onPickImage: (pickedImage) {
+                    //image++ 
+                    PathwayImagePicker(
+                    onPickImage: (pickedImage) {
                         newProfilePicture = pickedImage;
                       },
                     ),
+
                     const Padding(
                       padding:
                           EdgeInsets.symmetric(vertical: 10, horizontal: 5),
@@ -2068,6 +2055,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
   }
 
 //edit db
+
   Future<bool> validateTopics() async {
     if (newKey_topic == dbKey_topic) {
       return true;
@@ -2080,7 +2068,6 @@ class _AdminPathwaysState extends State<AdminPathways> {
     }
     return false;
   }
-
   Future<bool> updateTopics() async {
     final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
@@ -2481,7 +2468,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
     try {
       // Upload the new profile picture to Firebase Storage
       final Reference storageRef =
-          FirebaseStorage.instance.ref().child('pathway_images/$pathID.jpg');
+          FirebaseStorage.instance.ref().child('pathways_images/$pathID.jpg');
       final UploadTask uploadTask = storageRef.putFile(newProfilePicture!);
       final TaskSnapshot taskSnapshot =
           await uploadTask.whenComplete(() => null);
@@ -2620,7 +2607,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
     return true;
   }
 
-  Future<bool> validateResource(
+Future<bool> validateResource(
       List<String> list1, List<TextEditingController> list2) async {
     List<String> mergedList = [];
     int len = list1.length;
@@ -2631,6 +2618,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
         _showSnackBar('Please fill all resource');
         return false;
       }
+
       if (value.isNotEmpty) {
         mergedList.add(value);
       }
@@ -2653,11 +2641,20 @@ class _AdminPathwaysState extends State<AdminPathways> {
         _showSnackBar('Please fill all resource');
         return false;
       }
+      if (!_isUrlValid(mergedList[i])) {
+        _showSnackBar('Please enter a valid URL for resource ${i + 1}');
+        return false;
+      }
     }
     if (await updateresoursesssub(subtopicresourseControllers, resourse2)) {
       return true;
     }
     return false;
+  }
+
+  bool _isUrlValid(String url) {
+    Uri? uri = Uri.tryParse(url);
+    return uri != null && uri.isAbsolute;
   }
 
   Future<bool> validatesubtopics(
@@ -2745,6 +2742,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
   // DB
 
   Future<bool> saveDataToFirestore() async {
+
     try {
       // Create a new document reference
       DocumentReference documentReference =
@@ -2757,37 +2755,29 @@ class _AdminPathwaysState extends State<AdminPathways> {
         _showSnackBar('Please enter a new title');
         return false; // Data save failed
       }
-      //image++
-      String imagePath = "";
-      if (_selectedImage != null) {
-        // If user selected an image
-        imagePath =
-            'pathways_images/${documentReference.id}${path.extension(_selectedImage!.path)}'; // Generate a unique image path
-        FirebaseStorage storage = FirebaseStorage.instance;
-        Reference storageRef = storage.ref().child(imagePath);
-        UploadTask uploadTask = storageRef.putFile(_selectedImage!);
-        await uploadTask.whenComplete(() => null);
-      } else {
-        // If no image is selected, use the default image from assets
-        ByteData defaultImageData =
-            await rootBundle.load('assets/Backgrounds/navbarbg2.png');
-        List<int> defaultImageBytes = defaultImageData.buffer.asUint8List();
-        Directory tempDir = await getTemporaryDirectory();
-        String tempPath =
-            '${tempDir.path}/${path.basename('assets/Backgrounds/navbarbg2.png')}';
-        File tempFile = File(tempPath);
-        await tempFile.writeAsBytes(defaultImageBytes);
-        imagePath =
-            'pathways_images/${documentReference.id}.png'; // Generate a unique image path
-        FirebaseStorage storage = FirebaseStorage.instance;
-        Reference storageRef = storage.ref().child(imagePath);
-        UploadTask uploadTask = storageRef.putFile(tempFile);
-        await uploadTask.whenComplete(() => null);
-        await tempFile.delete(); // Delete the temporary file
-      }
 
-      String imageUrl =
-          await FirebaseStorage.instance.ref(imagePath).getDownloadURL();
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child('pathways_images')
+        .child('${documentReference?.id}png');
+
+    if (_selectedImage == null) {
+      // Load the default image from assets
+      final byteData = await rootBundle.load(defaultImagePath);
+      final bytes = byteData.buffer.asUint8List();
+
+      // Save the default image to a temporary file
+      final tempDir = await getTemporaryDirectory();
+      final tempPath = path.join(tempDir.path, 'default_image.png');
+      await File(tempPath).writeAsBytes(bytes);
+
+      // Upload the default image to storage
+      await storageRef.putFile(File(tempPath));
+    } else {
+      // Upload the selected image to storage
+      await storageRef.putFile(_selectedImage!);
+    }
+    final imageURL = await storageRef.getDownloadURL();
 
       // Save the flattened resources list to Firestore
       await documentReference.set({
@@ -2798,9 +2788,8 @@ class _AdminPathwaysState extends State<AdminPathways> {
         'descriptions':
             _descriptions.map((controller) => controller.text).toList(),
         'resources': _resources.map((controller) => controller.text).toList(),
-        'imageURL': imageUrl,
+        'imageURL': imageURL,
         'pathwayNo': id,
-        //'docId': documentReference.id,
       });
       id = id + 1;
       return true;
@@ -2810,6 +2799,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
   }
 
   /////// VALIDATION
+  
   Future<bool> isTitleUnique(String title) async {
     QuerySnapshot querySnapshot = await firestore
         .collection('Pathway')
@@ -2819,8 +2809,17 @@ class _AdminPathwaysState extends State<AdminPathways> {
     return querySnapshot
         .docs.isEmpty; // Return true if no matching title exists
   }
+Future<bool> isTitleUnique2(String title) async {
+    QuerySnapshot querySnapshot = await firestore
+        .collection('Pathway')
+        .where('title', isEqualTo: title)
+        .get();
 
-  Future<bool> _validateFields() async {
+    return querySnapshot
+        .docs.isEmpty; // Return true if no matching title exists
+  }
+
+Future<bool> _validateFields() async {
     // Validate the title field
     if (_pathTitle.text.isEmpty) {
       _showSnackBar('Please enter the title');
@@ -2830,10 +2829,15 @@ class _AdminPathwaysState extends State<AdminPathways> {
       _showSnackBar('Title should not exceed 40 characters');
       return false;
     }
+    bool titleExists = await isTitleUnique2(_pathTitle.text);
+    if (titleExists == false) {
+      _showSnackBar('Title is already taken. Please choose a different one.');
+      return false;
+    }
 
     if (_path_descriptions.text.isEmpty) {
       _showSnackBar('Please enter the pathway\'s description');
-      return false; // Return early if the title field is empty
+      return false; // Return early if the description field is empty
     }
     if (_path_descriptions.text.length > 250) {
       _showSnackBar('Description should not exceed 250 characters');
@@ -2841,8 +2845,8 @@ class _AdminPathwaysState extends State<AdminPathways> {
     }
 
     if (_SelectTopic.isEmpty) {
-      _showSnackBar('Please enter the pathway\'s KeyWords');
-      return false; // Return early if the title field is empty
+      _showSnackBar('Please enter the pathway\'s keywords');
+      return false; // Return early if the keywords field is empty
     }
 
     // Validate the topics, descriptions, and resources
@@ -2853,9 +2857,18 @@ class _AdminPathwaysState extends State<AdminPathways> {
         _showSnackBar('Please fill all fields for topic ${i + 1}');
         return false; // Return early if any topic or description field is empty
       }
+      if (!_isUrlValidadd(_resources[i].text)) {
+        _showSnackBar('Please enter a valid URL for topic ${i + 1}');
+        return false; // Return early if the resource is not a valid URL
+      }
     }
 
-    return true;
+    return true; // Validation passed
+  }
+
+  bool _isUrlValidadd(String url) {
+    Uri? uri = Uri.tryParse(url);
+    return uri != null && uri.isAbsolute;
   }
 
   void cleareFields() {
@@ -2863,6 +2876,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
     _pathTitle.clear();
     _path_descriptions.clear();
     _SelectTopic.clear();
+    _selectedImage = null;
 // remove the opened fields >1 "the muust field "
     if (_topics.length > 1) {
       _topics.removeRange(1, _topics.length);

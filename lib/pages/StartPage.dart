@@ -13,7 +13,7 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final String txlLogo = 'assets/Backgrounds/Xlogo.png';
-  final String txlLogo2 = 'assets/Backgrounds/TXLogo.png';
+  final String txlLogo2 = 'assets/Backgrounds/TXlogo2.png';
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +65,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                           SizedBox(height: 40),
                           Text(
-                            'Welcome to TechXcel,\nYour centralized hub for technology.\n\n'
+                            'Welcome to TeXel,\nYour centralized hub for technology.\n\n'
                             'Join our vibrant community to engage in community-wide discussions,find solutions to all your problem and '
                             'stay up to date with the newest technology events and courses, empowering your professional growth.',
                             style: TextStyle(
@@ -78,12 +78,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
                 Positioned(
-                  top: 535,
-                  left: 28,
+                  top: 550,
+                  left: 70,
                   child: Image.asset(
                     txlLogo2,
-                    width: 230, 
-                    height: 230, 
+                    width: 160, 
+                    height: 180, 
                   ),
                 ),
                 Positioned(

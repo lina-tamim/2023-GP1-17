@@ -8,6 +8,8 @@ import 'package:techxcel11/Models/ReusedElements.dart';
 import 'package:techxcel11/Models/FormCard.dart';
 import 'package:techxcel11/Models/PostCardView.dart';
 import 'package:techxcel11/Models/ViewQCard.dart';
+import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
+
 
 class UserPostsPage extends StatefulWidget {
   const UserPostsPage({Key? key}) : super(key: key);
@@ -71,7 +73,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
   Stream<List<CardQview>> readQuestion() {
     return FirebaseFirestore.instance
         .collection('Question')
-        //.where('dropdownValue', isEqualTo: 'Question')
         .where('userId', isEqualTo: email)
         .snapshots()
         .asyncMap((snapshot) async {
@@ -166,12 +167,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
                             builder: (context) =>
                                 AnswerPage(questionId: question.id)),
                       );
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.report),
-                    onPressed: () {
-                      // Add functionality next sprints
                     },
                   ),
                   PostDeleteButton(docId: question.docId, type: 'question'),
@@ -340,12 +335,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 IconButton(
-                  icon: Icon(Icons.report),
-                  onPressed: () {
-                    // Add functionality next sprints
-                  },
-                ),
-                IconButton(
                   icon: Icon(Icons.chat_bubble),
                   onPressed: () {
                     // Add functionality next sprints
@@ -432,12 +421,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                IconButton(
-                  icon: Icon(Icons.report),
-                  onPressed: () {
-                    // Add functionality next sprints
-                  },
-                ),
                 IconButton(
                   icon: Icon(Icons.chat_bubble),
                   onPressed: () {
@@ -706,7 +689,16 @@ class _UserPostsPageState extends State<UserPostsPage> {
     int upvoteCount = answer.upvoteCount ?? 0;
     List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
 
-    return Card(
+    return  GestureDetector(
+    onTap: () {
+      // Navigate to the Answer page when the card is tapped
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AnswerPage(questionId: answer.questionId),
+        ),
+      );
+    }, child: Card(
       child: ListTile(
         leading: CircleAvatar(
           backgroundImage: answer.userPhotoUrl != null
@@ -753,7 +745,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
                                 : Icons.arrow_circle_up),
                             onPressed: () {
                               setState(() {
-                                print("______ IM INTyyyy ${answer.docId}");
 
                                 if (upvotedUserIds.contains(currentEmail)) {
                                   // Undo the upvote
@@ -799,7 +790,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
           ],
         ),
       ),
-    );
+    ),);
   }
 }
 

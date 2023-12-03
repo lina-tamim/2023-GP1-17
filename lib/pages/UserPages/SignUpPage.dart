@@ -518,7 +518,7 @@ class _Signup extends State<Signup> {
                       padding:
                           EdgeInsets.symmetric(vertical: 20, horizontal: 7),
                       child: Text(
-                        'Unlock your potential with TechXcel!\n'
+                        'Unlock your potential with TeXel!\n'
                         'Join now and embark on an exciting journey!',
                         textAlign: TextAlign.center,
                       ),

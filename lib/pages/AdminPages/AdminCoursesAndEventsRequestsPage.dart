@@ -110,7 +110,7 @@ class _AdminCoursesAndEventsRequestsPageState
                   children: [
                     Center(
                       child: Text(
-                        "Welcome to the uploaded requests section by Techxcel users!\nHere, you have the power "
+                        "Welcome to the uploaded requests section by TeXel users!\nHere, you have the power "
                         "to review and make decisions on these requests.\nYou can either accept them, "
                         "allowing them to be published to the public,or reject them if they don't meet the criteria.\n",
                         style: TextStyle(

@@ -23,7 +23,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'TechXcel',
+                'TeXel',
                 style: GoogleFonts.orbitron(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,

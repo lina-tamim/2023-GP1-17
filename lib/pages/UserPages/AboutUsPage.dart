@@ -18,7 +18,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavBarUser(),
-      appBar: buildAppBar('About TechXcel'),
+      appBar: buildAppBar('About TeXel'),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -38,7 +38,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                   height: 30,
                 ),
                 const Text(
-                  "TechXcel, the all-in-one destination for tech ",
+                  "TeXel, the all-in-one destination for tech ",
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                 ),
                 Text(
@@ -53,7 +53,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                 const SizedBox(height: 25),
                 Center(
                   child: const Text(
-                    "At TechXcel, we're passionate about technology and its endless possibilities. Our platform serves as a hub where you can ignite your tech journey, connect with like-minded individuals, and unlock new opportunities.",
+                    "At TeXel, we're passionate about technology and its endless possibilities. Our platform serves as a hub where you can ignite your tech journey, connect with like-minded individuals, and unlock new opportunities.",
                     style: TextStyle(
                       fontSize: 13,
                     ),
@@ -75,7 +75,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                       Icon(Icons.email),
                       const SizedBox(width: 10),
                       Text(
-                        'txsupport@techxcel.com',
+                        'txsupport@texel.com',
                         style: TextStyle(
                           fontSize: 14,
                         ),
@@ -94,7 +94,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                       ),
                       const SizedBox(width: 10),
                       Text(
-                        '@techxcelapp',
+                        '@texelapp',
                         style: TextStyle(
                           fontSize: 14,
                         ),

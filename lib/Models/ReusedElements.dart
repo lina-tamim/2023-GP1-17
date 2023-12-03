@@ -354,7 +354,7 @@ void toastMessage(String message) {
   Fluttertoast.showToast(
     msg: message,
     toastLength: Toast.LENGTH_LONG,
-    backgroundColor: Color.fromRGBO(98, 96, 100, 0.89),
+    backgroundColor: Color.fromRGBO(60, 16, 103, 0.882),
     textColor: Color(0xffffffff),
     gravity: ToastGravity.TOP,
   );
