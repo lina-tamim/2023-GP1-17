@@ -2020,7 +2020,6 @@ class _AdminPathwaysState extends State<AdminPathways> {
                       ],
                     ),
                     const SizedBox(height: 25),
-
                     ElevatedButton(
                       onPressed: () async {
                         SharedPreferences pre =

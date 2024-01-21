@@ -1,4 +1,4 @@
- import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
@@ -16,24 +16,48 @@ class CalendarPage extends StatefulWidget {
 class _CalendarPageState extends State<CalendarPage> {
   int _currentIndex = 0;
   List<Color> _colorCollection = <Color>[];
+  String _loggedInImage = '';
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
     super.initState();
     _initializeEventColor();
+    fetchUserData();
   }
 
- void _initializeEventColor() {
-  _colorCollection.add(const Color(0xFF0F8644));
-  _colorCollection.add(const Color(0xFF881FA9));
-  _colorCollection.add(const Color(0xFF3F51B5));
-  _colorCollection.add(const Color(0xFFD32F2F));
-  _colorCollection.add(const Color(0xFF009688));
-  _colorCollection.add(const Color(0xFF795548));
-  _colorCollection.add(const Color(0xFFC2185B));
-  _colorCollection.add(const Color(0xFF8BC34A));
-  _colorCollection.add(const Color(0xFF607D8B));
-}
+  Future<void> fetchUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('loggedInEmail') ?? '';
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+        .collection('RegularUser')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final userData = snapshot.docs[0].data();
+
+      final imageURL = userData['imageURL'] ?? '';
+
+      setState(() {
+        _loggedInImage = imageURL;
+      });
+    }
+  }
+
+  void _initializeEventColor() {
+    _colorCollection.add(const Color(0xFF0F8644));
+    _colorCollection.add(const Color(0xFF881FA9));
+    _colorCollection.add(const Color(0xFF3F51B5));
+    _colorCollection.add(const Color(0xFFD32F2F));
+    _colorCollection.add(const Color(0xFF009688));
+    _colorCollection.add(const Color(0xFF795548));
+    _colorCollection.add(const Color(0xFFC2185B));
+    _colorCollection.add(const Color(0xFF8BC34A));
+    _colorCollection.add(const Color(0xFF607D8B));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +66,7 @@ class _CalendarPageState extends State<CalendarPage> {
     final DateTime lastDayOfMonth = DateTime(now.year, now.month + 30);
     return Scaffold(
       drawer: const NavBarUser(),
-      appBar: buildAppBar('Calendar'),
+      appBar: buildAppBarUser('Calendar', _loggedInImage),
       body: Padding(
         padding: const EdgeInsets.all(13),
         child: SingleChildScrollView(
@@ -121,14 +145,10 @@ class _CalendarPageState extends State<CalendarPage> {
 
   Widget _buildSelectedDayEvents(List<EventModel> events) {
     final selectedDayEvents = _getSelectedDayEvents(events);
- 
-
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: selectedDayEvents.map((event) {
-        
-
         return Container(
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.all(10),
@@ -209,11 +229,9 @@ class _CalendarPageState extends State<CalendarPage> {
             .collection('Calendar')
             .doc(docId)
             .delete();
-        setState(() {
-        });
+        setState(() {});
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   void _onSelectionChanged(CalendarSelectionDetails details) {
@@ -313,4 +331,3 @@ class DataSource extends CalendarDataSource {
     return appointment?.color ?? Colors.blue;
   }
 }
- 

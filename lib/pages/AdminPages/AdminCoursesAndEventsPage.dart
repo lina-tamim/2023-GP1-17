@@ -420,16 +420,17 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
         .where('type', isEqualTo: type)
         .where('approval', isEqualTo: 'Yes');
 
-    if (searchController.text.isNotEmpty) {
+if (searchController.text.isNotEmpty) {
       query = query
+          .where('title', isGreaterThanOrEqualTo: searchController.text)
           .where('title',
-              isGreaterThanOrEqualTo: searchController.text.toLowerCase())
-          .where('title',
-              isLessThanOrEqualTo:
-                  searchController.text.toLowerCase() + '\uf8ff');
-    } else {
+              isLessThanOrEqualTo: searchController.text + '\uf8ff');
+    } 
+     else {
       query = query.orderBy('createdAt', descending: true);
     }
+
+    
 
     return query.snapshots().asyncMap((snapshot) async {
       final courses = snapshot.docs.map((doc) {

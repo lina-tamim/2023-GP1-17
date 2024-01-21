@@ -95,7 +95,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavBarUser(),
-      appBar: buildAppBar('My Profile'),
+      appBar: buildAppBarUser('My Profile', _loggedInImage),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Container(
@@ -157,12 +157,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  if (_loggedInUserType ==
-                      "Freelancer") 
+                  if (_loggedInUserType == "Freelancer")
                     const Icon(
                       Icons.verified,
                       color: Color.fromARGB(255, 0, 91, 228),
-                      size: 25, 
+                      size: 25,
                     ),
                 ],
               ),
@@ -265,7 +264,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       ),
                     ),
                     const SizedBox(width: 5),
-                    const Text( 'Skills',
+                    const Text(
+                      'Skills',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -307,5 +307,3 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 }
-
- 

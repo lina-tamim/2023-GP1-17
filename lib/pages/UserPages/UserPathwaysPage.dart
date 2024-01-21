@@ -31,8 +31,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       fetchContainerData().then((data) {
-        setState(() {
-        });
+        setState(() {});
       });
     });
   }
@@ -43,9 +42,15 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
     Query<Map<String, dynamic>> query =
         FirebaseFirestore.instance.collection('Pathway');
     if (widget.searchQuery.isNotEmpty) {
+      String searchText = widget.searchQuery;
+
       query = query
-          .where('title', isGreaterThanOrEqualTo: widget.searchQuery)
-          .where('title', isLessThanOrEqualTo: widget.searchQuery + '\uf8ff');
+          .where('title',
+              isGreaterThanOrEqualTo: widget.searchQuery.toLowerCase())
+          .where('title',
+              isLessThanOrEqualTo: widget.searchQuery.toLowerCase() + '\uf8ff');
+    } else {
+      query = query.orderBy('title', descending: true);
     }
 
     return query.snapshots().asyncMap((snapshot) async {
@@ -172,7 +177,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
                       children: [
                         IconButton(
                           onPressed: () {
-                          // Add functionality next sprints
+                            // Add functionality next sprints
                           },
                           icon: Icon(
                             Icons.bookmark_add,
@@ -201,8 +206,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
                           ),
                         ],
                       ),
-                      icon:
-                      SizedBox(), 
+                      icon: SizedBox(),
                     ),
                   ],
                 ),
@@ -264,7 +268,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
     );
   }
 
-void moreInfo(PathwayContainer pathway) {
+  void moreInfo(PathwayContainer pathway) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -400,13 +404,13 @@ void moreInfo(PathwayContainer pathway) {
                                   ),
                                 ),
                               ),
-                           if (expandedStates[subtopic] ?? false)
+                            if (expandedStates[subtopic] ?? false)
                               Padding(
                                 padding: EdgeInsets.only(left: 22.0, top: 8.0),
                                 child: GestureDetector(
                                   onTap: () {
-                                    launch(
-                                        pathway.resources[index]); // Replace with the actual URL
+                                    launch(pathway.resources[
+                                        index]); // Replace with the actual URL
                                   },
                                   child: Row(
                                     children: [
@@ -424,7 +428,6 @@ void moreInfo(PathwayContainer pathway) {
                                   ),
                                 ),
                               ),
-                            
                           ],
                         );
                       }).toList(),
@@ -592,6 +595,4 @@ void moreInfo(PathwayContainer pathway) {
       });
     }
   }
-} 
-
- 
+}

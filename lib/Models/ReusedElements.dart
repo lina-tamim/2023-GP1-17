@@ -329,14 +329,16 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
 
 AppBar buildAppBar(String titleText) {
   return AppBar(
-    iconTheme: const IconThemeData(color: Color.fromARGB(255, 255, 255, 255)),
-    backgroundColor: const Color.fromRGBO(37, 6, 81, 0.898),
+    iconTheme: IconThemeData(
+      color: Color.fromRGBO(37, 6, 81, 0.898),
+    ),
     toolbarHeight: 100,
-    elevation: 0,
-    shape: const ContinuousRectangleBorder(
-      borderRadius: BorderRadius.only(
-        bottomLeft: Radius.circular(130),
-        bottomRight: Radius.circular(130),
+    flexibleSpace: Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/Backgrounds/bg11.png'),
+          fit: BoxFit.cover,
+        ),
       ),
     ),
     title: Text(
@@ -344,7 +346,7 @@ AppBar buildAppBar(String titleText) {
       style: const TextStyle(
         fontSize: 18,
         fontFamily: "Poppins",
-        color: Colors.white,
+        color: Color.fromRGBO(37, 6, 81, 0.898),
       ),
     ),
   );
@@ -359,6 +361,58 @@ void toastMessage(String message) {
     gravity: ToastGravity.TOP,
   );
 }
+
+/////
+
+AppBar buildAppBarUser(String titleText, String loggedInImage) {
+  return AppBar(
+    automaticallyImplyLeading: false,
+    iconTheme: IconThemeData(
+      color: Color.fromRGBO(37, 6, 81, 0.898),
+    ),
+    toolbarHeight: 100,
+    flexibleSpace: Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/Backgrounds/bg11.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    ),
+    title: Builder(
+      builder: (context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              if (loggedInImage.isNotEmpty)
+                GestureDetector(
+                  onTap: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                  child: CircleAvatar(
+                    radius: 25,
+                    backgroundImage: NetworkImage(loggedInImage),
+                  ),
+                ),
+              const SizedBox(width: 8),
+              Text(
+                titleText,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontFamily: "Poppins",
+                  color: Color.fromRGBO(0, 0, 0, 0.894),
+                ),
+              ),
+              const SizedBox(width: 120),
+            ],
+          ),
+        ],
+      ),
+    ),
+  );
+}
+/////////
 
 class BottomNavBar extends StatefulWidget {
   final int currentIndex;

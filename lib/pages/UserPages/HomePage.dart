@@ -2,6 +2,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
 import 'package:techxcel11/Models/FormCard.dart';
 import 'package:techxcel11/Models/PostCard.dart';
@@ -18,6 +19,38 @@ class FHomePage extends StatefulWidget {
 int _currentIndex = 0;
 
 class __FHomePageState extends State<FHomePage> {
+  String loggedInEmail = '';
+  String loggedImage = '';
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('loggedInEmail') ?? '';
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+        .collection('RegularUser')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final userData = snapshot.docs[0].data();
+
+      final username = userData['username'] ?? '';
+      final imageURL = userData['imageURL'] ?? '';
+
+      setState(() {
+        loggedInEmail = email;
+        loggedImage = imageURL;
+      });
+    }
+  }
+
   void _toggleFormVisibility() async {
     await Navigator.push(
       context,
@@ -25,10 +58,8 @@ class __FHomePageState extends State<FHomePage> {
     );
   }
 
- bool showSearchBar = false;
- TextEditingController searchController = TextEditingController();
-
-
+  bool showSearchBar = false;
+  TextEditingController searchController = TextEditingController();
 
   void showInputDialog() {
     showAlertDialog(
@@ -214,7 +245,7 @@ class __FHomePageState extends State<FHomePage> {
                 question.username ?? '', // Display the username
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
+                                color: Color.fromARGB(255, 24, 8, 53),
                     fontSize: 16),
               ),
               SizedBox(height: 5),
@@ -279,11 +310,10 @@ class __FHomePageState extends State<FHomePage> {
       );
 
   Widget buildTeamCard(CardFT team) {
-  DateTime deadlineDate = team.date as DateTime; 
-  DateTime currentDate = DateTime.now();
+    DateTime deadlineDate = team.date as DateTime;
+    DateTime currentDate = DateTime.now();
 
-    final formattedDate =
-        DateFormat.yMMMMd().format(team.date); 
+    final formattedDate = DateFormat.yMMMMd().format(team.date);
 
     return Card(
       child: Column(
@@ -357,19 +387,21 @@ class __FHomePageState extends State<FHomePage> {
             ],
           ),
           Container(
-              padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-              decoration: BoxDecoration(
-                color: deadlineDate.isBefore(currentDate) ? Colors.red : Color.fromARGB(255, 11, 0, 135),
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Text(
-                'Deadline: $formattedDate', 
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12.0,
-                ),
+            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+            decoration: BoxDecoration(
+              color: deadlineDate.isBefore(currentDate)
+                  ? Colors.red
+                  : Color.fromARGB(255, 11, 0, 135),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Text(
+              'Deadline: $formattedDate',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12.0,
               ),
             ),
+          ),
           SizedBox(height: 5),
         ],
       ),
@@ -394,70 +426,76 @@ class __FHomePageState extends State<FHomePage> {
         ),
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          iconTheme:
-              IconThemeData(color: const Color.fromARGB(255, 255, 255, 255)),
-          backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
+          iconTheme: IconThemeData(
+            color: Color.fromRGBO(37, 6, 81, 0.898),
+          ),
           toolbarHeight: 100,
-          // Adjust the height of the AppBar
-          elevation: 0,
-          // Adjust the position of the AppBar
-          shape: ContinuousRectangleBorder(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(130),
-              bottomRight: Radius.circular(130),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/Backgrounds/bg11.png'),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Builder(builder: (context) {
-                    return IconButton(
-                        onPressed: () {
+          title: Builder(
+            builder: (context) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    if (loggedImage.isNotEmpty)
+                      GestureDetector(
+                        onTap: () {
                           Scaffold.of(context).openDrawer();
                         },
-                        icon: Icon(Icons.menu));
-                  }),
-                  const Text(
-                    'Homepage ',
-                    style: TextStyle(
-                      fontSize: 18, // Adjust the font size
-                      fontFamily: "Poppins",
-                      color: Colors.white,
+                        child: CircleAvatar(
+                          radius: 25,
+                          backgroundImage: NetworkImage(loggedImage),
+                        ),
+                      ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Homepage',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: "Poppins",
+                        color: Color.fromRGBO(37, 6, 81, 0.898),
+                      ),
                     ),
-                  ),
-                  const Spacer(),
-                  IconButton(
+                    const SizedBox(width: 120),
+                    IconButton(
                       onPressed: () {
                         setState(() {
                           showSearchBar = !showSearchBar;
                         });
                       },
                       icon:
-                          Icon(showSearchBar ? Icons.search_off : Icons.search))
-                ],
-              ),
-              const SizedBox(
-                height: 0,
-              ),
-              if (showSearchBar)
-                TextField(
-                  controller: searchController,
-                  decoration: const InputDecoration(
-                    hintText: 'Search...',
-                    prefixIcon: Icon(Icons.search),
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 0,
+                          Icon(showSearchBar ? Icons.search_off : Icons.search),
                     ),
-                    isDense: true,
-                  ),
-                  onChanged: (text) {
-                    setState(() {});
-                    // Handle search input changes
-                  },
+                  ],
                 ),
-            ],
+                const SizedBox(
+                  height: 8,
+                ),
+                if (showSearchBar)
+                  TextField(
+                    controller: searchController,
+                    decoration: const InputDecoration(
+                      hintText: 'Search...',
+                      prefixIcon: Icon(Icons.search),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 0,
+                      ),
+                      isDense: true,
+                    ),
+                    onChanged: (text) {
+                      setState(() {});
+                      // Handle search input changes
+                    },
+                  ),
+              ],
+            ),
           ),
           bottom: const TabBar(
             indicator: BoxDecoration(),
@@ -467,8 +505,7 @@ class __FHomePageState extends State<FHomePage> {
                   'Questions',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Color.fromARGB(
-                        255, 245, 227, 255), // Set the desired color here
+                    color: Color.fromRGBO(37, 6, 81, 0.898),
                   ),
                 ),
               ),
@@ -477,8 +514,7 @@ class __FHomePageState extends State<FHomePage> {
                   'Build Team',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Color.fromARGB(
-                        255, 245, 227, 255), // Set the desired color here
+                    color: Color.fromRGBO(37, 6, 81, 0.898),
                   ),
                 ),
               ),
@@ -487,8 +523,7 @@ class __FHomePageState extends State<FHomePage> {
                   'Projects',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Color.fromARGB(
-                        255, 245, 227, 255), // Set the desired color here
+                    color: Color.fromRGBO(37, 6, 81, 0.898),
                   ),
                 ),
               ),
@@ -595,7 +630,4 @@ class __FHomePageState extends State<FHomePage> {
       ),
     );
   }
-
 }
-
- 

@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/pages/UserPages/UserCoursesAndEventsPage.dart';
 import 'package:techxcel11/pages/UserPages/UserPathwaysPage.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
@@ -14,10 +16,35 @@ class _UserExplorePageState extends State<UserExplorePage>
   bool showSearchBar = false;
   final searchController = TextEditingController();
 
+  String _loggedInImage = '';
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   @override
   void initState() {
     super.initState();
+    fetchUserData();
     _tabController = TabController(length: 2, vsync: this);
+  }
+
+  Future<void> fetchUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('loggedInEmail') ?? '';
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+        .collection('RegularUser')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final userData = snapshot.docs[0].data();
+
+      final imageURL = userData['imageURL'] ?? '';
+
+      setState(() {
+        _loggedInImage = imageURL;
+      });
+    }
   }
 
   @override
@@ -26,81 +53,71 @@ class _UserExplorePageState extends State<UserExplorePage>
     super.dispose();
   }
 
-  AppBar buildAppBarWithTabs(String titleText, TabController tabController) {
+  AppBar buildAppBarWithTabs(
+      String titleText, TabController tabController, _loggedInImage) {
     return AppBar(
       automaticallyImplyLeading: false,
-      iconTheme: IconThemeData(color: const Color.fromARGB(255, 255, 255, 255)),
-      backgroundColor: const Color.fromRGBO(37, 6, 81, 0.898),
-      toolbarHeight: 100, 
-      elevation: 0, 
-      shape: const ContinuousRectangleBorder(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(130),
-          bottomRight: Radius.circular(130),
+      iconTheme: IconThemeData(
+        color: Color.fromRGBO(37, 6, 81, 0.898),
+      ),
+      toolbarHeight: 100,
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/Backgrounds/bg11.png'),
+            fit: BoxFit.cover,
+          ),
         ),
       ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Builder(builder: (context) {
-                return IconButton(
+      title: Builder(
+        builder: (context) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                if (_loggedInImage.isNotEmpty)
+                  GestureDetector(
+                    onTap: () {
+                      Scaffold.of(context).openDrawer();
+                    },
+                    child: CircleAvatar(
+                      radius: 25,
+                      backgroundImage: NetworkImage(_loggedInImage),
+                    ),
+                  ),
+                const SizedBox(width: 8),
+                const Text(
+                  'Explore',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: "Poppins",
+                    color: Color.fromRGBO(37, 6, 81, 0.898),
+                  ),
+                ),
+                const SizedBox(width: 120),
+                IconButton(
                   onPressed: () {
-                    Scaffold.of(context).openDrawer();
+                    setState(() {
+                      showSearchBar = !showSearchBar;
+                    });
                   },
-                  icon: Icon(Icons.menu),
-                );
-              }),
-              Text(
-                'Explore',
-                style: TextStyle(
-                  fontSize: 18, // Adjust the font size
-                  fontFamily: "Poppins",
-                  color: Colors.white,
+                  icon: Icon(showSearchBar ? Icons.search_off : Icons.search),
                 ),
-              ),
-              Spacer(),
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    showSearchBar = !showSearchBar;
-                  });
-                },
-                icon: Icon(showSearchBar ? Icons.search_off : Icons.search),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 0,
-          ),
-          if (showSearchBar)
-            TextField(
-              controller: searchController,
-              decoration: const InputDecoration(
-                hintText: 'Search...',
-                prefixIcon: Icon(Icons.search),
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 0,
-                ),
-                isDense: true,
-              ),
-              onChanged: (text) {
-                setState(() {});
-              },
+              ],
             ),
-        ],
+          ],
+        ),
       ),
       bottom: TabBar(
-        controller: tabController, 
+        controller: tabController,
         indicator: BoxDecoration(),
         tabs: [
-           Tab(
-            child: Text('Courses and Events',
+          Tab(
+            child: Text(
+              'Courses and Events',
               style: TextStyle(
                 fontSize: 16,
-                color: Color.fromARGB(
-                    255, 245, 227, 255), 
+                color: Color.fromARGB(255, 0, 0, 0),
               ),
             ),
           ),
@@ -109,8 +126,7 @@ class _UserExplorePageState extends State<UserExplorePage>
               'Pathways',
               style: TextStyle(
                 fontSize: 16,
-                color: Color.fromARGB(
-                    255, 245, 227, 255), 
+                color: Color.fromARGB(255, 0, 0, 0),
               ),
             ),
           ),
@@ -122,7 +138,7 @@ class _UserExplorePageState extends State<UserExplorePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBarWithTabs('Explore', _tabController),
+      appBar: buildAppBarWithTabs('Explore', _tabController, _loggedInImage),
       drawer: NavBarUser(),
       body: TabBarView(
         controller: _tabController,
@@ -140,5 +156,3 @@ class _UserExplorePageState extends State<UserExplorePage>
     );
   }
 }
-
- 

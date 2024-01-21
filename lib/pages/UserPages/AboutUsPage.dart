@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
 
 class AboutUsPage extends StatefulWidget {
@@ -13,12 +15,41 @@ class AboutUsPage extends StatefulWidget {
 
 class _AboutUsPageState extends State<AboutUsPage> {
   int _currentIndex = 0;
+  String _loggedInImage = '';
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('loggedInEmail') ?? '';
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+        .collection('RegularUser')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final userData = snapshot.docs[0].data();
+
+      final imageURL = userData['imageURL'] ?? '';
+
+      setState(() {
+        _loggedInImage = imageURL;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavBarUser(),
-      appBar: buildAppBar('About TeXel'),
+      appBar: buildAppBarUser('About TeXel', _loggedInImage),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -61,7 +92,8 @@ class _AboutUsPageState extends State<AboutUsPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text( 'Reach out to us!',
+                const Text(
+                  'Reach out to us!',
                   style: TextStyle(
                     fontSize: 14,
                     color: Color.fromRGBO(37, 6, 81, 0.898),
@@ -118,5 +150,3 @@ class _AboutUsPageState extends State<AboutUsPage> {
     );
   }
 }
-
- 

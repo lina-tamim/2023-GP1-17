@@ -10,7 +10,6 @@ import 'package:techxcel11/Models/PostCardView.dart';
 import 'package:techxcel11/Models/ViewQCard.dart';
 import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
 
-
 class UserPostsPage extends StatefulWidget {
   const UserPostsPage({Key? key}) : super(key: key);
 
@@ -20,6 +19,8 @@ class UserPostsPage extends StatefulWidget {
 
 class _UserPostsPageState extends State<UserPostsPage> {
   int _currentIndex = 0;
+  String loggedInEmail = '';
+  String loggedImage = '';
 
   Future<String> fetchuseremail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -472,41 +473,45 @@ class _UserPostsPageState extends State<UserPostsPage> {
         ),
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          iconTheme:
-              IconThemeData(color: const Color.fromARGB(255, 255, 255, 255)),
-          backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
+          iconTheme: IconThemeData(
+            color: Color.fromRGBO(37, 6, 81, 0.898),
+          ),
           toolbarHeight: 100,
-          elevation: 0,
-          shape: ContinuousRectangleBorder(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(130),
-              bottomRight: Radius.circular(130),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/Backgrounds/bg11.png'),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Builder(builder: (context) {
-                    return IconButton(
-                        onPressed: () {
-                          Scaffold.of(context).openDrawer();
-                        },
-                        icon: Icon(Icons.menu));
-                  }),
-                  Text(
-                    'My Interactions',
-                    style: TextStyle(
-                      fontSize: 18, // Adjust the font size
-                      fontFamily: "Poppins",
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          title: Builder(
+              builder: (context) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(children: [
+                          // if (_loggedInImage.isNotEmpty)
+                          GestureDetector(
+                            onTap: () {
+                              Scaffold.of(context).openDrawer();
+                            },
+                            child: CircleAvatar(
+                              radius: 25,
+                              //backgroundImage: NetworkImage(_loggedInImage),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'My Profile',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontFamily: "Poppins",
+                              color: Color.fromRGBO(37, 6, 81, 0.898),
+                            ),
+                          ),
+                          const SizedBox(width: 120),
+                        ])
+                      ])),
           bottom: const TabBar(
             indicator: BoxDecoration(),
             tabs: [
@@ -689,108 +694,109 @@ class _UserPostsPageState extends State<UserPostsPage> {
     int upvoteCount = answer.upvoteCount ?? 0;
     List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
 
-    return  GestureDetector(
-    onTap: () {
-      // Navigate to the Answer page when the card is tapped
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AnswerPage(questionId: answer.questionId),
-        ),
-      );
-    }, child: Card(
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: answer.userPhotoUrl != null
-              ? NetworkImage(answer.userPhotoUrl!)
-              : null, // Handle null value
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 5),
-            Text(
-              answer.username ?? '', // Display the username
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, color: Colors.deepPurple),
-            ),
-            SizedBox(height: 5),
-            ListTile(
-              title: Text(answer.answerText),
-            ),
-          ],
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                FutureBuilder<String>(
-                  future: getCurrentUserEmail(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator(); // Show a loading indicator while retrieving the email
-                    } else if (snapshot.hasError) {
-                      return Text(
-                          'Error: ${snapshot.error}'); // Show an error message if email retrieval fails
-                    } else {
-                      currentEmail = snapshot.data!;
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          IconButton(
-                            icon: Icon(upvotedUserIds.contains(currentEmail)
-                                ? Icons.arrow_circle_down
-                                : Icons.arrow_circle_up),
-                            onPressed: () {
-                              setState(() {
-
-                                if (upvotedUserIds.contains(currentEmail)) {
-                                  // Undo the upvote
-                                  upvotedUserIds.remove(currentEmail);
-                                  upvoteCount--;
-                                } else {
-                                  // Perform the upvote
-                                  upvotedUserIds.add(currentEmail);
-                                  upvoteCount++;
-                                }
-                                answer.upvoteCount = upvoteCount;
-                                answer.upvotedUserIds = upvotedUserIds;
-                                // Update the upvote count and upvoted user IDs in Firestore
-                                FirebaseFirestore.instance
-                                    .collection('Answer')
-                                    .doc(answer.docId)
-                                    .update({
-                                      'upvoteCount': upvoteCount,
-                                      'upvotedUserIds': upvotedUserIds,
-                                    })
-                                    .then((_) {})
-                                    .catchError((error) {
-                                      // Handle error if the update fails
-                                    });
-                              });
-                            },
-                          ),
-                          Text('Upvotes: $upvoteCount'),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          PostDeleteButton(
-                            docId: answer.docId,
-                            type: 'answer',
-                          )
-                        ],
-                      );
-                    }
-                  },
-                ),
-              ],
-            ),
-          ],
+    return GestureDetector(
+      onTap: () {
+        // Navigate to the Answer page when the card is tapped
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AnswerPage(questionId: answer.questionId),
+          ),
+        );
+      },
+      child: Card(
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundImage: answer.userPhotoUrl != null
+                ? NetworkImage(answer.userPhotoUrl!)
+                : null, // Handle null value
+          ),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 5),
+              Text(
+                answer.username ?? '', // Display the username
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.deepPurple),
+              ),
+              SizedBox(height: 5),
+              ListTile(
+                title: Text(answer.answerText),
+              ),
+            ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  FutureBuilder<String>(
+                    future: getCurrentUserEmail(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator(); // Show a loading indicator while retrieving the email
+                      } else if (snapshot.hasError) {
+                        return Text(
+                            'Error: ${snapshot.error}'); // Show an error message if email retrieval fails
+                      } else {
+                        currentEmail = snapshot.data!;
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            IconButton(
+                              icon: Icon(upvotedUserIds.contains(currentEmail)
+                                  ? Icons.arrow_circle_down
+                                  : Icons.arrow_circle_up),
+                              onPressed: () {
+                                setState(() {
+                                  if (upvotedUserIds.contains(currentEmail)) {
+                                    // Undo the upvote
+                                    upvotedUserIds.remove(currentEmail);
+                                    upvoteCount--;
+                                  } else {
+                                    // Perform the upvote
+                                    upvotedUserIds.add(currentEmail);
+                                    upvoteCount++;
+                                  }
+                                  answer.upvoteCount = upvoteCount;
+                                  answer.upvotedUserIds = upvotedUserIds;
+                                  // Update the upvote count and upvoted user IDs in Firestore
+                                  FirebaseFirestore.instance
+                                      .collection('Answer')
+                                      .doc(answer.docId)
+                                      .update({
+                                        'upvoteCount': upvoteCount,
+                                        'upvotedUserIds': upvotedUserIds,
+                                      })
+                                      .then((_) {})
+                                      .catchError((error) {
+                                        // Handle error if the update fails
+                                      });
+                                });
+                              },
+                            ),
+                            Text('Upvotes: $upvoteCount'),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            PostDeleteButton(
+                              docId: answer.docId,
+                              type: 'answer',
+                            )
+                          ],
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-    ),);
+    );
   }
 }
 

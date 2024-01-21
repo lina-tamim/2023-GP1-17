@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
 
 class BookmarkPage extends StatefulWidget {
@@ -11,11 +13,42 @@ class BookmarkPage extends StatefulWidget {
 
 class _BookmarkPageState extends State<BookmarkPage> {
   int _currentIndex = 0;
+
+  String _loggedInImage = '';
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('loggedInEmail') ?? '';
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+        .collection('RegularUser')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final userData = snapshot.docs[0].data();
+
+      final imageURL = userData['imageURL'] ?? '';
+
+      setState(() {
+        _loggedInImage = imageURL;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavBarUser(),
-      appBar: buildAppBar('Bookmark'),
+      appBar: buildAppBarUser('Bookmark', _loggedInImage),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Center(
@@ -32,7 +65,8 @@ class _BookmarkPageState extends State<BookmarkPage> {
               ),
               Image.asset('assets/Backgrounds/XlogoSmall.png'),
               const SizedBox(height: 30),
-              Text( 'Coming soon !',
+              Text(
+                'Coming soon !',
                 style: TextStyle(
                     fontFamily: AutofillHints.familyName,
                     fontSize: 20,
@@ -53,5 +87,3 @@ class _BookmarkPageState extends State<BookmarkPage> {
     );
   }
 }
-
- 
