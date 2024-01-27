@@ -10,6 +10,7 @@ class CardFT {
   final String? docId;
   String? username;
   String? userPhotoUrl;
+  String email;
 
   CardFT(
       {
@@ -20,7 +21,8 @@ class CardFT {
       required this.userId,
       this.docId = '',
       required this.username,
-      required this.userPhotoUrl});
+      required this.userPhotoUrl,
+      required this.email});
 
   Map<String, dynamic> toJson() => {
         'postTitle': title,
@@ -31,6 +33,8 @@ class CardFT {
         'docId': docId,
         'username': '',
         'userPhotoUrl': userPhotoUrl,
+        'email':email,
+
       };
 
   static CardFT fromJson(Map<String, dynamic> json) => CardFT(
@@ -41,5 +45,6 @@ class CardFT {
       userId: json['userId'],
       username: json['username'] ?? '',
       userPhotoUrl: json['userPhotoUrl'] as String?,
-      docId: json['docId'] ?? '');
+      docId: json['docId'] ?? '',
+      email: json['email']??'',);
 }

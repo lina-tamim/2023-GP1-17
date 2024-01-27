@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
+import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 
 class FreelancerPage extends StatefulWidget {
   const FreelancerPage({Key? key}) : super(key: key);
@@ -77,6 +78,7 @@ class _FreelancerPageState extends State<FreelancerPage> {
             final username = freelancer['username'] as String;
             final imageURL = freelancer['imageURL'] as String;
             final skills = freelancer['skills'] as List<dynamic>;
+            final userId = freelancer['email'] as String;
 
             return Container(
               padding: EdgeInsets.all(10),
@@ -97,14 +99,25 @@ class _FreelancerPageState extends State<FreelancerPage> {
                       children: [
                         Row(
                           children: [
-                            Text(
+                            GestureDetector(
+             onTap: () {
+            if (userId != null && userId.isNotEmpty && userId !="DeactivatedUser") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UserProfileView(userId: userId),
+                ),
+              );
+            }
+          },
+                           child: Text(
                               username,
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Color.fromARGB(255, 24, 8, 53),
                                 fontWeight: FontWeight.bold,
                               ),
-                            ),
+                            ),),
                             SizedBox(width: 5),
                             const Icon(
                               Icons.verified,

@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/Models/QuestionCard.dart';
 import 'package:techxcel11/Models/AnswerCard.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
+import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 
 class AnswerPage extends StatefulWidget {
   final int questionId;
@@ -182,14 +183,25 @@ class _AnswerPageState extends State<AnswerPage> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 5),
-            Text(
+             SizedBox(height: 5),
+                    GestureDetector(
+             onTap: () {
+            if (answer.userId != null && answer.userId.isNotEmpty && answer.userId !="DeactivatedUser") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UserProfileView(userId: answer.userId),
+                ),
+              );
+            }
+          },
+            child:Text(
               answer.username ?? '',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.deepPurple,
               ),
-            ),
+            ),),
             SizedBox(height: 5),
             ListTile(
               title: Text(answer.answerText),

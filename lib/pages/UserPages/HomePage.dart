@@ -8,6 +8,7 @@ import 'package:techxcel11/Models/FormCard.dart';
 import 'package:techxcel11/Models/PostCard.dart';
 import 'package:techxcel11/Models/QuestionCard.dart';
 import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
+import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 
 class FHomePage extends StatefulWidget {
   const FHomePage({Key? key}) : super(key: key);
@@ -107,6 +108,7 @@ class __FHomePageState extends State<FHomePage> {
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
+        question.email = userDoc ?['email'] as String;
       });
 
       final userIdsNotFound =
@@ -241,13 +243,24 @@ class __FHomePageState extends State<FHomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
-              Text(
+               GestureDetector(
+             onTap: () {
+            if (question.email != null && question.email.isNotEmpty && question.userId !="DeactivatedUser") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UserProfileView(userId: question.email),
+                ),
+              );
+            }
+          },
+              child:Text(
                 question.username ?? '', // Display the username
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                                 color: Color.fromARGB(255, 24, 8, 53),
                     fontSize: 16),
-              ),
+              ),),
               SizedBox(height: 5),
               Text(
                 question.title,
@@ -328,12 +341,25 @@ class __FHomePageState extends State<FHomePage> {
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                SizedBox(height: 5),
+                    GestureDetector(
+             onTap: () {
+            if (team.userId != null && team.userId.isNotEmpty && team.userId !="DeactivatedUser") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UserProfileView(userId: team.userId),
+                ),
+              );
+            }
+          },
+                child:Text(
                   team.username ?? '', // Display the username
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.deepPurple,
                   ),
+                ),
                 ),
                 SizedBox(height: 5),
                 Text(
@@ -630,4 +656,5 @@ class __FHomePageState extends State<FHomePage> {
       ),
     );
   }
+  
 }

@@ -6,7 +6,7 @@ class CardAnswer {
   int upvoteCount;
   String? username;
   List<String> upvotedUserIds;
-  final String docId;
+   String docId;
   String? userPhotoUrl;
 
   CardAnswer({
