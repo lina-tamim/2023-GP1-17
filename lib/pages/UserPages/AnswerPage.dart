@@ -176,14 +176,14 @@ class _AnswerPageState extends State<AnswerPage> {
         print("888888888888888888");
 
     final existingBookmark = await FirebaseFirestore.instance
-        .collection('BookmarkedPost')
+        .collection('Bookmark')
         .where('bookmarkType', isEqualTo: 'question')
         .where('userId', isEqualTo: email)
         .where('postId', isEqualTo: question.questionDocId)
         .get();
 
     if (existingBookmark.docs.isEmpty) {
-      await FirebaseFirestore.instance.collection('BookmarkedPost').add({
+      await FirebaseFirestore.instance.collection('Bookmark').add({
         'bookmarkType': 'question',
         'userId': email,
         'postId': question.questionDocId,

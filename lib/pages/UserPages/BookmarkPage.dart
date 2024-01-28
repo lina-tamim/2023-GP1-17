@@ -266,27 +266,25 @@ Widget build(BuildContext context) {
 
 Stream<List<PathwayContainer>> readPathway() {
   return FirebaseFirestore.instance
-      .collection('BookmarkedPost')
+      .collection('Bookmark')
       .where('bookmarkType', isEqualTo: 'pathway')
       .where('userId', isEqualTo: email)
       .snapshots()
       .asyncMap((snapshot) async {
         final List<PathwayContainer> pathways = [];
 
-        print('BookmarkedPost Snapshot Size: ${snapshot.size}');
+        print('Bookmark Snapshot Size: ${snapshot.size}');
 
         for (final doc in snapshot.docs) {
-          final postId = doc['postId']; // Use the postId from BookmarkedPost
+          final postId = doc['postId']; 
           print('Post ID: $postId');
 
-          // Fetch pathway details using the postId from the 'Pathway' table
           final pathwaySnapshot = await FirebaseFirestore.instance
               .collection('Pathway')
               .doc(postId)
               .get();
 
           if (pathwaySnapshot.exists) {
-            // If the pathway exists, add it to the list
             pathways.add(PathwayContainer.fromJson(
               pathwaySnapshot.data() as Map<String, dynamic>,
             ));
@@ -299,13 +297,12 @@ Stream<List<PathwayContainer>> readPathway() {
 
 Future<Map<String, dynamic>?> fetchContainerData() async {
   final QuerySnapshot<Map<String, dynamic>> snapshot = await firestore
-      .collection('BookmarkedPost')
+      .collection('Bookmark')
       .where('bookmarkType', isEqualTo: 'pathway')
       .where('userId', isEqualTo: email)
       .get();
 
   if (snapshot.docs.isNotEmpty) {
-    // Assuming you want to retrieve the data of the first bookmarked pathway
     final pathwayId = snapshot.docs[0].id;
     final pathwaySnapshot = await FirebaseFirestore.instance
         .collection('Pathway')
@@ -322,11 +319,7 @@ Future<Map<String, dynamic>?> fetchContainerData() async {
   Widget buildpathwayCard(PathwayContainer pathway) {
 
     if (pathway.imagePath == 'assets/Backgrounds/navbarbg2.png') {
-      // Display the default image
-    } else {
-      // Display the image from URL
-    }
-
+    } 
     return Padding(
       padding: EdgeInsets.all(8.0), // Add space between each card
       child: FractionallySizedBox(
@@ -460,7 +453,7 @@ Future<Map<String, dynamic>?> fetchContainerData() async {
 Future<void> removeAllBookmarkedPathways() async {
   try {
     final snapshot = await FirebaseFirestore.instance
-        .collection('BookmarkedPost')
+        .collection('Bookmark')
         .where('userId', isEqualTo: email)
         .where('bookmarkType', isEqualTo: 'pathway')
         .get();
@@ -479,7 +472,7 @@ Future<void> removePathwayFromBookmark(PathwayContainer pathway) async {
   try {
     // Query to find the bookmarked pathway
     final QuerySnapshot<Map<String, dynamic>> existingBookmark = await firestore
-        .collection('BookmarkedPost')
+        .collection('Bookmark')
         .where('bookmarkType', isEqualTo: 'pathway')
         .where('userId', isEqualTo: email)
         .where('postId', isEqualTo: pathway.pathwayDocId)
@@ -951,7 +944,7 @@ Widget build(BuildContext context) {
 
 Stream<List<CardQview>> readBookmarkedQuestion() {
   return FirebaseFirestore.instance
-      .collection('BookmarkedPost')
+      .collection('Bookmark')
       .where('bookmarkType', isEqualTo: 'question')
       .where('userId', isEqualTo: email)
       .snapshots()
@@ -1084,7 +1077,7 @@ Stream<List<CardQview>> readBookmarkedQuestion() {
 Future<void> removeAllBookmarkedQuestion() async {
   try {
     final snapshot = await FirebaseFirestore.instance
-        .collection('BookmarkedPost')
+        .collection('Bookmark')
         .where('userId', isEqualTo: email)
         .where('bookmarkType', isEqualTo: 'question')
         .get();
@@ -1104,7 +1097,7 @@ Future<void> removeQuestionFromBookmark(CardQview question) async {
     // Query to find the bookmarked pathway
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
       final QuerySnapshot<Map<String, dynamic>> existingBookmark = await firestore
-        .collection('BookmarkedPost')
+        .collection('Bookmark')
         .where('bookmarkType', isEqualTo: 'question')
         .where('userId', isEqualTo: email)
         .where('postId', isEqualTo: question.docId)

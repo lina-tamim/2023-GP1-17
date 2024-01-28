@@ -77,14 +77,14 @@ Future<void> addPathwayToBookmarks(PathwayContainer pathway, String email) async
   try {
 
     final existingBookmark = await FirebaseFirestore.instance
-        .collection('BookmarkedPost')
+        .collection('Bookmark')
         .where('bookmarkType', isEqualTo: 'pathway')
         .where('userId', isEqualTo: email)
         .where('postId', isEqualTo: pathway.pathwayDocId) 
         .get();
 
     if (existingBookmark.docs.isEmpty) {
-      await FirebaseFirestore.instance.collection('BookmarkedPost').add({
+      await FirebaseFirestore.instance.collection('Bookmark').add({
         'bookmarkType': 'pathway',
         'userId': email,
         'postId': pathway.pathwayDocId,

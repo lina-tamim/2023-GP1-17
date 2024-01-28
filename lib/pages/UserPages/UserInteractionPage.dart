@@ -383,14 +383,14 @@ class _UserPostsPageState extends State<UserPostsPage> {
         print("888888888888888888");
 
     final existingBookmark = await FirebaseFirestore.instance
-        .collection('BookmarkedPost')
+        .collection('Bookmark')
         .where('bookmarkType', isEqualTo: 'question')
         .where('userId', isEqualTo: email)
         .where('postId', isEqualTo: question.questionDocId)
         .get();
 
     if (existingBookmark.docs.isEmpty) {
-      await FirebaseFirestore.instance.collection('BookmarkedPost').add({
+      await FirebaseFirestore.instance.collection('Bookmark').add({
         'bookmarkType': 'question',
         'userId': email,
         'postId': question.questionDocId,
@@ -732,7 +732,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
 
     return GestureDetector(
       onTap: () {
-        // Navigate to the Answer page when the card is tapped
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -894,6 +893,17 @@ class PostDeleteButton extends StatelessWidget {
                             .collection(collectionName)
                             .doc(docId)
                             .delete();
+
+                            QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
+                              .collection('Bookmark')
+                              .where('bookmarkType', isEqualTo: 'question')
+                              .where('postId', isEqualTo: docId)
+                              .get();
+
+                            for (QueryDocumentSnapshot<Map<String, dynamic>> docSnapshot in querySnapshot.docs) {
+                              await docSnapshot.reference.delete();
+                            }
+
                         Navigator.of(context).pop();
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(

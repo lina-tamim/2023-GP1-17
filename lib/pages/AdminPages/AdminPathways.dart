@@ -2992,6 +2992,16 @@ Future<bool> saveDataToFirestore() async {
             .doc(pathId)
             .delete();
 
+
+     QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
+      .collection('Bookmark')
+       .where('bookmarkType', isEqualTo: 'pathway')
+       .where('postId', isEqualTo: pathId)
+       .get();
+
+       for (QueryDocumentSnapshot<Map<String, dynamic>> docSnapshot in querySnapshot.docs) {
+        await docSnapshot.reference.delete();
+         }
         return true;
       }
     }

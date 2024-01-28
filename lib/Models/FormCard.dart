@@ -618,21 +618,20 @@ class _FormWidgetState extends State<FormWidget> {
       DateTime postDate = DateTime.now();
 
       if (_selectedPostType == 'Question') {
-        // Save form in the 'Question' collection
         final questionCollection =
-            FirebaseFirestore.instance.collection('Question');
+        FirebaseFirestore.instance.collection('Question');
         final newFormDoc = questionCollection.doc();
 
         await questionCollection.doc(newFormDoc.id).set({
           'userId': userId,
-          //'dropdownValue': _selectedPostType,
           'postTitle': textFieldValue,
           'postDescription': largeTextFieldValue,
           'selectedInterests': _selectedTopics,
-          //'upvotecount': count,
           'noOfAnwers': count,
           'questionCount': id + 1,
           'postedDate': postDate,
+          'questionDocId': newFormDoc.id,
+
         });
       } else if (_selectedPostType == 'Team Collaberation') {
 
