@@ -53,6 +53,7 @@ class __FHomePageState extends State<FHomePage> {
         loggedImage = imageURL;
       });
     }
+    context.read<ProfileProvider>();
   }
 
   void _toggleFormVisibility() async {

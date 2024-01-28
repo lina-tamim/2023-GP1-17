@@ -685,7 +685,7 @@ class _UserProfileView extends State<UserProfileView>
                             context
                                 .read<ProfileProvider>()
                                 .gotoChat(context, email);
-                            log('MK: clicked on Message: ${email}' as num);
+                            // log('MK: clicked on Message: ${email}');
                           },
                         ),
                       ),

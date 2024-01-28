@@ -7,6 +7,7 @@ import '../../../Models/chat.dart';
 import '../../../Models/message.dart';
 import '../../../Models/message_attachment.dart';
 import '../../../Models/message_read_info.dart';
+import '../../Models/ReusedElements.dart';
 import '../../utils/constants.dart';
 import '../../utils/functions/public_methods.dart';
 import '../../utils/functions/time_functions.dart';
@@ -231,7 +232,7 @@ class _ChatTextFieldState extends State<ChatTextField> {
                     });
                     final Chat? receiver = widget.chat;
                     if (receiver == null) {
-                      showToast('Check your internet Connection');
+                      toastMessage('Check your internet Connection');
                       return;
                     }
                     final int time = TimeFunctions.microseconds;

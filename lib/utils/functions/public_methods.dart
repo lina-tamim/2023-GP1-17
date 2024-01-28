@@ -22,18 +22,6 @@ double getWidth(BuildContext context) {
   return MediaQuery.of(context).size.width;
 }
 
-void showToast(String message) {
-  Fluttertoast.cancel();
-  Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 2,
-      backgroundColor: Colors.black87,
-      textColor: Colors.white,
-      fontSize: 16.0);
-}
-
 deleteUrlFromCache(String url) async {
   await CachedNetworkImage.evictFromCache(url);
 }

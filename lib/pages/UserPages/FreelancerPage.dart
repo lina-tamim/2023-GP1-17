@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
-import 'package:techxcel11/pages/UserPages/UserPathwaysPage.dart';
 import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 import '../../providers/profile_provider.dart';
 
@@ -136,7 +134,7 @@ class _FreelancerPageState extends State<FreelancerPage> {
                               onTap: () {
                                 context
                                     .read<ProfileProvider>()
-                                    .gotoChat(context, email);
+                                    .gotoChat(context, userId);
                               },
                               child: Padding(
                                 padding: const EdgeInsets.only(right: 10.0),

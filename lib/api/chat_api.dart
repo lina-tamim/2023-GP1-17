@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
 import '../Models/chat.dart';
 import '../Models/message.dart';
 import '../utils/functions/public_methods.dart';
@@ -118,7 +119,7 @@ class ChatAPI {
       }
       await _instance.collection(_collection).doc(chat.chatID).delete();
     } catch (e) {
-      showToast(e.toString());
+      toastMessage(e.toString());
     }
   }
 
@@ -134,7 +135,7 @@ class ChatAPI {
       String url = (await snapshot.ref.getDownloadURL()).toString();
       return url;
     } catch (e) {
-      showToast(e.toString());
+      toastMessage(e.toString());
       return null;
     }
   }

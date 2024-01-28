@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,9 +17,11 @@ import 'package:techxcel11/pages/UserPages/BookmarkPage.dart';
 import 'package:techxcel11/pages/UserPages/CalendarPage.dart';
 import 'package:techxcel11/pages/UserPages/UserInteractionPage.dart'; //m
 import 'package:techxcel11/pages/StartPage.dart';
+import 'package:techxcel11/providers/profile_provider.dart';
 
 class NavBarUser extends StatefulWidget {
   const NavBarUser({super.key});
+
   @override
   _NavBarUserState createState() => _NavBarUserState();
 }
@@ -478,20 +481,43 @@ class _BottomNavBarState extends State<BottomNavBar> {
         children: [
           GestureDetector(
             onTap: () => _navigateToPage(context, 0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  FontAwesomeIcons.solidMessage,
-                  size: 18.5,
-                  color: _currentTappedIndex == 0 ? Colors.blue : Colors.black,
-                ),
-                Text(
-                  'Chat',
-                  style: TextStyle(fontSize: 10),
-                ),
-              ],
-            ),
+            child: Consumer<ProfileProvider>(builder:
+                (BuildContext context, ProfileProvider notiProvider, _) {
+              int count = notiProvider.chatCount;
+              return Stack(
+                alignment: Alignment.topRight,
+                children: <Widget>[
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        FontAwesomeIcons.solidMessage,
+                        size: 18.5,
+                        color: _currentTappedIndex == 0
+                            ? Colors.blue
+                            : Colors.black,
+                      ),
+                      Text(
+                        'Chat',
+                        style: TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                  if (count > 0)
+                    CircleAvatar(
+                      radius: 5,
+                      backgroundColor: Colors.red,
+                      // child: Text(
+                      //   count <= 9 ? '$count' : '9+',
+                      //   style: const TextStyle(
+                      //     color: Colors.white,
+                      //     fontSize: 11,
+                      //   ),
+                      // ),
+                    )
+                ],
+              );
+            }),
           ),
           GestureDetector(
             onTap: () => _navigateToPage(context, 1),

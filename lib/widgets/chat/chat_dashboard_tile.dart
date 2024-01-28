@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
+import '../../Models/ReusedElements.dart';
 import '../../Models/chat.dart';
 import '../../Models/message.dart';
 import '../../Models/message_attachment.dart';
@@ -60,7 +61,7 @@ class ChatDashboardTile extends StatelessWidget {
             // dense: true,
             onTap: () {
               if (_user == null) {
-                showToast('Unable to open this chat. User no longer exists');
+                toastMessage('Unable to open this chat. User no longer exists');
                 return;
               }
               Navigator.of(context).push(
