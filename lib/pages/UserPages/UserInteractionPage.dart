@@ -8,7 +8,6 @@ import 'package:techxcel11/Models/ReusedElements.dart';
 import 'package:techxcel11/Models/FormCard.dart';
 import 'package:techxcel11/Models/PostCardView.dart';
 import 'package:techxcel11/Models/ViewQCard.dart';
-import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
 
 class UserPostsPage extends StatefulWidget {
   const UserPostsPage({Key? key}) : super(key: key);
@@ -19,24 +18,17 @@ class UserPostsPage extends StatefulWidget {
 
 class _UserPostsPageState extends State<UserPostsPage> {
   int _currentIndex = 0;
-  String loggedInEmail = '';
-  String loggedImage = '';
 
-  Future<String> fetchuseremail() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final emaill = prefs.getString('loggedInEmail') ?? '';
-    return emaill;
-  }
-
-  String? email;
+  String email = '';
+  String loggedInImage = '';
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? email = prefs.getString('loggedInEmail');
+      fetchUserData();
       setState(() {
-        this.email = email;
+      email = prefs.getString('loggedInEmail')!;
       });
     });
     super.initState();
@@ -47,6 +39,25 @@ class _UserPostsPageState extends State<UserPostsPage> {
       context,
       FormWidget(),
     );
+  }
+
+  Future<void> fetchUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('loggedInEmail') ?? '';
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+        .collection('RegularUser')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final userData = snapshot.docs[0].data();
+      final imageURL = userData['imageURL'] ?? '';
+
+      setState(() {
+        loggedInImage = imageURL;
+      });
+    }
   }
 
   Future<String> fetchusername() async {
@@ -64,12 +75,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
     return snapshot.size;
   }
 
-  void _toggleFormVisibility() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => FormWidget()),
-    );
-  }
+
 
   Stream<List<CardQview>> readQuestion() {
     return FirebaseFirestore.instance
@@ -156,7 +162,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   IconButton(
                     icon: Icon(Icons.bookmark),
                     onPressed: () {
-                      // Add functionality next sprints
+                      addQuestionToBookmarks( email! , question );
                     },
                   ),
                   IconButton(
@@ -370,6 +376,35 @@ class _UserPostsPageState extends State<UserPostsPage> {
     );
   }
 
+ Future<void> addQuestionToBookmarks(String email, CardQview question) async {
+  try {
+    print("888888888888888888");
+    print(question.questionDocId);
+        print("888888888888888888");
+
+    final existingBookmark = await FirebaseFirestore.instance
+        .collection('BookmarkedPost')
+        .where('bookmarkType', isEqualTo: 'question')
+        .where('userId', isEqualTo: email)
+        .where('postId', isEqualTo: question.questionDocId)
+        .get();
+
+    if (existingBookmark.docs.isEmpty) {
+      await FirebaseFirestore.instance.collection('BookmarkedPost').add({
+        'bookmarkType': 'question',
+        'userId': email,
+        'postId': question.questionDocId,
+        'bookmarkDate': DateTime.now(),
+      });
+      toastMessage('Question is Bookmarked');
+    } else {
+      toastMessage('Question is Already Bookmarked!');
+    }
+  } catch (error) {
+    print('Error adding question to bookmarks: $error');
+  }
+}
+
   Widget buildProjectCard(CardFTview fandT) {
     final formattedDate = DateFormat.yMMMMd().format(fandT.date);
     DateTime deadlineDate = fandT.date as DateTime;
@@ -471,6 +506,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
             });
           },
         ),
+
         appBar: AppBar(
           automaticallyImplyLeading: false,
           iconTheme: IconThemeData(
@@ -490,19 +526,19 @@ class _UserPostsPageState extends State<UserPostsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(children: [
-                          // if (_loggedInImage.isNotEmpty)
+                           if (loggedInImage.isNotEmpty)
                           GestureDetector(
                             onTap: () {
                               Scaffold.of(context).openDrawer();
                             },
                             child: CircleAvatar(
                               radius: 25,
-                              //backgroundImage: NetworkImage(_loggedInImage),
+                              backgroundImage: NetworkImage(loggedInImage),
                             ),
                           ),
                           const SizedBox(width: 8),
                           const Text(
-                            'My Profile',
+                            'My Interactions',
                             style: TextStyle(
                               fontSize: 18,
                               fontFamily: "Poppins",
@@ -519,7 +555,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                 child: Text(
                   'Question',
                   style: TextStyle(
-                    color: Color.fromARGB(255, 245, 227, 255),
+                    color: Color.fromARGB(255, 0, 0, 0),
                   ),
                 ),
               ),
@@ -527,15 +563,15 @@ class _UserPostsPageState extends State<UserPostsPage> {
                 child: Text(
                   'Answers',
                   style: TextStyle(
-                    color: Color.fromARGB(255, 245, 227, 255),
+                    color: Color.fromARGB(255, 0, 0, 0),
                   ),
                 ),
               ),
               Tab(
                 child: Text(
-                  'Build Team',
+                  'Teams',
                   style: TextStyle(
-                    color: Color.fromARGB(255, 245, 227, 255),
+                    color: Color.fromARGB(255, 0, 0, 0),
                   ),
                 ),
               ),
@@ -543,7 +579,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                 child: Text(
                   'Projects',
                   style: TextStyle(
-                    color: Color.fromARGB(255, 245, 227, 255),
+                    color: Color.fromARGB(255, 0, 0, 0),
                   ),
                 ),
               ),
@@ -688,7 +724,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
     String currentEmail = '';
 
     Future<String> getCurrentUserEmail() async {
-      return await fetchuseremail();
+      return email;
     }
 
     int upvoteCount = answer.upvoteCount ?? 0;

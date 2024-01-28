@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:lottie/lottie.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
@@ -16,25 +17,31 @@ class UserPathwaysPage extends StatefulWidget {
 }
 
 int _currentIndex = 0;
+  late SharedPreferences prefs;
+  late String email = '';
 
 class _UserPathwaysPageState extends State<UserPathwaysPage> {
   int id = 0;
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   Future<Map<String, dynamic>> fetchContainerData() async {
     final DocumentSnapshot snapshot =
         await firestore.collection('Pathway').doc('title').get();
     return snapshot.data() as Map<String, dynamic>;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      fetchContainerData().then((data) {
-        setState(() {});
-      });
-    });
+  Future<void> initializeVariables() async {
+    firestore = FirebaseFirestore.instance;
+    prefs = await SharedPreferences.getInstance();
+    email = prefs.getString('loggedInEmail') ?? '';
+    print(email);
+    print("**********");
   }
+  
+@override
+void initState() {
+  super.initState();
+  initializeVariables();
+}
 
   List<String> filteredTopics = [];
   bool showSearchtBarPath = false;
@@ -65,6 +72,32 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
       return pathway;
     });
   }
+
+Future<void> addPathwayToBookmarks(PathwayContainer pathway, String email) async {
+  try {
+
+    final existingBookmark = await FirebaseFirestore.instance
+        .collection('BookmarkedPost')
+        .where('bookmarkType', isEqualTo: 'pathway')
+        .where('userId', isEqualTo: email)
+        .where('postId', isEqualTo: pathway.pathwayDocId) 
+        .get();
+
+    if (existingBookmark.docs.isEmpty) {
+      await FirebaseFirestore.instance.collection('BookmarkedPost').add({
+        'bookmarkType': 'pathway',
+        'userId': email,
+        'postId': pathway.pathwayDocId,
+        'bookmarkDate': DateTime.now() 
+      });
+     toastMessage('Pathway is Bookmarked');
+    } else {
+      toastMessage('Pathway is Already Bookmarked!');
+    }
+  } catch (error) {
+    print('Error adding pathway to bookmarks: $error');
+  }
+}
 
   List<PathwayContainer> filterPathways(List<PathwayContainer> pathways) {
     final filterText = widget.searchQuery.toLowerCase();
@@ -177,7 +210,7 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
                       children: [
                         IconButton(
                           onPressed: () {
-                            // Add functionality next sprints
+                            addPathwayToBookmarks(pathway, email);
                           },
                           icon: Icon(
                             Icons.bookmark_add,

@@ -9,6 +9,7 @@ class CardQview {
   String? docId;
   String? username;
   String? userPhotoUrl; 
+  String questionDocId;
 
   CardQview({
     required this.id,
@@ -19,6 +20,8 @@ class CardQview {
     this.docId ='' ,
     required this.username,
     required this.userPhotoUrl,
+     required this.questionDocId,
+
   });
 
   Map<String, dynamic> toJson() => {
@@ -30,6 +33,7 @@ class CardQview {
         'docId': docId,
         'username': username,
         'userPhotoUrl': userPhotoUrl, 
+        'questionDocId':  questionDocId,
       };
 
 
@@ -42,6 +46,8 @@ class CardQview {
         docId: json['docId'] ?? '',
         username: json['username'] ?? '',
         userPhotoUrl: json['userPhotoUrl'] as String?, 
+        questionDocId: json['questionDocId'],
+
       );
 }
 

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class PathwayContainer extends StatelessWidget {
-  final int id; 
+  final int id;
   final String imagePath;
   final String title;
   final String path_description;
@@ -10,9 +10,9 @@ class PathwayContainer extends StatelessWidget {
   final List<String> subtopics;
   final List<String> descriptions;
   final List<String> resources;
+  final String pathwayDocId;
 
-   final String? docId;
-   PathwayContainer({
+  PathwayContainer({
     required this.id,
     required this.imagePath,
     required this.title,
@@ -20,9 +20,22 @@ class PathwayContainer extends StatelessWidget {
     required this.Key_topic,
     required this.subtopics,
     required this.descriptions,
-     this.docId,
-    required this.resources, 
+    required this.resources,
+    required this.pathwayDocId,
   });
+
+  // Additional constructor to create a PathwayContainer with a docId
+  PathwayContainer.withDocId({
+    required this.id,
+    required this.imagePath,
+    required this.title,
+    required this.path_description,
+    required this.Key_topic,
+    required this.subtopics,
+    required this.descriptions,
+    required this.resources,
+    required this.pathwayDocId ,
+  }) ;
 
   Map<String, dynamic> toJson() => {
         'pathwayNo': id,
@@ -32,21 +45,21 @@ class PathwayContainer extends StatelessWidget {
         'keyTopic': Key_topic,
         'subtopics': subtopics,
         'descriptions': descriptions,
-        'docId':docId,
-        'resources':resources,
+        'resources': resources,
+        'pathwayDocId': pathwayDocId, // Include docId in the JSON representation
       };
 
   static PathwayContainer fromJson(Map<String, dynamic> json) =>
       PathwayContainer(
-        id: json['pathwayNo'] ??0, 
-        imagePath: json['imageURL']??'',
-        title: json['title']??'',
-        path_description: json['pathwayDescription']??'',
-        Key_topic: List<String>.from(json['keyTopic']??[]),
-        subtopics: List<String>.from(json['subtopics']??[]),
-        descriptions: List<String>.from(json['descriptions']?? []),
-        resources: List<String>.from(json['resources']?? []),
-        docId: json['docId'],
+        id: json['pathwayNo'] ?? 0,
+        imagePath: json['imageURL'] ?? '',
+        title: json['title'] ?? '',
+        path_description: json['pathwayDescription'] ?? '',
+        Key_topic: List<String>.from(json['keyTopic'] ?? []),
+        subtopics: List<String>.from(json['subtopics'] ?? []),
+        descriptions: List<String>.from(json['descriptions'] ?? []),
+        resources: List<String>.from(json['resources'] ?? []),
+        pathwayDocId: json['pathwayDocId'],
       );
 
   @override
@@ -54,4 +67,3 @@ class PathwayContainer extends StatelessWidget {
     return Card();
   }
 }
- 

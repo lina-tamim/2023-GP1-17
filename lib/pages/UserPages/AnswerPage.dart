@@ -17,12 +17,18 @@ class AnswerPage extends StatefulWidget {
 }
 
 class _AnswerPageState extends State<AnswerPage> {
-  Future<String> fetchuseremail() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final email = prefs.getString('loggedInEmail') ?? '';
-    return email;
-  }
 
+  String email = '';
+
+  Future<void> fetchuseremail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+     final loggedinEmail  = prefs.getString('loggedInEmail') ?? '';
+
+      setState(() {
+        email = loggedinEmail;
+      });
+
+  }
   late List<CardQuestion> questions = [];
   final _questionStreamController =
       StreamController<List<CardQuestion>>.broadcast();
@@ -33,6 +39,7 @@ class _AnswerPageState extends State<AnswerPage> {
   void initState() {
     super.initState();
     fetchQuestionData();
+    fetchuseremail();
   }
 
   void fetchQuestionData() async {
@@ -134,7 +141,7 @@ class _AnswerPageState extends State<AnswerPage> {
                   IconButton(
                     icon: Icon(Icons.bookmark),
                     onPressed: () {
-                      // Add functionality next sprints
+                      addQuestionToBookmarks(email, question);
                     },
                   ),
                   IconButton(
@@ -161,11 +168,42 @@ class _AnswerPageState extends State<AnswerPage> {
         ),
       );
 
+
+ Future<void> addQuestionToBookmarks(String email, CardQuestion question) async {
+  try {
+    print("888888888888888888");
+    print(question.questionDocId);
+        print("888888888888888888");
+
+    final existingBookmark = await FirebaseFirestore.instance
+        .collection('BookmarkedPost')
+        .where('bookmarkType', isEqualTo: 'question')
+        .where('userId', isEqualTo: email)
+        .where('postId', isEqualTo: question.questionDocId)
+        .get();
+
+    if (existingBookmark.docs.isEmpty) {
+      await FirebaseFirestore.instance.collection('BookmarkedPost').add({
+        'bookmarkType': 'question',
+        'userId': email,
+        'postId': question.questionDocId,
+        'bookmarkDate': DateTime.now(),
+      });
+      toastMessage('Question is Bookmarked');
+    } else {
+      toastMessage('Question is Already Bookmarked!');
+    }
+  } catch (error) {
+    print('Error adding question to bookmarks: $error');
+  }
+}
+
+
   Widget buildAnswerCard(CardAnswer answer) {
     String currentEmail = '';
 
     Future<String> getCurrentUserEmail() async {
-      return await fetchuseremail();
+      return email;
     }
 
     int upvoteCount = answer.upvoteCount ?? 0;

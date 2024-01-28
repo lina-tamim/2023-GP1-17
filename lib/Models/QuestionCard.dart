@@ -6,10 +6,8 @@ class CardQuestion {
   final List<String> topics;
   final String userId;
   String? userPhotoUrl;
-  final String? docId;
   String? username;
-
-  String email;
+  String questionDocId;
 
   CardQuestion({
     required this.id,
@@ -17,10 +15,9 @@ class CardQuestion {
     required this.description,
     required this.topics,
     required this.userId,
-    this.docId = '',
     required this.username,
     required this.userPhotoUrl,
-    required this.email,
+    required this.questionDocId,
   });
 
   Map<String, dynamic> toJson() => {
@@ -29,10 +26,9 @@ class CardQuestion {
         'postDescription': description,
         'selectedInterests': topics,
         'userId': userId,
-        'docId': docId,
         'username': '',
         'userPhotoUrl': userPhotoUrl,
-        'email':email,
+        'questionDocId': questionDocId,
       };
 
   static CardQuestion fromJson(Map<String, dynamic> json) => CardQuestion(
@@ -41,10 +37,9 @@ class CardQuestion {
         description: json['postDescription'],
         topics: List<String>.from(json['selectedInterests']),
         userId: json['userId'],
-        docId: json['docId'] ?? '',
+        questionDocId: json['questionDocId'] ?? '',
         username: json['username'] ?? '',
         userPhotoUrl: json['userPhotoUrl'] as String?,
-        email: json['email']??'',
       );
 }
 

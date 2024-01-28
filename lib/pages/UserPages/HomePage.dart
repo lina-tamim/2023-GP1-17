@@ -108,7 +108,7 @@ class __FHomePageState extends State<FHomePage> {
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
-        question.email = userDoc ?['email'] as String;
+       // question.userId = userDoc ?['userId'] as String;
       });
 
       final userIdsNotFound =
@@ -245,11 +245,11 @@ class __FHomePageState extends State<FHomePage> {
               SizedBox(height: 5),
                GestureDetector(
              onTap: () {
-            if (question.email != null && question.email.isNotEmpty && question.userId !="DeactivatedUser") {
+            if (question.userId != null && question.userId.isNotEmpty && question.userId !="DeactivatedUser") {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => UserProfileView(userId: question.email),
+                  builder: (context) => UserProfileView(userId: question.userId),
                 ),
               );
             }
@@ -295,7 +295,7 @@ class __FHomePageState extends State<FHomePage> {
                   IconButton(
                     icon: Icon(Icons.bookmark),
                     onPressed: () {
-                      // Add functionality in upcoming sprints
+                      addQuestionToBookmarks(loggedInEmail, question);
                     },
                   ),
                   IconButton(
@@ -482,7 +482,7 @@ class __FHomePageState extends State<FHomePage> {
                       ),
                     const SizedBox(width: 8),
                     const Text(
-                      'Homepage',
+                      'Home           ',
                       style: TextStyle(
                         fontSize: 18,
                         fontFamily: "Poppins",
@@ -656,5 +656,33 @@ class __FHomePageState extends State<FHomePage> {
       ),
     );
   }
-  
+  Future<void> addQuestionToBookmarks(String email, CardQuestion question) async {
+  try {
+    print("888888888888888888");
+    print(question.questionDocId);
+        print("888888888888888888");
+
+    final existingBookmark = await FirebaseFirestore.instance
+        .collection('BookmarkedPost')
+        .where('bookmarkType', isEqualTo: 'question')
+        .where('userId', isEqualTo: email)
+        .where('postId', isEqualTo: question.questionDocId)
+        .get();
+
+    if (existingBookmark.docs.isEmpty) {
+      await FirebaseFirestore.instance.collection('BookmarkedPost').add({
+        'bookmarkType': 'question',
+        'userId': email,
+        'postId': question.questionDocId,
+        'bookmarkDate': DateTime.now(),
+      });
+      toastMessage('Question is Bookmarked');
+    } else {
+      toastMessage('Question is Already Bookmarked!');
+    }
+  } catch (error) {
+    print('Error adding question to bookmarks: $error');
+  }
+}
+
 }

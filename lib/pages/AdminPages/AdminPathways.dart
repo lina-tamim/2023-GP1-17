@@ -49,7 +49,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
   List<String> dbresourses = [];
   int lenghtOftopics = 0;
   int pathID = 0;
-  String? dbdocId = '';
+  String pathwayDocId = '';
   File? _selectedImage;
 
 //Modified by user
@@ -63,25 +63,28 @@ class _AdminPathwaysState extends State<AdminPathways> {
   File? newProfilePicture;
   String defaultImagePath = 'assets/Backgrounds/defaultPathwayImage.png';
 
-  Future<void> fetchData(PathwayContainer pathway) async {
-    SharedPreferences pre = await SharedPreferences.getInstance();
-    final pathwayId = pre.getInt('pathwayId_${pathway.id}') ?? '';
-    final QuerySnapshot<Map<String, dynamic>> snapshot = await firestore
-        .collection('Pathway')
-        .where('pathwayNo', isEqualTo: pathwayId)
-        .limit(1)
-        .get();
+Future<void> fetchData(PathwayContainer pathway) async {
+  SharedPreferences pre = await SharedPreferences.getInstance();
+  final pathwayId = pre.getString('pathwayId_${pathway.id}') ?? ''; // # Changed
 
-    if (snapshot.docs.isNotEmpty) {
-      final pathwayData = snapshot.docs[0].data();
-      final image_url = pathwayData['imageURL'] ?? '';
-      final title = pathwayData['title'] ?? '';
-      final path_description = pathwayData['pathwayDescription'] ?? '';
-      final Key_topic = List<String>.from(pathwayData['keyTopic'] ?? []);
-      final subtopics = List<String>.from(pathwayData['subtopics'] ?? []);
-      final descriptions = List<String>.from(pathwayData['descriptions'] ?? []);
-      final resourses = List<String>.from(pathwayData['resources'] ?? []);
+  final QuerySnapshot<Map<String, dynamic>> snapshot = await firestore
+      .collection('Pathway')
+      .where('pathwayNo', isEqualTo: pathwayId)
+      .limit(1)
+      .get();
 
+  if (snapshot.docs.isNotEmpty) {
+    final pathwayData = snapshot.docs[0].data();
+
+    final image_url = pathwayData['imageURL'] ?? '';
+    final title = pathwayData['title'] ?? '';
+    final path_description = pathwayData['pathwayDescription'] ?? '';
+    final Key_topic = List<String>.from(pathwayData['keyTopic'] ?? []);
+    final subtopics = List<String>.from(pathwayData['subtopics'] ?? []);
+    final descriptions = List<String>.from(pathwayData['descriptions'] ?? []);
+    final resources = List<String>.from(pathwayData['resources'] ?? []);
+
+    setState(() {
       newimage_url = image_url;
       newtitle = title;
       newpath_description = path_description;
@@ -89,24 +92,24 @@ class _AdminPathwaysState extends State<AdminPathways> {
       newsubtopics = subtopics;
       newdescriptions = descriptions;
       lenghtOftopics = subtopics.length;
-      newResources = resourses;
+      newResources = resources;
 
-      setState(() {
-        _editSelectTopic = pathway.Key_topic;
-        dbimage_url = image_url;
-        dbtitle = pathway.title;
-        dbpath_description = pathway.path_description;
-        dbKey_topic = Key_topic;
-        dbsubtopics = subtopics;
-        dbdescriptions = descriptions;
-        pathID = pathway.id;
-        dbdocId = pathway.docId;
-        subtopicControllers = pathway.subtopics;
-        subtopicDescriptionControllers = pathway.descriptions;
-        subtopicresourseControllers = pathway.resources;
-      });
-    }
+      _editSelectTopic = pathway.Key_topic;
+      dbimage_url = image_url;
+      dbtitle = title;
+      dbpath_description = path_description;
+      dbKey_topic = Key_topic;
+      dbsubtopics = subtopics;
+      dbdescriptions = descriptions;
+      pathID = pathway.id;
+      pathwayDocId = pathway.pathwayDocId; // # Changed
+      subtopicControllers = pathway.subtopics;
+      subtopicDescriptionControllers = pathway.descriptions;
+      subtopicresourseControllers = pathway.resources;
+    });
   }
+}
+
 
   void _showMultiSelectTopicedit() async {
     final Map<String, List<String>> edittopicGroups = {
@@ -622,7 +625,7 @@ class _AdminPathwaysState extends State<AdminPathways> {
                               SharedPreferences pre =
                                   await SharedPreferences.getInstance();
                               pre.setInt('pathwayId_${pathway.id}', pathway.id);
-                              pre.setString('pathwayIdx', pathway.docId ?? '');
+                              pre.setString('pathwayIdx', pathway.pathwayDocId ?? '');
                               fetchData(pathway);
                               setState(() {
                                 showEditBox = !showEditBox;
@@ -2762,68 +2765,72 @@ class _AdminPathwaysState extends State<AdminPathways> {
   }
 //DONE EDIT DATABASE
   // DB
-
-  Future<bool> saveDataToFirestore() async {
-    setState(() {
-      _isLoading = true;
-    });
-    try {
-      // Create a new document reference
-      DocumentReference documentReference =
-          firestore.collection('Pathway').doc();
-      //validation++
-      String newTitle = _pathTitle.text.trim();
-      bool isUnique = await isTitleUnique(newTitle);
-      if (!isUnique) {
-        // Title already exists, display message
-        _showSnackBar('Please enter a new title');
-        return false; // Data save failed
-      }
-
-      final storageRef = FirebaseStorage.instance
-          .ref()
-          .child('pathways_images')
-          .child('${documentReference?.id}png');
-
-      if (_selectedImage == null) {
-        // Load the default image from assets
-        final byteData = await rootBundle.load(defaultImagePath);
-        final bytes = byteData.buffer.asUint8List();
-
-        // Save the default image to a temporary file
-        final tempDir = await getTemporaryDirectory();
-        final tempPath = path.join(tempDir.path, 'default_image.png');
-        await File(tempPath).writeAsBytes(bytes);
-
-        // Upload the default image to storage
-        await storageRef.putFile(File(tempPath));
-      } else {
-        // Upload the selected image to storage
-        await storageRef.putFile(_selectedImage!);
-      }
-      final imageURL = await storageRef.getDownloadURL();
-      pathID = pathID + 1;
-      // Save the flattened resources list to Firestore
-      await documentReference.set({
-        'title': _pathTitle.text,
-        'pathwayDescription': _path_descriptions.text,
-        'keyTopic': _SelectTopic,
-        'subtopics': _topics.map((controller) => controller.text).toList(),
-        'descriptions':
-            _descriptions.map((controller) => controller.text).toList(),
-        'resources': _resources.map((controller) => controller.text).toList(),
-        'imageURL': imageURL,
-        'pathwayNo': pathID,
-      });
-      id = id + 1;
-      setState(() {
-        _isLoading = true;
-      });
-      return true;
-    } catch (error) {
-      return false;
+//m
+Future<bool> saveDataToFirestore() async {
+  setState(() {
+    _isLoading = true;
+  });
+  try {
+    // Create a new document reference
+    DocumentReference documentReference = firestore.collection('Pathway').doc();
+    //validation++
+    String newTitle = _pathTitle.text.trim();
+    bool isUnique = await isTitleUnique(newTitle);
+    if (!isUnique) {
+      // Title already exists, display message
+      _showSnackBar('Please enter a new title');
+      return false; // Data save failed
     }
+
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child('pathways_images')
+        .child('${documentReference?.id}png');
+
+    if (_selectedImage == null) {
+      // Load the default image from assets
+      final byteData = await rootBundle.load(defaultImagePath);
+      final bytes = byteData.buffer.asUint8List();
+
+      // Save the default image to a temporary file
+      final tempDir = await getTemporaryDirectory();
+      final tempPath = path.join(tempDir.path, 'default_image.png');
+      await File(tempPath).writeAsBytes(bytes);
+
+      // Upload the default image to storage
+      await storageRef.putFile(File(tempPath));
+    } else {
+      // Upload the selected image to storage
+      await storageRef.putFile(_selectedImage!);
+    }
+    final imageURL = await storageRef.getDownloadURL();
+    pathID = pathID + 1;
+    // Save the flattened resources list to Firestore
+    await documentReference.set({
+      'title': _pathTitle.text,
+      'pathwayDescription': _path_descriptions.text,
+      'keyTopic': _SelectTopic,
+      'subtopics': _topics.map((controller) => controller.text).toList(),
+      'descriptions':
+          _descriptions.map((controller) => controller.text).toList(),
+      'resources': _resources.map((controller) => controller.text).toList(),
+      'imageURL': imageURL,
+      'pathwayNo': pathID,
+      'pathwayDocId': documentReference.id, // Added pathwayDocId
+    });
+    id = id + 1;
+    setState(() {
+      _isLoading = false;
+    });
+    return true;
+  } catch (error) {
+    setState(() {
+      _isLoading = false;
+    });
+    return false;
   }
+}
+
 
   /////// VALIDATION
 

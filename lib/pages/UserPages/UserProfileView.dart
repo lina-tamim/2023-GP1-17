@@ -135,7 +135,7 @@ List<String> imageList = [
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
-        question.email = userDoc ?['email'] as String;
+       // question.userId = userDoc ?['userId'] as String;
       });
 
       final userIdsNotFound =
@@ -167,11 +167,11 @@ List<String> imageList = [
               SizedBox(height: 5),
                GestureDetector(
              onTap: () {
-            if (question.email != null && question.email.isNotEmpty) {
+            if (question.userId != null && question.userId.isNotEmpty) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => UserProfileView(userId: question.email),
+                  builder: (context) => UserProfileView(userId: question.userId),
                 ),
               );
             }

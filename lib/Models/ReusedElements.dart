@@ -144,7 +144,7 @@ class _NavBarUserState extends State<NavBarUser> {
             title: const Text('Bookmark'),
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const BookmarkPage()),
+              MaterialPageRoute(builder: (context) => BookmarkPage()),
             ),
           ),
           ListTile(
