@@ -2,6 +2,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
 import 'package:techxcel11/Models/FormCard.dart';
@@ -9,6 +10,8 @@ import 'package:techxcel11/Models/PostCard.dart';
 import 'package:techxcel11/Models/QuestionCard.dart';
 import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
 import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
+import 'dart:developer';
+import 'package:techxcel11/providers/profile_provider.dart';
 
 class FHomePage extends StatefulWidget {
   const FHomePage({Key? key}) : super(key: key);
@@ -108,7 +111,7 @@ class __FHomePageState extends State<FHomePage> {
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
-       // question.userId = userDoc ?['userId'] as String;
+        // question.userId = userDoc ?['userId'] as String;
       });
 
       final userIdsNotFound =
@@ -243,24 +246,28 @@ class __FHomePageState extends State<FHomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
-               GestureDetector(
-             onTap: () {
-            if (question.userId != null && question.userId.isNotEmpty && question.userId !="DeactivatedUser") {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => UserProfileView(userId: question.userId),
+              GestureDetector(
+                onTap: () {
+                  if (question.userId != null &&
+                      question.userId.isNotEmpty &&
+                      question.userId != "DeactivatedUser") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            UserProfileView(userId: question.userId),
+                      ),
+                    );
+                  }
+                },
+                child: Text(
+                  question.username ?? '', // Display the username
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 24, 8, 53),
+                      fontSize: 16),
                 ),
-              );
-            }
-          },
-              child:Text(
-                question.username ?? '', // Display the username
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 24, 8, 53),
-                    fontSize: 16),
-              ),),
+              ),
               SizedBox(height: 5),
               Text(
                 question.title,
@@ -342,24 +349,27 @@ class __FHomePageState extends State<FHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 5),
-                    GestureDetector(
-             onTap: () {
-            if (team.userId != null && team.userId.isNotEmpty && team.userId !="DeactivatedUser") {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => UserProfileView(userId: team.userId),
-                ),
-              );
-            }
-          },
-                child:Text(
-                  team.username ?? '', // Display the username
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
+                GestureDetector(
+                  onTap: () {
+                    if (team.userId != null &&
+                        team.userId.isNotEmpty &&
+                        team.userId != "DeactivatedUser") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              UserProfileView(userId: team.userId),
+                        ),
+                      );
+                    }
+                  },
+                  child: Text(
+                    team.username ?? '', // Display the username
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepPurple,
+                    ),
                   ),
-                ),
                 ),
                 SizedBox(height: 5),
                 Text(
@@ -402,6 +412,10 @@ class __FHomePageState extends State<FHomePage> {
                 ),
                 onPressed: () {
                   // Add your functionality next sprints
+                  context
+                      .read<ProfileProvider>()
+                      .gotoChat(context, team.userId);
+                  log('MK: clicked on Message: ${team.userId}');
                 },
               ),
               IconButton(
@@ -656,33 +670,34 @@ class __FHomePageState extends State<FHomePage> {
       ),
     );
   }
-  Future<void> addQuestionToBookmarks(String email, CardQuestion question) async {
-  try {
-    print("888888888888888888");
-    print(question.questionDocId);
-        print("888888888888888888");
 
-    final existingBookmark = await FirebaseFirestore.instance
-        .collection('Bookmark')
-        .where('bookmarkType', isEqualTo: 'question')
-        .where('userId', isEqualTo: email)
-        .where('postId', isEqualTo: question.questionDocId)
-        .get();
+  Future<void> addQuestionToBookmarks(
+      String email, CardQuestion question) async {
+    try {
+      print("888888888888888888");
+      print(question.questionDocId);
+      print("888888888888888888");
 
-    if (existingBookmark.docs.isEmpty) {
-      await FirebaseFirestore.instance.collection('Bookmark').add({
-        'bookmarkType': 'question',
-        'userId': email,
-        'postId': question.questionDocId,
-        'bookmarkDate': DateTime.now(),
-      });
-      toastMessage('Question is Bookmarked');
-    } else {
-      toastMessage('Question is Already Bookmarked!');
+      final existingBookmark = await FirebaseFirestore.instance
+          .collection('Bookmark')
+          .where('bookmarkType', isEqualTo: 'question')
+          .where('userId', isEqualTo: email)
+          .where('postId', isEqualTo: question.questionDocId)
+          .get();
+
+      if (existingBookmark.docs.isEmpty) {
+        await FirebaseFirestore.instance.collection('Bookmark').add({
+          'bookmarkType': 'question',
+          'userId': email,
+          'postId': question.questionDocId,
+          'bookmarkDate': DateTime.now(),
+        });
+        toastMessage('Question is Bookmarked');
+      } else {
+        toastMessage('Question is Already Bookmarked!');
+      }
+    } catch (error) {
+      print('Error adding question to bookmarks: $error');
     }
-  } catch (error) {
-    print('Error adding question to bookmarks: $error');
   }
-}
-
 }

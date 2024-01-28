@@ -34,6 +34,12 @@ dependencies:
   path_provider: ^2.1.1
   syncfusion_flutter_calendar: ^22.2.12
 
+  file_picker: ^5.2.4
+  grouped_list: ^5.1.2
+  cached_network_image: ^3.2.2
+  carousel_slider: ^4.1.1
+  provider: ^6.0.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

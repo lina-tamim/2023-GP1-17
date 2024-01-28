@@ -2,9 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
+import 'package:techxcel11/pages/UserPages/UserPathwaysPage.dart';
 import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
+import '../../providers/profile_provider.dart';
 
 class FreelancerPage extends StatefulWidget {
   const FreelancerPage({Key? key}) : super(key: key);
@@ -100,24 +103,28 @@ class _FreelancerPageState extends State<FreelancerPage> {
                         Row(
                           children: [
                             GestureDetector(
-             onTap: () {
-            if (userId != null && userId.isNotEmpty && userId !="DeactivatedUser") {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => UserProfileView(userId: userId),
-                ),
-              );
-            }
-          },
-                           child: Text(
-                              username,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Color.fromARGB(255, 24, 8, 53),
-                                fontWeight: FontWeight.bold,
+                              onTap: () {
+                                if (userId != null &&
+                                    userId.isNotEmpty &&
+                                    userId != "DeactivatedUser") {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          UserProfileView(userId: userId),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Text(
+                                username,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color.fromARGB(255, 24, 8, 53),
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),),
+                            ),
                             SizedBox(width: 5),
                             const Icon(
                               Icons.verified,
@@ -125,12 +132,19 @@ class _FreelancerPageState extends State<FreelancerPage> {
                               size: 19,
                             ),
                             Spacer(),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 10.0),
-                              child: const Icon(
-                                FontAwesomeIcons.solidMessage,
-                                color: Color.fromARGB(255, 135, 135, 135),
-                                size: 16,
+                            GestureDetector(
+                              onTap: () {
+                                context
+                                    .read<ProfileProvider>()
+                                    .gotoChat(context, email);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 10.0),
+                                child: const Icon(
+                                  FontAwesomeIcons.solidMessage,
+                                  color: Color.fromARGB(255, 135, 135, 135),
+                                  size: 16,
+                                ),
                               ),
                             ),
                           ],
