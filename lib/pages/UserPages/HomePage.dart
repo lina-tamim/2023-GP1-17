@@ -82,11 +82,9 @@ class __FHomePageState extends State<FHomePage> {
 
     if (searchController.text.isNotEmpty) {
       String searchText = searchController.text;
-      query = query.where(
-        FieldPath(['postDescription']),
-        isGreaterThanOrEqualTo: searchText.toUpperCase(),
-        isLessThanOrEqualTo: searchText.toUpperCase() + '\uf8ff',
-      );
+      query = query
+       .where('postDescription', isGreaterThanOrEqualTo: searchText)
+          .where('postDescription', isLessThan: searchText + 'z');
     } else {
       query = query.orderBy('postedDate', descending: true);
     }
@@ -151,13 +149,14 @@ class __FHomePageState extends State<FHomePage> {
     Query<Map<String, dynamic>> query =
         FirebaseFirestore.instance.collection('Team');
     //.where('dropdownValue', isEqualTo: 'Team Collaberation');
-
-    if (searchController.text.isNotEmpty) {
-      String searchText = searchController.text
-          .toLowerCase(); // Convert search text to lowercase
+    
+        if (searchController.text.isNotEmpty) {
+      String searchText = searchController.text;
+      //String newVal = searchText[0].toUpperCase() + searchText.substring(1); 
+        //.toLowerCase(); // Convert search text to lowercase
       query = query
           .where('postTitle', isGreaterThanOrEqualTo: searchText)
-          .where('postTitle', isLessThanOrEqualTo: searchText + '\uf8ff');
+          .where('postTitle', isLessThan: searchText + 'z');
     } else {
       query = query.orderBy('postedDate', descending: true);
     }
@@ -205,11 +204,11 @@ class __FHomePageState extends State<FHomePage> {
     //.where('dropdownValue', isEqualTo: 'Project');
 
     if (searchController.text.isNotEmpty) {
-      String searchText = searchController.text
-          .toLowerCase(); // Convert search text to lowercase
+      String searchText = searchController.text;
+          //.toLowerCase(); // Convert search text to lowercase
       query = query
           .where('postTitle', isGreaterThanOrEqualTo: searchText)
-          .where('postTitle', isLessThanOrEqualTo: searchText + '\uf8ff');
+          .where('postTitle', isLessThan: searchText + 'z');
     } else {
       query = query.orderBy('postedDate', descending: true);
     }
