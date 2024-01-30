@@ -126,6 +126,7 @@ class _Signup extends State<Signup> {
         'interests': _selectedInterests,
         'skills': _selectedSkills,
         'imageURL': imageURL,
+        'userScore': 0,
       });
 
       // Display a success message to the user

@@ -80,6 +80,7 @@ class _FreelancerPageState extends State<FreelancerPage> {
             final imageURL = freelancer['imageURL'] as String;
             final skills = freelancer['skills'] as List<dynamic>;
             final userId = freelancer['email'] as String;
+            final userScore = freelancer['userScore'] ;
 
             return Container(
               padding: EdgeInsets.all(10),
@@ -154,7 +155,7 @@ class _FreelancerPageState extends State<FreelancerPage> {
                               color: Color.fromARGB(255, 209, 196, 25),
                               size: 19,
                             ),
-                            Text(" 4.8 / 5"),
+                            Text(userScore.toString()),
                           ],
                         ),
                         Container(

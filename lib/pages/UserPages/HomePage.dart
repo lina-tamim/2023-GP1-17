@@ -73,6 +73,8 @@ class __FHomePageState extends State<FHomePage> {
     );
   }
 
+
+
   Stream<List<CardQuestion>> readQuestion() {
     Query<Map<String, dynamic>> query =
         FirebaseFirestore.instance.collection('Question');
@@ -82,8 +84,8 @@ class __FHomePageState extends State<FHomePage> {
       String searchText = searchController.text;
       query = query.where(
         FieldPath(['postDescription']),
-        isGreaterThanOrEqualTo: searchText.toLowerCase(),
-        isLessThanOrEqualTo: searchText.toLowerCase() + '\uf8ff',
+        isGreaterThanOrEqualTo: searchText.toUpperCase(),
+        isLessThanOrEqualTo: searchText.toUpperCase() + '\uf8ff',
       );
     } else {
       query = query.orderBy('postedDate', descending: true);
@@ -112,7 +114,7 @@ class __FHomePageState extends State<FHomePage> {
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
-        // question.userId = userDoc ?['userId'] as String;
+       // question.userId = userDoc ?['userId'] as String;
       });
 
       final userIdsNotFound =
@@ -129,6 +131,21 @@ class __FHomePageState extends State<FHomePage> {
       return questions;
     });
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   Stream<List<CardFT>> readTeam() {
     Query<Map<String, dynamic>> query =
@@ -520,6 +537,9 @@ class __FHomePageState extends State<FHomePage> {
                   height: 8,
                 ),
                 if (showSearchBar)
+
+
+                
                   TextField(
                     controller: searchController,
                     decoration: const InputDecoration(

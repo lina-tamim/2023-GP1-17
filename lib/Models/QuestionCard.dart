@@ -2,7 +2,7 @@ import 'dart:core';
 class CardQuestion {
   final int id;
   final String title;
-  final String description;
+  late final String description;
   final List<String> topics;
   final String userId;
   String? userPhotoUrl;

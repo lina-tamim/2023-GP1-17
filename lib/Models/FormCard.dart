@@ -625,7 +625,7 @@ class _FormWidgetState extends State<FormWidget> {
         await questionCollection.doc(newFormDoc.id).set({
           'userId': userId,
           'postTitle': textFieldValue,
-          'postDescription': largeTextFieldValue,
+          'postDescription': largeTextFieldValue[0].toUpperCase() + largeTextFieldValue.substring(1),
           'selectedInterests': _selectedTopics,
           'noOfAnwers': count,
           'questionCount': id + 1,
