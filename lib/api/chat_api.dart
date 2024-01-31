@@ -15,11 +15,14 @@ class ChatAPI {
   static const String _collection = 'Chat';
   static const String _subCollection = 'Message';
 
-  Stream<List<Message>> messages(String chatID) {
-    return _instance
+  Stream<List<Message>> messages(String chatID, {int? showAfterTimestamp}) {
+    CollectionReference<Map<String, dynamic>> ref = _instance
         .collection(_collection)
         .doc(chatID)
-        .collection(_subCollection)
+        .collection(_subCollection);
+
+    return ref
+        .where('timestamp', isGreaterThan: showAfterTimestamp)
         .orderBy('timestamp', descending: false)
         .snapshots()
         .map((QuerySnapshot<Map<String, dynamic>> event) {
@@ -41,9 +44,9 @@ class ChatAPI {
         .asyncMap((QuerySnapshot<Map<String, dynamic>> event) {
       List<Chat> chats = <Chat>[];
       for (DocumentSnapshot<Map<String, dynamic>> element in event.docs) {
+        log('MK: here in chats: ${element.data()?['continueOn']}');
         final Chat temp = Chat.fromMap(element.data()!);
         chats.add(temp);
-        log('MK: here in chats: ${temp.chatID}');
       }
       return chats;
     });
@@ -107,7 +110,32 @@ class ChatAPI {
     // }
   }
 
-  deleteMessage({required Chat chat}) async {
+  deleteChat(String id) async {
+    Chat? chat = await getSingleChat(id);
+    if (chat != null) {
+      if (chat.deletedBy == null || chat.deletedBy == getUid()) {
+        /////delete or update deletionn chat only by you
+        chat.deletedBy = getUid();
+
+        Map<String, dynamic> continueOn = chat.continueOn ?? {};
+        continueOn[getUid()] = TimeFunctions.microseconds;
+        chat.continueOn = continueOn;
+
+        await _instance.collection(_collection).doc(chat.chatID).update({
+          'deletedBy': chat.deletedBy,
+          'continueOn': chat.continueOn,
+        });
+        log('MK: chat will be deleted for you ${chat.chatID}');
+      } else if (chat.deletedBy != getUid()) {
+        /////chat is deleted by other personn so now you can delete entirely
+
+        log('MK: chat will be deleted completely ${chat.chatID}');
+        await deleteChatWithMessages(chat: chat);
+      }
+    }
+  }
+
+  deleteChatWithMessages({required Chat chat}) async {
     try {
       final QuerySnapshot<Map<String, dynamic>> docData = await _instance
           .collection(_collection)

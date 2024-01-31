@@ -4,7 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:techxcel11/api/chat_api.dart';
 import '../../../Models/chat.dart';
+import '../../../Models/message_read_info.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/functions/public_methods.dart';
 import '../../../widgets/chat/chat_dashboard_tile.dart';
 import '../../../widgets/misc_widgets.dart';
 
@@ -32,7 +34,21 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
               log('MK: error ${snapchat.error}');
               return Center(child: Text('Unable to load chats'));
             } else if (snapchat.hasData) {
-              final List<Chat> chats = snapchat.data!;
+              final List<Chat> chats = snapchat.data!
+                  .where((Chat element) => element.deletedBy != getUid())
+                  // .where((chatElement) =>
+                  //     chatElement.lastMessage?.sendTo
+                  //         .firstWhere(
+                  //             (MessageReadInfo element) =>
+                  //                 element.uid == getUid() &&
+                  //                 (element.deliveryAt ?? 0) >=
+                  //                     (chatElement.continueOn?[getUid()] ?? 0),
+                  //             orElse: () =>
+                  //                 MessageReadInfo(uid: '', seen: true))
+                  //         .seen ==
+                  //     false)
+                  .toList();
+
               return Column(
                 children: <Widget>[
                   Expanded(

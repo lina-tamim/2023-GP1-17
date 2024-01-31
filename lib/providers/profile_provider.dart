@@ -101,10 +101,15 @@ class ProfileProvider extends ChangeNotifier {
     ChatAPI().chats().listen((List<Chat> chats) {
       // Calculate chat count based on the updated chat data
       int count = chats
-          .where((Chat element) =>
-              element.lastMessage?.sendTo
+          .where((element) => element.deletedBy != getUid())
+          .where((Chat chat) =>
+              chat.lastMessage?.sendTo
                   .firstWhere(
-                    (MessageReadInfo element) => element.uid == getUid(),
+                    (MessageReadInfo element) => element.uid == getUid()
+                    //     &&
+                    // (element.deliveryAt ?? 0) >=
+                    //     (chat.continueOn?[getUid()] ?? 0)
+                    ,
                     orElse: () => MessageReadInfo(uid: '', seen: true),
                   )
                   .seen ==

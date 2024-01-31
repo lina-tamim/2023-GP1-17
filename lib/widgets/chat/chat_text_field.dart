@@ -285,6 +285,9 @@ class _ChatTextFieldState extends State<ChatTextField> {
                     _text.clear();
 
                     widget.chat.unseenMessages.add(msg);
+                    if (widget.chat.deletedBy != null) {
+                      widget.chat.deletedBy = null;
+                    }
                     await ChatAPI()
                         .sendMessage(chat: widget.chat, selfId: meUID);
                     widget.scrollDown();

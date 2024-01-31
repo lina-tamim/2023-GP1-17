@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:techxcel11/Models/user.dart';
 import 'message.dart';
 
@@ -16,6 +18,8 @@ class Chat {
     this.lastMessageText,
     this.users = const [],
     this.userInstances = const [],
+    this.deletedBy,
+    this.continueOn,
   });
 
   final String chatID;
@@ -25,6 +29,8 @@ class Chat {
   String? lastMessageText;
   List<Message> unseenMessages = [];
   int timestamp;
+  Map<String, dynamic>? continueOn;
+  String? deletedBy;
 
   String? name;
   String? description;
@@ -42,6 +48,8 @@ class Chat {
       'lastMessage': lastMessage != null ? lastMessage!.toMap() : null,
       'unseenMessages': unseenMessages.map((Message x) => x.toMap()).toList(),
       'timestamp': timestamp,
+      'deletedBy': deletedBy,
+      'continueOn': continueOn,
     };
   }
 
@@ -55,15 +63,22 @@ class Chat {
 
   // ignore: sort_constructors_first
   factory Chat.fromMap(Map<String, dynamic> map) {
+    log('MK: ${map['continueOn']}');
     return Chat(
       chatID: map['chatId'] ?? '',
       persons: List<String>.from(map['persons']),
-      lastMessage: Message.fromMap(map['lastMessage']),
+      lastMessage: map['lastMessage'] == null
+          ? null
+          : Message.fromMap(map['lastMessage']),
       unseenMessages: map['unseenMessages'] == null
           ? <Message>[]
           : List<Message>.from(
               map['unseenMessages']?.map((dynamic x) => Message.fromMap(x))),
       timestamp: map['timestamp'] ?? 0,
+      deletedBy: map['deletedBy'],
+      continueOn: map['continueOn'] == null
+          ? null
+          : map['continueOn'] as Map<String, dynamic>?,
     );
   }
 }

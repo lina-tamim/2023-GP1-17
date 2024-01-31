@@ -45,10 +45,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      final chat = await ChatAPI().getSingleChat(widget.chat.chatID);
       setState(() {
         selfId = getUid();
-        loading = true;
+        widget.chat.deletedBy = chat?.deletedBy;
+        widget.chat.continueOn = chat?.continueOn;
+        // loading = true;
       });
       // myName();
     });
@@ -117,12 +120,24 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
         leadingWidth: 0,
+        actions: [
+          if (widget.chat.deletedBy != selfId)
+            IconButton(
+                onPressed: () {
+                  showDeleteDialog();
+                },
+                icon: Icon(
+                  Icons.delete_outline,
+                  color: Colors.white,
+                ))
+        ],
       ),
       body: Column(
         children: <Widget>[
           Expanded(
             child: StreamBuilder<List<Message>>(
-              stream: ChatAPI().messages(widget.chat.chatID),
+              stream: ChatAPI().messages(widget.chat.chatID,
+                  showAfterTimestamp: widget.chat.continueOn?[getUid()]),
               builder: (BuildContext context,
                   AsyncSnapshot<List<Message>> snapshot) {
                 if (snapshot.hasError) {
@@ -173,6 +188,55 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  showDeleteDialog() {
+    bool loading = false;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Text(loading ? 'Deleting Chat...' : 'Confirm Deletion'),
+            content: loading
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Center(child: CircularProgressIndicator()),
+                    ],
+                  )
+                : Text(
+                    'Are you sure you want to delete this Chat? All messages will be deleted for you.'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+                onPressed: () async {
+                  setState(() {
+                    loading = true;
+                  });
+                  // await Future.delayed(Duration(seconds: 3));
+                  await ChatAPI().deleteChat(widget.chat.chatID);
+                  setState(() {
+                    loading = false;
+                  });
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+      },
     );
   }
 }
