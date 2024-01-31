@@ -1,4 +1,5 @@
 import 'dart:core';
+
 class CardQuestion {
   final int id;
   final String title;
@@ -8,6 +9,7 @@ class CardQuestion {
   String? userPhotoUrl;
   String? username;
   String questionDocId;
+  String userType;
 
   CardQuestion({
     required this.id,
@@ -18,6 +20,7 @@ class CardQuestion {
     required this.username,
     required this.userPhotoUrl,
     required this.questionDocId,
+    required this.userType,
   });
 
   Map<String, dynamic> toJson() => {
@@ -29,18 +32,17 @@ class CardQuestion {
         'username': '',
         'userPhotoUrl': userPhotoUrl,
         'questionDocId': questionDocId,
+        'userType': userType,
       };
 
   static CardQuestion fromJson(Map<String, dynamic> json) => CardQuestion(
-        id: json['questionCount'],
-        title: json['postTitle'],
-        description: json['postDescription'],
-        topics: List<String>.from(json['selectedInterests']),
-        userId: json['userId'],
-        questionDocId: json['questionDocId'] ?? '',
-        username: json['username'] ?? '',
-        userPhotoUrl: json['userPhotoUrl'] as String?,
-      );
+      id: json['questionCount'],
+      title: json['postTitle'],
+      description: json['postDescription'],
+      topics: List<String>.from(json['selectedInterests']),
+      userId: json['userId'],
+      questionDocId: json['questionDocId'] ?? '',
+      username: json['username'] ?? '',
+      userPhotoUrl: json['userPhotoUrl'] as String?,
+      userType: json['userType'] ?? '');
 }
-
- 

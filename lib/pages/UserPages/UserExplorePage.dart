@@ -110,14 +110,21 @@ class _UserExplorePageState extends State<UserExplorePage>
       ),
       bottom: TabBar(
         controller: tabController,
-        indicator: BoxDecoration(),
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(
+            width: 5.0,
+            color: Color.fromARGB(
+                255, 27, 5, 230), // Set the color of the underline
+          ),
+          // Adjust the insets if needed
+        ),
+        labelColor: Color.fromARGB(255, 27, 5, 230),
         tabs: [
           Tab(
             child: Text(
               'Courses and Events',
               style: TextStyle(
                 fontSize: 16,
-                color: Color.fromARGB(255, 0, 0, 0),
               ),
             ),
           ),
@@ -126,7 +133,6 @@ class _UserExplorePageState extends State<UserExplorePage>
               'Pathways',
               style: TextStyle(
                 fontSize: 16,
-                color: Color.fromARGB(255, 0, 0, 0),
               ),
             ),
           ),

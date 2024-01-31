@@ -160,7 +160,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   if (_loggedInUserType == "Freelancer")
                     const Icon(
                       Icons.verified,
-                      color: Color.fromARGB(255, 0, 91, 228),
+                      color: Colors.deepPurple,
                       size: 25,
                     ),
                 ],

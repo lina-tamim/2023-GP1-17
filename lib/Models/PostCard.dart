@@ -11,18 +11,20 @@ class CardFT {
   String? username;
   String? userPhotoUrl;
   String email;
+  String userType;
 
-  CardFT(
-      {
-      required this.title,
-      required this.description,
-      required this.date,
-      required this.topics,
-      required this.userId,
-      this.docId = '',
-      required this.username,
-      required this.userPhotoUrl,
-      required this.email});
+  CardFT({
+    required this.title,
+    required this.description,
+    required this.date,
+    required this.topics,
+    required this.userId,
+    this.docId = '',
+    required this.username,
+    required this.userPhotoUrl,
+    required this.email,
+    required this.userType,
+  });
 
   Map<String, dynamic> toJson() => {
         'postTitle': title,
@@ -33,18 +35,19 @@ class CardFT {
         'docId': docId,
         'username': '',
         'userPhotoUrl': userPhotoUrl,
-        'email':email,
-
+        'email': email,
+        'userType': userType,
       };
 
   static CardFT fromJson(Map<String, dynamic> json) => CardFT(
       title: json['postTitle'],
       description: json['postDescription'],
       topics: List<String>.from(json['selectedInterests']),
-      date: (json['deadlineDate'] as Timestamp).toDate() ,
+      date: (json['deadlineDate'] as Timestamp).toDate(),
       userId: json['userId'],
       username: json['username'] ?? '',
       userPhotoUrl: json['userPhotoUrl'] as String?,
       docId: json['docId'] ?? '',
-      email: json['email']??'',);
+      email: json['email'] ?? '',
+      userType: json['userType'] ?? '');
 }

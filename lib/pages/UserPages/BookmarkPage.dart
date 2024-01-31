@@ -11,7 +11,6 @@ import 'package:techxcel11/pages/UserPages/UserInteractionPage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:lottie/lottie.dart';
 
-
 class BookmarkPage extends StatefulWidget {
   @override
   _BookmarkPageState createState() => _BookmarkPageState();
@@ -104,14 +103,21 @@ class _BookmarkPageState extends State<BookmarkPage>
       ),
       bottom: TabBar(
         controller: tabController,
-        indicator: BoxDecoration(),
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(
+            width: 5.0,
+            color: Color.fromARGB(
+                255, 27, 5, 230), // Set the color of the underline
+          ),
+          // Adjust the insets if needed
+        ),
+        labelColor: Color.fromARGB(255, 27, 5, 230),
         tabs: [
           Tab(
             child: Text(
               'Questions',
               style: TextStyle(
                 fontSize: 16,
-                color: Color.fromARGB(255, 0, 0, 0),
               ),
             ),
           ),
@@ -120,7 +126,6 @@ class _BookmarkPageState extends State<BookmarkPage>
               'Pathways',
               style: TextStyle(
                 fontSize: 16,
-                color: Color.fromARGB(255, 0, 0, 0),
               ),
             ),
           ),
@@ -151,24 +156,23 @@ class UserBookmarkedPathways extends StatefulWidget {
 }
 
 int _currentIndex = 0;
+
 class _UserBookmarkedPathwaysState extends State<UserBookmarkedPathways> {
-  
   int id = 0;
   late FirebaseFirestore firestore;
   late SharedPreferences prefs;
   late String email = '';
 
-@override
-void initState() {
-  super.initState();
-  initializeVariables();
-  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    fetchContainerData().then((data) {
-      setState(() {});
+  @override
+  void initState() {
+    super.initState();
+    initializeVariables();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      fetchContainerData().then((data) {
+        setState(() {});
+      });
     });
-  });
-}
-
+  }
 
   Future<void> initializeVariables() async {
     firestore = FirebaseFirestore.instance;
@@ -177,149 +181,151 @@ void initState() {
     print(email);
     print("**********");
   }
+
   List<String> filteredTopics = [];
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    resizeToAvoidBottomInset: false,
-    body: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: Column(
-            children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: Material( // Wrap PopupMenuButton with Material
-                elevation: 0, // Set elevation to 0 to remove shadow
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(60), // Set the border radius
-                ),
-                child: PopupMenuButton<int>(
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 1,
-                      child: Container(
-                        padding: EdgeInsets.all(8.0), // Add padding as needed
-                        child: Text(
-                          'Clear All Bookmarked Pathways',
-                          style: TextStyle(fontSize: 15), // Set the font size
-                        ),
-                      ),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Material(
+                    // Wrap PopupMenuButton with Material
+                    elevation: 0, // Set elevation to 0 to remove shadow
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(60), // Set the border radius
                     ),
-                  ],
-                  onSelected: (value) {
-                    if (value == 1) {
-                      removeAllBookmarkedPathways();
-                    }
-                  },
+                    child: PopupMenuButton<int>(
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 1,
+                          child: Container(
+                            padding:
+                                EdgeInsets.all(8.0), // Add padding as needed
+                            child: Text(
+                              'Clear All Bookmarked Pathways',
+                              style:
+                                  TextStyle(fontSize: 15), // Set the font size
+                            ),
+                          ),
+                        ),
+                      ],
+                      onSelected: (value) {
+                        if (value == 1) {
+                          removeAllBookmarkedPathways();
+                        }
+                      },
+                    ),
+                  ),
                 ),
-              ),
-            ),
-              Expanded(
-                child: StreamBuilder<List<PathwayContainer>>(
-                  stream: readPathway(),
-                  builder: (context, pathwaySnapshot) {
-                    if (pathwaySnapshot.hasData) {
-                      final pathways = pathwaySnapshot.data!;
+                Expanded(
+                  child: StreamBuilder<List<PathwayContainer>>(
+                    stream: readPathway(),
+                    builder: (context, pathwaySnapshot) {
+                      if (pathwaySnapshot.hasData) {
+                        final pathways = pathwaySnapshot.data!;
 
-                      if (pathways.isEmpty) {
+                        if (pathways.isEmpty) {
+                          return Center(
+                            child: Text('No Saved Pathways'),
+                          );
+                        }
+
+                        return ListView.builder(
+                          itemCount: pathways.length,
+                          itemBuilder: (context, index) {
+                            return buildpathwayCard(pathways[index]);
+                          },
+                        );
+                      } else if (pathwaySnapshot.hasError) {
                         return Center(
-                          child: Text('No Saved Pathways'),
+                          child: Text('Error: ${pathwaySnapshot.error}'),
+                        );
+                      } else {
+                        return Center(
+                          child: CircularProgressIndicator(),
                         );
                       }
-
-                      return ListView.builder(
-                        itemCount: pathways.length,
-                        itemBuilder: (context, index) {
-                          return buildpathwayCard(pathways[index]);
-                        },
-                      );
-                    } else if (pathwaySnapshot.hasError) {
-                      return Center(
-                        child: Text('Error: ${pathwaySnapshot.error}'),
-                      );
-                    } else {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-    bottomNavigationBar: BottomNavBar(
-      currentIndex: _currentIndex,
-      onTap: (index) {
-        setState(() {
-          _currentIndex = index;
-        });
-      },
-    ),
-  );
-}
+        ],
+      ),
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
+    );
+  }
 
-Stream<List<PathwayContainer>> readPathway() {
-  return FirebaseFirestore.instance
-      .collection('Bookmark')
-      .where('bookmarkType', isEqualTo: 'pathway')
-      .where('userId', isEqualTo: email)
-      .snapshots()
-      .asyncMap((snapshot) async {
-        final List<PathwayContainer> pathways = [];
+  Stream<List<PathwayContainer>> readPathway() {
+    return FirebaseFirestore.instance
+        .collection('Bookmark')
+        .where('bookmarkType', isEqualTo: 'pathway')
+        .where('userId', isEqualTo: email)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      final List<PathwayContainer> pathways = [];
 
-        print('Bookmark Snapshot Size: ${snapshot.size}');
+      print('Bookmark Snapshot Size: ${snapshot.size}');
 
-        for (final doc in snapshot.docs) {
-          final postId = doc['postId']; 
-          print('Post ID: $postId');
+      for (final doc in snapshot.docs) {
+        final postId = doc['postId'];
+        print('Post ID: $postId');
 
-          final pathwaySnapshot = await FirebaseFirestore.instance
-              .collection('Pathway')
-              .doc(postId)
-              .get();
+        final pathwaySnapshot = await FirebaseFirestore.instance
+            .collection('Pathway')
+            .doc(postId)
+            .get();
 
-          if (pathwaySnapshot.exists) {
-            pathways.add(PathwayContainer.fromJson(
-              pathwaySnapshot.data() as Map<String, dynamic>,
-            ));
-          }
+        if (pathwaySnapshot.exists) {
+          pathways.add(PathwayContainer.fromJson(
+            pathwaySnapshot.data() as Map<String, dynamic>,
+          ));
         }
-        return pathways;
-      });
-}
+      }
+      return pathways;
+    });
+  }
 
-
-Future<Map<String, dynamic>?> fetchContainerData() async {
-  final QuerySnapshot<Map<String, dynamic>> snapshot = await firestore
-      .collection('Bookmark')
-      .where('bookmarkType', isEqualTo: 'pathway')
-      .where('userId', isEqualTo: email)
-      .get();
-
-  if (snapshot.docs.isNotEmpty) {
-    final pathwayId = snapshot.docs[0].id;
-    final pathwaySnapshot = await FirebaseFirestore.instance
-        .collection('Pathway')
-        .doc(pathwayId)
+  Future<Map<String, dynamic>?> fetchContainerData() async {
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await firestore
+        .collection('Bookmark')
+        .where('bookmarkType', isEqualTo: 'pathway')
+        .where('userId', isEqualTo: email)
         .get();
 
-    if (pathwaySnapshot.exists) {
-      return pathwaySnapshot.data() as Map<String, dynamic>;
+    if (snapshot.docs.isNotEmpty) {
+      final pathwayId = snapshot.docs[0].id;
+      final pathwaySnapshot = await FirebaseFirestore.instance
+          .collection('Pathway')
+          .doc(pathwayId)
+          .get();
+
+      if (pathwaySnapshot.exists) {
+        return pathwaySnapshot.data() as Map<String, dynamic>;
+      }
     }
+    return null;
   }
-  return null;
-}
 
   Widget buildpathwayCard(PathwayContainer pathway) {
-
-    if (pathway.imagePath == 'assets/Backgrounds/navbarbg2.png') {
-    } 
+    if (pathway.imagePath == 'assets/Backgrounds/navbarbg2.png') {}
     return Padding(
       padding: EdgeInsets.all(8.0), // Add space between each card
       child: FractionallySizedBox(
@@ -450,50 +456,52 @@ Future<Map<String, dynamic>?> fetchContainerData() async {
     );
   }
 
-Future<void> removeAllBookmarkedPathways() async {
-  try {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('Bookmark')
-        .where('userId', isEqualTo: email)
-        .where('bookmarkType', isEqualTo: 'pathway')
-        .get();
+  Future<void> removeAllBookmarkedPathways() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('Bookmark')
+          .where('userId', isEqualTo: email)
+          .where('bookmarkType', isEqualTo: 'pathway')
+          .get();
 
-    for (final doc in snapshot.docs) {
-      await doc.reference.delete();
-    }
-
-    print('All bookmarked pathways removed successfully!');
-  } catch (error) {
-    print('Error removing bookmarked pathways: $error');
-  }
-}
-
-Future<void> removePathwayFromBookmark(PathwayContainer pathway) async {
-  try {
-    // Query to find the bookmarked pathway
-    final QuerySnapshot<Map<String, dynamic>> existingBookmark = await firestore
-        .collection('Bookmark')
-        .where('bookmarkType', isEqualTo: 'pathway')
-        .where('userId', isEqualTo: email)
-        .where('postId', isEqualTo: pathway.pathwayDocId)
-        .get();
-
-    if (existingBookmark.docs.isNotEmpty) {
-      // If the bookmarked pathway is found, delete it
-      await Future.forEach(existingBookmark.docs, (DocumentSnapshot<Map<String, dynamic>> doc) async {
+      for (final doc in snapshot.docs) {
         await doc.reference.delete();
-      });
+      }
 
-      print('Pathway removed from bookmarks successfully!');
-    } else {
-      // If the bookmarked pathway is not found, you can handle it accordingly
-      print('Pathway is not bookmarked!');
+      print('All bookmarked pathways removed successfully!');
+    } catch (error) {
+      print('Error removing bookmarked pathways: $error');
     }
-  } catch (error) {
-    // Handle errors, e.g., display an error message or log the error
-    print('Error removing pathway from bookmarks: $error');
   }
-}
+
+  Future<void> removePathwayFromBookmark(PathwayContainer pathway) async {
+    try {
+      // Query to find the bookmarked pathway
+      final QuerySnapshot<Map<String, dynamic>> existingBookmark =
+          await firestore
+              .collection('Bookmark')
+              .where('bookmarkType', isEqualTo: 'pathway')
+              .where('userId', isEqualTo: email)
+              .where('postId', isEqualTo: pathway.pathwayDocId)
+              .get();
+
+      if (existingBookmark.docs.isNotEmpty) {
+        // If the bookmarked pathway is found, delete it
+        await Future.forEach(existingBookmark.docs,
+            (DocumentSnapshot<Map<String, dynamic>> doc) async {
+          await doc.reference.delete();
+        });
+
+        print('Pathway removed from bookmarks successfully!');
+      } else {
+        // If the bookmarked pathway is not found, you can handle it accordingly
+        print('Pathway is not bookmarked!');
+      }
+    } catch (error) {
+      // Handle errors, e.g., display an error message or log the error
+      print('Error removing pathway from bookmarks: $error');
+    }
+  }
 
   void moreInfo(PathwayContainer pathway) {
     showDialog(
@@ -823,14 +831,13 @@ Future<void> removePathwayFromBookmark(PathwayContainer pathway) async {
   }
 }
 
-
 class UserBookmarkedQuestions extends StatefulWidget {
   @override
-  State<UserBookmarkedQuestions> createState() => _UserBookmarkedQuestionsState();
+  State<UserBookmarkedQuestions> createState() =>
+      _UserBookmarkedQuestionsState();
 }
 
 class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
-  
   int _currentIndex = 0;
   String loggedInEmail = '';
   String loggedImage = '';
@@ -855,85 +862,89 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
     super.initState();
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    resizeToAvoidBottomInset: false,
-    body: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: Column(
-            children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: Material( // Wrap PopupMenuButton with Material
-                elevation: 0, // Set elevation to 0 to remove shadow
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(60), // Set the border radius
-                ),
-                child: PopupMenuButton<int>(
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 1,
-                      child: Container(
-                        padding: EdgeInsets.all(8.0), // Add padding as needed
-                        child: Text(
-                          'Clear All Bookmarked Questions',
-                          style: TextStyle(fontSize: 15), // Set the font size
-                        ),
-                      ),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Material(
+                    // Wrap PopupMenuButton with Material
+                    elevation: 0, // Set elevation to 0 to remove shadow
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(60), // Set the border radius
                     ),
-                  ],
-                  onSelected: (value) {
-                    if (value == 1) {
-                      removeAllBookmarkedQuestion();
-                    }
-                  },
+                    child: PopupMenuButton<int>(
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 1,
+                          child: Container(
+                            padding:
+                                EdgeInsets.all(8.0), // Add padding as needed
+                            child: Text(
+                              'Clear All Bookmarked Questions',
+                              style:
+                                  TextStyle(fontSize: 15), // Set the font size
+                            ),
+                          ),
+                        ),
+                      ],
+                      onSelected: (value) {
+                        if (value == 1) {
+                          removeAllBookmarkedQuestion();
+                        }
+                      },
+                    ),
+                  ),
                 ),
-              ),
+                Expanded(
+                  child: StreamBuilder<List<CardQview>>(
+                    stream: readBookmarkedQuestion(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final q = snapshot.data!;
+                        if (q.isEmpty) {
+                          return Center(
+                            child: Text('No Saved Questions'),
+                          );
+                        }
+                        return ListView(
+                          children: q.map(buildQuestionCard).toList(),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text('Error: ${snapshot.error}'),
+                        );
+                      } else {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
-              Expanded(
-                child:  StreamBuilder<List<CardQview>>(
-                stream: readBookmarkedQuestion(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final q = snapshot.data!;
-                    if (q.isEmpty) {
-                      return Center(
-                        child: Text('No Saved Questions'),
-                      );
-                    }
-                    return ListView(
-                      children: q.map(buildQuestionCard).toList(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error: ${snapshot.error}'),
-                    );
-                  } else {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                },
-              ),
-              ),
-            ],
           ),
-        ),
-      ],
-    ),
-    bottomNavigationBar: BottomNavBar(
-      currentIndex: _currentIndex,
-      onTap: (index) {
-        setState(() {
-          _currentIndex = index;
-        });
-      },
-    ),
-  );
-}
+        ],
+      ),
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
+    );
+  }
 
   void showInputDialog() {
     showAlertDialog(
@@ -942,59 +953,57 @@ Widget build(BuildContext context) {
     );
   }
 
-Stream<List<CardQview>> readBookmarkedQuestion() {
-  return FirebaseFirestore.instance
-      .collection('Bookmark')
-      .where('bookmarkType', isEqualTo: 'question')
-      .where('userId', isEqualTo: email)
-      .snapshots()
-      .asyncMap((snapshot) async {
-        if (snapshot.docs.isEmpty) {
-          return []; // Return an empty list if there are no saved questions.
-        }
+  Stream<List<CardQview>> readBookmarkedQuestion() {
+    return FirebaseFirestore.instance
+        .collection('Bookmark')
+        .where('bookmarkType', isEqualTo: 'question')
+        .where('userId', isEqualTo: email)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      if (snapshot.docs.isEmpty) {
+        return []; // Return an empty list if there are no saved questions.
+      }
 
-        final questionIds = snapshot.docs
-            .map((doc) => doc['postId'] as String)
-            .toList();
+      final questionIds =
+          snapshot.docs.map((doc) => doc['postId'] as String).toList();
 
-        // Retrieve details of saved questions from the 'Question' table
-        final questionDocs = await FirebaseFirestore.instance
-            .collection('Question')
-            .where(FieldPath.documentId, whereIn: questionIds)
-            .get();
+      // Retrieve details of saved questions from the 'Question' table
+      final questionDocs = await FirebaseFirestore.instance
+          .collection('Question')
+          .where(FieldPath.documentId, whereIn: questionIds)
+          .get();
 
-        final questions = questionDocs.docs.map((doc) {
-          Map<String, dynamic> data = doc.data();
-          data['docId'] = doc.id;
-          return CardQview.fromJson(data);
-        }).toList();
+      final questions = questionDocs.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        data['docId'] = doc.id;
+        return CardQview.fromJson(data);
+      }).toList();
 
-        // Get user-related information for each question
-        final userIds = questions.map((question) => question.userId).toSet();
-        final userDocs = await FirebaseFirestore.instance
-            .collection('RegularUser')
-            .where('email', whereIn: userIds.toList())
-            .get();
+      // Get user-related information for each question
+      final userIds = questions.map((question) => question.userId).toSet();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .where('email', whereIn: userIds.toList())
+          .get();
 
-        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-          userDocs.docs.map((doc) => MapEntry(
-            doc.data()['email'] as String,
-            doc.data()as Map<String, dynamic>,
-          )),
-        );
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+        userDocs.docs.map((doc) => MapEntry(
+              doc.data()['email'] as String,
+              doc.data() as Map<String, dynamic>,
+            )),
+      );
 
-        questions.forEach((question) {
-          final userDoc = userMap[question.userId];
-          final username = userDoc?['username'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-          question.username = username;
-          question.userPhotoUrl = userPhotoUrl;
-        });
-
-        return questions;
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
       });
-}
 
+      return questions;
+    });
+  }
 
   Widget buildQuestionCard(CardQview question) => Card(
         child: ListTile(
@@ -1011,7 +1020,9 @@ Stream<List<CardQview>> readBookmarkedQuestion() {
               Text(
                 question.username ?? '',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(255, 34, 3, 87),
+                ),
               ),
               SizedBox(height: 5),
               Text(
@@ -1045,7 +1056,10 @@ Stream<List<CardQview>> readBookmarkedQuestion() {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.bookmark_remove_sharp),
+                    icon: Icon(
+                      Icons.bookmark_remove_sharp,
+                      color: Color.fromARGB(255, 138, 0, 0),
+                    ),
                     onPressed: () {
                       removeQuestionFromBookmark(question);
                     },
@@ -1067,56 +1081,58 @@ Stream<List<CardQview>> readBookmarkedQuestion() {
                       // Add functionality next sprints
                     },
                   ),
-                 ],
+                ],
               ),
             ],
           ),
         ),
       );
 
-Future<void> removeAllBookmarkedQuestion() async {
-  try {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('Bookmark')
-        .where('userId', isEqualTo: email)
-        .where('bookmarkType', isEqualTo: 'question')
-        .get();
+  Future<void> removeAllBookmarkedQuestion() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('Bookmark')
+          .where('userId', isEqualTo: email)
+          .where('bookmarkType', isEqualTo: 'question')
+          .get();
 
-    for (final doc in snapshot.docs) {
-      await doc.reference.delete();
-    }
-
-    print('All bookmarked questions removed successfully!');
-  } catch (error) {
-    print('Error removing questions pathways: $error');
-  }
-}
-
-Future<void> removeQuestionFromBookmark(CardQview question) async {
-  try {
-    // Query to find the bookmarked pathway
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final QuerySnapshot<Map<String, dynamic>> existingBookmark = await firestore
-        .collection('Bookmark')
-        .where('bookmarkType', isEqualTo: 'question')
-        .where('userId', isEqualTo: email)
-        .where('postId', isEqualTo: question.docId)
-        .get();
-
-    if (existingBookmark.docs.isNotEmpty) {
-      // If the bookmarked pathway is found, delete it
-      await Future.forEach(existingBookmark.docs, (DocumentSnapshot<Map<String, dynamic>> doc) async {
+      for (final doc in snapshot.docs) {
         await doc.reference.delete();
-      });
+      }
 
-      print('Question removed from bookmarks successfully!');
-    } else {
-      // If the bookmarked pathway is not found, you can handle it accordingly
-      print('Question is not bookmarked!');
+      print('All bookmarked questions removed successfully!');
+    } catch (error) {
+      print('Error removing questions pathways: $error');
     }
-  } catch (error) {
-    // Handle errors, e.g., display an error message or log the error
-    print('Error removing Question from bookmarks: $error');
   }
-}
+
+  Future<void> removeQuestionFromBookmark(CardQview question) async {
+    try {
+      // Query to find the bookmarked pathway
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final QuerySnapshot<Map<String, dynamic>> existingBookmark =
+          await firestore
+              .collection('Bookmark')
+              .where('bookmarkType', isEqualTo: 'question')
+              .where('userId', isEqualTo: email)
+              .where('postId', isEqualTo: question.docId)
+              .get();
+
+      if (existingBookmark.docs.isNotEmpty) {
+        // If the bookmarked pathway is found, delete it
+        await Future.forEach(existingBookmark.docs,
+            (DocumentSnapshot<Map<String, dynamic>> doc) async {
+          await doc.reference.delete();
+        });
+
+        print('Question removed from bookmarks successfully!');
+      } else {
+        // If the bookmarked pathway is not found, you can handle it accordingly
+        print('Question is not bookmarked!');
+      }
+    } catch (error) {
+      // Handle errors, e.g., display an error message or log the error
+      print('Error removing Question from bookmarks: $error');
+    }
+  }
 }

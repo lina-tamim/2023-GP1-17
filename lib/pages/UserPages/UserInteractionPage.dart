@@ -28,7 +28,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       fetchUserData();
       setState(() {
-      email = prefs.getString('loggedInEmail')!;
+        email = prefs.getString('loggedInEmail')!;
       });
     });
     super.initState();
@@ -44,7 +44,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
   Future<void> fetchUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('loggedInEmail') ?? '';
-    final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
         .collection('RegularUser')
         .where('email', isEqualTo: email)
         .limit(1)
@@ -74,8 +75,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
 
     return snapshot.size;
   }
-
-
 
   Stream<List<CardQview>> readQuestion() {
     return FirebaseFirestore.instance
@@ -126,7 +125,9 @@ class _UserPostsPageState extends State<UserPostsPage> {
               Text(
                 question.username ?? '',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(255, 34, 3, 87),
+                ),
               ),
               SizedBox(height: 5),
               Text(
@@ -162,7 +163,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   IconButton(
                     icon: Icon(Icons.bookmark),
                     onPressed: () {
-                      addQuestionToBookmarks( email! , question );
+                      addQuestionToBookmarks(email!, question);
                     },
                   ),
                   IconButton(
@@ -308,7 +309,9 @@ class _UserPostsPageState extends State<UserPostsPage> {
             Text(
               fandT.username ?? '',
               style: TextStyle(
-                  fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                fontWeight: FontWeight.bold,
+                color: const Color.fromARGB(255, 34, 3, 87),
+              ),
             ),
             SizedBox(height: 5),
             Text(
@@ -376,34 +379,34 @@ class _UserPostsPageState extends State<UserPostsPage> {
     );
   }
 
- Future<void> addQuestionToBookmarks(String email, CardQview question) async {
-  try {
-    print("888888888888888888");
-    print(question.questionDocId);
-        print("888888888888888888");
+  Future<void> addQuestionToBookmarks(String email, CardQview question) async {
+    try {
+      print("888888888888888888");
+      print(question.questionDocId);
+      print("888888888888888888");
 
-    final existingBookmark = await FirebaseFirestore.instance
-        .collection('Bookmark')
-        .where('bookmarkType', isEqualTo: 'question')
-        .where('userId', isEqualTo: email)
-        .where('postId', isEqualTo: question.questionDocId)
-        .get();
+      final existingBookmark = await FirebaseFirestore.instance
+          .collection('Bookmark')
+          .where('bookmarkType', isEqualTo: 'question')
+          .where('userId', isEqualTo: email)
+          .where('postId', isEqualTo: question.questionDocId)
+          .get();
 
-    if (existingBookmark.docs.isEmpty) {
-      await FirebaseFirestore.instance.collection('Bookmark').add({
-        'bookmarkType': 'question',
-        'userId': email,
-        'postId': question.questionDocId,
-        'bookmarkDate': DateTime.now(),
-      });
-      toastMessage('Question is Bookmarked');
-    } else {
-      toastMessage('Question is Already Bookmarked!');
+      if (existingBookmark.docs.isEmpty) {
+        await FirebaseFirestore.instance.collection('Bookmark').add({
+          'bookmarkType': 'question',
+          'userId': email,
+          'postId': question.questionDocId,
+          'bookmarkDate': DateTime.now(),
+        });
+        toastMessage('Question is Bookmarked');
+      } else {
+        toastMessage('Question is Already Bookmarked!');
+      }
+    } catch (error) {
+      print('Error adding question to bookmarks: $error');
     }
-  } catch (error) {
-    print('Error adding question to bookmarks: $error');
   }
-}
 
   Widget buildProjectCard(CardFTview fandT) {
     final formattedDate = DateFormat.yMMMMd().format(fandT.date);
@@ -424,7 +427,9 @@ class _UserPostsPageState extends State<UserPostsPage> {
             Text(
               fandT.username ?? '',
               style: TextStyle(
-                  fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                fontWeight: FontWeight.bold,
+                color: const Color.fromARGB(255, 34, 3, 87),
+              ),
             ),
             SizedBox(height: 5),
             Text(
@@ -526,16 +531,16 @@ class _UserPostsPageState extends State<UserPostsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(children: [
-                           if (loggedInImage.isNotEmpty)
-                          GestureDetector(
-                            onTap: () {
-                              Scaffold.of(context).openDrawer();
-                            },
-                            child: CircleAvatar(
-                              radius: 25,
-                              backgroundImage: NetworkImage(loggedInImage),
+                          if (loggedInImage.isNotEmpty)
+                            GestureDetector(
+                              onTap: () {
+                                Scaffold.of(context).openDrawer();
+                              },
+                              child: CircleAvatar(
+                                radius: 25,
+                                backgroundImage: NetworkImage(loggedInImage),
+                              ),
                             ),
-                          ),
                           const SizedBox(width: 8),
                           const Text(
                             'My Interactions',
@@ -549,38 +554,38 @@ class _UserPostsPageState extends State<UserPostsPage> {
                         ])
                       ])),
           bottom: const TabBar(
-            indicator: BoxDecoration(),
+            indicator: UnderlineTabIndicator(
+              borderSide: BorderSide(
+                width: 5.0,
+                color: Color.fromARGB(
+                    255, 27, 5, 230), // Set the color of the underline
+              ),
+              // Adjust the insets if needed
+            ),
+            labelColor: Color.fromARGB(255, 27, 5, 230),
             tabs: [
               Tab(
                 child: Text(
                   'Question',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 0, 0, 0),
-                  ),
+                  style: TextStyle(),
                 ),
               ),
               Tab(
                 child: Text(
                   'Answers',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 0, 0, 0),
-                  ),
+                  style: TextStyle(),
                 ),
               ),
               Tab(
                 child: Text(
-                  'Teams',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 0, 0, 0),
-                  ),
+                  'Build Team',
+                  style: TextStyle(),
                 ),
               ),
               Tab(
                 child: Text(
                   'Projects',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 0, 0, 0),
-                  ),
+                  style: TextStyle(),
                 ),
               ),
             ],
@@ -753,7 +758,9 @@ class _UserPostsPageState extends State<UserPostsPage> {
               Text(
                 answer.username ?? '', // Display the username
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(255, 34, 3, 87),
+                ),
               ),
               SizedBox(height: 5),
               ListTile(
@@ -894,15 +901,18 @@ class PostDeleteButton extends StatelessWidget {
                             .doc(docId)
                             .delete();
 
-                            QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
-                              .collection('Bookmark')
-                              .where('bookmarkType', isEqualTo: 'question')
-                              .where('postId', isEqualTo: docId)
-                              .get();
+                        QuerySnapshot<Map<String, dynamic>> querySnapshot =
+                            await FirebaseFirestore.instance
+                                .collection('Bookmark')
+                                .where('bookmarkType', isEqualTo: 'question')
+                                .where('postId', isEqualTo: docId)
+                                .get();
 
-                            for (QueryDocumentSnapshot<Map<String, dynamic>> docSnapshot in querySnapshot.docs) {
-                              await docSnapshot.reference.delete();
-                            }
+                        for (QueryDocumentSnapshot<
+                                Map<String, dynamic>> docSnapshot
+                            in querySnapshot.docs) {
+                          await docSnapshot.reference.delete();
+                        }
 
                         Navigator.of(context).pop();
                       } else {

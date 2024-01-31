@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/Models/AnswerCard.dart';
 import 'package:techxcel11/Models/PostCard.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
 import 'package:techxcel11/Models/ViewAnswerCard.dart';
 import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
 import 'package:techxcel11/providers/profile_provider.dart';
@@ -24,6 +27,8 @@ class UserProfileView extends StatefulWidget {
   @override
   _UserProfileView createState() => _UserProfileView();
 }
+
+int _currentIndex = 0;
 
 class _UserProfileView extends State<UserProfileView>
     with TickerProviderStateMixin {
@@ -53,6 +58,7 @@ class _UserProfileView extends State<UserProfileView>
   List<String> skills = [];
   String username = '';
   String usertype = '';
+  int userScore = 0;
   bool isLoading = true; // Added loading state
 
   @override
@@ -85,6 +91,8 @@ class _UserProfileView extends State<UserProfileView>
       final emaildb = userData['email'] ?? '';
       final githubURLdb = userData['githubLink'];
       final usertypedb = userData['userType'];
+      userScore = userData['userScore'];
+
       final interestsdb = List<String>.from(userData['interests'] ?? []);
       final skillsdb = List<String>.from(userData['skills'] ?? []);
 
@@ -132,6 +140,8 @@ class _UserProfileView extends State<UserProfileView>
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
+        question.userType = userDoc?['userType'] as String? ?? "";
+
         // question.userId = userDoc ?['userId'] as String;
       });
 
@@ -175,12 +185,22 @@ class _UserProfileView extends State<UserProfileView>
                     );
                   }
                 },
-                child: Text(
-                  question.username ?? '', // Display the username
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 24, 8, 53),
-                      fontSize: 16),
+                child: Row(
+                  children: [
+                    Text(
+                      question.username ?? '', // Display the username
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 24, 8, 53),
+                          fontSize: 16),
+                    ),
+                    if (question.userType == "Freelancer")
+                      Icon(
+                        Icons.verified,
+                        color: Colors.deepPurple,
+                        size: 20,
+                      ),
+                  ],
                 ),
               ),
               SizedBox(height: 5),
@@ -217,7 +237,7 @@ class _UserProfileView extends State<UserProfileView>
                   IconButton(
                     icon: Icon(Icons.bookmark),
                     onPressed: () {
-                      // Add functionality in upcoming sprints
+                      addQuestionToBookmarks(email, question);
                     },
                   ),
                   IconButton(
@@ -677,8 +697,9 @@ class _UserProfileView extends State<UserProfileView>
                         child: OutlinedButton(
                           child: Text(
                             "Chat with $username",
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Color(0xFFFFFFFF),
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           onPressed: () {
@@ -693,14 +714,14 @@ class _UserProfileView extends State<UserProfileView>
                   ),
                 ),
                 SliverPadding(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.only(left: 8),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate(
                       [
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 10),
                         Row(
                           children: [
-                            const SizedBox(width: 5),
+                            const SizedBox(width: 10),
                             Text(
                               username,
                               style: const TextStyle(
@@ -714,43 +735,64 @@ class _UserProfileView extends State<UserProfileView>
                               ),
                           ],
                         ),
-                        if (usertype == 'Freelancer')
-                          Row(
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Row(
                             children: [
-                              const Icon(
-                                Icons.star_rounded,
-                                color: Color.fromARGB(255, 209, 196, 25),
-                                size: 19,
+                              Tooltip(
+                                child: const Icon(
+                                  Icons.star_rounded,
+                                  color: Color.fromARGB(255, 209, 196, 25),
+                                  size: 19,
+                                ),
+                                message:
+                                    'This is the total number of Upvote received \nfor positive interactions!',
+                                padding: EdgeInsets.all(10),
+                                showDuration: Duration(seconds: 3),
+                                textStyle: TextStyle(color: Colors.white),
+                                preferBelow: false,
                               ),
-                              Text(" 4.8 / 5"),
+                              Tooltip(
+                                child: Text(userScore.toString()),
+                                message:
+                                    'This is the total number of Upvote received \nfor positive interactions!',
+                                padding: EdgeInsets.all(10),
+                                showDuration: Duration(seconds: 3),
+                                textStyle: TextStyle(color: Colors.white),
+                                preferBelow: false,
+                              ),
                             ],
                           ),
+                        ),
                         if (githubURL != null && githubURL!.isNotEmpty)
                           SizedBox(height: 16.0),
                         if (githubURL!.isNotEmpty)
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                WidgetSpan(
-                                  child: ImageIcon(
-                                    AssetImage('assets/github.png'),
-                                    size: 18,
-                                    color: Colors.black,
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  WidgetSpan(
+                                    child: ImageIcon(
+                                      AssetImage('assets/github.png'),
+                                      size: 18,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
-                                TextSpan(
-                                  text: 'GitHub',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.black,
+                                  TextSpan(
+                                    text: 'GitHub',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        // Handle the tap on the GitHub link
+                                        launchGitHubURL(githubURL!);
+                                      },
                                   ),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      // Handle the tap on the GitHub link
-                                      launchGitHubURL(githubURL!);
-                                    },
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         const SizedBox(height: 4),
@@ -772,17 +814,22 @@ class _UserProfileView extends State<UserProfileView>
                         if (city != "null" && country != "null")
                           Text(
                             '$country, $city',
-                            style: const TextStyle(fontSize: 17),
+                            style: const TextStyle(
+                                fontSize: 17,
+                                color: Color.fromARGB(255, 128, 128, 128)),
                           ),
                         const SizedBox(height: 2),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Intrested In:',
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                'Intrested In:',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                             Container(
@@ -798,7 +845,7 @@ class _UserProfileView extends State<UserProfileView>
                                           interests[intrestsIndex] as String;
                                       return Padding(
                                         padding:
-                                            const EdgeInsets.only(right: 4.0),
+                                            const EdgeInsets.only(left: 8.0),
                                         child: Chip(
                                           label: Text(
                                             intrest,
@@ -820,11 +867,14 @@ class _UserProfileView extends State<UserProfileView>
                             if (skills != null && skills.isNotEmpty)
                               SizedBox(height: 16.0),
                             if (skills.isNotEmpty)
-                              Text(
-                                'Skills:',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Text(
+                                  'Skills:',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             Container(
@@ -840,7 +890,7 @@ class _UserProfileView extends State<UserProfileView>
                                           skills[skillIndex] as String;
                                       return Padding(
                                         padding:
-                                            const EdgeInsets.only(right: 4.0),
+                                            const EdgeInsets.only(left: 8.0),
                                         child: Chip(
                                           label: Text(
                                             skill,
@@ -861,24 +911,27 @@ class _UserProfileView extends State<UserProfileView>
                   ),
                 ),
                 SliverToBoxAdapter(
-                  child: Divider(color: Colors.deepPurple),
+                  child:
+                      Divider(color: const Color.fromARGB(255, 140, 140, 140)),
                 ),
                 SliverToBoxAdapter(
                   child: Container(
-                    padding: const EdgeInsets.only(top: 8),
-                    alignment: Alignment.center,
-                    child: TabBar(
-                      labelColor: Colors.black,
-                      controller: tabController,
-                      tabs: [
-                        Tab(text: 'Question'),
-                        Tab(text: 'BuildTeam'),
-                        Tab(text: 'Project'),
-                        Tab(text: 'Answer'),
-                        Tab(text: 'Upvoted'),
-                      ],
-                    ),
-                  ),
+                      padding: const EdgeInsets.only(top: 8),
+                      alignment: Alignment.center,
+                      child: TabBar(
+                        controller: tabController,
+                        indicatorColor: const Color.fromARGB(
+                            255, 27, 5, 230), // Change the underline color here
+                        labelColor: const Color.fromARGB(
+                            255, 27, 5, 230), // Change the text color here
+                        tabs: [
+                          Tab(text: 'Question'),
+                          Tab(text: 'Build\nTeam'),
+                          Tab(text: 'Project'),
+                          Tab(text: 'Answer'),
+                          Tab(text: 'Upvoted'),
+                        ],
+                      )),
                 ),
                 SliverFillRemaining(
                   child: TabBarView(
@@ -1015,6 +1068,14 @@ class _UserProfileView extends State<UserProfileView>
                 ),
               ],
             ),
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
     );
   }
 
@@ -1023,6 +1084,36 @@ class _UserProfileView extends State<UserProfileView>
       await launch(url);
     } else {
       throw 'Could not launch $url';
+    }
+  }
+
+  Future<void> addQuestionToBookmarks(
+      String email, CardQuestion question) async {
+    try {
+      print("888888888888888888");
+      print(question.questionDocId);
+      print("888888888888888888");
+
+      final existingBookmark = await FirebaseFirestore.instance
+          .collection('Bookmark')
+          .where('bookmarkType', isEqualTo: 'question')
+          .where('userId', isEqualTo: email)
+          .where('postId', isEqualTo: question.questionDocId)
+          .get();
+
+      if (existingBookmark.docs.isEmpty) {
+        await FirebaseFirestore.instance.collection('Bookmark').add({
+          'bookmarkType': 'question',
+          'userId': email,
+          'postId': question.questionDocId,
+          'bookmarkDate': DateTime.now(),
+        });
+        toastMessage('Question is Bookmarked');
+      } else {
+        toastMessage('Question is Already Bookmarked!');
+      }
+    } catch (error) {
+      print('Error adding question to bookmarks: $error');
     }
   }
 }

@@ -80,7 +80,7 @@ class _FreelancerPageState extends State<FreelancerPage> {
             final imageURL = freelancer['imageURL'] as String;
             final skills = freelancer['skills'] as List<dynamic>;
             final userId = freelancer['email'] as String;
-            final userScore = freelancer['userScore'] ;
+            final userScore = freelancer['userScore'];
 
             return Container(
               padding: EdgeInsets.all(10),
@@ -127,7 +127,7 @@ class _FreelancerPageState extends State<FreelancerPage> {
                             SizedBox(width: 5),
                             const Icon(
                               Icons.verified,
-                              color: Color.fromARGB(255, 0, 91, 228),
+                              color: Colors.deepPurple,
                               size: 19,
                             ),
                             Spacer(),
@@ -150,12 +150,28 @@ class _FreelancerPageState extends State<FreelancerPage> {
                         ),
                         Row(
                           children: [
-                            const Icon(
-                              Icons.star_rounded,
-                              color: Color.fromARGB(255, 209, 196, 25),
-                              size: 19,
+                            Tooltip(
+                              child: const Icon(
+                                Icons.star_rounded,
+                                color: Color.fromARGB(255, 209, 196, 25),
+                                size: 19,
+                              ),
+                              message:
+                                  'This is the total number of Upvote received \nfor positive interactions!',
+                              padding: EdgeInsets.all(10),
+                              showDuration: Duration(seconds: 3),
+                              textStyle: TextStyle(color: Colors.white),
+                              preferBelow: false,
                             ),
-                            Text(userScore.toString()),
+                            Tooltip(
+                              child: Text(userScore.toString()),
+                              message:
+                                  'This is the total number of Upvote received \nfor positive interactions!',
+                              padding: EdgeInsets.all(10),
+                              showDuration: Duration(seconds: 3),
+                              textStyle: TextStyle(color: Colors.white),
+                              preferBelow: false,
+                            ),
                           ],
                         ),
                         Container(

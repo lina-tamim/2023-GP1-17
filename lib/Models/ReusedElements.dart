@@ -31,6 +31,8 @@ class _NavBarUserState extends State<NavBarUser> {
   String loggedInEmail = '';
   String loggedImage = '';
   String loggedInAdminEmail = '';
+  String loggedInUserType = '';
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
@@ -53,11 +55,13 @@ class _NavBarUserState extends State<NavBarUser> {
 
       final username = userData['username'] ?? '';
       final imageURL = userData['imageURL'] ?? '';
+      final userType = userData['userType'] ?? '';
 
       setState(() {
         loggedInUsername = username;
         loggedInEmail = email;
         loggedImage = imageURL;
+        loggedInUserType = userType;
       });
     }
   }
@@ -85,12 +89,22 @@ class _NavBarUserState extends State<NavBarUser> {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text(
-              loggedInUsername,
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w800,
-              ),
+            accountName: Row(
+              children: [
+                Text(
+                  loggedInUsername,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                if (loggedInUserType == "Freelancer")
+                  Icon(
+                    Icons.verified,
+                    color: Colors.deepPurple,
+                    size: 25,
+                  ),
+              ],
             ),
             accountEmail: Text(
               loggedInEmail,

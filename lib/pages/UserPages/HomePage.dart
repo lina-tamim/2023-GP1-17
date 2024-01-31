@@ -73,8 +73,6 @@ class __FHomePageState extends State<FHomePage> {
     );
   }
 
-
-
   Stream<List<CardQuestion>> readQuestion() {
     Query<Map<String, dynamic>> query =
         FirebaseFirestore.instance.collection('Question');
@@ -83,7 +81,7 @@ class __FHomePageState extends State<FHomePage> {
     if (searchController.text.isNotEmpty) {
       String searchText = searchController.text;
       query = query
-       .where('postDescription', isGreaterThanOrEqualTo: searchText)
+          .where('postDescription', isGreaterThanOrEqualTo: searchText)
           .where('postDescription', isLessThan: searchText + 'z');
     } else {
       query = query.orderBy('postedDate', descending: true);
@@ -112,7 +110,8 @@ class __FHomePageState extends State<FHomePage> {
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
-       // question.userId = userDoc ?['userId'] as String;
+        question.userType = userDoc?['userType'] as String? ?? "";
+        // question.userId = userDoc ?['userId'] as String;
       });
 
       final userIdsNotFound =
@@ -130,30 +129,15 @@ class __FHomePageState extends State<FHomePage> {
     });
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   Stream<List<CardFT>> readTeam() {
     Query<Map<String, dynamic>> query =
         FirebaseFirestore.instance.collection('Team');
     //.where('dropdownValue', isEqualTo: 'Team Collaberation');
-    
-        if (searchController.text.isNotEmpty) {
+
+    if (searchController.text.isNotEmpty) {
       String searchText = searchController.text;
-      //String newVal = searchText[0].toUpperCase() + searchText.substring(1); 
-        //.toLowerCase(); // Convert search text to lowercase
+      //String newVal = searchText[0].toUpperCase() + searchText.substring(1);
+      //.toLowerCase(); // Convert search text to lowercase
       query = query
           .where('postTitle', isGreaterThanOrEqualTo: searchText)
           .where('postTitle', isLessThan: searchText + 'z');
@@ -205,7 +189,7 @@ class __FHomePageState extends State<FHomePage> {
 
     if (searchController.text.isNotEmpty) {
       String searchText = searchController.text;
-          //.toLowerCase(); // Convert search text to lowercase
+      //.toLowerCase(); // Convert search text to lowercase
       query = query
           .where('postTitle', isGreaterThanOrEqualTo: searchText)
           .where('postTitle', isLessThan: searchText + 'z');
@@ -277,12 +261,22 @@ class __FHomePageState extends State<FHomePage> {
                     );
                   }
                 },
-                child: Text(
-                  question.username ?? '', // Display the username
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 24, 8, 53),
-                      fontSize: 16),
+                child: Row(
+                  children: [
+                    Text(
+                      question.username ?? '', // Display the username
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromARGB(255, 34, 3, 87),
+                          fontSize: 16),
+                    ),
+                    if (question.userType == "Freelancer")
+                      Icon(
+                        Icons.verified,
+                        color: Colors.deepPurple,
+                        size: 20,
+                      ),
+                  ],
                 ),
               ),
               SizedBox(height: 5),
@@ -380,12 +374,22 @@ class __FHomePageState extends State<FHomePage> {
                       );
                     }
                   },
-                  child: Text(
-                    team.username ?? '', // Display the username
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
-                    ),
+                  child: Row(
+                    children: [
+                      Text(
+                        team.username ?? '', // Display the username
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromARGB(255, 34, 3, 87),
+                        ),
+                      ),
+                      if (team.userType == "Freelancer")
+                        Icon(
+                          Icons.verified,
+                          color: Colors.deepPurple,
+                          size: 20,
+                        ),
+                    ],
                   ),
                 ),
                 SizedBox(height: 5),
@@ -482,114 +486,101 @@ class __FHomePageState extends State<FHomePage> {
           },
         ),
         appBar: AppBar(
-          automaticallyImplyLeading: false,
-          iconTheme: IconThemeData(
-            color: Color.fromRGBO(37, 6, 81, 0.898),
-          ),
-          toolbarHeight: 100,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/Backgrounds/bg11.png'),
-                fit: BoxFit.cover,
+            automaticallyImplyLeading: false,
+            iconTheme: IconThemeData(
+              color: Color.fromRGBO(37, 6, 81, 0.898),
+            ),
+            toolbarHeight: 100,
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/Backgrounds/bg11.png'),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          title: Builder(
-            builder: (context) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    if (loggedImage.isNotEmpty)
-                      GestureDetector(
-                        onTap: () {
-                          Scaffold.of(context).openDrawer();
-                        },
-                        child: CircleAvatar(
-                          radius: 25,
-                          backgroundImage: NetworkImage(loggedImage),
+            title: Builder(
+              builder: (context) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      if (loggedImage.isNotEmpty)
+                        GestureDetector(
+                          onTap: () {
+                            Scaffold.of(context).openDrawer();
+                          },
+                          child: CircleAvatar(
+                            radius: 25,
+                            backgroundImage: NetworkImage(loggedImage),
+                          ),
+                        ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Home           ',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: "Poppins",
+                          color: Color.fromRGBO(37, 6, 81, 0.898),
                         ),
                       ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Home           ',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontFamily: "Poppins",
-                        color: Color.fromRGBO(37, 6, 81, 0.898),
+                      const SizedBox(width: 120),
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            showSearchBar = !showSearchBar;
+                          });
+                        },
+                        icon: Icon(
+                            showSearchBar ? Icons.search_off : Icons.search),
                       ),
-                    ),
-                    const SizedBox(width: 120),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          showSearchBar = !showSearchBar;
-                        });
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  if (showSearchBar)
+                    TextField(
+                      controller: searchController,
+                      decoration: const InputDecoration(
+                        hintText: 'Search...',
+                        prefixIcon: Icon(Icons.search),
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 0,
+                        ),
+                        isDense: true,
+                      ),
+                      onChanged: (text) {
+                        setState(() {});
+                        // Handle search input changes
                       },
-                      icon:
-                          Icon(showSearchBar ? Icons.search_off : Icons.search),
                     ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                if (showSearchBar)
-
-
-                
-                  TextField(
-                    controller: searchController,
-                    decoration: const InputDecoration(
-                      hintText: 'Search...',
-                      prefixIcon: Icon(Icons.search),
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 0,
-                      ),
-                      isDense: true,
-                    ),
-                    onChanged: (text) {
-                      setState(() {});
-                      // Handle search input changes
-                    },
-                  ),
-              ],
+                ],
+              ),
             ),
-          ),
-          bottom: const TabBar(
-            indicator: BoxDecoration(),
-            tabs: [
-              Tab(
-                child: Text(
-                  'Questions',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Color.fromRGBO(37, 6, 81, 0.898),
-                  ),
+            bottom: const TabBar(
+              indicator: UnderlineTabIndicator(
+                borderSide: BorderSide(
+                  width: 5.0,
+                  color: Color.fromARGB(
+                      255, 27, 5, 230), // Set the color of the underline
                 ),
+                // Adjust the insets if needed
               ),
-              Tab(
-                child: Text(
-                  'Build Team',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Color.fromRGBO(37, 6, 81, 0.898),
-                  ),
+              labelColor: Color.fromARGB(255, 27, 5, 230),
+              // Set the color of the selected tab's text
+              tabs: [
+                Tab(
+                  child: Text('Questions'),
                 ),
-              ),
-              Tab(
-                child: Text(
-                  'Projects',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Color.fromRGBO(37, 6, 81, 0.898),
-                  ),
+                Tab(
+                  child: Text('Build Team'),
                 ),
-              ),
-            ],
-          ),
-        ),
+                Tab(
+                  child: Text('Projects'),
+                ),
+              ],
+            )),
 
         floatingActionButton: FloatingActionButton(
           shape:
