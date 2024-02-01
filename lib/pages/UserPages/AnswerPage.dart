@@ -139,13 +139,14 @@ class _AnswerPageState extends State<AnswerPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.bookmark),
-                    onPressed: () {
-                      addQuestionToBookmarks(email, question);
-                    },
-                  ),
+  icon: Icon(Icons.bookmark, color: Color.fromARGB(255, 63, 63, 63)),
+  onPressed: () {
+    addQuestionToBookmarks(email, question);
+  },
+),
+
                   IconButton(
-                    icon: Icon(Icons.comment),
+                    icon: Icon(Icons.comment, color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -156,7 +157,7 @@ class _AnswerPageState extends State<AnswerPage> {
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.report),
+                    icon: Icon(Icons.report, color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       // Add functionality next sprints
                     },
@@ -268,14 +269,20 @@ class _AnswerPageState extends State<AnswerPage> {
                         return Text('No document ID');
                       }
                       return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          IconButton(
-  icon: Icon(
-    upvotedUserIds.contains(currentEmail)
-        ? Icons.arrow_circle_down
-        : Icons.arrow_circle_up,
-  ),
+  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  children: [
+    SizedBox(width: 80,), // Adjust the width to move the icons further to the right
+    IconButton(
+      icon: Icon(
+  upvotedUserIds.contains(currentEmail)
+      ? Icons.arrow_circle_down
+      : Icons.arrow_circle_up,
+  size: 28, // Adjust the size as needed
+  color: upvotedUserIds.contains(currentEmail)
+      ? const Color.fromARGB(255, 49, 3, 0) // Color for arrow_circle_down
+      : const Color.fromARGB(255, 26, 33, 38), // Color for arrow_circle_up
+),
+
   onPressed: () {
     setState(() {
       if (upvotedUserIds.contains(currentEmail)) {
@@ -344,6 +351,7 @@ class _AnswerPageState extends State<AnswerPage> {
     });
   },
 ),
+    SizedBox(width: 2,), // Adjust the width to move the icons further to the right
 Text('Upvotes: $upvoteCount'),
                         ],
                       );

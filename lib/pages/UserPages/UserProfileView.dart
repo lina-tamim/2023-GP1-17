@@ -235,13 +235,13 @@ class _UserProfileView extends State<UserProfileView>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.bookmark),
+                    icon: Icon(Icons.bookmark, color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       addQuestionToBookmarks(email, question);
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.comment),
+                    icon: Icon(Icons.comment , color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -252,7 +252,7 @@ class _UserProfileView extends State<UserProfileView>
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.report),
+                    icon: Icon(Icons.report, color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       // Add functionality in upcoming sprints
                     },
@@ -773,16 +773,16 @@ class _UserProfileView extends State<UserProfileView>
                               text: TextSpan(
                                 children: [
                                   WidgetSpan(
-                                    child: ImageIcon(
-                                      AssetImage('assets/github.png'),
-                                      size: 18,
-                                      color: Colors.black,
-                                    ),
+                                    child: Icon(
+                        FontAwesomeIcons.github,
+                        size: 20,
+                        color: const Color.fromARGB(255, 0, 0, 0),
+                      ),
                                   ),
                                   TextSpan(
-                                    text: 'GitHub',
+                                    text: '     GitHub',
                                     style: TextStyle(
-                                      fontSize: 18,
+                                      fontSize: 17.5,
                                       color: Colors.black,
                                     ),
                                     recognizer: TapGestureRecognizer()
@@ -798,22 +798,22 @@ class _UserProfileView extends State<UserProfileView>
                         const SizedBox(height: 4),
                         if (country == "null")
                           Text(
-                            '$city',
+                            '  $city',
                             style: const TextStyle(fontSize: 17),
                           ),
                         if (city == "null")
                           Text(
-                            '$country',
+                            '  $country',
                             style: const TextStyle(fontSize: 17),
                           ),
                         if (city == "null" && country == "null")
                           Text(
-                            '$country, $city',
+                            '  $country, $city',
                             style: const TextStyle(fontSize: 17),
                           ),
                         if (city != "null" && country != "null")
                           Text(
-                            '$country, $city',
+                            '  $country, $city',
                             style: const TextStyle(
                                 fontSize: 17,
                                 color: Color.fromARGB(255, 128, 128, 128)),
@@ -1090,21 +1090,19 @@ class _UserProfileView extends State<UserProfileView>
   Future<void> addQuestionToBookmarks(
       String email, CardQuestion question) async {
     try {
-      print("888888888888888888");
-      print(question.questionDocId);
-      print("888888888888888888");
-
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final currentUser = prefs.getString('loggedInEmail') ?? '';  
       final existingBookmark = await FirebaseFirestore.instance
           .collection('Bookmark')
           .where('bookmarkType', isEqualTo: 'question')
-          .where('userId', isEqualTo: email)
+          .where('userId', isEqualTo: currentUser)
           .where('postId', isEqualTo: question.questionDocId)
           .get();
 
       if (existingBookmark.docs.isEmpty) {
         await FirebaseFirestore.instance.collection('Bookmark').add({
           'bookmarkType': 'question',
-          'userId': email,
+          'userId': currentUser,
           'postId': question.questionDocId,
           'bookmarkDate': DateTime.now(),
         });

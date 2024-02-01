@@ -311,13 +311,13 @@ class __FHomePageState extends State<FHomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.bookmark),
+                    icon: Icon(Icons.bookmark , color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       addQuestionToBookmarks(loggedInEmail, question);
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.comment),
+                    icon: Icon(Icons.comment , color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -328,7 +328,7 @@ class __FHomePageState extends State<FHomePage> {
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.report),
+                    icon: Icon(Icons.report , color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       // Add functionality in upcoming sprints
                     },
@@ -588,7 +588,7 @@ class __FHomePageState extends State<FHomePage> {
           onPressed: () async {
             showInputDialog();
           },
-          backgroundColor: Color.fromARGB(255, 156, 147, 176),
+          backgroundColor: Color.fromARGB(255, 13, 13, 15),
           child: const Icon(
             Icons.add,
             color: Color.fromARGB(255, 255, 255, 255),

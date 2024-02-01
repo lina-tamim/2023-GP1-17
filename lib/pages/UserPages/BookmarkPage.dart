@@ -1065,7 +1065,7 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.comment),
+                    icon: Icon(Icons.comment, color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -1076,7 +1076,7 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.report),
+                    icon: Icon(Icons.report, color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       // Add functionality next sprints
                     },

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -56,7 +57,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
           clearAllFields();
           showInputDialog();
         },
-        backgroundColor: Color.fromARGB(255, 156, 147, 176),
+        backgroundColor: Color.fromARGB(255, 13, 13, 15),
         child: const Tooltip(
           message: '  Add a course or event now!   ',
           child: Icon(
@@ -85,7 +86,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    const SizedBox(width: 122),
+                    const SizedBox(width: 124),
                     PopupMenuButton<String>(
                       onSelected: (value) {
                         if (value == 'my_requests') {
@@ -129,7 +130,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                       ],
                       child: const SizedBox(
                         width: 169,
-                        child: OutlinedButton(
+                        child: TextButton(
                           onPressed: null,
                           child: Align(
                             alignment: Alignment.center,
@@ -454,32 +455,57 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
     _selectedImage = null;
   }
 
-  Stream<List<Course>> readCourses({String type = 'Course'}) {
-    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+
+
+Stream<List<Course>> readCourses({String type = 'Course'}) {
+  final StreamController<List<Course>> controller = StreamController<List<Course>>();
+
+  try {
+    // Fetch courses where 'approval' is 'Yes' or 'userEmail' is 'texelad1@gmail.com'
+    FirebaseFirestore.instance
         .collection('Program')
         .where('type', isEqualTo: type)
-        .where('approval', isEqualTo: 'Yes');
+        .where('approval', isEqualTo: 'Yes')
+        .get()
+        .then((approvedSnapshot) async {
+          final approvedCourses = approvedSnapshot.docs.map((doc) {
+            Map<String, dynamic> data = doc.data();
+            data['docId'] = doc.id;
+            return Course.fromJson(data);
+          }).toList();
 
-    if (widget.searchQuery.isNotEmpty) {
-      query = query
-          .where('title',
-              isGreaterThanOrEqualTo: widget.searchQuery.toLowerCase())
-          .where('title',
-              isLessThanOrEqualTo: widget.searchQuery.toLowerCase() + '\uf8ff');
-    } else {
-      query = query.orderBy('createdAt', descending: true);
-    }
+          // Fetch courses where 'userEmail' is 'texelad1@gmail.com'
+          final userEmailSnapshot = await FirebaseFirestore.instance
+              .collection('Program')
+              .where('type', isEqualTo: type)
+              .where('userEmail', isEqualTo: 'texelad1@gmail.com')
+              .get();
 
-    return query.snapshots().asyncMap((snapshot) async {
-      final courses = snapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data();
-        data['docId'] = doc.id;
-        return Course.fromJson(data);
-      }).toList();
+          final userEmailCourses = userEmailSnapshot.docs.map((doc) {
+            Map<String, dynamic> data = doc.data();
+            data['docId'] = doc.id;
+            return Course.fromJson(data);
+          }).toList();
 
-      return courses;
-    });
+          // Combine and add courses
+          approvedCourses.addAll(userEmailCourses);
+
+          controller.add(approvedCourses);
+        });
+  } catch (error, stackTrace) {
+    // Handle errors
+    print("Error fetching courses: $error");
+    print(stackTrace);
+    controller.addError(error);
   }
+
+  return controller.stream;
+}
+
+
+
+
+
 
   void showInputDialog() {
     showAlertDialog(
@@ -1157,7 +1183,7 @@ class CoursesWidget extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        height: 200,
+                        height: 260,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(10),
@@ -1172,7 +1198,7 @@ class CoursesWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 5),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
@@ -1181,6 +1207,7 @@ class CoursesWidget extends StatelessWidget {
                         fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
+                SizedBox(height: 5),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Container(
@@ -1195,7 +1222,7 @@ class CoursesWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 5),
+                SizedBox(height: 20),
                 Visibility(
                   visible: item.attendanceType == 'Onsite',
                   child: Padding(
@@ -1213,7 +1240,7 @@ class CoursesWidget extends StatelessWidget {
                         ),
                         Expanded(
                           child: Text(
-                            item.location ?? '--',
+                            item.location,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -1318,9 +1345,9 @@ class CoursesWidget extends StatelessWidget {
                         _UserCoursesAndEventsPageState().saveToCalendar(item);
                       },
                       icon: Icon(
-                        Icons.calendar_today_sharp,
+                        Icons.edit_calendar,
                         size: 28,
-                        color: Color.fromARGB(255, 150, 202, 245),
+                        color: Color.fromARGB(255, 63, 63, 63),
                       ),
                       tooltip: 'Save to Calendar',
                     ),
@@ -1338,8 +1365,9 @@ class CoursesWidget extends StatelessWidget {
                           child: const Text(
                             'More Details ->',
                             style: TextStyle(
-                              color: Color.fromARGB(255, 150, 202, 245),
+                              color: Color.fromARGB(255, 63, 63, 63),
                               fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
                             ),
                           ),
                         ),

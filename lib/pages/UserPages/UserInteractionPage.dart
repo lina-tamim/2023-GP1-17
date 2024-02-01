@@ -161,13 +161,13 @@ class _UserPostsPageState extends State<UserPostsPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.bookmark),
+                    icon: Icon(Icons.bookmark , color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
-                      addQuestionToBookmarks(email!, question);
+                      addQuestionToBookmarks(email, question);
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.comment),
+                    icon: Icon(Icons.comment , color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -241,8 +241,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
 
       final userMap = Map<String, Map<String, dynamic>>.fromEntries(
         userDocs.docs.map((doc) => MapEntry(
-              doc.data()!['email'] as String,
-              doc.data()! as Map<String, dynamic>,
+              doc.data()['email'] as String,
+              doc.data()as Map<String, dynamic>,
             )),
       );
 
@@ -566,7 +566,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
             tabs: [
               Tab(
                 child: Text(
-                  'Question',
+                  'Questions',
                   style: TextStyle(),
                 ),
               ),
@@ -601,7 +601,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
             // _toggleFormVisibility();
             showInputDialog();
           },
-          backgroundColor: Color.fromARGB(255, 156, 147, 176),
+          backgroundColor: Color.fromARGB(255, 13, 13, 15),
           child: const Icon(
             Icons.add,
             color: Color.fromARGB(255, 255, 255, 255),
@@ -611,7 +611,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         body: TabBarView(
           children: [
-            if (email == null || email == '')
+            if (email == '')
               SizedBox()
             else
               StreamBuilder<List<CardQview>>(
@@ -638,7 +638,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   }
                 },
               ),
-            if (email == null || email == '')
+            if (email == '')
               SizedBox()
             else
               StreamBuilder<List<CardAview>>(
@@ -665,7 +665,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   }
                 },
               ),
-            if (email == null || email == '')
+            if (email == '')
               SizedBox()
             else
               StreamBuilder<List<CardFTview>>(
@@ -692,7 +692,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   }
                 },
               ),
-            if (email == null || email == '')
+            if (email == '')
               SizedBox()
             else
               StreamBuilder<List<CardFTview>>(
@@ -732,8 +732,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
       return email;
     }
 
-    int upvoteCount = answer.upvoteCount ?? 0;
-    List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
+    int upvoteCount = answer.upvoteCount;
+    List<String> upvotedUserIds = answer.upvotedUserIds;
 
     return GestureDetector(
       onTap: () {
