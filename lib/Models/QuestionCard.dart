@@ -10,6 +10,7 @@ class CardQuestion {
   String? username;
   String questionDocId;
   String userType;
+  String reason; // Add the reason property
 
   CardQuestion({
     required this.id,
@@ -21,6 +22,7 @@ class CardQuestion {
     required this.userPhotoUrl,
     required this.questionDocId,
     required this.userType,
+    required this.reason, // Add the reason property
   });
 
   Map<String, dynamic> toJson() => {
@@ -33,16 +35,19 @@ class CardQuestion {
         'userPhotoUrl': userPhotoUrl,
         'questionDocId': questionDocId,
         'userType': userType,
+        'reason': reason,
       };
 
   static CardQuestion fromJson(Map<String, dynamic> json) => CardQuestion(
-      id: json['questionCount'],
-      title: json['postTitle'],
-      description: json['postDescription'],
-      topics: List<String>.from(json['selectedInterests']),
-      userId: json['userId'],
-      questionDocId: json['questionDocId'] ?? '',
-      username: json['username'] ?? '',
-      userPhotoUrl: json['userPhotoUrl'] as String?,
-      userType: json['userType'] ?? '');
+        id: json['questionCount'],
+        title: json['postTitle'],
+        description: json['postDescription'],
+        topics: List<String>.from(json['selectedInterests']),
+        userId: json['userId'],
+        questionDocId: json['questionDocId'] ?? '',
+        username: json['username'] ?? '',
+        userPhotoUrl: json['userPhotoUrl'] as String?,
+        userType: json['userType'] ?? '',
+        reason: json['reason'] ?? '',
+      );
 }

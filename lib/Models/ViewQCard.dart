@@ -8,8 +8,9 @@ class CardQview {
   final String userId;
   String? docId;
   String? username;
-  String? userPhotoUrl; 
+  String? userPhotoUrl;
   String questionDocId;
+  String? reason; // Add the reason property
 
   CardQview({
     required this.id,
@@ -17,11 +18,11 @@ class CardQview {
     required this.description,
     required this.topics,
     required this.userId,
-    this.docId ='' ,
+    this.docId,
     required this.username,
     required this.userPhotoUrl,
-     required this.questionDocId,
-
+    required this.questionDocId,
+    this.reason, // Add the reason property
   });
 
   Map<String, dynamic> toJson() => {
@@ -32,10 +33,10 @@ class CardQview {
         'userId': userId,
         'docId': docId,
         'username': username,
-        'userPhotoUrl': userPhotoUrl, 
-        'questionDocId':  questionDocId,
+        'userPhotoUrl': userPhotoUrl,
+        'questionDocId': questionDocId,
+        'reason': reason,
       };
-
 
   static CardQview fromJson(Map<String, dynamic> json) => CardQview(
         id: json['questionCount'],
@@ -43,12 +44,10 @@ class CardQview {
         description: json['postDescription'],
         topics: List<String>.from(json['selectedInterests']),
         userId: json['userId'],
-        docId: json['docId'] ?? '',
-        username: json['username'] ?? '',
-        userPhotoUrl: json['userPhotoUrl'] as String?, 
+        docId: json['docId'],
+        username: json['username'],
+        userPhotoUrl: json['userPhotoUrl'] as String?,
         questionDocId: json['questionDocId'],
-
+        reason: json['reason'] as String?,
       );
 }
-
- 

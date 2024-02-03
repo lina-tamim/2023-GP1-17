@@ -25,11 +25,43 @@ int _currentIndex = 0;
 class __FHomePageState extends State<FHomePage> {
   String loggedInEmail = '';
   String loggedImage = '';
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+// lina add
+  String? selectedOption;
+  List<String> dropDownOptions = [
+    'Inappropriate content',
+    'Spam',
+    'Harassment',
+    'False information',
+    'Violence',
+    'Hate speech',
+    'Bullying',
+    // Add more options as needed
+  ];
+
+  void _handleReportQuestion(String email, CardQuestion question) async {
+    String postId = question.questionDocId; // Get the post ID
+    String reason = selectedOption!;
+    String reportedEmail = email;
+
+    // Create a new document in the "reported_posts" collection in Firestore
+    _firestore.collection('ReportedPost').add({
+      'postId': postId,
+      'reason': reason,
+      'reportedEmail': reportedEmail,
+      'createdAt': DateTime.now(),
+    });
+
+    // Clear the selected option after reporting
+    selectedOption = null;
+  }
 
   @override
   void initState() {
     super.initState();
+
     fetchUserData();
   }
 
@@ -311,13 +343,15 @@ class __FHomePageState extends State<FHomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.bookmark , color: Color.fromARGB(255, 63, 63, 63)),
+                    icon: Icon(Icons.bookmark,
+                        color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       addQuestionToBookmarks(loggedInEmail, question);
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.comment , color: Color.fromARGB(255, 63, 63, 63)),
+                    icon: Icon(Icons.comment,
+                        color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -328,9 +362,69 @@ class __FHomePageState extends State<FHomePage> {
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.report , color: Color.fromARGB(255, 63, 63, 63)),
+                    icon: Icon(Icons.report,
+                        color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
-                      // Add functionality in upcoming sprints
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return StatefulBuilder(
+                            builder:
+                                (BuildContext context, StateSetter setState) {
+                              // Set the initial selectedOption to null
+                              String? initialOption = null;
+
+                              return AlertDialog(
+                                title: Text('Report Post'),
+                                content: DropdownButton<String>(
+                                  value: selectedOption,
+                                  hint: Text('Select a reason'),
+                                  onTap: () {
+                                    // Set the initialOption to the selectedOption
+                                    initialOption = selectedOption;
+                                  },
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      selectedOption = newValue!;
+                                    });
+                                  },
+                                  items: dropDownOptions.map((String option) {
+                                    return DropdownMenuItem<String>(
+                                      value: option,
+                                      child: Text(option),
+                                    );
+                                  }).toList(),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () {
+                                      // Reset the selectedOption to the initialOption when canceling
+                                      setState(() {
+                                        selectedOption = initialOption;
+                                      });
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Report'),
+                                    onPressed: () {
+                                      if (selectedOption != null) {
+                                        _handleReportQuestion(
+                                            loggedInEmail, question);
+                                        toastMessage(
+                                            'Question is Reported Successfully');
+
+                                        Navigator.of(context).pop();
+                                      }
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      );
                     },
                   ),
                 ],
