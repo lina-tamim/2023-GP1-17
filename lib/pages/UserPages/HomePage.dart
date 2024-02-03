@@ -47,11 +47,11 @@ class __FHomePageState extends State<FHomePage> {
     String reportedEmail = email;
 
     // Create a new document in the "reported_posts" collection in Firestore
-    _firestore.collection('ReportedPost').add({
+    _firestore.collection('Report').add({
       'postId': postId,
       'reason': reason,
-      'reportedEmail': reportedEmail,
-      'createdAt': DateTime.now(),
+      'userId': reportedEmail,
+      'reportDate': DateTime.now(),
     });
 
     // Clear the selected option after reporting

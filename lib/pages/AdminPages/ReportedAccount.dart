@@ -9,6 +9,8 @@ class ReportedAccount extends StatefulWidget {
 }
 
 int _currentIndex = 0;
+bool showSearchBar = false;
+final searchController = TextEditingController();
 
 class _ReportedAccountState extends State<ReportedAccount> {
   @override
@@ -16,40 +18,72 @@ class _ReportedAccountState extends State<ReportedAccount> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        iconTheme:
-            IconThemeData(color: const Color.fromARGB(255, 255, 255, 255)),
-        backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
-        toolbarHeight: 100, 
-        elevation: 0, 
-        shape: ContinuousRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(130),
-            bottomRight: Radius.circular(130),
+        iconTheme: IconThemeData(
+          color: Color.fromRGBO(37, 6, 81, 0.898),
+        ),
+        toolbarHeight: 100,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/Backgrounds/bg11.png'),
+              fit: BoxFit.cover,
+            ),
           ),
         ),
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(
+        title: Builder(
+          builder: (context) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Builder(builder: (context) {
-                return IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: Icon(Icons.arrow_back),
-                );
-              }),
-              const Text(
-                'Reported Accounts',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: "Poppins",
-                  color: Colors.white,
-                ),
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.arrow_back),
+                  ),
+                  const SizedBox(width: 0),
+                  const Text(
+                    'Reported Accounts',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: "Poppins",
+                      color: Color.fromRGBO(37, 6, 81, 0.898),
+                    ),
+                  ),
+                  const SizedBox(width: 100),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        showSearchBar = !showSearchBar;
+                      });
+                    },
+                    icon: Icon(showSearchBar ? Icons.search_off : Icons.search),
+                  ),
+                ],
               ),
-              const Spacer(),
+              const SizedBox(
+                height: 8,
+              ),
+              if (showSearchBar)
+                TextField(
+                  controller: searchController,
+                  decoration: const InputDecoration(
+                    hintText: 'Search...',
+                    prefixIcon: Icon(Icons.search),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 0,
+                    ),
+                    isDense: true,
+                  ),
+                  onChanged: (text) {
+                    setState(() {});
+                    // Handle search input changes
+                  },
+                ),
             ],
           ),
-        ]),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),

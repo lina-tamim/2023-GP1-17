@@ -38,63 +38,72 @@ class _AdminCoursesAndEventsRequestsPageState
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        iconTheme:
-            const IconThemeData(color: Color.fromARGB(255, 255, 255, 255)),
-        backgroundColor: const Color.fromRGBO(37, 6, 81, 0.898),
-        toolbarHeight: showSearchBar ? 120 : 100,
         automaticallyImplyLeading: false,
-        elevation: 0,
-        shape: const ContinuousRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(80),
-            bottomRight: Radius.circular(80),
+        iconTheme: IconThemeData(
+          color: Color.fromRGBO(37, 6, 81, 0.898),
+        ),
+        toolbarHeight: 100,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/Backgrounds/bg11.png'),
+              fit: BoxFit.cover,
+            ),
           ),
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
+        title: Builder(
+          builder: (context) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  IconButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: const Icon(Icons.arrow_back)),
-                const Text(
-                  'Courses and Events Requests',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: "Poppins",
-                    color: Colors.white,
+                    icon: const Icon(Icons.arrow_back),
                   ),
-                ),
-                const Spacer(),
-                IconButton(
+                  const SizedBox(width: 0),
+                  const Text(
+                    'Courses & Events Requests',
+                    style: TextStyle(
+                      fontSize: 17.5,
+                      fontFamily: "Poppins",
+                      color: Color.fromRGBO(37, 6, 81, 0.898),
+                    ),
+                  ),
+                  const SizedBox(width: 40),
+                  IconButton(
                     onPressed: () {
                       setState(() {
                         showSearchBar = !showSearchBar;
                       });
                     },
-                    icon: Icon(showSearchBar ? Icons.search_off : Icons.search))
-              ],
-            ),
-            if (showSearchBar)
-              TextField(
-                controller: searchController,
-                decoration: const InputDecoration(
-                  hintText: 'Search...',
-                  prefixIcon: Icon(Icons.search),
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 0,
+                    icon: Icon(showSearchBar ? Icons.search_off : Icons.search),
                   ),
-                  isDense: true,
-                ),
-                onChanged: (text) {
-                  setState(() {});
-                },
+                ],
               ),
-          ],
+              const SizedBox(
+                height: 8,
+              ),
+              if (showSearchBar)
+                TextField(
+                  controller: searchController,
+                  decoration: const InputDecoration(
+                    hintText: 'Search...',
+                    prefixIcon: Icon(Icons.search),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 0,
+                    ),
+                    isDense: true,
+                  ),
+                  onChanged: (text) {
+                    setState(() {});
+                    // Handle search input changes
+                  },
+                ),
+            ],
+          ),
         ),
       ),
       body: SingleChildScrollView(

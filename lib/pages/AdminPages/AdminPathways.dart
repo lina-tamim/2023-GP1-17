@@ -38,6 +38,8 @@ class _AdminPathwaysState extends State<AdminPathways> {
   List<TextEditingController> resourse2 = [];
 
   List<List<String>> resourcesnew = [];
+  final searchController = TextEditingController();
+  bool showSearchBar = false;
 
   //Retrived Values From DB
   String dbimage_url = '';
@@ -675,68 +677,71 @@ Future<void> fetchData(PathwayContainer pathway) async {
       drawer: const NavBarAdmin(),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        iconTheme:
-            IconThemeData(color: const Color.fromARGB(255, 255, 255, 255)),
-        backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
-        toolbarHeight: 120, // Adjust the height of the AppBar
-        elevation: 0, // Adjust the position of the AppBar
-        shape: ContinuousRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(130),
-            bottomRight: Radius.circular(130),
+        iconTheme: IconThemeData(
+          color: Color.fromRGBO(37, 6, 81, 0.898),
+        ),
+        toolbarHeight: 100,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/Backgrounds/bg11.png'),
+              fit: BoxFit.cover,
+            ),
           ),
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Builder(builder: (context) {
-                  return IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.arrow_back));
-                }),
-                const Text(
-                  'Pathway Management ',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: "Poppins",
-                    color: Colors.white,
+        title: Builder(
+          builder: (context) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.arrow_back),
                   ),
-                ),
-                const Spacer(),
-                IconButton(
+                  const SizedBox(width: 0),
+                  const Text(
+                    'Pathways Management',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: "Poppins",
+                      color: Color.fromRGBO(37, 6, 81, 0.898),
+                    ),
+                  ),
+                  const SizedBox(width: 50),
+                  IconButton(
                     onPressed: () {
                       setState(() {
-                        showSearchtBarPath = !showSearchtBarPath;
+                        showSearchBar = !showSearchBar;
                       });
                     },
-                    icon: Icon(
-                        showSearchtBarPath ? Icons.search_off : Icons.search))
-              ],
-            ),
-            const SizedBox(
-              height: 0,
-            ),
-            if (showSearchtBarPath)
-              TextField(
-                controller: searchpathController,
-                decoration: const InputDecoration(
-                  hintText: 'Search...',
-                  prefixIcon: Icon(Icons.search),
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 0,
+                    icon: Icon(showSearchBar ? Icons.search_off : Icons.search),
                   ),
-                  isDense: true,
-                ),
-                onChanged: (text) {
-                  setState(() {});
-                  // Handle search input changes
-                },
+                ],
               ),
-          ],
+              const SizedBox(
+                height: 8,
+              ),
+              if (showSearchBar)
+                TextField(
+                  controller: searchController,
+                  decoration: const InputDecoration(
+                    hintText: 'Search...',
+                    prefixIcon: Icon(Icons.search),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 0,
+                    ),
+                    isDense: true,
+                  ),
+                  onChanged: (text) {
+                    setState(() {});
+                    // Handle search input changes
+                  },
+                ),
+            ],
+          ),
         ),
       ),
       body: Stack(

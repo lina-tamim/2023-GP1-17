@@ -131,7 +131,7 @@ class _ReposrtedPostState extends State<ReposrtedPost> {
 
   Stream<List<CardQview>> readReportedQuestion() {
     return FirebaseFirestore.instance
-        .collection('ReportedPost')
+        .collection('Report')
         .snapshots()
         .asyncMap((snapshot) async {
       if (snapshot.docs.isEmpty) {
@@ -280,30 +280,28 @@ class _ReposrtedPostState extends State<ReposrtedPost> {
                 children: [
                   ElevatedButton(
                     onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      primary: Colors.green,
-                    ),
-                    child: Text('Accept',
-                        style: TextStyle(
-                          color: Colors.white, // Set the desired text color
-                        )),
-                  ), // Set the desired font size
-
+                                      style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Color.fromARGB(255, 22, 146, 0),
+                    side: BorderSide.none,
+                    shape: const StadiumBorder(),
+                  ),
+                  child: const Text('Accept',
+                      style:
+                          TextStyle(color: Color.fromARGB(255, 254, 254, 254))),
+                ),
                   ElevatedButton(
                     onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      primary: Color.fromARGB(255, 225, 7, 7),
-                    ),
-                    child: Text('Reject',
-                        style: TextStyle(
-                          color: Colors.white, // Set the desired text color
-                        )),
+                                      style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: const Color.fromARGB(255, 122, 1, 1),
+                    side: BorderSide.none,
+                    shape: const StadiumBorder(),
+                  ),
+                  child: const Text(
+                    'Reject',
+                    style: TextStyle(color: Color.fromARGB(255, 254, 254, 254)),
+                  ),
                   )
                 ],
               )
