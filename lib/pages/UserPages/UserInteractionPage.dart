@@ -788,37 +788,83 @@ class _UserPostsPageState extends State<UserPostsPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             IconButton(
-                              icon: Icon(upvotedUserIds.contains(currentEmail)
-                                  ? Icons.arrow_circle_down
-                                  : Icons.arrow_circle_up),
-                              onPressed: () {
-                                setState(() {
-                                  if (upvotedUserIds.contains(currentEmail)) {
-                                    // Undo the upvote
-                                    upvotedUserIds.remove(currentEmail);
-                                    upvoteCount--;
-                                  } else {
-                                    // Perform the upvote
-                                    upvotedUserIds.add(currentEmail);
-                                    upvoteCount++;
-                                  }
-                                  answer.upvoteCount = upvoteCount;
-                                  answer.upvotedUserIds = upvotedUserIds;
-                                  // Update the upvote count and upvoted user IDs in Firestore
-                                  FirebaseFirestore.instance
-                                      .collection('Answer')
-                                      .doc(answer.docId)
+                            icon: Icon(
+                        upvotedUserIds.contains(currentEmail)
+                            ? Icons.arrow_circle_down
+                            : Icons.arrow_circle_up,
+                        size: 28, // Adjust the size as needed
+                        color: upvotedUserIds.contains(currentEmail)
+                            ? const Color.fromARGB(255, 49, 3, 0) // Color for arrow_circle_down
+                            : const Color.fromARGB(255, 26, 33, 38), // Color for arrow_circle_up
+                      ),
+
+                        onPressed: () {
+                          setState(() {
+                            if (upvotedUserIds.contains(currentEmail)) {
+                              upvotedUserIds.remove(currentEmail);
+                              upvoteCount--;
+
+                              // Decrease userScore in RegularUser collection
+                              FirebaseFirestore.instance
+                                .collection('RegularUser')
+                                .where('email', isEqualTo: answer.userId)
+                                .get()
+                                .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
+                                  if (snapshot.docs.isNotEmpty) {
+                                    final documentId = snapshot.docs[0].id;
+
+                                    FirebaseFirestore.instance
+                                      .collection('RegularUser')
+                                      .doc(documentId)
                                       .update({
-                                        'upvoteCount': upvoteCount,
-                                        'upvotedUserIds': upvotedUserIds,
+                                        'userScore': FieldValue.increment(-1),
                                       })
-                                      .then((_) {})
                                       .catchError((error) {
                                         // Handle error if the update fails
                                       });
+                                  } 
+                                })
+                                .catchError((error) {
                                 });
-                              },
-                            ),
+                            } else {
+                              upvotedUserIds.add(currentEmail);
+                              upvoteCount++;
+                              FirebaseFirestore.instance
+                                .collection('RegularUser')
+                                .where('email', isEqualTo: answer.userId)
+                                .get()
+                                .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
+                                  if (snapshot.docs.isNotEmpty) {
+                                    final documentId = snapshot.docs[0].id;
+
+                                    FirebaseFirestore.instance
+                                      .collection('RegularUser')
+                                      .doc(documentId)
+                                      .update({
+                                        'userScore': FieldValue.increment(1),
+                                      })
+                                      .catchError((error) {
+                                      });
+                                  }
+                                })
+                                .catchError((error) {
+                                });
+                            }
+
+                            answer.upvoteCount = upvoteCount;
+                            answer.upvotedUserIds = upvotedUserIds;
+                            FirebaseFirestore.instance
+                              .collection('Answer')
+                              .doc(answer.docId)
+                              .update({
+                                'upvoteCount': upvoteCount,
+                                'upvotedUserIds': upvotedUserIds,
+                              })
+                              .catchError((error) {
+                              });
+                          });
+                        },
+                      ),
                             Text('Upvotes: $upvoteCount'),
                             SizedBox(
                               width: 20,

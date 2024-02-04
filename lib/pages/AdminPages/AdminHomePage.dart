@@ -58,7 +58,7 @@ class _AdminHome extends State<AdminHome> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const ReportedAccount()),
+                            builder: (context) => const ReportedAccountsPage()),
                       );
                     },
                     child: itemDashboard(

@@ -185,8 +185,8 @@ class _Login extends State<Login> {
                         horizontal: 7,
                       ),
                       child: Text(
-                        'Unlock your potential with TeXel!\n'
-                        'Login now and embark on an exciting journey!',
+                        'Unlock your potential with TeXel!\n',
+                       // 'Login now and embark on an exciting journey!',
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -281,26 +281,28 @@ class _Login extends State<Login> {
                     SizedBox(
                       height: 20,
                     ),
-                    ElevatedButton(
-                      onPressed: logUserIn,
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 198, 180, 247),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
+                       Container(
+                        width: 180, // Set the desired width for the button
+                        child: ElevatedButton(
+                          onPressed: logUserIn,
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromARGB(255, 54, 7, 104),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            elevation: 10,
+                            shadowColor: Color.fromARGB(255, 0, 0, 0).withOpacity(1),
+                          ),
+                          child: Text(
+                            'Login',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
                         ),
-                        elevation: 10,
-                        shadowColor:
-                            Color.fromARGB(255, 0, 0, 0).withOpacity(1),
                       ),
-                      child: Text(
-                        'Login',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
                     SizedBox(
                       height: 20,
                     ),
@@ -329,6 +331,9 @@ class _Login extends State<Login> {
                           ),
                         ),
                       ),
+                    ),
+                    SizedBox(
+                      height: 20,
                     ),
                   ],
                 ),

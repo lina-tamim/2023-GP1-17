@@ -8,6 +8,7 @@ import 'package:techxcel11/Models/ViewQCard.dart';
 import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
 import 'package:techxcel11/pages/UserPages/UserInteractionPage.dart';
+import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:lottie/lottie.dart';
 
@@ -997,6 +998,7 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
         final userDoc = userMap[question.userId];
         final username = userDoc?['username'] as String? ?? '';
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+     //   final userType = userDoc?['userType'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
       });
@@ -1013,15 +1015,34 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
                 ? NetworkImage(question.userPhotoUrl!)
                 : null,
           ),
-          title: Column(
+                    title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
-              Text(
-                question.username ?? '',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: const Color.fromARGB(255, 34, 3, 87),
+              GestureDetector(
+                onTap: () {
+                  if (question.userId != null &&
+                      question.userId.isNotEmpty &&
+                      question.userId != "DeactivatedUser") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            UserProfileView(userId: question.userId),
+                      ),
+                    );
+                  }
+                },
+                child: Row(
+                  children: [
+                    Text(
+                      question.username ?? '', // Display the username
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromARGB(255, 34, 3, 87),
+                          fontSize: 16),
+                    ),
+                  ],
                 ),
               ),
               SizedBox(height: 5),

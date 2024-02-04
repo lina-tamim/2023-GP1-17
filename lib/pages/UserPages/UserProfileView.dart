@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +10,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/Models/AnswerCard.dart';
 import 'package:techxcel11/Models/PostCard.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
-import 'package:techxcel11/Models/ViewAnswerCard.dart';
 import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
+import 'package:techxcel11/pages/UserPages/EditUserProfilePage.dart';
 import 'package:techxcel11/providers/profile_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../../Models/QuestionCard.dart';
 
 class UserProfileView extends StatefulWidget {
@@ -40,9 +37,14 @@ class _UserProfileView extends State<UserProfileView>
     // add more image paths or URLs here
   ];
 
+
+
+  String currentEmail = '';
   Future<String> fetchuseremail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('loggedInEmail') ?? '';
+    currentEmail = email;
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!$currentEmail");
     return email;
   }
 //retrive info from DB
@@ -65,7 +67,9 @@ class _UserProfileView extends State<UserProfileView>
   void initState() {
     super.initState();
     fetchUserData();
-    tabController = TabController(length: 5, vsync: this);
+    fetchuseremail();
+    tabController = TabController(length: 4, vsync: this);
+    
   }
 
   @override
@@ -369,12 +373,22 @@ class _UserProfileView extends State<UserProfileView>
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  team.username ?? '', // Display the username
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      team.username ?? '', // Display the username
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromARGB(255, 34, 3, 87),
+                          fontSize: 16),
+                    ),
+                    if (usertype == "Freelancer")
+                      Icon(
+                        Icons.verified,
+                        color: Colors.deepPurple,
+                        size: 20,
+                      ),
+                  ],
                 ),
                 SizedBox(height: 5),
                 Text(
@@ -497,18 +511,22 @@ class _UserProfileView extends State<UserProfileView>
     });
   }
 
-  Widget buildAnswerCard(CardAnswer answer) {
-    String currentEmail = '';
+Widget buildAnswerCard(CardAnswer answer) {
+  int upvoteCount = answer.upvoteCount ?? 0;
+  List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
+  String doc = answer.docId;
+  print("7777777777777 $doc");
 
-    Future<String> getCurrentUserEmail() async {
-      return await fetchuseremail();
-    }
-
-    int upvoteCount = answer.upvoteCount ?? 0;
-    List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
-    String doc = answer.docId;
-    print("7777777777777 $doc");
-    return Card(
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AnswerPage(questionId: answer.questionId),
+        ),
+      );
+    },
+    child: Card(
       child: ListTile(
         leading: CircleAvatar(
           backgroundImage: answer.userPhotoUrl != ''
@@ -520,13 +538,23 @@ class _UserProfileView extends State<UserProfileView>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 5),
-            Text(
-              answer.username ?? '',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.deepPurple,
-              ),
-            ),
+             Row(
+                  children: [
+                    Text(
+                      answer.username ?? '', // Display the username
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromARGB(255, 34, 3, 87),
+                          fontSize: 16),
+                    ),
+                    if (usertype == "Freelancer")
+                      Icon(
+                        Icons.verified,
+                        color: Colors.deepPurple,
+                        size: 20,
+                      ),
+                  ],
+                ),
             SizedBox(height: 5),
             ListTile(
               title: Text(answer.answerText),
@@ -539,127 +567,306 @@ class _UserProfileView extends State<UserProfileView>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                FutureBuilder<String>(
-                  future: getCurrentUserEmail(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      currentEmail = snapshot.data!;
-                      print("11111111111 $currentEmail");
-
-                      if (answer.docId == null) {
-                        return Text('No document ID');
-                      }
-                      return Row(
+                isLoading
+                    ? CircularProgressIndicator()
+                    : Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           IconButton(
-                            icon: Icon(upvotedUserIds.contains(currentEmail)
-                                ? Icons.arrow_circle_down
-                                : Icons.arrow_circle_up),
-                            onPressed: () {
-                              setState(() {
-                                print("______ IM INT $upvotedUserIds");
-                                print("______ IM INT ${answer.docId}");
+      icon: Icon(
+  upvotedUserIds.contains(currentEmail)
+      ? Icons.arrow_circle_down
+      : Icons.arrow_circle_up,
+  size: 28, // Adjust the size as needed
+  color: upvotedUserIds.contains(currentEmail)
+      ? const Color.fromARGB(255, 49, 3, 0) // Color for arrow_circle_down
+      : const Color.fromARGB(255, 26, 33, 38), // Color for arrow_circle_up
+),
 
-                                if (upvotedUserIds.contains(currentEmail)) {
-                                  upvotedUserIds.remove(currentEmail);
-                                  upvoteCount--;
-                                } else {
-                                  upvotedUserIds.add(currentEmail);
-                                  upvoteCount++;
-                                }
+  onPressed: () {
+    setState(() {
+      if (upvotedUserIds.contains(currentEmail)) {
+        upvotedUserIds.remove(currentEmail);
+        upvoteCount--;
 
-                                answer.upvoteCount = upvoteCount;
-                                answer.upvotedUserIds = upvotedUserIds;
+        // Decrease userScore in RegularUser collection
+        FirebaseFirestore.instance
+          .collection('RegularUser')
+          .where('email', isEqualTo: answer.userId)
+          .get()
+          .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
+            if (snapshot.docs.isNotEmpty) {
+              final documentId = snapshot.docs[0].id;
 
-                                FirebaseFirestore.instance
-                                    .collection('Answer')
-                                    .doc(answer.docId)
-                                    .update({
-                                  'upvoteCount': upvoteCount,
-                                  'upvotedUserIds': upvotedUserIds,
-                                }).then((_) {
-                                  // Update successful
-                                }).catchError((error) {
-                                  // Handle error if the update fails
-                                });
-                              });
-                            },
-                          ),
+              FirebaseFirestore.instance
+                .collection('RegularUser')
+                .doc(documentId)
+                .update({
+                  'userScore': FieldValue.increment(-1),
+                })
+                .catchError((error) {
+                  // Handle error if the update fails
+                });
+            } 
+          })
+          .catchError((error) {
+          });
+      } else {
+        upvotedUserIds.add(currentEmail);
+        upvoteCount++;
+        FirebaseFirestore.instance
+          .collection('RegularUser')
+          .where('email', isEqualTo: answer.userId)
+          .get()
+          .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
+            if (snapshot.docs.isNotEmpty) {
+              final documentId = snapshot.docs[0].id;
+
+              FirebaseFirestore.instance
+                .collection('RegularUser')
+                .doc(documentId)
+                .update({
+                  'userScore': FieldValue.increment(1),
+                })
+                .catchError((error) {
+                });
+            }
+          })
+          .catchError((error) {
+          });
+      }
+
+      answer.upvoteCount = upvoteCount;
+      answer.upvotedUserIds = upvotedUserIds;
+      FirebaseFirestore.instance
+        .collection('Answer')
+        .doc(answer.docId)
+        .update({
+          'upvoteCount': upvoteCount,
+          'upvotedUserIds': upvotedUserIds,
+        })
+        .catchError((error) {
+          // Handle error if the update fails
+        });
+    });
+  },
+),
                           Text('Upvotes: $upvoteCount'),
                         ],
-                      );
-                    }
-                  },
-                ),
+                      ),
               ],
             ),
           ],
         ),
       ),
+    ),
+  );
+}
+ void showReportDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Report Account'),
+        content: SingleChildScrollView(
+          child: Column(
+            children: [
+              buildReasonItem(context, 'Inappropriate Content'),
+              buildReasonItem(context, 'Spam'),
+              buildReasonItem(context, 'Harassment'),
+              buildReasonItem(context, 'Fake Account'),
+              buildOtherReasonItem(context),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close the dialog
+            },
+            child: const Text('Cancel'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Widget buildReasonItem(BuildContext context, String reason) {
+  return ListTile(
+    title: Text(reason),
+    onTap: () {
+      showConfirmationDialog(context, reason);
+      print('Selected reason: $reason');
+    },
+  );
+}
+
+
+void showConfirmationDialog(BuildContext context, String selectedReason) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Report'),
+          content: const Text('Are you sure you want to report this account?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                handleReportAccount(context , email, selectedReason);
+                Navigator.pop(context); 
+                 Navigator.pop(context); 
+                                     showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text(
+                'Report Submitted',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              content: const Text(
+                  'We will check your request and take appropriate action. Thank you for keeping it cool!'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Ok'),
+                ),
+              ],
+            );
+          },
+        );
+              },
+              child: const Text('Yes'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the confirmation dialog
+              },
+              child: const Text('No'),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  Stream<List<CardAnswer>> readupvoted() {
-    String x = '';
-    return FirebaseFirestore.instance
-        .collection('Answer')
-        .where('upvotedUserIds',
-            arrayContains: email) // Replace 'email' with the desired user ID
-        .snapshots()
-        .asyncMap((snapshot) async {
-      final questions = snapshot.docs.map((doc) {
-        final cardAnswer =
-            CardAnswer.fromJson(doc.data() as Map<String, dynamic>);
-        x = doc.id; // Assign the document ID to the docId field
-        return cardAnswer;
-      }).toList();
-
-      if (questions.isEmpty) return [];
-
-      final userIds = questions.map((question) => question.userId).toList();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', whereIn: userIds)
-          .get();
-
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-              doc.data() as Map<String, dynamic>)));
-
-      questions.forEach((question) {
-        final userDoc = userMap[question.userId];
-        final username = userDoc?['username'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-        question.username = username;
-        question.userPhotoUrl = userPhotoUrl;
-        question.docId = x;
-      });
-
-      final userIdsNotFound =
-          userIds.where((userId) => !userMap.containsKey(userId)).toList();
-      userIdsNotFound.forEach((userId) {
-        questions.forEach((question) {
-          if (question.userId == userId) {
-            question.username = 'DeactivatedUser';
-            question.userPhotoUrl = '';
-          }
-        });
-      });
-
-      return questions;
-    });
+  Widget buildOtherReasonItem(BuildContext context) {
+    return ListTile(
+      title: const Text('Others'),
+      onTap: () {
+        Navigator.pop(context); // Close the current dialog
+        showOtherReasonDialog(context); // Show a dialog for typing custom reason
+      },
+    );
   }
+
+void showOtherReasonDialog(BuildContext context) {
+  String customReason = ''; // Variable to hold the custom reason value
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Enter Custom Reason'),
+        content: TextField(
+          decoration: const InputDecoration(
+            hintText: 'Type your reason here',
+          ),
+          onChanged: (value) {
+            customReason = value; // Update the customReason variable as the user types
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close the dialog
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close the dialog
+                      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text(
+                'Report Submitted',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              content: const Text(
+                  'We will check your request and take appropriate action. Thank you for keeping it cool!'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Ok'),
+                ),
+              ],
+            );
+          },
+        );
+              handleReportAccount(context, email, customReason); // Pass the customReason to the handleReportAccount method
+            },
+            child: const Text('Submit'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+void handleReportAccount(BuildContext context, String email, String reason) {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  // Retrieve postId based on email from RegularUser collection
+  firestore
+      .collection('RegularUser')
+      .where('email', isEqualTo: email)
+      .get()
+      .then((QuerySnapshot querySnapshot) {
+    if (querySnapshot.docs.isNotEmpty) {
+      // Get the first document that matches the query
+      DocumentSnapshot documentSnapshot = querySnapshot.docs[0];
+      String postId = documentSnapshot.id;
+
+      // Add report to Firestore
+      firestore.collection('Report').add({
+        'postId': postId,
+        'reason': reason,
+        'userId': email,
+        'reportDate': DateTime.now(),
+        'reportType': 'account'
+      }).catchError((error) {
+        print('Error submitting report: $error');
+        // Handle error, show an error dialog, or take appropriate action
+      });
+    } else {
+      print('User not found');
+      // Handle the case where the user with the provided email is not found
+    }
+  }).catchError((error) {
+    print('Error retrieving user: $error');
+    // Handle error, show an error dialog, or take appropriate action
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
-    final TabController tabController = TabController(length: 5, vsync: this);
+    final TabController tabController = TabController(length: 4, vsync: this);
     int randomIndex = Random().nextInt(imageList.length);
     String randomImage = imageList[randomIndex];
+   
     return Scaffold(
       body: isLoading
           ? Center(
@@ -691,25 +898,46 @@ class _UserProfileView extends State<UserProfileView>
                           radius: 40,
                         ),
                       ),
-                      Container(
-                        alignment: Alignment.bottomRight,
-                        margin: const EdgeInsets.all(20),
-                        child: OutlinedButton(
-                          child: Text(
-                            "Chat with $username",
-                            style: TextStyle(
-                              color: Color(0xFFFFFFFF),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          onPressed: () {
-                            context
-                                .read<ProfileProvider>()
-                                .gotoChat(context, email);
-                            // log('MK: clicked on Message: ${email}');
-                          },
-                        ),
-                      ),
+                          if (currentEmail != email)
+      Container(
+        alignment: Alignment.topRight,
+        margin: const EdgeInsets.all(20),
+        child: IconButton(
+          onPressed: () {
+            showReportDialog(context);
+          },
+          icon: const Icon(Icons.report, color: Color.fromARGB(255, 255, 255, 255)),
+        ),
+      ),
+                     Container(
+  alignment: Alignment.bottomRight,
+  margin: const EdgeInsets.all(20),
+  child: OutlinedButton(
+    child: Text(
+      currentEmail == email
+          ? "My profile"
+          : "Chat with $username",
+      style: TextStyle(
+        color: Color(0xFFFFFFFF),
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+    onPressed: () {
+      if (currentEmail == email) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EditProfile2(),
+          ),
+        );
+        // Add the behavior for chatting with oneself
+        // For example, display a message or show an alert
+      } else {
+        context.read<ProfileProvider>().gotoChat(context, email);
+      }
+    },
+  ),
+),
                     ],
                   ),
                 ),
@@ -929,7 +1157,7 @@ class _UserProfileView extends State<UserProfileView>
                           Tab(text: 'Build\nTeam'),
                           Tab(text: 'Project'),
                           Tab(text: 'Answer'),
-                          Tab(text: 'Upvoted'),
+                          
                         ],
                       )),
                 ),
@@ -1039,30 +1267,7 @@ class _UserProfileView extends State<UserProfileView>
                         },
                       ),
 
-                      StreamBuilder<List<CardAnswer>>(
-                        stream: readupvoted(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            final p = snapshot.data!;
-                            if (p.isEmpty) {
-                              return Center(
-                                child: Text('No Upvotes yet'),
-                              );
-                            }
-                            return ListView(
-                              children: p.map(buildAnswerCard).toList(),
-                            );
-                          } else if (snapshot.hasError) {
-                            return Center(
-                              child: Text('Error: ${snapshot.error}'),
-                            );
-                          } else {
-                            return Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                        },
-                      ),
+                     
                     ],
                   ),
                 ),

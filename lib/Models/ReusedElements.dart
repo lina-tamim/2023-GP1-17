@@ -17,6 +17,7 @@ import 'package:techxcel11/pages/UserPages/BookmarkPage.dart';
 import 'package:techxcel11/pages/UserPages/CalendarPage.dart';
 import 'package:techxcel11/pages/UserPages/UserInteractionPage.dart'; //m
 import 'package:techxcel11/pages/StartPage.dart';
+import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 import 'package:techxcel11/providers/profile_provider.dart';
 
 class NavBarUser extends StatefulWidget {
@@ -138,10 +139,13 @@ class _NavBarUserState extends State<NavBarUser> {
             leading: const Icon(Icons.person, size: 27),
             iconColor: Colors.black,
             title: const Text('Profile'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const UserProfilePage()),
-            ),
+            onTap: () {
+    final String userId = loggedInEmail; // Create a new local variable
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => UserProfileView(userId: userId)),
+    );
+  },
           ),
           ListTile(
             leading: const Icon(Icons.post_add, size: 27),
