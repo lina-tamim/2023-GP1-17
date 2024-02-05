@@ -8,6 +8,7 @@ class CardAview {
   List<String> upvotedUserIds;
   final String docId;
   String? userPhotoUrl;
+  String userType;
 
   CardAview({
     //required this.answerId,
@@ -19,6 +20,7 @@ class CardAview {
     required this.docId,
     required this.username,
     required this.userPhotoUrl,
+    required this.userType,
   });
 
   Map<String, dynamic> toJson() => {
@@ -30,7 +32,9 @@ class CardAview {
         'username': '',
         'upvotedUserIds': upvotedUserIds,
         'docId': docId,
-        'userPhotoUrl': userPhotoUrl, // Update property name to userPhotoUrl
+        'userPhotoUrl': userPhotoUrl,
+        'userType': userType,
+        // Update property name to userPhotoUrl
       };
 
   factory CardAview.fromJson(Map<String, dynamic> json) {
@@ -43,8 +47,9 @@ class CardAview {
       upvotedUserIds: List<String>.from(json['upvotedUserIds'] ?? []),
       docId: json['docId'],
       username: json['username'] ?? '',
-      userPhotoUrl: json['userPhotoUrl']
-          as String?, // Update property name to userPhotoUrl
+      userPhotoUrl: json['userPhotoUrl'] as String?,
+      userType: json['userType'] ?? '',
+      // Update property name to userPhotoUrl
     );
   }
 }

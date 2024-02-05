@@ -37,8 +37,6 @@ class _UserProfileView extends State<UserProfileView>
     // add more image paths or URLs here
   ];
 
-
-
   String currentEmail = '';
   Future<String> fetchuseremail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -69,7 +67,6 @@ class _UserProfileView extends State<UserProfileView>
     fetchUserData();
     fetchuseremail();
     tabController = TabController(length: 4, vsync: this);
-    
   }
 
   @override
@@ -239,13 +236,15 @@ class _UserProfileView extends State<UserProfileView>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.bookmark, color: Color.fromARGB(255, 63, 63, 63)),
+                    icon: Icon(Icons.bookmark,
+                        color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       addQuestionToBookmarks(email, question);
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.comment , color: Color.fromARGB(255, 63, 63, 63)),
+                    icon: Icon(Icons.comment,
+                        color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -256,7 +255,8 @@ class _UserProfileView extends State<UserProfileView>
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.report, color: Color.fromARGB(255, 63, 63, 63)),
+                    icon: Icon(Icons.report,
+                        color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       // Add functionality in upcoming sprints
                     },
@@ -511,199 +511,198 @@ class _UserProfileView extends State<UserProfileView>
     });
   }
 
-Widget buildAnswerCard(CardAnswer answer) {
-  int upvoteCount = answer.upvoteCount ?? 0;
-  List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
-  String doc = answer.docId;
-  print("7777777777777 $doc");
+  Widget buildAnswerCard(CardAnswer answer) {
+    int upvoteCount = answer.upvoteCount ?? 0;
+    List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
+    String doc = answer.docId;
+    print("7777777777777 $doc");
 
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AnswerPage(questionId: answer.questionId),
-        ),
-      );
-    },
-    child: Card(
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: answer.userPhotoUrl != ''
-              ? NetworkImage(answer.userPhotoUrl!)
-              : AssetImage('assets/Backgrounds/defaultUserPic.png')
-                  as ImageProvider<Object>,
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 5),
-             Row(
-                  children: [
-                    Text(
-                      answer.username ?? '', // Display the username
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 34, 3, 87),
-                          fontSize: 16),
-                    ),
-                    if (usertype == "Freelancer")
-                      Icon(
-                        Icons.verified,
-                        color: Colors.deepPurple,
-                        size: 20,
-                      ),
-                  ],
-                ),
-            SizedBox(height: 5),
-            ListTile(
-              title: Text(answer.answerText),
-            ),
-          ],
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                isLoading
-                    ? CircularProgressIndicator()
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          IconButton(
-      icon: Icon(
-  upvotedUserIds.contains(currentEmail)
-      ? Icons.arrow_circle_down
-      : Icons.arrow_circle_up,
-  size: 28, // Adjust the size as needed
-  color: upvotedUserIds.contains(currentEmail)
-      ? const Color.fromARGB(255, 49, 3, 0) // Color for arrow_circle_down
-      : const Color.fromARGB(255, 26, 33, 38), // Color for arrow_circle_up
-),
-
-  onPressed: () {
-    setState(() {
-      if (upvotedUserIds.contains(currentEmail)) {
-        upvotedUserIds.remove(currentEmail);
-        upvoteCount--;
-
-        // Decrease userScore in RegularUser collection
-        FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', isEqualTo: answer.userId)
-          .get()
-          .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
-            if (snapshot.docs.isNotEmpty) {
-              final documentId = snapshot.docs[0].id;
-
-              FirebaseFirestore.instance
-                .collection('RegularUser')
-                .doc(documentId)
-                .update({
-                  'userScore': FieldValue.increment(-1),
-                })
-                .catchError((error) {
-                  // Handle error if the update fails
-                });
-            } 
-          })
-          .catchError((error) {
-          });
-      } else {
-        upvotedUserIds.add(currentEmail);
-        upvoteCount++;
-        FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', isEqualTo: answer.userId)
-          .get()
-          .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
-            if (snapshot.docs.isNotEmpty) {
-              final documentId = snapshot.docs[0].id;
-
-              FirebaseFirestore.instance
-                .collection('RegularUser')
-                .doc(documentId)
-                .update({
-                  'userScore': FieldValue.increment(1),
-                })
-                .catchError((error) {
-                });
-            }
-          })
-          .catchError((error) {
-          });
-      }
-
-      answer.upvoteCount = upvoteCount;
-      answer.upvotedUserIds = upvotedUserIds;
-      FirebaseFirestore.instance
-        .collection('Answer')
-        .doc(answer.docId)
-        .update({
-          'upvoteCount': upvoteCount,
-          'upvotedUserIds': upvotedUserIds,
-        })
-        .catchError((error) {
-          // Handle error if the update fails
-        });
-    });
-  },
-),
-                          Text('Upvotes: $upvoteCount'),
-                        ],
-                      ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
- void showReportDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Report Account'),
-        content: SingleChildScrollView(
-          child: Column(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AnswerPage(questionId: answer.questionId),
+          ),
+        );
+      },
+      child: Card(
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundImage: answer.userPhotoUrl != ''
+                ? NetworkImage(answer.userPhotoUrl!)
+                : AssetImage('assets/Backgrounds/defaultUserPic.png')
+                    as ImageProvider<Object>,
+          ),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildReasonItem(context, 'Inappropriate Content'),
-              buildReasonItem(context, 'Spam'),
-              buildReasonItem(context, 'Harassment'),
-              buildReasonItem(context, 'Fake Account'),
-              buildOtherReasonItem(context),
+              SizedBox(height: 5),
+              Row(
+                children: [
+                  Text(
+                    answer.username ?? '', // Display the username
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: const Color.fromARGB(255, 34, 3, 87),
+                        fontSize: 16),
+                  ),
+                  if (usertype == "Freelancer")
+                    Icon(
+                      Icons.verified,
+                      color: Colors.deepPurple,
+                      size: 20,
+                    ),
+                ],
+              ),
+              SizedBox(height: 5),
+              ListTile(
+                title: Text(answer.answerText),
+              ),
+            ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  isLoading
+                      ? CircularProgressIndicator()
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                upvotedUserIds.contains(currentEmail)
+                                    ? Icons.arrow_circle_down
+                                    : Icons.arrow_circle_up,
+                                size: 28, // Adjust the size as needed
+                                color: upvotedUserIds.contains(currentEmail)
+                                    ? const Color.fromARGB(255, 49, 3,
+                                        0) // Color for arrow_circle_down
+                                    : const Color.fromARGB(255, 26, 33,
+                                        38), // Color for arrow_circle_up
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  if (upvotedUserIds.contains(currentEmail)) {
+                                    upvotedUserIds.remove(currentEmail);
+                                    upvoteCount--;
+
+                                    // Decrease userScore in RegularUser collection
+                                    FirebaseFirestore.instance
+                                        .collection('RegularUser')
+                                        .where('email',
+                                            isEqualTo: answer.userId)
+                                        .get()
+                                        .then(
+                                            (QuerySnapshot<Map<String, dynamic>>
+                                                snapshot) {
+                                      if (snapshot.docs.isNotEmpty) {
+                                        final documentId = snapshot.docs[0].id;
+
+                                        FirebaseFirestore.instance
+                                            .collection('RegularUser')
+                                            .doc(documentId)
+                                            .update({
+                                          'userScore': FieldValue.increment(-1),
+                                        }).catchError((error) {
+                                          // Handle error if the update fails
+                                        });
+                                      }
+                                    }).catchError((error) {});
+                                  } else {
+                                    upvotedUserIds.add(currentEmail);
+                                    upvoteCount++;
+                                    FirebaseFirestore.instance
+                                        .collection('RegularUser')
+                                        .where('email',
+                                            isEqualTo: answer.userId)
+                                        .get()
+                                        .then(
+                                            (QuerySnapshot<Map<String, dynamic>>
+                                                snapshot) {
+                                      if (snapshot.docs.isNotEmpty) {
+                                        final documentId = snapshot.docs[0].id;
+
+                                        FirebaseFirestore.instance
+                                            .collection('RegularUser')
+                                            .doc(documentId)
+                                            .update({
+                                          'userScore': FieldValue.increment(1),
+                                        }).catchError((error) {});
+                                      }
+                                    }).catchError((error) {});
+                                  }
+
+                                  answer.upvoteCount = upvoteCount;
+                                  answer.upvotedUserIds = upvotedUserIds;
+                                  FirebaseFirestore.instance
+                                      .collection('Answer')
+                                      .doc(answer.docId)
+                                      .update({
+                                    'upvoteCount': upvoteCount,
+                                    'upvotedUserIds': upvotedUserIds,
+                                  }).catchError((error) {
+                                    // Handle error if the update fails
+                                  });
+                                });
+                              },
+                            ),
+                            Text('Upvotes: $upvoteCount'),
+                          ],
+                        ),
+                ],
+              ),
             ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Close the dialog
-            },
-            child: const Text('Cancel'),
+      ),
+    );
+  }
+
+  void showReportDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Report Account'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                buildReasonItem(context, 'Inappropriate Content'),
+                buildReasonItem(context, 'Spam'),
+                buildReasonItem(context, 'Harassment'),
+                buildReasonItem(context, 'Fake Account'),
+                buildOtherReasonItem(context),
+              ],
+            ),
           ),
-        ],
-      );
-    },
-  );
-}
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-Widget buildReasonItem(BuildContext context, String reason) {
-  return ListTile(
-    title: Text(reason),
-    onTap: () {
-      showConfirmationDialog(context, reason);
-      print('Selected reason: $reason');
-    },
-  );
-}
+  Widget buildReasonItem(BuildContext context, String reason) {
+    return ListTile(
+      title: Text(reason),
+      onTap: () {
+        showConfirmationDialog(context, reason);
+        print('Selected reason: $reason');
+      },
+    );
+  }
 
-
-void showConfirmationDialog(BuildContext context, String selectedReason) {
+  void showConfirmationDialog(BuildContext context, String selectedReason) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -713,33 +712,33 @@ void showConfirmationDialog(BuildContext context, String selectedReason) {
           actions: [
             TextButton(
               onPressed: () {
-                handleReportAccount(context , email, selectedReason);
-                Navigator.pop(context); 
-                 Navigator.pop(context); 
-                                     showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text(
-                'Report Submitted',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              content: const Text(
-                  'We will check your request and take appropriate action. Thank you for keeping it cool!'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
+                handleReportAccount(context, email, selectedReason);
+                Navigator.pop(context);
+                Navigator.pop(context);
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text(
+                        'Report Submitted',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      content: const Text(
+                          'We will check your request and take appropriate action. Thank you for keeping it cool!'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Ok'),
+                        ),
+                      ],
+                    );
                   },
-                  child: const Text('Ok'),
-                ),
-              ],
-            );
-          },
-        );
+                );
               },
               child: const Text('Yes'),
             ),
@@ -760,113 +759,115 @@ void showConfirmationDialog(BuildContext context, String selectedReason) {
       title: const Text('Others'),
       onTap: () {
         Navigator.pop(context); // Close the current dialog
-        showOtherReasonDialog(context); // Show a dialog for typing custom reason
+        showOtherReasonDialog(
+            context); // Show a dialog for typing custom reason
       },
     );
   }
 
-void showOtherReasonDialog(BuildContext context) {
-  String customReason = ''; // Variable to hold the custom reason value
+  void showOtherReasonDialog(BuildContext context) {
+    String customReason = ''; // Variable to hold the custom reason value
 
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Enter Custom Reason'),
-        content: TextField(
-          decoration: const InputDecoration(
-            hintText: 'Type your reason here',
-          ),
-          onChanged: (value) {
-            customReason = value; // Update the customReason variable as the user types
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Close the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Enter Custom Reason'),
+          content: TextField(
+            decoration: const InputDecoration(
+              hintText: 'Type your reason here',
+            ),
+            onChanged: (value) {
+              customReason =
+                  value; // Update the customReason variable as the user types
             },
-            child: const Text('Cancel'),
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Close the dialog
-                      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text(
-                'Report Submitted',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              content: const Text(
-                  'We will check your request and take appropriate action. Thank you for keeping it cool!'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text(
+                        'Report Submitted',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      content: const Text(
+                          'We will check your request and take appropriate action. Thank you for keeping it cool!'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Ok'),
+                        ),
+                      ],
+                    );
                   },
-                  child: const Text('Ok'),
-                ),
-              ],
-            );
-          },
+                );
+                handleReportAccount(context, email,
+                    customReason); // Pass the customReason to the handleReportAccount method
+              },
+              child: const Text('Submit'),
+            ),
+          ],
         );
-              handleReportAccount(context, email, customReason); // Pass the customReason to the handleReportAccount method
-            },
-            child: const Text('Submit'),
-          ),
-        ],
-      );
-    },
-  );
-}
+      },
+    );
+  }
 
-void handleReportAccount(BuildContext context, String email, String reason) {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  void handleReportAccount(BuildContext context, String email, String reason) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  // Retrieve postId based on email from RegularUser collection
-  firestore
-      .collection('RegularUser')
-      .where('email', isEqualTo: email)
-      .get()
-      .then((QuerySnapshot querySnapshot) {
-    if (querySnapshot.docs.isNotEmpty) {
-      // Get the first document that matches the query
-      DocumentSnapshot documentSnapshot = querySnapshot.docs[0];
-      String postId = documentSnapshot.id;
+    // Retrieve postId based on email from RegularUser collection
+    firestore
+        .collection('RegularUser')
+        .where('email', isEqualTo: email)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        // Get the first document that matches the query
+        DocumentSnapshot documentSnapshot = querySnapshot.docs[0];
+        String postId = documentSnapshot.id;
 
-      // Add report to Firestore
-      firestore.collection('Report').add({
-        'postId': postId,
-        'reason': reason,
-        'userId': email,
-        'reportDate': DateTime.now(),
-        'reportType': 'account'
-      }).catchError((error) {
-        print('Error submitting report: $error');
-        // Handle error, show an error dialog, or take appropriate action
-      });
-    } else {
-      print('User not found');
-      // Handle the case where the user with the provided email is not found
-    }
-  }).catchError((error) {
-    print('Error retrieving user: $error');
-    // Handle error, show an error dialog, or take appropriate action
-  });
-}
-
+        // Add report to Firestore
+        firestore.collection('Report').add({
+          'postId': postId,
+          'reason': reason,
+          'userId': email,
+          'reportDate': DateTime.now(),
+          'reportType': 'account'
+        }).catchError((error) {
+          print('Error submitting report: $error');
+          // Handle error, show an error dialog, or take appropriate action
+        });
+      } else {
+        print('User not found');
+        // Handle the case where the user with the provided email is not found
+      }
+    }).catchError((error) {
+      print('Error retrieving user: $error');
+      // Handle error, show an error dialog, or take appropriate action
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final TabController tabController = TabController(length: 4, vsync: this);
     int randomIndex = Random().nextInt(imageList.length);
     String randomImage = imageList[randomIndex];
-   
+
     return Scaffold(
       body: isLoading
           ? Center(
@@ -887,7 +888,8 @@ void handleReportAccount(BuildContext context, String email, String reason) {
                         ), //Container(color: Color.fromRGBO(100, 100, 100, 250)),
                       ),
                       Positioned(
-                        bottom: 0,
+                        left: 10,
+                        bottom: 10,
                         child: CircleAvatar(
                           backgroundImage: imageURL != null &&
                                   imageURL!.isNotEmpty
@@ -898,46 +900,49 @@ void handleReportAccount(BuildContext context, String email, String reason) {
                           radius: 40,
                         ),
                       ),
-                          if (currentEmail != email)
-      Container(
-        alignment: Alignment.topRight,
-        margin: const EdgeInsets.all(20),
-        child: IconButton(
-          onPressed: () {
-            showReportDialog(context);
-          },
-          icon: const Icon(Icons.report, color: Color.fromARGB(255, 255, 255, 255)),
-        ),
-      ),
-                     Container(
-  alignment: Alignment.bottomRight,
-  margin: const EdgeInsets.all(20),
-  child: OutlinedButton(
-    child: Text(
-      currentEmail == email
-          ? "My profile"
-          : "Chat with $username",
-      style: TextStyle(
-        color: Color(0xFFFFFFFF),
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-    onPressed: () {
-      if (currentEmail == email) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EditProfile2(),
-          ),
-        );
-        // Add the behavior for chatting with oneself
-        // For example, display a message or show an alert
-      } else {
-        context.read<ProfileProvider>().gotoChat(context, email);
-      }
-    },
-  ),
-),
+                      if (currentEmail != email)
+                        Container(
+                          alignment: Alignment.topRight,
+                          margin: const EdgeInsets.all(20),
+                          child: IconButton(
+                            onPressed: () {
+                              showReportDialog(context);
+                            },
+                            icon: const Icon(Icons.report,
+                                color: Color.fromARGB(255, 255, 255, 255)),
+                          ),
+                        ),
+                      Container(
+                        alignment: Alignment.bottomRight,
+                        margin: const EdgeInsets.all(20),
+                        child: OutlinedButton(
+                          child: Text(
+                            currentEmail == email
+                                ? "My profile"
+                                : "Chat with $username",
+                            style: TextStyle(
+                              color: Color(0xFFFFFFFF),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          onPressed: () {
+                            if (currentEmail == email) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditProfile2(),
+                                ),
+                              );
+                              // Add the behavior for chatting with oneself
+                              // For example, display a message or show an alert
+                            } else {
+                              context
+                                  .read<ProfileProvider>()
+                                  .gotoChat(context, email);
+                            }
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -1002,10 +1007,10 @@ void handleReportAccount(BuildContext context, String email, String reason) {
                                 children: [
                                   WidgetSpan(
                                     child: Icon(
-                        FontAwesomeIcons.github,
-                        size: 20,
-                        color: const Color.fromARGB(255, 0, 0, 0),
-                      ),
+                                      FontAwesomeIcons.github,
+                                      size: 20,
+                                      color: const Color.fromARGB(255, 0, 0, 0),
+                                    ),
                                   ),
                                   TextSpan(
                                     text: '     GitHub',
@@ -1157,7 +1162,6 @@ void handleReportAccount(BuildContext context, String email, String reason) {
                           Tab(text: 'Build\nTeam'),
                           Tab(text: 'Project'),
                           Tab(text: 'Answer'),
-                          
                         ],
                       )),
                 ),
@@ -1266,8 +1270,6 @@ void handleReportAccount(BuildContext context, String email, String reason) {
                           }
                         },
                       ),
-
-                     
                     ],
                   ),
                 ),
@@ -1296,7 +1298,7 @@ void handleReportAccount(BuildContext context, String email, String reason) {
       String email, CardQuestion question) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      final currentUser = prefs.getString('loggedInEmail') ?? '';  
+      final currentUser = prefs.getString('loggedInEmail') ?? '';
       final existingBookmark = await FirebaseFirestore.instance
           .collection('Bookmark')
           .where('bookmarkType', isEqualTo: 'question')

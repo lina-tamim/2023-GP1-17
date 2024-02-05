@@ -998,9 +998,10 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
         final userDoc = userMap[question.userId];
         final username = userDoc?['username'] as String? ?? '';
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-     //   final userType = userDoc?['userType'] as String? ?? '';
+        //   final userType = userDoc?['userType'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
+        question.userType = userDoc?['userType'] as String? ?? "";
       });
 
       return questions;
@@ -1015,7 +1016,7 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
                 ? NetworkImage(question.userPhotoUrl!)
                 : null,
           ),
-                    title: Column(
+          title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
@@ -1042,6 +1043,12 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
                           color: const Color.fromARGB(255, 34, 3, 87),
                           fontSize: 16),
                     ),
+                    if (question.userType == "Freelancer")
+                      Icon(
+                        Icons.verified,
+                        color: Colors.deepPurple,
+                        size: 20,
+                      ),
                   ],
                 ),
               ),
@@ -1086,7 +1093,8 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.comment, color: Color.fromARGB(255, 63, 63, 63)),
+                    icon: Icon(Icons.comment,
+                        color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -1097,7 +1105,8 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.report, color: Color.fromARGB(255, 63, 63, 63)),
+                    icon: Icon(Icons.report,
+                        color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       // Add functionality next sprints
                     },

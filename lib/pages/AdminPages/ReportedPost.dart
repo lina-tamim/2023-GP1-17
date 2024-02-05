@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:techxcel11/Models/ViewQCard.dart';
 import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
+import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 
 class ReposrtedPost extends StatefulWidget {
   const ReposrtedPost({super.key});
@@ -177,15 +178,17 @@ class _ReposrtedPostState extends State<ReposrtedPost> {
         final userDoc = userMap[question.userId];
         final username = userDoc?['username'] as String? ?? '';
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        
         final reportedPost = reportedPosts.firstWhere(
           (post) => post['postId'] == question.questionDocId,
           orElse: () => <String, dynamic>{},
         );
-        final reason = reportedPost['reason'] as String? ??
-            ''; // Get the reason from the ReportedPost table
+        final reason = reportedPost['reason'] as String? ?? '';
+                question.userType = userDoc?['userType'] as String? ?? "";
+
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
-        question.reason = reason; // Assign the reason to the reason property
+        question.reason = reason;
       });
 
       return questions;
@@ -195,7 +198,6 @@ class _ReposrtedPostState extends State<ReposrtedPost> {
   Widget buildQuestionCard(CardQview question) => Card(
         child: ListTile(
           leading: CircleAvatar(
-            // ignore: unnecessary_null_comparison
             backgroundImage: question.userPhotoUrl != null
                 ? NetworkImage(question.userPhotoUrl!)
                 : null,
@@ -204,11 +206,36 @@ class _ReposrtedPostState extends State<ReposrtedPost> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
-              Text(
-                question.username ?? '',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: const Color.fromARGB(255, 34, 3, 87),
+              GestureDetector(
+                onTap: () {
+                  if (question.userId != null &&
+                      question.userId.isNotEmpty &&
+                      question.userId != "DeactivatedUser") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            UserProfileView(userId: question.userId),
+                      ),
+                    );
+                  }
+                },
+                child: Row(
+                  children: [
+                    Text(
+                      question.username ?? '', // Display the username
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromARGB(255, 34, 3, 87),
+                          fontSize: 16),
+                    ),
+                    if (question.userType == "Freelancer")
+                      Icon(
+                        Icons.verified,
+                        color: Colors.deepPurple,
+                        size: 20,
+                      ),
+                  ],
                 ),
               ),
               SizedBox(height: 5),
@@ -280,28 +307,29 @@ class _ReposrtedPostState extends State<ReposrtedPost> {
                 children: [
                   ElevatedButton(
                     onPressed: () {},
-                                      style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Color.fromARGB(255, 22, 146, 0),
-                    side: BorderSide.none,
-                    shape: const StadiumBorder(),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Color.fromARGB(255, 22, 146, 0),
+                      side: BorderSide.none,
+                      shape: const StadiumBorder(),
+                    ),
+                    child: const Text('Accept',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 254, 254, 254))),
                   ),
-                  child: const Text('Accept',
-                      style:
-                          TextStyle(color: Color.fromARGB(255, 254, 254, 254))),
-                ),
                   ElevatedButton(
                     onPressed: () {},
-                                      style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: const Color.fromARGB(255, 122, 1, 1),
-                    side: BorderSide.none,
-                    shape: const StadiumBorder(),
-                  ),
-                  child: const Text(
-                    'Reject',
-                    style: TextStyle(color: Color.fromARGB(255, 254, 254, 254)),
-                  ),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: const Color.fromARGB(255, 122, 1, 1),
+                      side: BorderSide.none,
+                      shape: const StadiumBorder(),
+                    ),
+                    child: const Text(
+                      'Reject',
+                      style:
+                          TextStyle(color: Color.fromARGB(255, 254, 254, 254)),
+                    ),
                   )
                 ],
               )

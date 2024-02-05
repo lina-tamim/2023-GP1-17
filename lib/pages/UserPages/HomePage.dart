@@ -52,6 +52,8 @@ class __FHomePageState extends State<FHomePage> {
       'reason': reason,
       'userId': reportedEmail,
       'reportDate': DateTime.now(),
+      'reportType': "Post",
+      'status': 'pending',
     });
 
     // Clear the selected option after reporting
@@ -198,6 +200,7 @@ class __FHomePageState extends State<FHomePage> {
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
+        question.userType = userDoc?['userType'] as String? ?? '';
       });
 
       final userIdsNotFound =
@@ -250,6 +253,7 @@ class __FHomePageState extends State<FHomePage> {
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
+        question.userType = userDoc?['userType'] as String? ?? '';
       });
 
       final userIdsNotFound =
@@ -413,7 +417,7 @@ class __FHomePageState extends State<FHomePage> {
                                         _handleReportQuestion(
                                             loggedInEmail, question);
                                         toastMessage(
-                                            'Question is Reported Successfully');
+                                            'Your report has been sent successfully');
 
                                         Navigator.of(context).pop();
                                       }
@@ -534,9 +538,68 @@ class __FHomePageState extends State<FHomePage> {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.report),
+                icon:
+                    Icon(Icons.report, color: Color.fromARGB(255, 63, 63, 63)),
                 onPressed: () {
-                  // Add your functionality next sprints
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return StatefulBuilder(
+                        builder: (BuildContext context, StateSetter setState) {
+                          // Set the initial selectedOption to null
+                          String? initialOption = null;
+
+                          return AlertDialog(
+                            title: Text('Report Post'),
+                            content: DropdownButton<String>(
+                              value: selectedOption,
+                              hint: Text('Select a reason'),
+                              onTap: () {
+                                // Set the initialOption to the selectedOption
+                                initialOption = selectedOption;
+                              },
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedOption = newValue!;
+                                });
+                              },
+                              items: dropDownOptions.map((String option) {
+                                return DropdownMenuItem<String>(
+                                  value: option,
+                                  child: Text(option),
+                                );
+                              }).toList(),
+                            ),
+                            actions: [
+                              TextButton(
+                                child: Text('Cancel'),
+                                onPressed: () {
+                                  // Reset the selectedOption to the initialOption when canceling
+                                  setState(() {
+                                    selectedOption = initialOption;
+                                  });
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              TextButton(
+                                child: Text('Report'),
+                                onPressed: () {
+                                  if (selectedOption != null) {
+                                    //_handleReportQuestion(
+                                    //  loggedInEmail, question);
+                                    toastMessage(
+                                        'Your report has been sent successfully');
+
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  );
                 },
               ),
             ],

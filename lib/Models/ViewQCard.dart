@@ -10,7 +10,9 @@ class CardQview {
   String? username;
   String? userPhotoUrl;
   String questionDocId;
-  String? reason; // Add the reason property
+  String? reason;
+  String userType;
+// Add the reason property
 
   CardQview({
     required this.id,
@@ -22,7 +24,9 @@ class CardQview {
     required this.username,
     required this.userPhotoUrl,
     required this.questionDocId,
-    this.reason, // Add the reason property
+    this.reason,
+    required this.userType,
+// Add the reason property
   });
 
   Map<String, dynamic> toJson() => {
@@ -36,6 +40,7 @@ class CardQview {
         'userPhotoUrl': userPhotoUrl,
         'questionDocId': questionDocId,
         'reason': reason,
+        'userType': userType,
       };
 
   static CardQview fromJson(Map<String, dynamic> json) => CardQview(
@@ -49,5 +54,6 @@ class CardQview {
         userPhotoUrl: json['userPhotoUrl'] as String?,
         questionDocId: json['questionDocId'],
         reason: json['reason'] as String?,
+        userType: json['userType'] ?? '',
       );
 }

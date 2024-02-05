@@ -104,6 +104,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
+        question.userType = userDoc?['userType'] as String? ?? '';
       });
 
       return questions;
@@ -122,12 +123,22 @@ class _UserPostsPageState extends State<UserPostsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
-              Text(
-                question.username ?? '',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: const Color.fromARGB(255, 34, 3, 87),
-                ),
+              Row(
+                children: [
+                  Text(
+                    question.username ?? '',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 34, 3, 87),
+                    ),
+                  ),
+                  if (question.userType == "Freelancer")
+                    Icon(
+                      Icons.verified,
+                      color: Colors.deepPurple,
+                      size: 20,
+                    ),
+                ],
               ),
               SizedBox(height: 5),
               Text(
@@ -161,13 +172,15 @@ class _UserPostsPageState extends State<UserPostsPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.bookmark , color: Color.fromARGB(255, 63, 63, 63)),
+                    icon: Icon(Icons.bookmark,
+                        color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       addQuestionToBookmarks(email, question);
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.comment , color: Color.fromARGB(255, 63, 63, 63)),
+                    icon: Icon(Icons.comment,
+                        color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -215,6 +228,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
+        question.userType = userDoc?['userType'] as String? ?? '';
       });
 
       return questions;
@@ -242,7 +256,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
       final userMap = Map<String, Map<String, dynamic>>.fromEntries(
         userDocs.docs.map((doc) => MapEntry(
               doc.data()['email'] as String,
-              doc.data()as Map<String, dynamic>,
+              doc.data() as Map<String, dynamic>,
             )),
       );
 
@@ -285,6 +299,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
           final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
           answer.username = username;
           answer.userPhotoUrl = userPhotoUrl;
+          answer.userType = userDoc?['userType'] as String? ?? '';
         });
 
         return answers;
@@ -294,6 +309,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
     final formattedDate = DateFormat.yMMMMd().format(fandT.date);
     DateTime deadlineDate = fandT.date as DateTime;
     DateTime currentDate = DateTime.now();
+    print('User typeTeam: ${fandT.userType}');
 
     return Card(
       child: ListTile(
@@ -306,12 +322,22 @@ class _UserPostsPageState extends State<UserPostsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 5),
-            Text(
-              fandT.username ?? '',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: const Color.fromARGB(255, 34, 3, 87),
-              ),
+            Row(
+              children: [
+                Text(
+                  fandT.username ?? '',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromARGB(255, 34, 3, 87),
+                  ),
+                ),
+                if (fandT.userType == "Freelancer")
+                  Icon(
+                    Icons.verified,
+                    color: Colors.deepPurple,
+                    size: 20,
+                  ),
+              ],
             ),
             SizedBox(height: 5),
             Text(
@@ -412,7 +438,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
     final formattedDate = DateFormat.yMMMMd().format(fandT.date);
     DateTime deadlineDate = fandT.date as DateTime;
     DateTime currentDate = DateTime.now();
-
+    print('User typeP: ${fandT.userType}');
     return Card(
       child: ListTile(
         leading: CircleAvatar(
@@ -424,12 +450,22 @@ class _UserPostsPageState extends State<UserPostsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 5),
-            Text(
-              fandT.username ?? '',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: const Color.fromARGB(255, 34, 3, 87),
-              ),
+            Row(
+              children: [
+                Text(
+                  fandT.username ?? '',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromARGB(255, 34, 3, 87),
+                  ),
+                ),
+                if (fandT.userType == "Freelancer")
+                  Icon(
+                    Icons.verified,
+                    color: Colors.deepPurple,
+                    size: 20,
+                  ),
+              ],
             ),
             SizedBox(height: 5),
             Text(
@@ -439,7 +475,9 @@ class _UserPostsPageState extends State<UserPostsPage> {
               ),
             ),
             SizedBox(height: 5),
-            Text(fandT.description),
+            Text(
+              fandT.description,
+            ),
           ],
         ),
         subtitle: Column(
@@ -755,12 +793,22 @@ class _UserPostsPageState extends State<UserPostsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
-              Text(
-                answer.username ?? '', // Display the username
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: const Color.fromARGB(255, 34, 3, 87),
-                ),
+              Row(
+                children: [
+                  Text(
+                    answer.username ?? '', // Display the username
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 34, 3, 87),
+                    ),
+                  ),
+                  if (answer.userType == "Freelancer")
+                    Icon(
+                      Icons.verified,
+                      color: Colors.deepPurple,
+                      size: 20,
+                    ),
+                ],
               ),
               SizedBox(height: 5),
               ListTile(
@@ -788,83 +836,81 @@ class _UserPostsPageState extends State<UserPostsPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             IconButton(
-                            icon: Icon(
-                        upvotedUserIds.contains(currentEmail)
-                            ? Icons.arrow_circle_down
-                            : Icons.arrow_circle_up,
-                        size: 28, // Adjust the size as needed
-                        color: upvotedUserIds.contains(currentEmail)
-                            ? const Color.fromARGB(255, 49, 3, 0) // Color for arrow_circle_down
-                            : const Color.fromARGB(255, 26, 33, 38), // Color for arrow_circle_up
-                      ),
+                              icon: Icon(
+                                upvotedUserIds.contains(currentEmail)
+                                    ? Icons.arrow_circle_down
+                                    : Icons.arrow_circle_up,
+                                size: 28, // Adjust the size as needed
+                                color: upvotedUserIds.contains(currentEmail)
+                                    ? const Color.fromARGB(255, 49, 3,
+                                        0) // Color for arrow_circle_down
+                                    : const Color.fromARGB(255, 26, 33,
+                                        38), // Color for arrow_circle_up
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  if (upvotedUserIds.contains(currentEmail)) {
+                                    upvotedUserIds.remove(currentEmail);
+                                    upvoteCount--;
 
-                        onPressed: () {
-                          setState(() {
-                            if (upvotedUserIds.contains(currentEmail)) {
-                              upvotedUserIds.remove(currentEmail);
-                              upvoteCount--;
-
-                              // Decrease userScore in RegularUser collection
-                              FirebaseFirestore.instance
-                                .collection('RegularUser')
-                                .where('email', isEqualTo: answer.userId)
-                                .get()
-                                .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
-                                  if (snapshot.docs.isNotEmpty) {
-                                    final documentId = snapshot.docs[0].id;
-
+                                    // Decrease userScore in RegularUser collection
                                     FirebaseFirestore.instance
-                                      .collection('RegularUser')
-                                      .doc(documentId)
-                                      .update({
-                                        'userScore': FieldValue.increment(-1),
-                                      })
-                                      .catchError((error) {
-                                        // Handle error if the update fails
-                                      });
-                                  } 
-                                })
-                                .catchError((error) {
-                                });
-                            } else {
-                              upvotedUserIds.add(currentEmail);
-                              upvoteCount++;
-                              FirebaseFirestore.instance
-                                .collection('RegularUser')
-                                .where('email', isEqualTo: answer.userId)
-                                .get()
-                                .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
-                                  if (snapshot.docs.isNotEmpty) {
-                                    final documentId = snapshot.docs[0].id;
+                                        .collection('RegularUser')
+                                        .where('email',
+                                            isEqualTo: answer.userId)
+                                        .get()
+                                        .then(
+                                            (QuerySnapshot<Map<String, dynamic>>
+                                                snapshot) {
+                                      if (snapshot.docs.isNotEmpty) {
+                                        final documentId = snapshot.docs[0].id;
 
+                                        FirebaseFirestore.instance
+                                            .collection('RegularUser')
+                                            .doc(documentId)
+                                            .update({
+                                          'userScore': FieldValue.increment(-1),
+                                        }).catchError((error) {
+                                          // Handle error if the update fails
+                                        });
+                                      }
+                                    }).catchError((error) {});
+                                  } else {
+                                    upvotedUserIds.add(currentEmail);
+                                    upvoteCount++;
                                     FirebaseFirestore.instance
-                                      .collection('RegularUser')
-                                      .doc(documentId)
-                                      .update({
-                                        'userScore': FieldValue.increment(1),
-                                      })
-                                      .catchError((error) {
-                                      });
+                                        .collection('RegularUser')
+                                        .where('email',
+                                            isEqualTo: answer.userId)
+                                        .get()
+                                        .then(
+                                            (QuerySnapshot<Map<String, dynamic>>
+                                                snapshot) {
+                                      if (snapshot.docs.isNotEmpty) {
+                                        final documentId = snapshot.docs[0].id;
+
+                                        FirebaseFirestore.instance
+                                            .collection('RegularUser')
+                                            .doc(documentId)
+                                            .update({
+                                          'userScore': FieldValue.increment(1),
+                                        }).catchError((error) {});
+                                      }
+                                    }).catchError((error) {});
                                   }
-                                })
-                                .catchError((error) {
-                                });
-                            }
 
-                            answer.upvoteCount = upvoteCount;
-                            answer.upvotedUserIds = upvotedUserIds;
-                            FirebaseFirestore.instance
-                              .collection('Answer')
-                              .doc(answer.docId)
-                              .update({
-                                'upvoteCount': upvoteCount,
-                                'upvotedUserIds': upvotedUserIds,
-                              })
-                              .catchError((error) {
-                              });
-                          });
-                        },
-                      ),
+                                  answer.upvoteCount = upvoteCount;
+                                  answer.upvotedUserIds = upvotedUserIds;
+                                  FirebaseFirestore.instance
+                                      .collection('Answer')
+                                      .doc(answer.docId)
+                                      .update({
+                                    'upvoteCount': upvoteCount,
+                                    'upvotedUserIds': upvotedUserIds,
+                                  }).catchError((error) {});
+                                });
+                              },
+                            ),
                             Text('Upvotes: $upvoteCount'),
                             SizedBox(
                               width: 20,

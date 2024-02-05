@@ -1,7 +1,6 @@
 import 'dart:core';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 class CardFTview {
   final String title;
   final String description;
@@ -12,6 +11,7 @@ class CardFTview {
   String? username;
   String? userPhotoUrl;
   String email;
+  String userType;
 
   CardFTview({
     required this.title,
@@ -21,8 +21,9 @@ class CardFTview {
     required this.userId,
     this.docId = '',
     required this.username,
-     required this.userPhotoUrl,
-     required this.email,
+    required this.userPhotoUrl,
+    required this.email,
+    required this.userType,
   });
 
   Map<String, dynamic> toJson() => {
@@ -34,7 +35,8 @@ class CardFTview {
         'docId': docId,
         'username': username,
         'userPhotoUrl': userPhotoUrl,
-        'email':email,
+        'email': email,
+        'userType': userType,
       };
 
   static CardFTview fromJson(Map<String, dynamic> json) => CardFTview(
@@ -44,10 +46,9 @@ class CardFTview {
         date: (json['deadlineDate'] as Timestamp).toDate(),
         userId: json['userId'],
         username: json['username'] ?? '',
-        docId: json['docId'] ,
+        docId: json['docId'],
         userPhotoUrl: json['userPhotoUrl'] as String?,
-        email: json['email']??'',
+        email: json['email'] ?? '',
+        userType: json['userType'] ?? '',
       );
 }
-
- 
