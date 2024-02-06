@@ -44,7 +44,7 @@ class _AdminHome extends State<AdminHome> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const ReposrtedPost()),
+                                const ReportedPost()),
                       );
                     },
                     child: itemDashboard(

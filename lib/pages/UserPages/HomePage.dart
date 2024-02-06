@@ -42,22 +42,68 @@ class __FHomePageState extends State<FHomePage> {
   ];
 
   void _handleReportQuestion(String email, CardQuestion question) async {
-    String postId = question.questionDocId; // Get the post ID
+    String? postId = question.questionDocId; // Get the post ID
     String reason = selectedOption!;
-    String reportedEmail = email;
 
     // Create a new document in the "reported_posts" collection in Firestore
     _firestore.collection('Report').add({
-      'postId': postId,
+      'reportedItemId': postId,
       'reason': reason,
-      'userId': reportedEmail,
       'reportDate': DateTime.now(),
-      'reportType': "Post",
+      'reportType': "Question",
       'status': 'pending',
     });
 
     // Clear the selected option after reporting
     selectedOption = null;
+  }
+
+  void _handleReportTeam(String email, CardFT team) async {
+    String? postId = team.teamDocId; // Get the post ID
+    String reason = selectedOption!;
+
+    // Create a new document in the "Report" collection in Firestore
+    await FirebaseFirestore.instance.collection('Report').add({
+      'reportedItemId': postId,
+      'reason': reason,
+      'reportDate': DateTime.now(),
+      'reportType': "Team",
+      'status': 'pending',
+    });
+
+    // Clear the selected option after reporting
+    selectedOption = null;
+  }
+
+  void _handleReportProject(String email, CardFT team) async {
+    String? postId = team.teamDocId; // Get the post ID
+    String reason = selectedOption!;
+
+    // Create a new document in the "Report" collection in Firestore
+    await FirebaseFirestore.instance.collection('Report').add({
+      'reportedItemId': postId,
+      'reason': reason,
+      'reportDate': DateTime.now(),
+      'reportType': "Project",
+      'status': 'pending',
+    });
+
+    // Clear the selected option after reporting
+    selectedOption = null;
+  }
+
+  Future<bool> checkIfPostExists(String collectionName, String postId) async {
+    bool exists = false;
+
+    // Query Firestore to check if the document exists
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance
+        .collection(collectionName)
+        .doc(postId)
+        .get();
+
+    exists = snapshot.exists;
+
+    return exists;
   }
 
   @override
@@ -583,17 +629,36 @@ class __FHomePageState extends State<FHomePage> {
                               ),
                               TextButton(
                                 child: Text('Report'),
-                                onPressed: () {
+                                onPressed: () async {
                                   if (selectedOption != null) {
-                                    //_handleReportQuestion(
-                                    //  loggedInEmail, question);
-                                    toastMessage(
-                                        'Your report has been sent successfully');
+                                    if (team is CardFT &&
+                                        team.teamDocId != null) {
+                                      String postId = team.teamDocId!;
+                                      bool isTeamPost = await checkIfPostExists(
+                                          'Team', postId);
+                                      bool isProjectPost =
+                                          await checkIfPostExists(
+                                              'Project', postId);
 
-                                    Navigator.of(context).pop();
+                                      if (isTeamPost) {
+                                        _handleReportTeam(loggedInEmail, team);
+                                      } else if (isProjectPost) {
+                                        _handleReportProject(
+                                            loggedInEmail, team);
+                                      } else {
+                                        toastMessage('Invalid team');
+                                      }
+
+                                      toastMessage(
+                                          'Your report has been sent successfully');
+                                      Navigator.of(context).pop();
+                                    } else {
+                                      // Handle the cases when team is not an instance of CardFT or postId is null
+                                      toastMessage('Invalid team');
+                                    }
                                   }
                                 },
-                              ),
+                              )
                             ],
                           );
                         },

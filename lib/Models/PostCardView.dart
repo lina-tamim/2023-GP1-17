@@ -12,6 +12,7 @@ class CardFTview {
   String? userPhotoUrl;
   String email;
   String userType;
+  String? teamDocId;
 
   CardFTview({
     required this.title,
@@ -24,6 +25,7 @@ class CardFTview {
     required this.userPhotoUrl,
     required this.email,
     required this.userType,
+    required this.teamDocId,
   });
 
   Map<String, dynamic> toJson() => {
@@ -37,6 +39,8 @@ class CardFTview {
         'userPhotoUrl': userPhotoUrl,
         'email': email,
         'userType': userType,
+        'teamDocId': teamDocId,
+        // 'projectDocId': projectDocId,
       };
 
   static CardFTview fromJson(Map<String, dynamic> json) => CardFTview(
@@ -50,5 +54,7 @@ class CardFTview {
         userPhotoUrl: json['userPhotoUrl'] as String?,
         email: json['email'] ?? '',
         userType: json['userType'] ?? '',
+        teamDocId: json['teamDocId'],
+        // projectDocId: json['projectDocId'],
       );
 }

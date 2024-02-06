@@ -12,6 +12,9 @@ class CardFT {
   String? userPhotoUrl;
   String email;
   String userType;
+  String? reason;
+  String? teamDocId;
+  String? projectDocId; 
 
   CardFT({
     required this.title,
@@ -24,6 +27,9 @@ class CardFT {
     required this.userPhotoUrl,
     required this.email,
     required this.userType,
+    this.reason,
+    required this.teamDocId,
+    required this.projectDocId, // Provide a default value or make it nullable
   });
 
   Map<String, dynamic> toJson() => {
@@ -37,17 +43,24 @@ class CardFT {
         'userPhotoUrl': userPhotoUrl,
         'email': email,
         'userType': userType,
+        'reason': reason,
+        'teamDocId': teamDocId,
+        'projectDocId':projectDocId,
       };
 
   static CardFT fromJson(Map<String, dynamic> json) => CardFT(
-      title: json['postTitle'],
-      description: json['postDescription'],
-      topics: List<String>.from(json['selectedInterests']),
-      date: (json['deadlineDate'] as Timestamp).toDate(),
-      userId: json['userId'],
-      username: json['username'] ?? '',
-      userPhotoUrl: json['userPhotoUrl'] as String?,
-      docId: json['docId'] ?? '',
-      email: json['email'] ?? '',
-      userType: json['userType'] ?? '');
+        title: json['postTitle'],
+        description: json['postDescription'],
+        topics: List<String>.from(json['selectedInterests']),
+        date: (json['deadlineDate'] as Timestamp).toDate(),
+        userId: json['userId'],
+        username: json['username'] ?? '',
+        userPhotoUrl: json['userPhotoUrl'] as String?,
+        docId: json['docId'] ?? '',
+        email: json['email'] ?? '',
+        userType: json['userType'] ?? '',
+        reason: json['reason'] as String?,
+        teamDocId: json['teamDocId'],
+        projectDocId:json['projectDocId'],
+      );
 }

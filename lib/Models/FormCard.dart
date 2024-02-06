@@ -619,22 +619,21 @@ class _FormWidgetState extends State<FormWidget> {
 
       if (_selectedPostType == 'Question') {
         final questionCollection =
-        FirebaseFirestore.instance.collection('Question');
+            FirebaseFirestore.instance.collection('Question');
         final newFormDoc = questionCollection.doc();
 
         await questionCollection.doc(newFormDoc.id).set({
           'userId': userId,
           'postTitle': textFieldValue,
-          'postDescription': largeTextFieldValue[0].toUpperCase() + largeTextFieldValue.substring(1),
+          'postDescription': largeTextFieldValue[0].toUpperCase() +
+              largeTextFieldValue.substring(1),
           'selectedInterests': _selectedTopics,
           'noOfAnwers': count,
           'questionCount': id + 1,
           'postedDate': postDate,
           'questionDocId': newFormDoc.id,
-
         });
       } else if (_selectedPostType == 'Team Collaberation') {
-
         final teamCollabCollection =
             FirebaseFirestore.instance.collection('Team');
         final newFormDoc = teamCollabCollection.doc();
@@ -645,8 +644,8 @@ class _FormWidgetState extends State<FormWidget> {
           'deadlineDate': selectedDate,
           'selectedInterests': _selectedTopics,
           'postedDate': postDate,
+          'teamDocId': newFormDoc.id,
         });
-
       } else if (_selectedPostType == 'Project') {
         // Save form in the 'Project' collection
         final formCollection = FirebaseFirestore.instance.collection('Project');
@@ -660,6 +659,7 @@ class _FormWidgetState extends State<FormWidget> {
           'deadlineDate': selectedDate,
           'selectedInterests': _selectedTopics,
           'postedDate': postDate,
+          'teamDocId': newFormDoc.id,
         });
       }
 
