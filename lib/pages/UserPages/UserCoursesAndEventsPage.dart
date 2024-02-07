@@ -25,9 +25,6 @@ class UserCoursesAndEventsPage extends StatefulWidget {
 
 const Color mainColor = Color.fromRGBO(37, 6, 81, 0.898);
 const Color secondaryColor = Color(0xffffffff);
-const Color redColor = Color(0xffbd2727);
-
-int _currentIndex = 0;
 
 class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
   final titleController = TextEditingController();
@@ -172,14 +169,14 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     }
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      height: 420,
+                      height: 470,
                       child: ListView.builder(
                           itemCount: list.length,
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
                             return Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 5),
+                                  horizontal: 8, vertical: 2),
                               child: CoursesWidget(
                                 item: list[index],
                               ),
@@ -229,14 +226,14 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     }
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      height: 420,
+                      height: 470,
                       child: ListView.builder(
                           itemCount: list.length,
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
                             return Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 5),
+                                  horizontal: 8, vertical: 2),
                               child: CoursesWidget(
                                 item: list[index],
                               ),
@@ -793,7 +790,6 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                             ),
                           ],
                         ),
-                        // Rest of your code...
                       ],
                     ),
                   ),
@@ -1155,7 +1151,7 @@ class CoursesWidget extends StatelessWidget {
     return Padding(
         padding: const EdgeInsets.only(top: 0),
         child: Container(
-          width: MediaQuery.of(context).size.width * 0.9,
+          width: MediaQuery.of(context).size.width * 0.8,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),

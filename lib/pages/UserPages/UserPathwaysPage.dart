@@ -214,7 +214,7 @@ Future<void> addPathwayToBookmarks(PathwayContainer pathway, String email) async
                           },
                           icon: Icon(
                             Icons.bookmark_add,
-                            color: Color.fromARGB(255, 150, 202, 245),
+                            color:  Color.fromRGBO(37, 6, 81, 0.898),
                           ),
                         ),
                       ],
@@ -229,13 +229,13 @@ Future<void> addPathwayToBookmarks(PathwayContainer pathway, String email) async
                           Text(
                             'Explore',
                             style: TextStyle(
-                              color: Color.fromARGB(255, 150, 202, 245),
+                              color: Color.fromRGBO(37, 6, 81, 0.898),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Icon(
                             Icons.arrow_forward,
-                            color: Color.fromARGB(255, 150, 202, 245),
+                            color:  Color.fromRGBO(37, 6, 81, 0.898),
                           ),
                         ],
                       ),

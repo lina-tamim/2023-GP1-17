@@ -367,18 +367,14 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   )
                   .toList(),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Padding(
+              padding: const EdgeInsets.only(left: 105),
+            child: Row(
               children: [
-                IconButton(
-                  icon: Icon(Icons.chat_bubble),
-                  onPressed: () {
-                    // Add functionality next sprints
-                  },
-                ),
                 PostDeleteButton(docId: fandT.docId, type: 'team'),
                 SizedBox(height: 5),
               ],
+            ),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 40),
@@ -386,7 +382,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                 padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
                 decoration: BoxDecoration(
                   color: deadlineDate.isBefore(currentDate)
-                      ? Colors.red
+                      ? const Color.fromARGB(255, 113, 10, 3)
                       : Color.fromARGB(255, 11, 0, 135),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
@@ -497,18 +493,15 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   )
                   .toList(),
             ),
-            Row(
+            Padding(padding:  
+            const EdgeInsets.only(left: 30),
+            child:Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                IconButton(
-                  icon: Icon(Icons.chat_bubble),
-                  onPressed: () {
-                    // Add functionality next sprints
-                  },
-                ),
                 PostDeleteButton(docId: fandT.docId, type: 'project'),
                 SizedBox(height: 5),
               ],
+            ),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 40),
@@ -516,7 +509,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                 padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
                 decoration: BoxDecoration(
                   color: deadlineDate.isBefore(currentDate)
-                      ? Colors.red
+                      ? const Color.fromARGB(255, 113, 10, 3)
                       : Color.fromARGB(255, 11, 0, 135),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
@@ -965,7 +958,7 @@ class PostDeleteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      color: Colors.red,
+      color:const Color.fromARGB(255, 122, 1, 1),
       icon: Icon(Icons.delete),
       onPressed: () {
         if (docId == null || docId == '') {

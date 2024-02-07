@@ -525,13 +525,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
                     CircleAvatar(
                       radius: 5,
                       backgroundColor: Colors.red,
-                      // child: Text(
-                      //   count <= 9 ? '$count' : '9+',
-                      //   style: const TextStyle(
-                      //     color: Colors.white,
-                      //     fontSize: 11,
-                      //   ),
-                      // ),
                     )
                 ],
               );

@@ -264,24 +264,36 @@ class _UserProfileView extends State<UserProfileView>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.bookmark,
-                        color: Color.fromARGB(255, 63, 63, 63)),
-                    onPressed: () {
-                      addQuestionToBookmarks(email, question);
-                    },
+                  icon: Icon(
+                    Icons.bookmark,
+                    color: currentEmail == 'texelad1@gmail.com'
+                        ? const Color.fromARGB(24, 63, 63, 63)
+                        : Color.fromARGB(255, 63, 63, 63),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.comment,
-                        color: Color.fromARGB(255, 63, 63, 63)),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                AnswerPage(questionId: question.id)),
-                      );
-                    },
+                  onPressed: currentEmail == 'texelad1@gmail.com'
+                      ? null
+                      : () {
+                          addQuestionToBookmarks(email, question);
+                        },
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.comment,
+                    color: currentEmail == 'texelad1@gmail.com'
+                        ? const Color.fromARGB(24, 63, 63, 63)
+                        : Color.fromARGB(255, 63, 63, 63),
                   ),
+                  onPressed: currentEmail == 'texelad1@gmail.com'
+                      ? null
+                      : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AnswerPage(questionId: question.id),
+                            ),
+                          );
+                        },
+                ),
                   IconButton(
                     icon: currentEmail != email
                         ? Icon(Icons.report,
@@ -542,19 +554,30 @@ class _UserProfileView extends State<UserProfileView>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              IconButton(
-                icon: Icon(
-                  FontAwesomeIcons.solidMessage,
-                  size: 18.5,
-                ),
-                onPressed: () {
-                  // Add your functionality next sprints
-                },
-              ),
-              IconButton(
-                icon: currentEmail != email
-                    ? Icon(Icons.report, color: Color.fromARGB(255, 63, 63, 63))
-                    : SizedBox.shrink(),
+              Visibility(
+  visible: currentEmail != email,
+  child: IconButton(
+    icon: Icon(
+      FontAwesomeIcons.solidMessage,
+      color: currentEmail == 'texelad1@gmail.com'
+          ? const Color.fromARGB(24, 63, 63, 63)
+          : Color.fromARGB(255, 63, 63, 63),
+      size: 18.5,
+    ),
+    onPressed: currentEmail == 'texelad1@gmail.com'
+        ? null
+        : () {
+            context
+                .read<ProfileProvider>()
+                .gotoChat(context, team.userId);
+            log('MK: clicked on Message: ${team.userId}' as int);
+          },
+  ),
+),
+Visibility(
+  visible: currentEmail != email,
+  child: IconButton(
+    icon: Icon(Icons.report, color: Color.fromARGB(255, 63, 63, 63)),
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -604,7 +627,6 @@ class _UserProfileView extends State<UserProfileView>
                               TextButton(
                                 child: Text('Cancel'),
                                 onPressed: () {
-                                  // Reset the selectedOption to the initialOption when canceling
                                   setState(() {
                                     selectedOption = initialOption;
                                   });
@@ -657,6 +679,7 @@ class _UserProfileView extends State<UserProfileView>
                     },
                   );
                 },
+               ),
               ),
             ],
           ),
@@ -793,15 +816,15 @@ class _UserProfileView extends State<UserProfileView>
                           children: [
                             IconButton(
                               icon: Icon(
-                                upvotedUserIds.contains(currentEmail)
-                                    ? Icons.arrow_circle_down
-                                    : Icons.arrow_circle_up,
+                                currentEmail == 'texelad1@gmail.com'
+                                    ? null
+                                    : upvotedUserIds.contains(currentEmail)
+                                        ? Icons.arrow_circle_down
+                                        : Icons.arrow_circle_up,
                                 size: 28, // Adjust the size as needed
                                 color: upvotedUserIds.contains(currentEmail)
-                                    ? const Color.fromARGB(255, 49, 3,
-                                        0) // Color for arrow_circle_down
-                                    : const Color.fromARGB(255, 26, 33,
-                                        38), // Color for arrow_circle_up
+                                    ? const Color.fromARGB(255, 49, 3, 0) // Color for arrow_circle_down
+                                    : const Color.fromARGB(255, 26, 33, 38), // Color for arrow_circle_up
                               ),
                               onPressed: () {
                                 setState(() {
@@ -1136,14 +1159,16 @@ class _UserProfileView extends State<UserProfileView>
                         margin: const EdgeInsets.all(20),
                         child: OutlinedButton(
                           child: Text(
-                            currentEmail == email
-                                ? "My profile"
-                                : "Chat with $username",
-                            style: TextStyle(
-                              color: Color(0xFFFFFFFF),
-                              fontWeight: FontWeight.bold,
-                            ),
+                          currentEmail == email
+                              ? "My profile"
+                              : currentEmail == 'texelad1@gmail.com'
+                                  ? ""
+                                  : "Chat with $username",
+                          style: TextStyle(
+                            color: Color(0xFFFFFFFF),
+                            fontWeight: FontWeight.bold,
                           ),
+                        ),
                           onPressed: () {
                             if (currentEmail == email) {
                               Navigator.push(

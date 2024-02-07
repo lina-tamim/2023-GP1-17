@@ -10,8 +10,8 @@ import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:techxcel11/Models/UserEditProfileImage.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
-import 'package:techxcel11/pages/UserPages/UserProfilePage.dart';
 import 'package:techxcel11/pages/StartPage.dart';
+import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 
 //EDIT +CALNDER COMMIT
 
@@ -687,13 +687,13 @@ class _EditProfile2State extends State<EditProfile2> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const UserProfilePage()),
+                                builder: (context) => UserProfileView(userId: _loggedInEmail,)),
                           );
                         } else {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const UserProfilePage()),
+                                builder: (context) => UserProfileView(userId: _loggedInEmail,)),
                           );
                         }
                       }

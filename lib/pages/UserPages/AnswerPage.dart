@@ -152,24 +152,36 @@ class _AnswerPageState extends State<AnswerPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.bookmark,
-                        color: Color.fromARGB(255, 63, 63, 63)),
-                    onPressed: () {
-                      addQuestionToBookmarks(email, question);
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.comment,
-                        color: Color.fromARGB(255, 63, 63, 63)),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                AnswerPage(questionId: question.id)),
-                      );
-                    },
-                  ),
+  icon: Icon(
+    Icons.bookmark,
+    color: email == 'texelad1@gmail.com'
+        ?Color.fromARGB(24, 63, 63, 63) // Color for texelad1@gmail.com
+        : Color.fromARGB(255, 63, 63, 63), // Default color
+  ),
+  onPressed: email == 'texelad1@gmail.com'
+      ? null
+      : () {
+          addQuestionToBookmarks(email, question);
+        },
+),
+IconButton(
+  icon: Icon(
+    Icons.comment,
+    color: email == 'texelad1@gmail.com'
+        ? Color.fromARGB(24, 63, 63, 63)
+        : Color.fromARGB(255, 63, 63, 63), // Default color
+  ),
+  onPressed: email == 'texelad1@gmail.com'
+      ? null
+      : () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AnswerPage(questionId: question.id),
+            ),
+          );
+        },
+),
                   IconButton(
                     icon: Icon(Icons.report,
                         color: Color.fromARGB(255, 63, 63, 63)),
@@ -480,7 +492,7 @@ class _AnswerPageState extends State<AnswerPage> {
                               );
                             },
                           ),
-
+                        if (email != 'texelad1@gmail.com')
                           IconButton(
                             icon: Icon(
                               upvotedUserIds.contains(currentEmail)
@@ -684,6 +696,7 @@ class _AnswerPageState extends State<AnswerPage> {
               },
             ),
           ),
+          if (email != 'texelad1@gmail.com')
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Form(

@@ -556,7 +556,6 @@ class __FHomePageState extends State<FHomePage> {
                   size: 18.5,
                 ),
                 onPressed: () {
-                  // Add your functionality next sprints
                   context
                       .read<ProfileProvider>()
                       .gotoChat(context, team.userId);
