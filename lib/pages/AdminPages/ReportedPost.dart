@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:techxcel11/Models/AnswerCard.dart';
 import 'package:techxcel11/Models/PostCard.dart';
+import 'package:techxcel11/Models/ReusedElements.dart';
 import 'package:techxcel11/Models/ViewQCard.dart';
 import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
 import 'package:techxcel11/pages/UserPages/UserPathwaysPage.dart';
@@ -19,11 +21,12 @@ class _ReportedPostState extends State<ReportedPost> {
   final searchController = TextEditingController();
 
   bool showSearchBar = false;
+  bool isLoading = true; // Added loading state
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -117,62 +120,144 @@ class _ReportedPostState extends State<ReportedPost> {
                   style: TextStyle(),
                 ),
               ),
+              Tab(
+                child: Text(
+                  'Project',
+                  style: TextStyle(),
+                ),
+              ),
+              Tab(
+                child: Text(
+                  'Answers',
+                  style: TextStyle(),
+                ),
+              ),
             ],
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        body: TabBarView(
-          children: [
-            StreamBuilder<List<CardQview>>(
-              stream: readReportedQuestion(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final q = snapshot.data!;
-                  if (q.isEmpty) {
-                    return Center(
-                      child: Text('No Reported Question'),
-                    );
-                  }
-                  return ListView(
-                    children: q.map(buildQuestionCard).toList(),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                } else {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
+        body: Column(children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: () {
+                // Handle button press
               },
+              child: Text('ollld'),
             ),
-            StreamBuilder<List<CardFT>>(
-              stream: readReportedTeam(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final t = snapshot.data!;
-                  if (t.isEmpty) {
-                    return Center(
-                      child: Text('No Reported Build Team Post'),
-                    );
-                  }
-                  return ListView(
-                    children: t.map(buildTeamCard).toList(),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                } else {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
+          ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                StreamBuilder<List<CardQview>>(
+                  stream: readReportedQuestion(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final q = snapshot.data!;
+                      if (q.isEmpty) {
+                        return Center(
+                          child: Text('No Reported Question'),
+                        );
+                      }
+                      return ListView(
+                        children: q
+                            .map((question) => buildQuestionCard(
+                                question, question.reportedItemId))
+                            .toList(),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text('Error: ${snapshot.error}'),
+                      );
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                ),
+                StreamBuilder<List<CardFT>>(
+                  stream: readReportedTeam(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final t = snapshot.data!;
+                      if (t.isEmpty) {
+                        return Center(
+                          child: Text('No Reported Build Team Post'),
+                        );
+                      }
+                      return ListView(
+                        children: t
+                            .map((team) => buildTeamCard(context, team))
+                            .toList(),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text('Error: ${snapshot.error}'),
+                      );
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                ),
+                StreamBuilder<List<CardFT>>(
+                  stream: readReportedProject(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final q = snapshot.data!;
+                      if (q.isEmpty) {
+                        return Center(
+                          child: Text('No Reported Question'),
+                        );
+                      }
+                      return ListView(
+                        children: q
+                            .map((team) => buildTeamCard(context, team))
+                            .toList(),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text('Error: ${snapshot.error}'),
+                      );
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                ),
+                /*StreamBuilder<List<CardAnswer>>(
+                  stream: readReportedAnswer(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final q = snapshot.data!;
+                      if (q.isEmpty) {
+                        return Center(
+                          child: Text('No Reported Question'),
+                        );
+                      }
+                      return ListView(
+                        children: q
+                            .map((team) => buildAnswerCard(context, team))
+                            .toList(),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text('Error: ${snapshot.error}'),
+                      );
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                )*/
+              ],
             ),
-          ],
-        ),
+          ),
+        ]),
       ),
     );
   }
@@ -182,6 +267,7 @@ class _ReportedPostState extends State<ReportedPost> {
   Stream<List<CardQview>> readReportedQuestion() {
     return FirebaseFirestore.instance
         .collection('Report')
+        .orderBy('reportType', descending: true)
         .snapshots()
         .asyncMap((snapshot) async {
       if (snapshot.docs.isEmpty) {
@@ -234,8 +320,10 @@ class _ReportedPostState extends State<ReportedPost> {
           orElse: () => <String, dynamic>{},
         );
         final reason = reportedPost['reason'] as String? ?? '';
-        question.userType = userDoc?['userType'] as String? ?? "";
+        final reportedItemId = reportedPost['reportedItemId'] as String? ?? '';
 
+        question.userType = userDoc?['userType'] as String? ?? "";
+        question.reportedItemId = reportedItemId;
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
         question.reason = reason;
@@ -245,7 +333,7 @@ class _ReportedPostState extends State<ReportedPost> {
     });
   }
 
-  Widget buildQuestionCard(CardQview question) => Card(
+  Widget buildQuestionCard(CardQview question, String postId) => Card(
         child: ListTile(
           leading: CircleAvatar(
             backgroundImage: question.userPhotoUrl != null
@@ -356,7 +444,12 @@ class _ReportedPostState extends State<ReportedPost> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _updateReportStatus(
+                          'accepted',
+                          question
+                              .reportedItemId); // Pass 'accepted' status and the reportId
+                    },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: Color.fromARGB(255, 22, 146, 0),
@@ -368,7 +461,12 @@ class _ReportedPostState extends State<ReportedPost> {
                             color: Color.fromARGB(255, 254, 254, 254))),
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _updateReportStatus(
+                          'rejected',
+                          question
+                              .reportedItemId); // Pass 'rejected' status and the reportId
+                    },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: const Color.fromARGB(255, 122, 1, 1),
@@ -382,7 +480,7 @@ class _ReportedPostState extends State<ReportedPost> {
                     ),
                   )
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -394,6 +492,7 @@ class _ReportedPostState extends State<ReportedPost> {
   Stream<List<CardFT>> readReportedTeam() {
     return FirebaseFirestore.instance
         .collection('Report')
+        .orderBy('reportType', descending: true)
         .snapshots()
         .asyncMap((snapshot) async {
       if (snapshot.docs.isEmpty) {
@@ -408,15 +507,8 @@ class _ReportedPostState extends State<ReportedPost> {
 
       final teamIds = reportedPosts
           .map((post) => post['reportedItemId'] as String)
-          .where((id) =>
-              id != null && id.isNotEmpty) // Filter out empty or null ids
           .toList();
 
-      if (teamIds.isEmpty) {
-        return []; // Return an empty list if there are no valid teamIds.
-      }
-
-      // Retrieve details of the reported posts from the 'Team' table
       final teamDocs = await FirebaseFirestore.instance
           .collection('Team')
           .where(FieldPath.documentId, whereIn: teamIds)
@@ -424,7 +516,7 @@ class _ReportedPostState extends State<ReportedPost> {
 
       final teams = teamDocs.docs.map((doc) {
         Map<String, dynamic> data = doc.data()!;
-        data['teamDocId'] = doc.id;
+        data['docId'] = doc.id;
         return CardFT.fromJson(data);
       }).toList();
 
@@ -453,7 +545,6 @@ class _ReportedPostState extends State<ReportedPost> {
         );
         final reason = reportedPost['reason'] as String? ?? '';
         team.userType = userDoc?['userType'] as String? ?? "";
-
         team.username = username;
         team.userPhotoUrl = userPhotoUrl;
         team.reason = reason;
@@ -463,7 +554,7 @@ class _ReportedPostState extends State<ReportedPost> {
     });
   }
 
-  Widget buildTeamCard(CardFT team) => Card(
+  Widget buildTeamCard(BuildContext context, CardFT team) => Card(
         child: ListTile(
           leading: CircleAvatar(
             backgroundImage: team.userPhotoUrl != null
@@ -588,5 +679,312 @@ class _ReportedPostState extends State<ReportedPost> {
           ),
         ),
       );
+
+  /// end TEAM
+  /// Start project
+  ///
+  Stream<List<CardFT>> readReportedProject() {
+    return FirebaseFirestore.instance
+        .collection('Report')
+        .orderBy('reportType', descending: true)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      if (snapshot.docs.isEmpty) {
+        return []; // Return an empty list if there are no reported posts.
+      }
+
+      final reportedPosts = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data()!;
+        data['reportedPostId'] = doc.id;
+        return data;
+      }).toList();
+
+      final projectIds = reportedPosts
+          .map((post) => post['reportedItemId'] as String)
+          .toList();
+
+      final projectDocs = await FirebaseFirestore.instance
+          .collection('Project')
+          .where(FieldPath.documentId, whereIn: projectIds)
+          .get();
+
+      final projects = projectDocs.docs.map((doc) {
+        Map<String, dynamic> data = doc.data()!;
+        data['docId'] = doc.id;
+        return CardFT.fromJson(data);
+      }).toList();
+
+      // Get user-related information for each question
+      final userIds = projects.map((project) => project.userId).toSet();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .where('email', whereIn: userIds.toList())
+          .get();
+
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+        userDocs.docs.map((doc) => MapEntry(
+              doc.data()!['email'] as String,
+              doc.data()! as Map<String, dynamic>,
+            )),
+      );
+
+      projects.forEach((project) {
+        final userDoc = userMap[project.userId];
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+
+        final reportedPost = reportedPosts.firstWhere(
+          (post) => post['reportedItemId'] == project.docId, //
+          orElse: () => <String, dynamic>{},
+        );
+        final reason = reportedPost['reason'] as String? ?? '';
+        project.userType = userDoc?['userType'] as String? ?? "";
+
+        project.username = username;
+        project.userPhotoUrl = userPhotoUrl;
+        project.reason = reason;
+      });
+
+      return projects;
+    });
+  }
+
+  // answer
+/*
+  Stream<List<CardAnswer>> readReportedAnswer() {
+    return FirebaseFirestore.instance
+        .collection('Report')
+        .orderBy('reportType', descending: true)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      if (snapshot.docs.isEmpty) {
+        return []; // Return an empty list if there are no reported posts.
+      }
+
+      final reportedPosts = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data()!;
+        data['reportedPostId'] = doc.id;
+        return data;
+      }).toList();
+
+      final questionIds = reportedPosts
+          .map((post) => post['reportedItemId'] as String)
+          .toList();
+
+      // Retrieve details of the reported posts from the 'Question' table
+      final questionDocs = await FirebaseFirestore.instance
+          .collection('Answer')
+          .where(FieldPath.documentId, whereIn: questionIds)
+          .get();
+
+      final questions = questionDocs.docs.map((doc) {
+        Map<String, dynamic> data = doc.data()!;
+        data['docId'] = doc.id;
+        return CardQview.fromJson(data);
+      }).toList();
+
+      // Get user-related information for each question
+      final userIds = questions.map((question) => question.userId).toSet();
+      final userDocs = await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .where('email', whereIn: userIds.toList())
+          .get();
+
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+        userDocs.docs.map((doc) => MapEntry(
+              doc.data()!['email'] as String,
+              doc.data()! as Map<String, dynamic>,
+            )),
+      );
+
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+
+        final reportedPost = reportedPosts.firstWhere(
+          (post) => post['reportedItemId'] == question.questionDocId,
+          orElse: () => <String, dynamic>{},
+        );
+        final reason = reportedPost['reason'] as String? ?? '';
+        final reportedItemId = reportedPost['reportedItemId'] as String? ?? '';
+
+        question.userType = userDoc?['userType'] as String? ?? "";
+        question.reportedItemId = reportedItemId;
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
+        question.reason = reason;
+      });
+
+      return questions;
+    });
+  }
+
+  Widget buildAnswerCard(BuildContext context ,CardAnswer answer) {
+    String currentEmail = '';
+    int upvoteCount = answer.upvoteCount ?? 0;
+    List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
+    String doc = answer.docId;
+    print("7777777777777 $doc");
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AnswerPage(questionId: answer.questionId),
+          ),
+        );
+      },
+      child: Card(
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundImage: answer.userPhotoUrl != ''
+                ? NetworkImage(answer.userPhotoUrl!)
+                : AssetImage('assets/Backgrounds/defaultUserPic.png')
+                    as ImageProvider<Object>,
+          ),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 5),
+              Row(
+                children: [
+                  Text(
+                    answer.username ?? '', // Display the username
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: const Color.fromARGB(255, 34, 3, 87),
+                        fontSize: 16),
+                  ),
+                  if (answer.userType == "Freelancer")
+                    Icon(
+                      Icons.verified,
+                      color: Colors.deepPurple,
+                      size: 20,
+                    ),
+                ],
+              ),
+              SizedBox(height: 5),
+              ListTile(
+                title: Text(answer.answerText),
+              ),
+            ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  isLoading
+                      ? CircularProgressIndicator()
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                upvotedUserIds.contains(currentEmail)
+                                    ? Icons.arrow_circle_down
+                                    : Icons.arrow_circle_up,
+                                size: 28, // Adjust the size as needed
+                                color: upvotedUserIds.contains(currentEmail)
+                                    ? const Color.fromARGB(255, 49, 3,
+                                        0) // Color for arrow_circle_down
+                                    : const Color.fromARGB(255, 26, 33,
+                                        38), // Color for arrow_circle_up
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  if (upvotedUserIds.contains(currentEmail)) {
+                                    upvotedUserIds.remove(currentEmail);
+                                    upvoteCount--;
+
+                                    // Decrease userScore in RegularUser collection
+                                    FirebaseFirestore.instance
+                                        .collection('RegularUser')
+                                        .where('email',
+                                            isEqualTo: answer.userId)
+                                        .get()
+                                        .then(
+                                            (QuerySnapshot<Map<String, dynamic>>
+                                                snapshot) {
+                                      if (snapshot.docs.isNotEmpty) {
+                                        final documentId = snapshot.docs[0].id;
+
+                                        FirebaseFirestore.instance
+                                            .collection('RegularUser')
+                                            .doc(documentId)
+                                            .update({
+                                          'userScore': FieldValue.increment(-1),
+                                        }).catchError((error) {
+                                          // Handle error if the update fails
+                                        });
+                                      }
+                                    }).catchError((error) {});
+                                  } else {
+                                    upvotedUserIds.add(currentEmail);
+                                    upvoteCount++;
+                                    FirebaseFirestore.instance
+                                        .collection('RegularUser')
+                                        .where('email',
+                                            isEqualTo: answer.userId)
+                                        .get()
+                                        .then(
+                                            (QuerySnapshot<Map<String, dynamic>>
+                                                snapshot) {
+                                      if (snapshot.docs.isNotEmpty) {
+                                        final documentId = snapshot.docs[0].id;
+
+                                        FirebaseFirestore.instance
+                                            .collection('RegularUser')
+                                            .doc(documentId)
+                                            .update({
+                                          'userScore': FieldValue.increment(1),
+                                        }).catchError((error) {});
+                                      }
+                                    }).catchError((error) {});
+                                  }
+
+                                  answer.upvoteCount = upvoteCount;
+                                  answer.upvotedUserIds = upvotedUserIds;
+                                  FirebaseFirestore.instance
+                                      .collection('Answer')
+                                      .doc(answer.docId)
+                                      .update({
+                                    'upvoteCount': upvoteCount,
+                                    'upvotedUserIds': upvotedUserIds,
+                                  }).catchError((error) {
+                                    // Handle error if the update fails
+                                  });
+                                });
+                              },
+                            ),
+                            Text('Upvotes: $upvoteCount'),
+                          ],
+                        ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }*/
+
+  void _updateReportStatus(String status, String reportId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('Report')
+          .doc(reportId)
+          .update({
+        'status': status,
+      });
+      print('Report status updated to $status');
+    } catch (e) {
+      print('Error updating report status: $e');
+      // Handle the error as needed
+    }
+  }
 }
 //

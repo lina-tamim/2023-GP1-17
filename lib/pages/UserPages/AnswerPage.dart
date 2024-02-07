@@ -17,18 +17,31 @@ class AnswerPage extends StatefulWidget {
 }
 
 class _AnswerPageState extends State<AnswerPage> {
-
   String email = '';
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  String? selectedOption;
+  List<String> dropDownOptions = [
+    'Inappropriate content',
+    'Spam',
+    'Harassment',
+    'False information',
+    'Violence',
+    'Hate speech',
+    'Bullying',
+    'Others'
+    // Add more options as needed
+  ];
 
   Future<void> fetchuseremail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-     final loggedinEmail  = prefs.getString('loggedInEmail') ?? '';
+    final loggedinEmail = prefs.getString('loggedInEmail') ?? '';
 
-      setState(() {
-        email = loggedinEmail;
-      });
-
+    setState(() {
+      email = loggedinEmail;
+    });
   }
+
   late List<CardQuestion> questions = [];
   final _questionStreamController =
       StreamController<List<CardQuestion>>.broadcast();
@@ -139,14 +152,15 @@ class _AnswerPageState extends State<AnswerPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-  icon: Icon(Icons.bookmark, color: Color.fromARGB(255, 63, 63, 63)),
-  onPressed: () {
-    addQuestionToBookmarks(email, question);
-  },
-),
-
+                    icon: Icon(Icons.bookmark,
+                        color: Color.fromARGB(255, 63, 63, 63)),
+                    onPressed: () {
+                      addQuestionToBookmarks(email, question);
+                    },
+                  ),
                   IconButton(
-                    icon: Icon(Icons.comment, color: Color.fromARGB(255, 63, 63, 63)),
+                    icon: Icon(Icons.comment,
+                        color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -157,9 +171,97 @@ class _AnswerPageState extends State<AnswerPage> {
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.report, color: Color.fromARGB(255, 63, 63, 63)),
+                    icon: Icon(Icons.report,
+                        color: Color.fromARGB(255, 63, 63, 63)),
                     onPressed: () {
-                      // Add functionality next sprints
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return StatefulBuilder(
+                            builder:
+                                (BuildContext context, StateSetter setState) {
+                              // Set the initial selectedOption to null
+                              String? initialOption = null;
+                              TextEditingController customReasonController =
+                                  TextEditingController();
+
+                              return AlertDialog(
+                                title: Text('Report Post'),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    DropdownButton<String>(
+                                      value: selectedOption,
+                                      hint: Text('Select a reason'),
+                                      onTap: () {
+                                        // Set the initialOption to the selectedOption
+                                        initialOption = selectedOption;
+                                      },
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          selectedOption = newValue!;
+                                        });
+                                      },
+                                      items:
+                                          dropDownOptions.map((String option) {
+                                        return DropdownMenuItem<String>(
+                                          value: option,
+                                          child: Text(option),
+                                        );
+                                      }).toList(),
+                                    ),
+                                    Visibility(
+                                      visible: selectedOption == 'Others',
+                                      child: TextFormField(
+                                        controller: customReasonController,
+                                        decoration: InputDecoration(
+                                            labelText: 'Enter your reason'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () {
+                                      // Reset the selectedOption to the initialOption when canceling
+                                      setState(() {
+                                        selectedOption = initialOption;
+                                      });
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Report'),
+                                    onPressed: () {
+                                      if (selectedOption != null) {
+                                        String reason;
+                                        if (selectedOption == 'Others') {
+                                          reason = customReasonController.text;
+                                        } else {
+                                          reason = selectedOption!;
+                                        }
+                                        if (reason.isNotEmpty) {
+                                          // Check if a reason is provided
+                                          handleReportQuestion(
+                                              email, question, reason);
+                                          toastMessage(
+                                              'Your report has been sent successfully');
+                                          Navigator.of(context).pop();
+                                        } else {
+                                          // Show an error message or handle the case where no reason is provided
+                                          print(
+                                              'Please provide a reason for reporting.');
+                                        }
+                                      }
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      );
                     },
                   ),
                 ],
@@ -169,36 +271,35 @@ class _AnswerPageState extends State<AnswerPage> {
         ),
       );
 
+  Future<void> addQuestionToBookmarks(
+      String email, CardQuestion question) async {
+    try {
+      print("888888888888888888");
+      print(question.questionDocId);
+      print("888888888888888888");
 
- Future<void> addQuestionToBookmarks(String email, CardQuestion question) async {
-  try {
-    print("888888888888888888");
-    print(question.questionDocId);
-        print("888888888888888888");
+      final existingBookmark = await FirebaseFirestore.instance
+          .collection('Bookmark')
+          .where('bookmarkType', isEqualTo: 'question')
+          .where('userId', isEqualTo: email)
+          .where('postId', isEqualTo: question.questionDocId)
+          .get();
 
-    final existingBookmark = await FirebaseFirestore.instance
-        .collection('Bookmark')
-        .where('bookmarkType', isEqualTo: 'question')
-        .where('userId', isEqualTo: email)
-        .where('postId', isEqualTo: question.questionDocId)
-        .get();
-
-    if (existingBookmark.docs.isEmpty) {
-      await FirebaseFirestore.instance.collection('Bookmark').add({
-        'bookmarkType': 'question',
-        'userId': email,
-        'postId': question.questionDocId,
-        'bookmarkDate': DateTime.now(),
-      });
-      toastMessage('Question is Bookmarked');
-    } else {
-      toastMessage('Question is Already Bookmarked!');
+      if (existingBookmark.docs.isEmpty) {
+        await FirebaseFirestore.instance.collection('Bookmark').add({
+          'bookmarkType': 'question',
+          'userId': email,
+          'postId': question.questionDocId,
+          'bookmarkDate': DateTime.now(),
+        });
+        toastMessage('Question is Bookmarked');
+      } else {
+        toastMessage('Question is Already Bookmarked!');
+      }
+    } catch (error) {
+      print('Error adding question to bookmarks: $error');
     }
-  } catch (error) {
-    print('Error adding question to bookmarks: $error');
   }
-}
-
 
   Widget buildAnswerCard(CardAnswer answer) {
     String currentEmail = '';
@@ -222,25 +323,29 @@ class _AnswerPageState extends State<AnswerPage> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             SizedBox(height: 5),
-                    GestureDetector(
-             onTap: () {
-            if (answer.userId != null && answer.userId.isNotEmpty && answer.userId !="DeactivatedUser") {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => UserProfileView(userId: answer.userId),
+            SizedBox(height: 5),
+            GestureDetector(
+              onTap: () {
+                if (answer.userId != null &&
+                    answer.userId.isNotEmpty &&
+                    answer.userId != "DeactivatedUser") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          UserProfileView(userId: answer.userId),
+                    ),
+                  );
+                }
+              },
+              child: Text(
+                answer.username ?? '',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
                 ),
-              );
-            }
-          },
-            child:Text(
-              answer.username ?? '',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.deepPurple,
               ),
-            ),),
+            ),
             SizedBox(height: 5),
             ListTile(
               title: Text(answer.answerText),
@@ -269,90 +374,191 @@ class _AnswerPageState extends State<AnswerPage> {
                         return Text('No document ID');
                       }
                       return Row(
-  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  children: [
-    SizedBox(width: 80,), // Adjust the width to move the icons further to the right
-    IconButton(
-      icon: Icon(
-  upvotedUserIds.contains(currentEmail)
-      ? Icons.arrow_circle_down
-      : Icons.arrow_circle_up,
-  size: 28, // Adjust the size as needed
-  color: upvotedUserIds.contains(currentEmail)
-      ? const Color.fromARGB(255, 49, 3, 0) // Color for arrow_circle_down
-      : const Color.fromARGB(255, 26, 33, 38), // Color for arrow_circle_up
-),
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          SizedBox(
+                            width: 80,
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.report,
+                                color: Color.fromARGB(255, 63, 63, 63)),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return StatefulBuilder(
+                                    builder: (BuildContext context,
+                                        StateSetter setState) {
+                                      // Set the initial selectedOption to null
+                                      String? initialOption = null;
+                                      TextEditingController
+                                          customReasonController =
+                                          TextEditingController();
 
-  onPressed: () {
-    setState(() {
-      if (upvotedUserIds.contains(currentEmail)) {
-        upvotedUserIds.remove(currentEmail);
-        upvoteCount--;
+                                      return AlertDialog(
+                                        title: Text('Report Post'),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                            DropdownButton<String>(
+                                              value: selectedOption,
+                                              hint: Text('Select a reason'),
+                                              onTap: () {
+                                                // Set the initialOption to the selectedOption
+                                                initialOption = selectedOption;
+                                              },
+                                              onChanged: (String? newValue) {
+                                                setState(() {
+                                                  selectedOption = newValue!;
+                                                });
+                                              },
+                                              items: dropDownOptions
+                                                  .map((String option) {
+                                                return DropdownMenuItem<String>(
+                                                  value: option,
+                                                  child: Text(option),
+                                                );
+                                              }).toList(),
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  selectedOption == 'Others',
+                                              child: TextFormField(
+                                                controller:
+                                                    customReasonController,
+                                                decoration: InputDecoration(
+                                                    labelText:
+                                                        'Enter your reason'),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            child: Text('Cancel'),
+                                            onPressed: () {
+                                              // Reset the selectedOption to the initialOption when canceling
+                                              setState(() {
+                                                selectedOption = initialOption;
+                                              });
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: Text('Report'),
+                                            onPressed: () {
+                                              if (selectedOption != null) {
+                                                String reason;
+                                                if (selectedOption ==
+                                                    'Others') {
+                                                  reason =
+                                                      customReasonController
+                                                          .text;
+                                                } else {
+                                                  reason = selectedOption!;
+                                                }
+                                                if (reason.isNotEmpty) {
+                                                  // Check if a reason is provided
+                                                  handleReportAnswer(
+                                                      email, answer, reason);
+                                                  toastMessage(
+                                                      'Your report has been sent successfully');
+                                                  Navigator.of(context).pop();
+                                                } else {
+                                                  // Show an error message or handle the case where no reason is provided
+                                                  print(
+                                                      'Please provide a reason for reporting.');
+                                                }
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          ),
 
-        // Decrease userScore in RegularUser collection
-        FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', isEqualTo: answer.userId)
-          .get()
-          .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
-            if (snapshot.docs.isNotEmpty) {
-              final documentId = snapshot.docs[0].id;
+                          IconButton(
+                            icon: Icon(
+                              upvotedUserIds.contains(currentEmail)
+                                  ? Icons.arrow_circle_down
+                                  : Icons.arrow_circle_up,
+                              size: 28, // Adjust the size as needed
+                              color: upvotedUserIds.contains(currentEmail)
+                                  ? const Color.fromARGB(255, 49, 3,
+                                      0) // Color for arrow_circle_down
+                                  : const Color.fromARGB(255, 26, 33,
+                                      38), // Color for arrow_circle_up
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                if (upvotedUserIds.contains(currentEmail)) {
+                                  upvotedUserIds.remove(currentEmail);
+                                  upvoteCount--;
 
-              FirebaseFirestore.instance
-                .collection('RegularUser')
-                .doc(documentId)
-                .update({
-                  'userScore': FieldValue.increment(-1),
-                })
-                .catchError((error) {
-                  // Handle error if the update fails
-                });
-            } 
-          })
-          .catchError((error) {
-          });
-      } else {
-        upvotedUserIds.add(currentEmail);
-        upvoteCount++;
-        FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', isEqualTo: answer.userId)
-          .get()
-          .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
-            if (snapshot.docs.isNotEmpty) {
-              final documentId = snapshot.docs[0].id;
+                                  // Decrease userScore in RegularUser collection
+                                  FirebaseFirestore.instance
+                                      .collection('RegularUser')
+                                      .where('email', isEqualTo: answer.userId)
+                                      .get()
+                                      .then((QuerySnapshot<Map<String, dynamic>>
+                                          snapshot) {
+                                    if (snapshot.docs.isNotEmpty) {
+                                      final documentId = snapshot.docs[0].id;
 
-              FirebaseFirestore.instance
-                .collection('RegularUser')
-                .doc(documentId)
-                .update({
-                  'userScore': FieldValue.increment(1),
-                })
-                .catchError((error) {
-                });
-            }
-          })
-          .catchError((error) {
-          });
-      }
+                                      FirebaseFirestore.instance
+                                          .collection('RegularUser')
+                                          .doc(documentId)
+                                          .update({
+                                        'userScore': FieldValue.increment(-1),
+                                      }).catchError((error) {
+                                        // Handle error if the update fails
+                                      });
+                                    }
+                                  }).catchError((error) {});
+                                } else {
+                                  upvotedUserIds.add(currentEmail);
+                                  upvoteCount++;
+                                  FirebaseFirestore.instance
+                                      .collection('RegularUser')
+                                      .where('email', isEqualTo: answer.userId)
+                                      .get()
+                                      .then((QuerySnapshot<Map<String, dynamic>>
+                                          snapshot) {
+                                    if (snapshot.docs.isNotEmpty) {
+                                      final documentId = snapshot.docs[0].id;
 
-      answer.upvoteCount = upvoteCount;
-      answer.upvotedUserIds = upvotedUserIds;
-      FirebaseFirestore.instance
-        .collection('Answer')
-        .doc(answer.docId)
-        .update({
-          'upvoteCount': upvoteCount,
-          'upvotedUserIds': upvotedUserIds,
-        })
-        .catchError((error) {
-          // Handle error if the update fails
-        });
-    });
-  },
-),
-    SizedBox(width: 2,), // Adjust the width to move the icons further to the right
-Text('Upvotes: $upvoteCount'),
+                                      FirebaseFirestore.instance
+                                          .collection('RegularUser')
+                                          .doc(documentId)
+                                          .update({
+                                        'userScore': FieldValue.increment(1),
+                                      }).catchError((error) {});
+                                    }
+                                  }).catchError((error) {});
+                                }
+
+                                answer.upvoteCount = upvoteCount;
+                                answer.upvotedUserIds = upvotedUserIds;
+                                FirebaseFirestore.instance
+                                    .collection('Answer')
+                                    .doc(answer.docId)
+                                    .update({
+                                  'upvoteCount': upvoteCount,
+                                  'upvotedUserIds': upvotedUserIds,
+                                }).catchError((error) {
+                                  // Handle error if the update fails
+                                });
+                              });
+                            },
+                          ),
+                          SizedBox(
+                            width: 2,
+                          ), // Adjust the width to move the icons further to the right
+                          Text('Upvotes: $upvoteCount'),
                         ],
                       );
                     }
@@ -536,5 +742,43 @@ Text('Upvotes: $upvoteCount'),
         ],
       ),
     );
+  }
+
+  void handleReportQuestion(
+    String email,
+    CardQuestion question,
+    String reason,
+  ) async {
+    String? postId = question.questionDocId; // Get the post ID
+
+    await _firestore.collection('Report').add({
+      'reportedItemId': postId,
+      'reason': reason, // Use the provided reason parameter
+      'reportDate': DateTime.now(),
+      'reportType': "Question",
+      'status': 'pending',
+    });
+
+    // Clear the selected option after reporting
+    selectedOption = null;
+  }
+
+  void handleReportAnswer(
+    String email,
+    CardAnswer answer,
+    String reason,
+  ) async {
+    String? postId = answer.docId; // Get the post ID
+
+    await _firestore.collection('Report').add({
+      'reportedItemId': postId,
+      'reason': reason, // Use the provided reason parameter
+      'reportDate': DateTime.now(),
+      'reportType': "Answer",
+      'status': 'pending',
+    });
+
+    // Clear the selected option after reporting
+    selectedOption = null;
   }
 }

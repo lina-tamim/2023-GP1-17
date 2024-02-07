@@ -38,59 +38,11 @@ class __FHomePageState extends State<FHomePage> {
     'Violence',
     'Hate speech',
     'Bullying',
+    'Others'
     // Add more options as needed
   ];
 
-  void _handleReportQuestion(String email, CardQuestion question) async {
-    String? postId = question.questionDocId; // Get the post ID
-    String reason = selectedOption!;
-
-    // Create a new document in the "reported_posts" collection in Firestore
-    _firestore.collection('Report').add({
-      'reportedItemId': postId,
-      'reason': reason,
-      'reportDate': DateTime.now(),
-      'reportType': "Question",
-      'status': 'pending',
-    });
-
-    // Clear the selected option after reporting
-    selectedOption = null;
-  }
-
-  void _handleReportTeam(String email, CardFT team) async {
-    String? postId = team.teamDocId; // Get the post ID
-    String reason = selectedOption!;
-
-    // Create a new document in the "Report" collection in Firestore
-    await FirebaseFirestore.instance.collection('Report').add({
-      'reportedItemId': postId,
-      'reason': reason,
-      'reportDate': DateTime.now(),
-      'reportType': "Team",
-      'status': 'pending',
-    });
-
-    // Clear the selected option after reporting
-    selectedOption = null;
-  }
-
-  void _handleReportProject(String email, CardFT team) async {
-    String? postId = team.teamDocId; // Get the post ID
-    String reason = selectedOption!;
-
-    // Create a new document in the "Report" collection in Firestore
-    await FirebaseFirestore.instance.collection('Report').add({
-      'reportedItemId': postId,
-      'reason': reason,
-      'reportDate': DateTime.now(),
-      'reportType': "Project",
-      'status': 'pending',
-    });
-
-    // Clear the selected option after reporting
-    selectedOption = null;
-  }
+  // Clear the selected option after reporting
 
   Future<bool> checkIfPostExists(String collectionName, String postId) async {
     bool exists = false;
@@ -423,27 +375,43 @@ class __FHomePageState extends State<FHomePage> {
                                 (BuildContext context, StateSetter setState) {
                               // Set the initial selectedOption to null
                               String? initialOption = null;
+                              TextEditingController customReasonController =
+                                  TextEditingController();
 
                               return AlertDialog(
                                 title: Text('Report Post'),
-                                content: DropdownButton<String>(
-                                  value: selectedOption,
-                                  hint: Text('Select a reason'),
-                                  onTap: () {
-                                    // Set the initialOption to the selectedOption
-                                    initialOption = selectedOption;
-                                  },
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      selectedOption = newValue!;
-                                    });
-                                  },
-                                  items: dropDownOptions.map((String option) {
-                                    return DropdownMenuItem<String>(
-                                      value: option,
-                                      child: Text(option),
-                                    );
-                                  }).toList(),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    DropdownButton<String>(
+                                      value: selectedOption,
+                                      hint: Text('Select a reason'),
+                                      onTap: () {
+                                        // Set the initialOption to the selectedOption
+                                        initialOption = selectedOption;
+                                      },
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          selectedOption = newValue!;
+                                        });
+                                      },
+                                      items:
+                                          dropDownOptions.map((String option) {
+                                        return DropdownMenuItem<String>(
+                                          value: option,
+                                          child: Text(option),
+                                        );
+                                      }).toList(),
+                                    ),
+                                    Visibility(
+                                      visible: selectedOption == 'Others',
+                                      child: TextFormField(
+                                        controller: customReasonController,
+                                        decoration: InputDecoration(
+                                            labelText: 'Enter your reason'),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 actions: [
                                   TextButton(
@@ -460,12 +428,24 @@ class __FHomePageState extends State<FHomePage> {
                                     child: Text('Report'),
                                     onPressed: () {
                                       if (selectedOption != null) {
-                                        _handleReportQuestion(
-                                            loggedInEmail, question);
-                                        toastMessage(
-                                            'Your report has been sent successfully');
-
-                                        Navigator.of(context).pop();
+                                        String reason;
+                                        if (selectedOption == 'Others') {
+                                          reason = customReasonController.text;
+                                        } else {
+                                          reason = selectedOption!;
+                                        }
+                                        if (reason.isNotEmpty) {
+                                          // Check if a reason is provided
+                                          handleReportQuestion(
+                                              loggedInEmail, question, reason);
+                                          toastMessage(
+                                              'Your report has been sent successfully');
+                                          Navigator.of(context).pop();
+                                        } else {
+                                          // Show an error message or handle the case where no reason is provided
+                                          print(
+                                              'Please provide a reason for reporting.');
+                                        }
                                       }
                                     },
                                   ),
@@ -594,27 +574,42 @@ class __FHomePageState extends State<FHomePage> {
                         builder: (BuildContext context, StateSetter setState) {
                           // Set the initial selectedOption to null
                           String? initialOption = null;
+                          TextEditingController customReasonController =
+                              TextEditingController();
 
                           return AlertDialog(
                             title: Text('Report Post'),
-                            content: DropdownButton<String>(
-                              value: selectedOption,
-                              hint: Text('Select a reason'),
-                              onTap: () {
-                                // Set the initialOption to the selectedOption
-                                initialOption = selectedOption;
-                              },
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  selectedOption = newValue!;
-                                });
-                              },
-                              items: dropDownOptions.map((String option) {
-                                return DropdownMenuItem<String>(
-                                  value: option,
-                                  child: Text(option),
-                                );
-                              }).toList(),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                DropdownButton<String>(
+                                  value: selectedOption,
+                                  hint: Text('Select a reason'),
+                                  onTap: () {
+                                    // Set the initialOption to the selectedOption
+                                    initialOption = selectedOption;
+                                  },
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      selectedOption = newValue!;
+                                    });
+                                  },
+                                  items: dropDownOptions.map((String option) {
+                                    return DropdownMenuItem<String>(
+                                      value: option,
+                                      child: Text(option),
+                                    );
+                                  }).toList(),
+                                ),
+                                Visibility(
+                                  visible: selectedOption == 'Others',
+                                  child: TextFormField(
+                                    controller: customReasonController,
+                                    decoration: InputDecoration(
+                                        labelText: 'Enter your reason'),
+                                  ),
+                                ),
+                              ],
                             ),
                             actions: [
                               TextButton(
@@ -631,6 +626,13 @@ class __FHomePageState extends State<FHomePage> {
                                 child: Text('Report'),
                                 onPressed: () async {
                                   if (selectedOption != null) {
+                                    String reason;
+                                    if (selectedOption == 'Others') {
+                                      reason = customReasonController.text;
+                                    } else {
+                                      reason = selectedOption!;
+                                    }
+
                                     if (team is CardFT &&
                                         team.teamDocId != null) {
                                       String postId = team.teamDocId!;
@@ -641,10 +643,11 @@ class __FHomePageState extends State<FHomePage> {
                                               'Project', postId);
 
                                       if (isTeamPost) {
-                                        _handleReportTeam(loggedInEmail, team);
+                                        handleReportTeam(
+                                            loggedInEmail, team, reason);
                                       } else if (isProjectPost) {
-                                        _handleReportProject(
-                                            loggedInEmail, team);
+                                        handleReportProject(
+                                            loggedInEmail, team, reason);
                                       } else {
                                         toastMessage('Invalid team');
                                       }
@@ -658,7 +661,7 @@ class __FHomePageState extends State<FHomePage> {
                                     }
                                   }
                                 },
-                              )
+                              ),
                             ],
                           );
                         },
@@ -932,5 +935,64 @@ class __FHomePageState extends State<FHomePage> {
     } catch (error) {
       print('Error adding question to bookmarks: $error');
     }
+  }
+
+  void handleReportQuestion(
+    String email,
+    CardQuestion question,
+    String reason,
+  ) async {
+    String? postId = question.questionDocId; // Get the post ID
+
+    await _firestore.collection('Report').add({
+      'reportedItemId': postId,
+      'reason': reason, // Use the provided reason parameter
+      'reportDate': DateTime.now(),
+      'reportType': "Question",
+      'status': 'pending',
+    });
+
+    // Clear the selected option after reporting
+    selectedOption = null;
+  }
+
+  void handleReportTeam(
+    String email,
+    CardFT team,
+    String reason, // Accept reason as a parameter
+  ) async {
+    String? postId = team.teamDocId; // Get the post ID
+
+    // Create a new document in the "Report" collection in Firestore
+    await FirebaseFirestore.instance.collection('Report').add({
+      'reportedItemId': postId,
+      'reason': reason, // Use the provided reason parameter
+      'reportDate': DateTime.now(),
+      'reportType': "Team",
+      'status': 'pending', // Correct the spelling of 'pending'
+    });
+
+    // Clear the selected option after reporting
+    selectedOption = null;
+  }
+
+  void handleReportProject(
+    String email,
+    CardFT team,
+    String reason, // Accept reason as a parameter
+  ) async {
+    String? postId = team.teamDocId; // Get the post ID
+
+    // Create a new document in the "Report" collection in Firestore
+    await FirebaseFirestore.instance.collection('Report').add({
+      'reportedItemId': postId,
+      'reason': reason, // Use the provided reason parameter
+      'reportDate': DateTime.now(),
+      'reportType': "Project",
+      'status': 'pending', // Correct the spelling of 'pending'
+    });
+
+    // Clear the selected option after reporting
+    selectedOption = null;
   }
 }

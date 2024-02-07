@@ -15,6 +15,7 @@ import 'package:techxcel11/pages/UserPages/EditUserProfilePage.dart';
 import 'package:techxcel11/providers/profile_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../Models/QuestionCard.dart';
+import 'package:techxcel11/pages/UserPages/HomePage.dart';
 
 class UserProfileView extends StatefulWidget {
   const UserProfileView({super.key, required this.userId});
@@ -44,6 +45,33 @@ class _UserProfileView extends State<UserProfileView>
     currentEmail = email;
     print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!$currentEmail");
     return email;
+  }
+
+  String? selectedOption;
+  List<String> dropDownOptions = [
+    'Inappropriate content',
+    'Spam',
+    'Harassment',
+    'False information',
+    'Violence',
+    'Hate speech',
+    'Bullying',
+    'Others'
+    // Add more options as needed
+  ];
+
+  Future<bool> checkIfPostExists(String collectionName, String postId) async {
+    bool exists = false;
+
+    // Query Firestore to check if the document exists
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance
+        .collection(collectionName)
+        .doc(postId)
+        .get();
+
+    exists = snapshot.exists;
+
+    return exists;
   }
 //retrive info from DB
 
@@ -255,9 +283,99 @@ class _UserProfileView extends State<UserProfileView>
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.report,
-                        color: Color.fromARGB(255, 63, 63, 63)),
+                    icon: currentEmail != email
+                        ? Icon(Icons.report,
+                            color: Color.fromARGB(255, 63, 63, 63))
+                        : SizedBox.shrink(),
                     onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return StatefulBuilder(
+                            builder:
+                                (BuildContext context, StateSetter setState) {
+                              // Set the initial selectedOption to null
+                              String? initialOption = null;
+                              TextEditingController customReasonController =
+                                  TextEditingController();
+
+                              return AlertDialog(
+                                title: Text('Report Post'),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    DropdownButton<String>(
+                                      value: selectedOption,
+                                      hint: Text('Select a reason'),
+                                      onTap: () {
+                                        // Set the initialOption to the selectedOption
+                                        initialOption = selectedOption;
+                                      },
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          selectedOption = newValue!;
+                                        });
+                                      },
+                                      items:
+                                          dropDownOptions.map((String option) {
+                                        return DropdownMenuItem<String>(
+                                          value: option,
+                                          child: Text(option),
+                                        );
+                                      }).toList(),
+                                    ),
+                                    Visibility(
+                                      visible: selectedOption == 'Others',
+                                      child: TextFormField(
+                                        controller: customReasonController,
+                                        decoration: InputDecoration(
+                                            labelText: 'Enter your reason'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () {
+                                      // Reset the selectedOption to the initialOption when canceling
+                                      setState(() {
+                                        selectedOption = initialOption;
+                                      });
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Report'),
+                                    onPressed: () {
+                                      if (selectedOption != null) {
+                                        String reason;
+                                        if (selectedOption == 'Others') {
+                                          reason = customReasonController.text;
+                                        } else {
+                                          reason = selectedOption!;
+                                        }
+                                        if (reason.isNotEmpty) {
+                                          // Check if a reason is provided
+                                          handleReportQuestion(
+                                              email, question, reason);
+                                          toastMessage(
+                                              'Your report has been sent successfully');
+                                          Navigator.of(context).pop();
+                                        } else {
+                                          // Show an error message or handle the case where no reason is provided
+                                          print(
+                                              'Please provide a reason for reporting.');
+                                        }
+                                      }
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      );
                       // Add functionality in upcoming sprints
                     },
                   ),
@@ -434,9 +552,110 @@ class _UserProfileView extends State<UserProfileView>
                 },
               ),
               IconButton(
-                icon: Icon(Icons.report),
+                icon: currentEmail != email
+                    ? Icon(Icons.report, color: Color.fromARGB(255, 63, 63, 63))
+                    : SizedBox.shrink(),
                 onPressed: () {
-                  // Add your functionality next sprints
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return StatefulBuilder(
+                        builder: (BuildContext context, StateSetter setState) {
+                          // Set the initial selectedOption to null
+                          String? initialOption = null;
+                          TextEditingController customReasonController =
+                              TextEditingController();
+
+                          return AlertDialog(
+                            title: Text('Report Post'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                DropdownButton<String>(
+                                  value: selectedOption,
+                                  hint: Text('Select a reason'),
+                                  onTap: () {
+                                    // Set the initialOption to the selectedOption
+                                    initialOption = selectedOption;
+                                  },
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      selectedOption = newValue!;
+                                    });
+                                  },
+                                  items: dropDownOptions.map((String option) {
+                                    return DropdownMenuItem<String>(
+                                      value: option,
+                                      child: Text(option),
+                                    );
+                                  }).toList(),
+                                ),
+                                Visibility(
+                                  visible: selectedOption == 'Others',
+                                  child: TextFormField(
+                                    controller: customReasonController,
+                                    decoration: InputDecoration(
+                                        labelText: 'Enter your reason'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                child: Text('Cancel'),
+                                onPressed: () {
+                                  // Reset the selectedOption to the initialOption when canceling
+                                  setState(() {
+                                    selectedOption = initialOption;
+                                  });
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              TextButton(
+                                child: Text('Report'),
+                                onPressed: () async {
+                                  if (selectedOption != null) {
+                                    String reason;
+                                    if (selectedOption == 'Others') {
+                                      reason = customReasonController.text;
+                                    } else {
+                                      reason = selectedOption!;
+                                    }
+
+                                    if (team is CardFT &&
+                                        team.teamDocId != null) {
+                                      String postId = team.teamDocId!;
+                                      bool isTeamPost = await checkIfPostExists(
+                                          'Team', postId);
+                                      bool isProjectPost =
+                                          await checkIfPostExists(
+                                              'Project', postId);
+
+                                      if (isTeamPost) {
+                                        handleReportTeam(email, team, reason);
+                                      } else if (isProjectPost) {
+                                        handleReportProject(
+                                            email, team, reason);
+                                      } else {
+                                        toastMessage('Invalid team');
+                                      }
+
+                                      toastMessage(
+                                          'Your report has been sent successfully');
+                                      Navigator.of(context).pop();
+                                    } else {
+                                      // Handle the cases when team is not an instance of CardFT or postId is null
+                                      toastMessage('Invalid team');
+                                    }
+                                  }
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  );
                 },
               ),
             ],
@@ -1320,5 +1539,65 @@ class _UserProfileView extends State<UserProfileView>
     } catch (error) {
       print('Error adding question to bookmarks: $error');
     }
+  }
+
+  void handleReportQuestion(
+    String email,
+    CardQuestion question,
+    String reason,
+  ) async {
+    String? postId = question.questionDocId; // Get the post ID
+
+    // Create a new document in the "reported_posts" collection in Firestore
+    await _firestore.collection('Report').add({
+      'reportedItemId': postId,
+      'reason': reason, // Use the provided reason parameter
+      'reportDate': DateTime.now(),
+      'reportType': "Question",
+      'status': 'pending',
+    });
+
+    // Clear the selected option after reporting
+    selectedOption = null;
+  }
+
+  void handleReportTeam(
+    String email,
+    CardFT team,
+    String reason, // Accept reason as a parameter
+  ) async {
+    String? postId = team.teamDocId; // Get the post ID
+
+    // Create a new document in the "Report" collection in Firestore
+    await FirebaseFirestore.instance.collection('Report').add({
+      'reportedItemId': postId,
+      'reason': reason, // Use the provided reason parameter
+      'reportDate': DateTime.now(),
+      'reportType': "Team",
+      'status': 'pending', // Correct the spelling of 'pending'
+    });
+
+    // Clear the selected option after reporting
+    selectedOption = null;
+  }
+
+  void handleReportProject(
+    String email,
+    CardFT team,
+    String reason, // Accept reason as a parameter
+  ) async {
+    String? postId = team.teamDocId; // Get the post ID
+
+    // Create a new document in the "Report" collection in Firestore
+    await FirebaseFirestore.instance.collection('Report').add({
+      'reportedItemId': postId,
+      'reason': reason, // Use the provided reason parameter
+      'reportDate': DateTime.now(),
+      'reportType': "Project",
+      'status': 'pending', // Correct the spelling of 'pending'
+    });
+
+    // Clear the selected option after reporting
+    selectedOption = null;
   }
 }

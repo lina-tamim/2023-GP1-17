@@ -538,7 +538,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Scaffold(
         drawer: const NavBarUser(),
         bottomNavigationBar: BottomNavBar(
@@ -565,68 +565,84 @@ class _UserPostsPageState extends State<UserPostsPage> {
             ),
           ),
           title: Builder(
-              builder: (context) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(children: [
-                          if (loggedInImage.isNotEmpty)
-                            GestureDetector(
-                              onTap: () {
-                                Scaffold.of(context).openDrawer();
-                              },
-                              child: CircleAvatar(
-                                radius: 25,
-                                backgroundImage: NetworkImage(loggedInImage),
-                              ),
-                            ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            'My Interactions',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontFamily: "Poppins",
-                              color: Color.fromRGBO(37, 6, 81, 0.898),
-                            ),
-                          ),
-                          const SizedBox(width: 120),
-                        ])
-                      ])),
-          bottom: const TabBar(
-            indicator: UnderlineTabIndicator(
-              borderSide: BorderSide(
-                width: 5.0,
-                color: Color.fromARGB(
-                    255, 27, 5, 230), // Set the color of the underline
-              ),
-              // Adjust the insets if needed
+            builder: (context) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    if (loggedInImage.isNotEmpty)
+                      GestureDetector(
+                        onTap: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                        child: CircleAvatar(
+                          radius: 25,
+                          backgroundImage: NetworkImage(loggedInImage),
+                        ),
+                      ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'My Interactions',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: "Poppins",
+                        color: Color.fromRGBO(37, 6, 81, 0.898),
+                      ),
+                    ),
+                    const SizedBox(width: 120),
+                  ],
+                ),
+              ],
             ),
-            labelColor: Color.fromARGB(255, 27, 5, 230),
-            tabs: [
-              Tab(
-                child: Text(
-                  'Questions',
-                  style: TextStyle(),
+          ),
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(45),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: TabBar(
+                isScrollable: true,
+                indicator: UnderlineTabIndicator(
+                  borderSide: BorderSide(
+                    width: 5.0,
+                    color: Color.fromARGB(255, 27, 5, 230),
+                  ),
                 ),
+                labelColor: Color.fromARGB(255, 27, 5, 230),
+                tabs: [
+                  Tab(
+                    child: Text(
+                      'Questions',
+                      style:
+                          TextStyle(fontSize: 13), // Adjust font size as needed
+                    ),
+                  ),
+                  Tab(
+                    child: Text(
+                      'Answers',
+                      style: TextStyle(fontSize: 13),
+                    ),
+                  ),
+                  Tab(
+                    child: Text(
+                      'Build Team',
+                      style: TextStyle(fontSize: 13),
+                    ),
+                  ),
+                  Tab(
+                    child: Text(
+                      'Projects',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ),
+                  Tab(
+                    child: Text(
+                      'Reported Post',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ],
               ),
-              Tab(
-                child: Text(
-                  'Answers',
-                  style: TextStyle(),
-                ),
-              ),
-              Tab(
-                child: Text(
-                  'Build Team',
-                  style: TextStyle(),
-                ),
-              ),
-              Tab(
-                child: Text(
-                  'Projects',
-                  style: TextStyle(),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
 
@@ -756,6 +772,12 @@ class _UserPostsPageState extends State<UserPostsPage> {
                     );
                   }
                 },
+              ),
+            if (email == '')
+              SizedBox()
+            else
+              Center(
+                child: Text('No reported posts yet'),
               ),
           ],
         ),

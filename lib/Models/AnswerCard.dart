@@ -6,8 +6,10 @@ class CardAnswer {
   int upvoteCount;
   String? username;
   List<String> upvotedUserIds;
-   String docId;
+  String docId;
   String? userPhotoUrl;
+  String? reason;
+  String userType;
 
   CardAnswer({
     //required this.answerId,
@@ -19,6 +21,8 @@ class CardAnswer {
     this.docId = '',
     required this.username,
     required this.userPhotoUrl,
+    this.reason,
+    required this.userType,
   });
 
   Map<String, dynamic> toJson() => {
@@ -30,7 +34,9 @@ class CardAnswer {
         'username': username,
         'upvotedUserIds': upvotedUserIds,
         'docId': docId,
-        'userPhotoUrl': userPhotoUrl, // Update property name to userPhotoUrl
+        'userPhotoUrl': userPhotoUrl,
+        'reason': reason,
+        'userType': userType,
       };
 
   factory CardAnswer.fromJson(Map<String, dynamic> json) {
@@ -43,8 +49,11 @@ class CardAnswer {
       upvotedUserIds: List<String>.from(json['upvotedUserIds'] ?? []),
       docId: json['docId'] ?? '',
       username: json['username'] ?? '',
-      userPhotoUrl: json['userPhotoUrl']
-          as String?, // Update property name to userPhotoUrl
+      userPhotoUrl: json['userPhotoUrl'] as String?,
+      reason: json['reason'] as String?,
+      userType: json['userType'] ?? '',
+
+// Update property name to userPhotoUrl
     );
   }
 }
