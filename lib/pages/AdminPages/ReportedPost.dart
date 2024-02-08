@@ -228,19 +228,19 @@ class _ReportedPostState extends State<ReportedPost> {
                     }
                   },
                 ),
-                /*StreamBuilder<List<CardAnswer>>(
+                StreamBuilder<List<CardAnswer>>(
                   stream: readReportedAnswer(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      final q = snapshot.data!;
-                      if (q.isEmpty) {
+                      final a = snapshot.data!;
+                      if (a.isEmpty) {
                         return Center(
-                          child: Text('No Reported Question'),
+                          child: Text('No Answers yet'),
                         );
                       }
                       return ListView(
-                        children: q
-                            .map((team) => buildAnswerCard(context, team))
+                        children: a
+                            .map((answer) => buildAnswerCard(context, answer))
                             .toList(),
                       );
                     } else if (snapshot.hasError) {
@@ -253,7 +253,7 @@ class _ReportedPostState extends State<ReportedPost> {
                       );
                     }
                   },
-                )*/
+                ),
               ],
             ),
           ),
@@ -267,11 +267,13 @@ class _ReportedPostState extends State<ReportedPost> {
   Stream<List<CardQview>> readReportedQuestion() {
     return FirebaseFirestore.instance
         .collection('Report')
+        .where('status', isEqualTo: 'pending') // Filter by status
+
         .orderBy('reportType', descending: true)
         .snapshots()
         .asyncMap((snapshot) async {
       if (snapshot.docs.isEmpty) {
-        return []; // Return an empty list if there are no reported posts.
+        return [];
       }
 
       final reportedPosts = snapshot.docs.map((doc) {
@@ -284,7 +286,6 @@ class _ReportedPostState extends State<ReportedPost> {
           .map((post) => post['reportedItemId'] as String)
           .toList();
 
-      // Retrieve details of the reported posts from the 'Question' table
       final questionDocs = await FirebaseFirestore.instance
           .collection('Question')
           .where(FieldPath.documentId, whereIn: questionIds)
@@ -296,7 +297,6 @@ class _ReportedPostState extends State<ReportedPost> {
         return CardQview.fromJson(data);
       }).toList();
 
-      // Get user-related information for each question
       final userIds = questions.map((question) => question.userId).toSet();
       final userDocs = await FirebaseFirestore.instance
           .collection('RegularUser')
@@ -321,12 +321,16 @@ class _ReportedPostState extends State<ReportedPost> {
         );
         final reason = reportedPost['reason'] as String? ?? '';
         final reportedItemId = reportedPost['reportedItemId'] as String? ?? '';
+        final reportDocid = reportedPost['reportedPostId'] as String? ??
+            ''; // Add this line to retrieve the report document ID
 
-        question.userType = userDoc?['userType'] as String? ?? "";
+        question.userType = userDoc?['userType'] as String? ?? '';
         question.reportedItemId = reportedItemId;
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
         question.reason = reason;
+        question.reportDocid =
+            reportDocid; // Assign the report document ID to the reportDocid variable
       });
 
       return questions;
@@ -448,7 +452,7 @@ class _ReportedPostState extends State<ReportedPost> {
                       _updateReportStatus(
                           'accepted',
                           question
-                              .reportedItemId); // Pass 'accepted' status and the reportId
+                              .reportDocid); // Pass 'accepted' status and the reportId
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -465,7 +469,7 @@ class _ReportedPostState extends State<ReportedPost> {
                       _updateReportStatus(
                           'rejected',
                           question
-                              .reportedItemId); // Pass 'rejected' status and the reportId
+                              .reportDocid); // Pass 'rejected' status and the reportId
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -492,6 +496,8 @@ class _ReportedPostState extends State<ReportedPost> {
   Stream<List<CardFT>> readReportedTeam() {
     return FirebaseFirestore.instance
         .collection('Report')
+        .where('status', isEqualTo: 'pending') // Filter by status
+
         .orderBy('reportType', descending: true)
         .snapshots()
         .asyncMap((snapshot) async {
@@ -544,10 +550,12 @@ class _ReportedPostState extends State<ReportedPost> {
           orElse: () => <String, dynamic>{},
         );
         final reason = reportedPost['reason'] as String? ?? '';
+        final reportDocid = reportedPost['reportedPostId'] as String? ?? '';
         team.userType = userDoc?['userType'] as String? ?? "";
         team.username = username;
         team.userPhotoUrl = userPhotoUrl;
         team.reason = reason;
+        team.reportDocid = reportDocid;
       });
 
       return teams;
@@ -648,7 +656,9 @@ class _ReportedPostState extends State<ReportedPost> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _updateReportStatus('accepted', team.reportDocid);
+                    },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: Color.fromARGB(255, 22, 146, 0),
@@ -660,7 +670,9 @@ class _ReportedPostState extends State<ReportedPost> {
                             color: Color.fromARGB(255, 254, 254, 254))),
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _updateReportStatus('reject', team.reportDocid);
+                    },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: const Color.fromARGB(255, 122, 1, 1),
@@ -686,6 +698,8 @@ class _ReportedPostState extends State<ReportedPost> {
   Stream<List<CardFT>> readReportedProject() {
     return FirebaseFirestore.instance
         .collection('Report')
+        .where('status', isEqualTo: 'pending') // Filter by status
+
         .orderBy('reportType', descending: true)
         .snapshots()
         .asyncMap((snapshot) async {
@@ -738,8 +752,9 @@ class _ReportedPostState extends State<ReportedPost> {
           orElse: () => <String, dynamic>{},
         );
         final reason = reportedPost['reason'] as String? ?? '';
+        final reportDocid = reportedPost['reportedPostId'] as String? ?? '';
         project.userType = userDoc?['userType'] as String? ?? "";
-
+        project.reportDocid = reportDocid;
         project.username = username;
         project.userPhotoUrl = userPhotoUrl;
         project.reason = reason;
@@ -750,10 +765,12 @@ class _ReportedPostState extends State<ReportedPost> {
   }
 
   // answer
-/*
+
   Stream<List<CardAnswer>> readReportedAnswer() {
     return FirebaseFirestore.instance
         .collection('Report')
+        .where('status', isEqualTo: 'pending') // Filter by status
+
         .orderBy('reportType', descending: true)
         .snapshots()
         .asyncMap((snapshot) async {
@@ -767,24 +784,23 @@ class _ReportedPostState extends State<ReportedPost> {
         return data;
       }).toList();
 
-      final questionIds = reportedPosts
+      final AnswerIds = reportedPosts
           .map((post) => post['reportedItemId'] as String)
           .toList();
 
-      // Retrieve details of the reported posts from the 'Question' table
-      final questionDocs = await FirebaseFirestore.instance
+      final AnswerDocs = await FirebaseFirestore.instance
           .collection('Answer')
-          .where(FieldPath.documentId, whereIn: questionIds)
+          .where(FieldPath.documentId, whereIn: AnswerIds)
           .get();
 
-      final questions = questionDocs.docs.map((doc) {
+      final Answers = AnswerDocs.docs.map((doc) {
         Map<String, dynamic> data = doc.data()!;
         data['docId'] = doc.id;
-        return CardQview.fromJson(data);
+        return CardAnswer.fromJson(data);
       }).toList();
 
       // Get user-related information for each question
-      final userIds = questions.map((question) => question.userId).toSet();
+      final userIds = Answers.map((Answer) => Answer.userId).toSet();
       final userDocs = await FirebaseFirestore.instance
           .collection('RegularUser')
           .where('email', whereIn: userIds.toList())
@@ -797,30 +813,30 @@ class _ReportedPostState extends State<ReportedPost> {
             )),
       );
 
-      questions.forEach((question) {
-        final userDoc = userMap[question.userId];
+      Answers.forEach((Answer) {
+        final userDoc = userMap[Answer.userId];
         final username = userDoc?['username'] as String? ?? '';
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
         final reportedPost = reportedPosts.firstWhere(
-          (post) => post['reportedItemId'] == question.questionDocId,
+          (post) => post['reportedItemId'] == Answer.docId, //
           orElse: () => <String, dynamic>{},
         );
         final reason = reportedPost['reason'] as String? ?? '';
-        final reportedItemId = reportedPost['reportedItemId'] as String? ?? '';
+        final reportDocid = reportedPost['reportedPostId'] as String? ?? '';
 
-        question.userType = userDoc?['userType'] as String? ?? "";
-        question.reportedItemId = reportedItemId;
-        question.username = username;
-        question.userPhotoUrl = userPhotoUrl;
-        question.reason = reason;
+        Answer.userType = userDoc?['userType'] as String? ?? "";
+        Answer.username = username;
+        Answer.userPhotoUrl = userPhotoUrl;
+        Answer.reason = reason;
+        Answer.reportDocid = reportDocid;
       });
 
-      return questions;
+      return Answers;
     });
   }
 
-  Widget buildAnswerCard(BuildContext context ,CardAnswer answer) {
+  Widget buildAnswerCard(BuildContext context, CardAnswer answer) {
     String currentEmail = '';
     int upvoteCount = answer.upvoteCount ?? 0;
     List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
@@ -850,12 +866,27 @@ class _ReportedPostState extends State<ReportedPost> {
               SizedBox(height: 5),
               Row(
                 children: [
-                  Text(
-                    answer.username ?? '', // Display the username
-                    style: TextStyle(
+                  GestureDetector(
+                    onTap: () {
+                      if (answer.userId != null &&
+                          answer.userId.isNotEmpty &&
+                          answer.userId != "DeactivatedUser") {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                UserProfileView(userId: answer.userId),
+                          ),
+                        );
+                      }
+                    },
+                    child: Text(
+                      answer.username ?? '',
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: const Color.fromARGB(255, 34, 3, 87),
-                        fontSize: 16),
+                        color: Colors.deepPurple,
+                      ),
+                    ),
                   ),
                   if (answer.userType == "Freelancer")
                     Icon(
@@ -865,10 +896,9 @@ class _ReportedPostState extends State<ReportedPost> {
                     ),
                 ],
               ),
-              SizedBox(height: 5),
-              ListTile(
-                title: Text(answer.answerText),
-              ),
+              SizedBox(height: 10),
+              Text(answer.answerText),
+              SizedBox(height: 10),
             ],
           ),
           subtitle: Column(
@@ -877,100 +907,80 @@ class _ReportedPostState extends State<ReportedPost> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  isLoading
-                      ? CircularProgressIndicator()
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            IconButton(
-                              icon: Icon(
-                                upvotedUserIds.contains(currentEmail)
-                                    ? Icons.arrow_circle_down
-                                    : Icons.arrow_circle_up,
-                                size: 28, // Adjust the size as needed
-                                color: upvotedUserIds.contains(currentEmail)
-                                    ? const Color.fromARGB(255, 49, 3,
-                                        0) // Color for arrow_circle_down
-                                    : const Color.fromARGB(255, 26, 33,
-                                        38), // Color for arrow_circle_up
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  if (upvotedUserIds.contains(currentEmail)) {
-                                    upvotedUserIds.remove(currentEmail);
-                                    upvoteCount--;
-
-                                    // Decrease userScore in RegularUser collection
-                                    FirebaseFirestore.instance
-                                        .collection('RegularUser')
-                                        .where('email',
-                                            isEqualTo: answer.userId)
-                                        .get()
-                                        .then(
-                                            (QuerySnapshot<Map<String, dynamic>>
-                                                snapshot) {
-                                      if (snapshot.docs.isNotEmpty) {
-                                        final documentId = snapshot.docs[0].id;
-
-                                        FirebaseFirestore.instance
-                                            .collection('RegularUser')
-                                            .doc(documentId)
-                                            .update({
-                                          'userScore': FieldValue.increment(-1),
-                                        }).catchError((error) {
-                                          // Handle error if the update fails
-                                        });
-                                      }
-                                    }).catchError((error) {});
-                                  } else {
-                                    upvotedUserIds.add(currentEmail);
-                                    upvoteCount++;
-                                    FirebaseFirestore.instance
-                                        .collection('RegularUser')
-                                        .where('email',
-                                            isEqualTo: answer.userId)
-                                        .get()
-                                        .then(
-                                            (QuerySnapshot<Map<String, dynamic>>
-                                                snapshot) {
-                                      if (snapshot.docs.isNotEmpty) {
-                                        final documentId = snapshot.docs[0].id;
-
-                                        FirebaseFirestore.instance
-                                            .collection('RegularUser')
-                                            .doc(documentId)
-                                            .update({
-                                          'userScore': FieldValue.increment(1),
-                                        }).catchError((error) {});
-                                      }
-                                    }).catchError((error) {});
-                                  }
-
-                                  answer.upvoteCount = upvoteCount;
-                                  answer.upvotedUserIds = upvotedUserIds;
-                                  FirebaseFirestore.instance
-                                      .collection('Answer')
-                                      .doc(answer.docId)
-                                      .update({
-                                    'upvoteCount': upvoteCount,
-                                    'upvotedUserIds': upvotedUserIds,
-                                  }).catchError((error) {
-                                    // Handle error if the update fails
-                                  });
-                                });
-                              },
-                            ),
-                            Text('Upvotes: $upvoteCount'),
-                          ],
-                        ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text('Upvotes: $upvoteCount'),
+                    ],
+                  ),
                 ],
               ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                width: 550.0,
+                height: 1.0,
+                color: Colors.grey, // Customize the color if needed
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                "Reason: ${answer.reason ?? ''}", // Display the reason here
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red, // Customize the color if needed
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      _updateReportStatus('accepted', answer.reportDocid);
+// Pass 'accepted' status and the reportId
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Color.fromARGB(255, 22, 146, 0),
+                      side: BorderSide.none,
+                      shape: const StadiumBorder(),
+                    ),
+                    child: const Text('Accept',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 254, 254, 254))),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      _updateReportStatus(
+                          'rejected',
+                          answer
+                              .reportDocid); // Pass 'rejected' status and the reportId
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: const Color.fromARGB(255, 122, 1, 1),
+                      side: BorderSide.none,
+                      shape: const StadiumBorder(),
+                    ),
+                    child: const Text(
+                      'Reject',
+                      style:
+                          TextStyle(color: Color.fromARGB(255, 254, 254, 254)),
+                    ),
+                  )
+                ],
+              )
             ],
           ),
         ),
       ),
     );
-  }*/
+  }
 
   void _updateReportStatus(String status, String reportId) async {
     try {

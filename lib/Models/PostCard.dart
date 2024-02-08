@@ -14,7 +14,8 @@ class CardFT {
   String userType;
   String? reason;
   String? teamDocId;
-  String? projectDocId; 
+  String? projectDocId;
+  String reportDocid;
 
   CardFT({
     required this.title,
@@ -30,6 +31,7 @@ class CardFT {
     this.reason,
     required this.teamDocId,
     required this.projectDocId, // Provide a default value or make it nullable
+    required this.reportDocid,
   });
 
   Map<String, dynamic> toJson() => {
@@ -45,7 +47,8 @@ class CardFT {
         'userType': userType,
         'reason': reason,
         'teamDocId': teamDocId,
-        'projectDocId':projectDocId,
+        'projectDocId': projectDocId,
+        'reportDocid': reportDocid,
       };
 
   static CardFT fromJson(Map<String, dynamic> json) => CardFT(
@@ -61,6 +64,7 @@ class CardFT {
         userType: json['userType'] ?? '',
         reason: json['reason'] as String?,
         teamDocId: json['teamDocId'],
-        projectDocId:json['projectDocId'],
+        projectDocId: json['projectDocId'],
+        reportDocid: json['reportDocid'] ?? '',
       );
 }

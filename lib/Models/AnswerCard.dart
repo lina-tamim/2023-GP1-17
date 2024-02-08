@@ -10,6 +10,8 @@ class CardAnswer {
   String? userPhotoUrl;
   String? reason;
   String userType;
+  String reportedItemId;
+  String reportDocid;
 
   CardAnswer({
     //required this.answerId,
@@ -23,6 +25,8 @@ class CardAnswer {
     required this.userPhotoUrl,
     this.reason,
     required this.userType,
+    required this.reportedItemId,
+    required this.reportDocid,
   });
 
   Map<String, dynamic> toJson() => {
@@ -37,6 +41,8 @@ class CardAnswer {
         'userPhotoUrl': userPhotoUrl,
         'reason': reason,
         'userType': userType,
+        'reportedItemId': reportedItemId,
+        'reportDocid': reportDocid,
       };
 
   factory CardAnswer.fromJson(Map<String, dynamic> json) {
@@ -52,6 +58,8 @@ class CardAnswer {
       userPhotoUrl: json['userPhotoUrl'] as String?,
       reason: json['reason'] as String?,
       userType: json['userType'] ?? '',
+      reportedItemId: json['reportedItemId'] ?? '',
+      reportDocid: json['reportDocid'] ?? '',
 
 // Update property name to userPhotoUrl
     );
