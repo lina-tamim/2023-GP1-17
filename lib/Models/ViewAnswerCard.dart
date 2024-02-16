@@ -1,6 +1,6 @@
 class CardAview {
   //String answerId;
-  int questionId;
+  String questionDocId;
   String userId;
   String answerText;
   int upvoteCount;
@@ -12,7 +12,7 @@ class CardAview {
 
   CardAview({
     //required this.answerId,
-    required this.questionId,
+    required this.questionDocId,
     required this.userId,
     required this.answerText,
     required this.upvoteCount,
@@ -25,7 +25,7 @@ class CardAview {
 
   Map<String, dynamic> toJson() => {
         //'answerId': answerId,
-        'questionId': questionId,
+        'questionDocId': questionDocId,
         'userId': userId,
         'answerText': answerText,
         'upvoteCount': upvoteCount,
@@ -40,7 +40,7 @@ class CardAview {
   factory CardAview.fromJson(Map<String, dynamic> json) {
     return CardAview(
       //answerId: json['answerId'] as String,
-      questionId: json['questionId'] as int,
+      questionDocId: json['questionDocId'] ,
       userId: json['userId'] as String,
       answerText: json['answerText'] as String,
       upvoteCount: json['upvoteCount'] as int,

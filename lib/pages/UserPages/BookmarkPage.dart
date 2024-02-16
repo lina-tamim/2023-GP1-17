@@ -1100,7 +1100,7 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                AnswerPage(questionId: question.id)),
+                                AnswerPage(questionDocId: question.questionDocId)),
                       );
                     },
                   ),

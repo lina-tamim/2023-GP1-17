@@ -1,6 +1,6 @@
 class CardAnswer {
   //String answerId;
-  int questionId;
+  String questionDocId;
   String userId;
   String answerText;
   int upvoteCount;
@@ -15,7 +15,7 @@ class CardAnswer {
 
   CardAnswer({
     //required this.answerId,
-    required this.questionId,
+    required this.questionDocId,
     required this.userId,
     required this.answerText,
     required this.upvoteCount,
@@ -31,7 +31,7 @@ class CardAnswer {
 
   Map<String, dynamic> toJson() => {
         //'answerId': answerId,
-        'questionId': questionId,
+        'questionDocId': questionDocId,
         'userId': userId,
         'answerText': answerText,
         'upvoteCount': upvoteCount,
@@ -48,7 +48,7 @@ class CardAnswer {
   factory CardAnswer.fromJson(Map<String, dynamic> json) {
     return CardAnswer(
       //answerId: json['answerId'] as String,
-      questionId: json['questionId'] as int,
+      questionDocId: json['questionDocId'],
       userId: json['userId'] as String,
       answerText: json['answerText'] as String,
       upvoteCount: json['upvoteCount'] as int,

@@ -8,9 +8,9 @@ import 'package:techxcel11/Models/ReusedElements.dart';
 import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 
 class AnswerPage extends StatefulWidget {
-  final int questionId;
+  final String questionDocId;
 
-  const AnswerPage({Key? key, required this.questionId}) : super(key: key);
+  const AnswerPage({Key? key, required this.questionDocId}) : super(key: key);
 
   @override
   _AnswerPageState createState() => _AnswerPageState();
@@ -63,7 +63,7 @@ class _AnswerPageState extends State<AnswerPage> {
   Future<List<CardQuestion>> readQuestion() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('Question')
-        .where('questionCount', isEqualTo: widget.questionId)
+        .where('questionDocId', isEqualTo: widget.questionDocId)
         .limit(1)
         .get();
 
@@ -177,7 +177,7 @@ IconButton(
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AnswerPage(questionId: question.id),
+              builder: (context) => AnswerPage(questionDocId: question.questionDocId),
             ),
           );
         },
@@ -596,7 +596,7 @@ IconButton(
       final newFormDoc = formCollection.doc();
       await newFormDoc.set({
         //'answerId': newFormDoc.id,
-        'questionId': widget.questionId,
+        'questionDocId': widget.questionDocId,
         'userId': email,
         'answerText': answerText,
         'upvoteCount': 0,
@@ -608,7 +608,7 @@ IconButton(
 
   Stream<List<CardAnswer>> readAnswer() => FirebaseFirestore.instance
           .collection('Answer')
-          .where('questionId', isEqualTo: widget.questionId)
+          .where('questionDocId', isEqualTo: widget.questionDocId)
           .snapshots()
           .asyncMap((snapshot) async {
         final answers = snapshot.docs.map((doc) {
@@ -769,7 +769,7 @@ IconButton(
       'reason': reason, // Use the provided reason parameter
       'reportDate': DateTime.now(),
       'reportType': "Question",
-      'status': 'pending',
+      'status': 'Pending',
     });
 
     // Clear the selected option after reporting
@@ -788,7 +788,7 @@ IconButton(
       'reason': reason, // Use the provided reason parameter
       'reportDate': DateTime.now(),
       'reportType': "Answer",
-      'status': 'pending',
+      'status': 'Pending',
     });
 
     // Clear the selected option after reporting

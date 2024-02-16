@@ -289,7 +289,7 @@ class _UserProfileView extends State<UserProfileView>
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AnswerPage(questionId: question.id),
+                              builder: (context) => AnswerPage(questionDocId: question.questionDocId),
                             ),
                           );
                         },
@@ -764,7 +764,7 @@ Visibility(
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AnswerPage(questionId: answer.questionId),
+            builder: (context) => AnswerPage(questionDocId: answer.questionDocId),
           ),
         );
       },
@@ -1579,7 +1579,7 @@ Visibility(
       'reason': reason, // Use the provided reason parameter
       'reportDate': DateTime.now(),
       'reportType': "Question",
-      'status': 'pending',
+      'status': 'Pending',
     });
 
     // Clear the selected option after reporting
@@ -1599,7 +1599,7 @@ Visibility(
       'reason': reason, // Use the provided reason parameter
       'reportDate': DateTime.now(),
       'reportType': "Team",
-      'status': 'pending', // Correct the spelling of 'pending'
+      'status': 'Pending', 
     });
 
     // Clear the selected option after reporting
@@ -1619,7 +1619,7 @@ Visibility(
       'reason': reason, // Use the provided reason parameter
       'reportDate': DateTime.now(),
       'reportType': "Project",
-      'status': 'pending', // Correct the spelling of 'pending'
+      'status': 'Pending', 
     });
 
     // Clear the selected option after reporting

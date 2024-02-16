@@ -599,24 +599,8 @@ class _FormWidgetState extends State<FormWidget> {
     } else if (_selectedTopics.isEmpty) {
       toastMessage(interestsValidation ?? 'Invalid data');
     } else {
-      final formCollectionn = FirebaseFirestore.instance.collection('Question');
-      final snapshot = await formCollectionn
-          .orderBy('questionCount', descending: true)
-          .limit(1)
-          .get();
-
-      int id;
-      if (snapshot.docs.isEmpty) {
-        // No existing documents, it's the first question
-        id = 0;
-      } else {
-        final lastDocument = snapshot.docs.first;
-        final lastId = lastDocument['questionCount'] as int;
-        id = lastId + 1;
-      }
-
+    
       DateTime postDate = DateTime.now();
-
       if (_selectedPostType == 'Question') {
         final questionCollection =
             FirebaseFirestore.instance.collection('Question');
@@ -629,7 +613,6 @@ class _FormWidgetState extends State<FormWidget> {
               largeTextFieldValue.substring(1),
           'selectedInterests': _selectedTopics,
           'noOfAnwers': count,
-          'questionCount': id + 1,
           'postedDate': postDate,
           'questionDocId': newFormDoc.id,
         });
