@@ -26,7 +26,6 @@ class CardAnswer {
     required this.reportedItemId,
     required this.reportDocid,
   });
-
   Map<String, dynamic> toJson() => {
         'questionDocId': questionDocId,
         'userId': userId,

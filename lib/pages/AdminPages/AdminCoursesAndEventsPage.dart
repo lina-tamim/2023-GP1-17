@@ -916,7 +916,6 @@ class FormTitleWidget extends StatelessWidget {
 
 class CoursesWidget extends StatelessWidget {
   final Course item;
-
   const CoursesWidget({
     Key? key,
     required this.item,

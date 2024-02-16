@@ -37,7 +37,6 @@ class CardQuestion {
         'reason': reason,
         'reportedItemId': reportedItemId,
       };
-
   static CardQuestion fromJson(Map<String, dynamic> json) => CardQuestion(
         title: json['postTitle'],
         description: json['postDescription'],

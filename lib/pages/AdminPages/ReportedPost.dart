@@ -980,7 +980,6 @@ class _ReportedPostState extends State<ReportedPost> {
       ),
     );
   }
-
   void _updateReportStatus(String status, String reportId) async {
     try {
       await FirebaseFirestore.instance

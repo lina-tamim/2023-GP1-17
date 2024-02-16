@@ -9,6 +9,7 @@ class CardAview {
   String? userPhotoUrl;
   String userType;
 
+
   CardAview({
     required this.questionDocId,
     required this.userId,

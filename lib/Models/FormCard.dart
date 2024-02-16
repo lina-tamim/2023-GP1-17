@@ -141,7 +141,6 @@ class _FormWidgetState extends State<FormWidget> {
     };
 
     final List<String> items = topicGroups.keys.toList();
-
     final List<String> selectedTopics = List<String>.from(
         _selectedTopics); 
 

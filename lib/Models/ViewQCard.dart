@@ -13,6 +13,7 @@ class CardQview {
   String userType;
   String reportedItemId; 
   String reportDocid;
+  
   CardQview({
     required this.title,
     required this.description,

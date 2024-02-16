@@ -877,7 +877,6 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
     });
     super.initState();
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

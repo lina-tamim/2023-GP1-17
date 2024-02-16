@@ -1530,6 +1530,7 @@ Visibility(
     );
   }
 
+
   void launchGitHubURL(String url) async {
     if (await canLaunch(url)) {
       await launch(url);

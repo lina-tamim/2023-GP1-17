@@ -290,7 +290,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       toastMessage("Failed to save to Calendar: $e");
     }
   }
-
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

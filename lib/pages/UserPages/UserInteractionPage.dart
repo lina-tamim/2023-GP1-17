@@ -855,20 +855,18 @@ class _UserPostsPageState extends State<UserPostsPage> {
                                 upvotedUserIds.contains(currentEmail)
                                     ? Icons.arrow_circle_down
                                     : Icons.arrow_circle_up,
-                                size: 28, // Adjust the size as needed
+                                size: 28, 
                                 color: upvotedUserIds.contains(currentEmail)
                                     ? const Color.fromARGB(255, 49, 3,
-                                        0) // Color for arrow_circle_down
+                                        0) 
                                     : const Color.fromARGB(255, 26, 33,
-                                        38), // Color for arrow_circle_up
+                                        38), 
                               ),
                               onPressed: () {
                                 setState(() {
                                   if (upvotedUserIds.contains(currentEmail)) {
                                     upvotedUserIds.remove(currentEmail);
                                     upvoteCount--;
-
-                                    // Decrease userScore in RegularUser collection
                                     FirebaseFirestore.instance
                                         .collection('RegularUser')
                                         .where('email',

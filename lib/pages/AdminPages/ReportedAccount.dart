@@ -623,6 +623,7 @@ The TeXel Team
     },
   );
 
+
   if (await canLaunch(emailUri.toString())) {
     await launch(emailUri.toString());
   } else {
