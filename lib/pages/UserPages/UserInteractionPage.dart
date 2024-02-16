@@ -668,7 +668,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                     final q = snapshot.data!;
                     if (q.isEmpty) {
                       return Center(
-                        child: Text('You didn’t post anything yet'),
+                        child: Text('You didn’t post any questions yet'),
                       );
                     }
                     return ListView(
@@ -802,7 +802,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
           leading: CircleAvatar(
             backgroundImage: answer.userPhotoUrl != null
                 ? NetworkImage(answer.userPhotoUrl!)
-                : null, // Handle null value
+                : null, 
           ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -811,7 +811,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
               Row(
                 children: [
                   Text(
-                    answer.username ?? '', // Display the username
+                    answer.username ?? '',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: const Color.fromARGB(255, 34, 3, 87),

@@ -11,7 +11,7 @@ class CardQview {
   String questionDocId;
   String? reason;
   String userType;
-  String reportedItemId; // Add postId property here
+  String reportedItemId; 
   String reportDocid;
   CardQview({
     required this.title,

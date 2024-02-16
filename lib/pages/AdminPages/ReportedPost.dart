@@ -267,7 +267,7 @@ class _ReportedPostState extends State<ReportedPost> {
   Stream<List<CardQview>> readReportedQuestion() {
     return FirebaseFirestore.instance
         .collection('Report')
-        .where('status', isEqualTo: 'pending') // Filter by status
+        .where('status', isEqualTo: 'Pending') // Filter by status
 
         .orderBy('reportType', descending: true)
         .snapshots()
@@ -450,7 +450,7 @@ class _ReportedPostState extends State<ReportedPost> {
                   ElevatedButton(
                     onPressed: () {
                       _updateReportStatus(
-                          'accepted',
+                          'Accepted',
                           question
                               .reportDocid); // Pass 'accepted' status and the reportId
                     },
@@ -467,9 +467,9 @@ class _ReportedPostState extends State<ReportedPost> {
                   ElevatedButton(
                     onPressed: () {
                       _updateReportStatus(
-                          'rejected',
+                          'Rejected',
                           question
-                              .reportDocid); // Pass 'rejected' status and the reportId
+                              .reportDocid); 
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -496,7 +496,7 @@ class _ReportedPostState extends State<ReportedPost> {
   Stream<List<CardFT>> readReportedTeam() {
     return FirebaseFirestore.instance
         .collection('Report')
-        .where('status', isEqualTo: 'pending') // Filter by status
+        .where('status', isEqualTo: 'Pending') // Filter by status
 
         .orderBy('reportType', descending: true)
         .snapshots()
@@ -657,7 +657,7 @@ class _ReportedPostState extends State<ReportedPost> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      _updateReportStatus('accepted', team.reportDocid);
+                      _updateReportStatus('Accepted', team.reportDocid);
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -698,7 +698,7 @@ class _ReportedPostState extends State<ReportedPost> {
   Stream<List<CardFT>> readReportedProject() {
     return FirebaseFirestore.instance
         .collection('Report')
-        .where('status', isEqualTo: 'pending') // Filter by status
+        .where('status', isEqualTo: 'Pending') // Filter by status
 
         .orderBy('reportType', descending: true)
         .snapshots()
@@ -769,7 +769,7 @@ class _ReportedPostState extends State<ReportedPost> {
   Stream<List<CardAnswer>> readReportedAnswer() {
     return FirebaseFirestore.instance
         .collection('Report')
-        .where('status', isEqualTo: 'pending') // Filter by status
+        .where('status', isEqualTo: 'Pending') // Filter by status
 
         .orderBy('reportType', descending: true)
         .snapshots()
@@ -941,8 +941,7 @@ class _ReportedPostState extends State<ReportedPost> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      _updateReportStatus('accepted', answer.reportDocid);
-// Pass 'accepted' status and the reportId
+                      _updateReportStatus('Accepted', answer.reportDocid);
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -957,9 +956,9 @@ class _ReportedPostState extends State<ReportedPost> {
                   ElevatedButton(
                     onPressed: () {
                       _updateReportStatus(
-                          'rejected',
+                          'Rejected',
                           answer
-                              .reportDocid); // Pass 'rejected' status and the reportId
+                              .reportDocid); 
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -990,11 +989,8 @@ class _ReportedPostState extends State<ReportedPost> {
           .update({
         'status': status,
       });
-      print('Report status updated to $status');
     } catch (e) {
-      print('Error updating report status: $e');
-      // Handle the error as needed
     }
   }
 }
-//
+

@@ -143,7 +143,7 @@ class _FormWidgetState extends State<FormWidget> {
     final List<String> items = topicGroups.keys.toList();
 
     final List<String> selectedTopics = List<String>.from(
-        _selectedTopics); // Store the selected interests outside of the dialog
+        _selectedTopics); 
 
     final List<String>? result = await showDialog<List<String>>(
       context: context,

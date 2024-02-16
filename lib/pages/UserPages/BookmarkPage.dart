@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/Models/FormCard.dart';
 import 'package:techxcel11/Models/PathwaysCard.dart';
+import 'package:techxcel11/Models/PostCard.dart';
+import 'package:techxcel11/Models/QuestionCard.dart';
 import 'package:techxcel11/Models/ViewAnswerCard.dart';
 import 'package:techxcel11/Models/ViewQCard.dart';
 import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
@@ -157,6 +159,7 @@ class UserBookmarkedPathways extends StatefulWidget {
 }
 
 int _currentIndex = 0;
+
 
 class _UserBookmarkedPathwaysState extends State<UserBookmarkedPathways> {
   int id = 0;
@@ -837,6 +840,18 @@ class UserBookmarkedQuestions extends StatefulWidget {
   State<UserBookmarkedQuestions> createState() =>
       _UserBookmarkedQuestionsState();
 }
+  String? selectedOption;
+    List<String> dropDownOptions = [
+    'Inappropriate content',
+    'Spam',
+    'Harassment',
+    'False information',
+    'Violence',
+    'Hate speech',
+    'Bullying',
+    'Others'
+  ];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
   int _currentIndex = 0;
@@ -876,11 +891,10 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
                 Align(
                   alignment: Alignment.topRight,
                   child: Material(
-                    // Wrap PopupMenuButton with Material
-                    elevation: 0, // Set elevation to 0 to remove shadow
+                    elevation: 0, 
                     shape: RoundedRectangleBorder(
                       borderRadius:
-                          BorderRadius.circular(60), // Set the border radius
+                          BorderRadius.circular(60),
                     ),
                     child: PopupMenuButton<int>(
                       itemBuilder: (context) => [
@@ -1107,8 +1121,95 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
                   IconButton(
                     icon: Icon(Icons.report,
                         color: Color.fromARGB(255, 63, 63, 63)),
-                    onPressed: () {
-                      // Add functionality next sprints
+                     onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return StatefulBuilder(
+                            builder:
+                                (BuildContext context, StateSetter setState) {
+                              // Set the initial selectedOption to null
+                              String? initialOption = null;
+                              TextEditingController customReasonController =
+                                  TextEditingController();
+
+                              return AlertDialog(
+                                title: Text('Report Post'),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    DropdownButton<String>(
+                                      value: selectedOption,
+                                      hint: Text('Select a reason'),
+                                      onTap: () {
+                                        // Set the initialOption to the selectedOption
+                                        initialOption = selectedOption;
+                                      },
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          selectedOption = newValue!;
+                                        });
+                                      },
+                                      items:
+                                          dropDownOptions.map((String option) {
+                                        return DropdownMenuItem<String>(
+                                          value: option,
+                                          child: Text(option),
+                                        );
+                                      }).toList(),
+                                    ),
+                                    Visibility(
+                                      visible: selectedOption == 'Others',
+                                      child: TextFormField(
+                                        controller: customReasonController,
+                                        decoration: InputDecoration(
+                                            labelText: 'Enter your reason'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () {
+                                      // Reset the selectedOption to the initialOption when canceling
+                                      setState(() {
+                                        selectedOption = initialOption;
+                                      });
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Report'),
+                                    onPressed: () {
+                                      if (selectedOption != null) {
+                                        String reason;
+                                        if (selectedOption == 'Others') {
+                                          reason = customReasonController.text;
+                                        } else {
+                                          reason = selectedOption!;
+                                        }
+                                        if (reason.isNotEmpty) {
+                                          // Check if a reason is provided
+                                          handleReportQuestion(
+                                              loggedInEmail, question, reason);
+                                          toastMessage(
+                                              'Your report has been sent successfully');
+                                          Navigator.of(context).pop();
+                                        } else {
+                                          // Show an error message or handle the case where no reason is provided
+                                          print(
+                                              'Please provide a reason for reporting.');
+                                        }
+                                      }
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      );
                     },
                   ),
                 ],
@@ -1165,4 +1266,23 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
       print('Error removing Question from bookmarks: $error');
     }
   }
+
+  void handleReportQuestion(
+    String email,
+    CardQview question,
+    String reason,
+  ) async {
+    String? postId = question.questionDocId; // Get the post ID
+
+    await _firestore.collection('Report').add({
+      'reportedItemId': postId,
+      'reason': reason, // Use the provided reason parameter
+      'reportDate': DateTime.now(),
+      'reportType': "Question",
+      'status': 'Pending',
+    });
+    selectedOption = null;
+  }
+
+
 }

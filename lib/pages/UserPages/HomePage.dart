@@ -373,7 +373,6 @@ class __FHomePageState extends State<FHomePage> {
                           return StatefulBuilder(
                             builder:
                                 (BuildContext context, StateSetter setState) {
-                              // Set the initial selectedOption to null
                               String? initialOption = null;
                               TextEditingController customReasonController =
                                   TextEditingController();
@@ -949,7 +948,7 @@ class __FHomePageState extends State<FHomePage> {
       'reason': reason, // Use the provided reason parameter
       'reportDate': DateTime.now(),
       'reportType': "Question",
-      'status': 'pending',
+      'status': 'Pending',
     });
 
     // Clear the selected option after reporting
@@ -969,7 +968,7 @@ class __FHomePageState extends State<FHomePage> {
       'reason': reason, // Use the provided reason parameter
       'reportDate': DateTime.now(),
       'reportType': "Team",
-      'status': 'pending', // Correct the spelling of 'pending'
+      'status': 'Pending', // Correct the spelling of 'pending'
     });
 
     // Clear the selected option after reporting
@@ -989,7 +988,7 @@ class __FHomePageState extends State<FHomePage> {
       'reason': reason, // Use the provided reason parameter
       'reportDate': DateTime.now(),
       'reportType': "Project",
-      'status': 'pending', // Correct the spelling of 'pending'
+      'status': 'Pending', // Correct the spelling of 'pending'
     });
 
     // Clear the selected option after reporting

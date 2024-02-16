@@ -1,14 +1,10 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
 import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:firebase_admin/firebase_admin.dart';
-import 'package:firebase_admin/src/credential.dart';
 
 class ReportedAccountsPage extends StatefulWidget {
   const ReportedAccountsPage({super.key});
@@ -632,28 +628,8 @@ The TeXel Team
   } else {
     throw 'Could not launch email';
   }
- deactivateReportedAccount( email);
 
 }
- 
-
 }
 
 
-
-void deactivateReportedAccount(String email) async {
-  /*try {
-    final user = await FirebaseAuth.instance.getUserByEmail(email);
-
-    if (user != null) {
-      // Deactivate the user account
-      await FirebaseAuth.instance.updateUser(user.uid, UserRecordUpdate()..disabled = true);
-
-      print('Account deactivated successfully');
-    } else {
-      print('User not found');
-    }
-  } catch (e) {
-    print('Error deactivating account: $e');
-  }*/
-}

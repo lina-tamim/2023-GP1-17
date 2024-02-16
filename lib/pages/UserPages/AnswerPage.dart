@@ -767,7 +767,7 @@ IconButton(
       'reason': reason, // Use the provided reason parameter
       'reportDate': DateTime.now(),
       'reportType': "Question",
-      'status': 'pending',
+      'status': 'Pending',
     });
 
     // Clear the selected option after reporting
@@ -779,17 +779,15 @@ IconButton(
     CardAnswer answer,
     String reason,
   ) async {
-    String? postId = answer.docId; // Get the post ID
+    String? postId = answer.docId;
 
     await _firestore.collection('Report').add({
       'reportedItemId': postId,
-      'reason': reason, // Use the provided reason parameter
+      'reason': reason, 
       'reportDate': DateTime.now(),
       'reportType': "Answer",
-      'status': 'pending',
+      'status': 'Pending',
     });
-
-    // Clear the selected option after reporting
     selectedOption = null;
   }
 }

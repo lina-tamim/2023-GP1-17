@@ -1579,7 +1579,7 @@ Visibility(
       'reason': reason, // Use the provided reason parameter
       'reportDate': DateTime.now(),
       'reportType': "Question",
-      'status': 'pending',
+      'status': 'Pending',
     });
 
     // Clear the selected option after reporting
@@ -1589,40 +1589,34 @@ Visibility(
   void handleReportTeam(
     String email,
     CardFT team,
-    String reason, // Accept reason as a parameter
+    String reason, 
   ) async {
-    String? postId = team.teamDocId; // Get the post ID
+    String? postId = team.teamDocId; 
 
-    // Create a new document in the "Report" collection in Firestore
     await FirebaseFirestore.instance.collection('Report').add({
       'reportedItemId': postId,
-      'reason': reason, // Use the provided reason parameter
+      'reason': reason, 
       'reportDate': DateTime.now(),
       'reportType': "Team",
-      'status': 'pending', // Correct the spelling of 'pending'
+      'status': 'Pending', 
     });
-
-    // Clear the selected option after reporting
     selectedOption = null;
   }
 
   void handleReportProject(
     String email,
     CardFT team,
-    String reason, // Accept reason as a parameter
+    String reason, 
   ) async {
-    String? postId = team.teamDocId; // Get the post ID
+    String? postId = team.teamDocId; 
 
-    // Create a new document in the "Report" collection in Firestore
     await FirebaseFirestore.instance.collection('Report').add({
       'reportedItemId': postId,
-      'reason': reason, // Use the provided reason parameter
+      'reason': reason, 
       'reportDate': DateTime.now(),
       'reportType': "Project",
-      'status': 'pending', // Correct the spelling of 'pending'
+      'status': 'Pending', 
     });
-
-    // Clear the selected option after reporting
     selectedOption = null;
   }
 }

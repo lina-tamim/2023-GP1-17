@@ -740,7 +740,6 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                             ),
                           ],
                         ),
-                        // Rest of your code...
                       ],
                     ),
                   ),

@@ -270,12 +270,8 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final email = prefs.getString('loggedInEmail') ?? '';
-
-      // Create a reference to the Firestore collection "Calendar"
       final calendarCollection =
           FirebaseFirestore.instance.collection('Calendar');
-
-      // Check if a document with matching my_id and docId already exists
       final existingDocsQuery = calendarCollection
           .where('my_id', isEqualTo: email)
           .where('docId', isEqualTo: courseAndEvent.docId)
@@ -284,21 +280,13 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       final existingDocsSnapshot = await existingDocsQuery.get();
 
       if (existingDocsSnapshot.docs.isNotEmpty) {
-        // A matching document already exists
         toastMessage("Already exists in Calendar");
         return;
       }
-
-      // Convert the course object to a map
       final courseAndeventMap = courseAndEvent.toJson2(email);
-
-      // Save the course data to the Firestore collection
       await calendarCollection.add(courseAndeventMap);
-
-      // Show a success message to the user
       toastMessage("Saved to Calender");
     } catch (e) {
-      // Show an error message to the user
       toastMessage("Failed to save to Calendar: $e");
     }
   }
