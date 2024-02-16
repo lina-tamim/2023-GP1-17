@@ -9,7 +9,6 @@ import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 
 class AnswerPage extends StatefulWidget {
   final String questionDocId;
-  final String questionDocId;
 
   const AnswerPage({Key? key, required this.questionDocId}) : super(key: key);
 
