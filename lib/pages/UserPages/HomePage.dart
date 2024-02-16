@@ -359,7 +359,7 @@ class __FHomePageState extends State<FHomePage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                AnswerPage(questionId: question.id)),
+                                AnswerPage(questionDocId: question.questionDocId)),
                       );
                     },
                   ),

@@ -420,7 +420,7 @@ class _ReportedPostState extends State<ReportedPost> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                AnswerPage(questionId: question.id)),
+                                AnswerPage(questionDocId: question.questionDocId)),
                       );
                     },
                   ),
@@ -848,7 +848,7 @@ class _ReportedPostState extends State<ReportedPost> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AnswerPage(questionId: answer.questionId),
+            builder: (context) => AnswerPage(questionDocId: answer.questionDocId),
           ),
         );
       },

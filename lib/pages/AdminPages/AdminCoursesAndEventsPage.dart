@@ -385,6 +385,7 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
         'link': linkController.text,
         'location': locationController.text,
         'imageURL': imageURL,
+        'approval': 'Yes',
       });
     } else {
       await newFormDoc.set({
@@ -399,6 +400,7 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
         'location': locationController.text,
         'createdAt': postDate,
         'imageURL': imageURL,
+        'approval': 'Yes',
       });
     }
 
@@ -424,49 +426,32 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
 
 
 Stream<List<Course>> readCourses({String type = 'Course'}) {
-  final StreamController<List<Course>> controller = StreamController<List<Course>>();
-
-  try {
-    // Fetch courses where 'approval' is 'Yes' or 'userEmail' is 'texelad1@gmail.com'
-    FirebaseFirestore.instance
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
         .collection('Program')
         .where('type', isEqualTo: type)
-        .where('approval', isEqualTo: 'Yes')
-        .get()
-        .then((approvedSnapshot) async {
-          final approvedCourses = approvedSnapshot.docs.map((doc) {
-            Map<String, dynamic> data = doc.data();
-            data['docId'] = doc.id;
-            return Course.fromJson(data);
-          }).toList();
+        .where('approval', isEqualTo: 'Yes');
 
-          // Fetch courses where 'userEmail' is 'texelad1@gmail.com'
-          final userEmailSnapshot = await FirebaseFirestore.instance
-              .collection('Program')
-              .where('type', isEqualTo: type)
-              .where('userEmail', isEqualTo: 'texelad1@gmail.com')
-              .get();
+    if (searchController.text.isNotEmpty) {
+      query = query
+          .where('title',
+              isGreaterThanOrEqualTo: searchController.text.toLowerCase())
+          .where('title',
+              isLessThanOrEqualTo:
+                  searchController.text.toLowerCase() + '\uf8ff');
+    } else {
+      query = query.orderBy('createdAt', descending: true);
+    }
 
-          final userEmailCourses = userEmailSnapshot.docs.map((doc) {
-            Map<String, dynamic> data = doc.data();
-            data['docId'] = doc.id;
-            return Course.fromJson(data);
-          }).toList();
+    return query.snapshots().asyncMap((snapshot) async {
+      final courses = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        data['docId'] = doc.id;
+        return Course.fromJson(data);
+      }).toList();
 
-          // Combine and add courses
-          approvedCourses.addAll(userEmailCourses);
-
-          controller.add(approvedCourses);
-        });
-  } catch (error, stackTrace) {
-    // Handle errors
-    print("Error fetching courses: $error");
-    print(stackTrace);
-    controller.addError(error);
+      return courses;
+    });
   }
-
-  return controller.stream;
-}
 
 
   void showInputDialog() {

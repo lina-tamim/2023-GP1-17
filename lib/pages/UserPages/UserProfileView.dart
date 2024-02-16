@@ -289,7 +289,7 @@ class _UserProfileView extends State<UserProfileView>
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AnswerPage(questionId: question.id),
+                              builder: (context) => AnswerPage(questionDocId: question.questionDocId),
                             ),
                           );
                         },
@@ -764,7 +764,7 @@ Visibility(
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AnswerPage(questionId: answer.questionId),
+            builder: (context) => AnswerPage(questionDocId: answer.questionDocId),
           ),
         );
       },

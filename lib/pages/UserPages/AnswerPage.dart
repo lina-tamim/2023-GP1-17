@@ -8,9 +8,9 @@ import 'package:techxcel11/Models/ReusedElements.dart';
 import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 
 class AnswerPage extends StatefulWidget {
-  final int questionId;
+  final String questionDocId;
 
-  const AnswerPage({Key? key, required this.questionId}) : super(key: key);
+  const AnswerPage({Key? key, required this.questionDocId}) : super(key: key);
 
   @override
   _AnswerPageState createState() => _AnswerPageState();
@@ -30,7 +30,6 @@ class _AnswerPageState extends State<AnswerPage> {
     'Hate speech',
     'Bullying',
     'Others'
-    // Add more options as needed
   ];
 
   Future<void> fetchuseremail() async {
@@ -63,7 +62,7 @@ class _AnswerPageState extends State<AnswerPage> {
   Future<List<CardQuestion>> readQuestion() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('Question')
-        .where('questionCount', isEqualTo: widget.questionId)
+        .where('questionDocId', isEqualTo: widget.questionDocId)
         .limit(1)
         .get();
 
@@ -177,7 +176,7 @@ IconButton(
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AnswerPage(questionId: question.id),
+              builder: (context) => AnswerPage(questionDocId: question.questionDocId),
             ),
           );
         },
@@ -595,8 +594,7 @@ IconButton(
 
       final newFormDoc = formCollection.doc();
       await newFormDoc.set({
-        //'answerId': newFormDoc.id,
-        'questionId': widget.questionId,
+        'questionId': widget.questionDocId,
         'userId': email,
         'answerText': answerText,
         'upvoteCount': 0,
@@ -608,12 +606,12 @@ IconButton(
 
   Stream<List<CardAnswer>> readAnswer() => FirebaseFirestore.instance
           .collection('Answer')
-          .where('questionId', isEqualTo: widget.questionId)
+          .where('questionId', isEqualTo: widget.questionDocId)
           .snapshots()
           .asyncMap((snapshot) async {
         final answers = snapshot.docs.map((doc) {
           final data = doc.data();
-          data['docId'] = doc.id; // Set the 'docId' field to the document ID
+          data['docId'] = doc.id; 
           return CardAnswer.fromJson(data);
         }).toList();
         final userIds = answers.map((answer) => answer.userId).toList();
