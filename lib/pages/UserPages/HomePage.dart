@@ -968,7 +968,7 @@ class __FHomePageState extends State<FHomePage> {
       'reason': reason, // Use the provided reason parameter
       'reportDate': DateTime.now(),
       'reportType': "Team",
-      'status': 'Pending', // Correct the spelling of 'pending'
+      'status': 'Pending', 
     });
 
     // Clear the selected option after reporting
@@ -988,7 +988,7 @@ class __FHomePageState extends State<FHomePage> {
       'reason': reason, // Use the provided reason parameter
       'reportDate': DateTime.now(),
       'reportType': "Project",
-      'status': 'Pending', // Correct the spelling of 'pending'
+      'status': 'Pending', 
     });
 
     // Clear the selected option after reporting

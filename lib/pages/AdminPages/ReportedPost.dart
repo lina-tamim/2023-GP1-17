@@ -452,7 +452,7 @@ class _ReportedPostState extends State<ReportedPost> {
                       _updateReportStatus(
                           'Accepted',
                           question
-                              .reportDocid); // Pass 'accepted' status and the reportId
+                              .reportDocid); 
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,

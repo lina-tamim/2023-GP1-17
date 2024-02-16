@@ -602,7 +602,6 @@ class _FormWidgetState extends State<FormWidget> {
 
 
       DateTime postDate = DateTime.now();
-
       if (_selectedPostType == 'Question') {
         final questionCollection =
             FirebaseFirestore.instance.collection('Question');
