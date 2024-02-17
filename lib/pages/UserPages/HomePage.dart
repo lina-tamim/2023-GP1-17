@@ -105,61 +105,81 @@ class __FHomePageState extends State<FHomePage> {
     );
   }
 
-  Stream<List<CardQuestion>> readQuestion() {
-    Query<Map<String, dynamic>> query =
-        FirebaseFirestore.instance.collection('Question');
-    //.where('dropdownValue', isEqualTo: 'Question');
+Stream<List<CardQuestion>> readQuestion() {
+  Query<Map<String, dynamic>> query =
+      FirebaseFirestore.instance.collection('Question');
+  //.where('dropdownValue', isEqualTo: 'Question');
 
-    if (searchController.text.isNotEmpty) {
-      String searchText = searchController.text;
-      query = query
-          .where('postDescription', isGreaterThanOrEqualTo: searchText)
-          .where('postDescription', isLessThan: searchText + 'z');
-    } else {
-      query = query.orderBy('postedDate', descending: true);
-    }
-
-    return query.snapshots().asyncMap((snapshot) async {
-      final questions = snapshot.docs
-          .map((doc) =>
-              CardQuestion.fromJson(doc.data() as Map<String, dynamic>))
-          .toList();
-      if (questions.isEmpty) return [];
-
-      final userIds = questions.map((question) => question.userId).toList();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', whereIn: userIds)
-          .get();
-
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-              doc.data() as Map<String, dynamic>)));
-
-      questions.forEach((question) {
-        final userDoc = userMap[question.userId];
-        final username = userDoc?['username'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-        question.username = username;
-        question.userPhotoUrl = userPhotoUrl;
-        question.userType = userDoc?['userType'] as String? ?? "";
-        // question.userId = userDoc ?['userId'] as String;
-      });
-
-      final userIdsNotFound =
-          userIds.where((userId) => !userMap.containsKey(userId)).toList();
-      userIdsNotFound.forEach((userId) {
-        questions.forEach((question) {
-          if (question.userId == userId) {
-            question.username = 'DeactivatedUser';
-            question.userPhotoUrl = '';
-          }
-        });
-      });
-
-      return questions;
-    });
+  if (searchController.text.isNotEmpty) {
+    String searchText = searchController.text;
+    query = query
+        .where('postDescription', isGreaterThanOrEqualTo: searchText)
+        .where('postDescription', isLessThan: searchText + 'z');
+  } else {
+    query = query.orderBy('postedDate', descending: true);
   }
+
+  return query.snapshots().asyncMap((snapshot) async {
+    final questions = snapshot.docs.map((doc) {
+      final questionData = doc.data() as Map<String, dynamic>;
+      final question = CardQuestion.fromJson(questionData);
+      question.docId = doc.id; // Set the docId to the actual document ID
+      return question;
+    }).toList();
+    if (questions.isEmpty) return [];
+
+    final userIds = questions.map((question) => question.userId).toList();
+
+    // Query the Report collection to get accepted questionIds
+    QuerySnapshot<Map<String, dynamic>> reportSnapshot = await FirebaseFirestore.instance
+        .collection('Report')
+        .where('reportType', isEqualTo: 'Question')
+        .where('status', isEqualTo: 'Accepted')
+        .get();
+
+   Set<String> acceptedQuestionIds =
+    reportSnapshot.docs.map((doc) => doc['reportedItemId'] as String).toSet();
+        print("@@@@@@@@@$acceptedQuestionIds");
+
+    final userDocs = await FirebaseFirestore.instance
+        .collection('RegularUser')
+        .where('email', whereIn: userIds)
+        .get();
+
+    final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+        userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+            doc.data() as Map<String, dynamic>)));
+
+    questions.forEach((question) {
+      final userDoc = userMap[question.userId];
+      final username = userDoc?['username'] as String? ?? '';
+      final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+      question.username = username;
+      question.userPhotoUrl = userPhotoUrl;
+      question.userType = userDoc?['userType'] as String? ?? "";
+      // question.userId = userDoc ?['userId'] as String;
+      print("22222222222 ${question.docId}");
+    });
+
+    final userIdsNotFound =
+        userIds.where((userId) => !userMap.containsKey(userId)).toList();
+    userIdsNotFound.forEach((userId) {
+      questions.forEach((question) {
+        if (question.userId == userId) {
+          question.username = 'DeactivatedUser';
+          question.userPhotoUrl = '';
+          
+        }
+      });
+    });
+
+    // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
+    List<CardQuestion> filteredQuestions =
+        questions.where((question) => !acceptedQuestionIds.contains(question.docId)).toList();
+
+    return filteredQuestions;
+  });
+}
 
   Stream<List<CardFT>> readTeam() {
     Query<Map<String, dynamic>> query =
@@ -177,12 +197,29 @@ class __FHomePageState extends State<FHomePage> {
       query = query.orderBy('postedDate', descending: true);
     }
 
-    return query.snapshots().asyncMap((snapshot) async {
-      final questions = snapshot.docs
-          .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
-          .toList();
+    
+
+          return query.snapshots().asyncMap((snapshot) async {
+    final questions = snapshot.docs.map((doc) {
+      final questionData = doc.data() as Map<String, dynamic>;
+      final question = CardFT.fromJson(questionData);
+      question.docId = doc.id; // Set the docId to the actual document ID
+      return question;
+    }).toList();
+
       if (questions.isEmpty) return [];
       final userIds = questions.map((question) => question.userId).toList();
+
+        // Query the Report collection to get accepted questionIds
+    QuerySnapshot<Map<String, dynamic>> reportSnapshot = await FirebaseFirestore.instance
+        .collection('Report')
+        .where('reportType', isEqualTo: 'Team')
+        .where('status', isEqualTo: 'Accepted')
+        .get();
+
+   Set<String> acceptedQuestionIds =
+    reportSnapshot.docs.map((doc) => doc['reportedItemId'] as String).toSet();
+
       final userDocs = await FirebaseFirestore.instance
           .collection('RegularUser')
           .where('email', whereIn: userIds)
@@ -211,7 +248,14 @@ class __FHomePageState extends State<FHomePage> {
           }
         });
       });
-      return questions;
+      
+
+      
+    // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
+    List<CardFT> filteredQuestions =
+        questions.where((question) => !acceptedQuestionIds.contains(question.docId)).toList();
+
+    return filteredQuestions;
     });
   }
 
@@ -231,15 +275,27 @@ class __FHomePageState extends State<FHomePage> {
     }
 
     return query.snapshots().asyncMap((snapshot) async {
-      final questions = snapshot.docs
-          .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
-          .toList();
+    final questions = snapshot.docs.map((doc) {
+      final questionData = doc.data() as Map<String, dynamic>;
+      final question = CardFT.fromJson(questionData);
+      question.docId = doc.id; // Set the docId to the actual document ID
+      return question;
+    }).toList();
       if (questions.isEmpty) return [];
       final userIds = questions.map((question) => question.userId).toList();
+
+          // Query the Report collection to get accepted questionIds
+    QuerySnapshot<Map<String, dynamic>> reportSnapshot = await FirebaseFirestore.instance
+        .collection('Report')
+        .where('reportType', isEqualTo: 'Project')
+        .where('status', isEqualTo: 'Accepted')
+        .get();
       final userDocs = await FirebaseFirestore.instance
           .collection('RegularUser')
           .where('email', whereIn: userIds)
           .get();
+Set<String> acceptedQuestionIds =
+    reportSnapshot.docs.map((doc) => doc['reportedItemId'] as String).toSet();
 
       final userMap = Map<String, Map<String, dynamic>>.fromEntries(
           userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
@@ -264,7 +320,11 @@ class __FHomePageState extends State<FHomePage> {
           }
         });
       });
-      return questions;
+      // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
+    List<CardFT> filteredQuestions =
+        questions.where((question) => !acceptedQuestionIds.contains(question.docId)).toList();
+
+    return filteredQuestions;
     });
   }
 

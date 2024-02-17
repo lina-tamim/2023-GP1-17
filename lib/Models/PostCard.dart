@@ -7,7 +7,8 @@ class CardFT {
   final DateTime date;
   final List<String> topics;
   final String userId;
-  final String? docId;
+  //final String? docId;
+  String docId;
   String? username;
   String? userPhotoUrl;
   String email;

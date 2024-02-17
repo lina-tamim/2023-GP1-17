@@ -147,11 +147,22 @@ class _UserProfileView extends State<UserProfileView>
         .orderBy('postedDate', descending: true);
 
     return query.snapshots().asyncMap((snapshot) async {
-      final questions = snapshot.docs
-          .map((doc) =>
-              CardQuestion.fromJson(doc.data() as Map<String, dynamic>))
-          .toList();
+    final questions = snapshot.docs.map((doc) {
+      final questionData = doc.data() as Map<String, dynamic>;
+      final question = CardQuestion.fromJson(questionData);
+      question.docId = doc.id; // Set the docId to the actual document ID
+      return question;
+    }).toList();
       if (questions.isEmpty) return [];
+ // Query the Report collection to get accepted questionIds
+    QuerySnapshot<Map<String, dynamic>> reportSnapshot = await FirebaseFirestore.instance
+        .collection('Report')
+        .where('reportType', isEqualTo: 'Question')
+        .where('status', isEqualTo: 'Accepted')
+        .get();
+
+   Set<String> acceptedQuestionIds =
+    reportSnapshot.docs.map((doc) => doc['reportedItemId'] as String).toSet();
 
       final userIds = questions.map((question) => question.userId).toList();
       final userDocs = await FirebaseFirestore.instance
@@ -185,8 +196,11 @@ class _UserProfileView extends State<UserProfileView>
         });
       });
 
-      return questions;
-    });
+ List<CardQuestion> filteredQuestions =
+        questions.where((question) => !acceptedQuestionIds.contains(question.docId)).toList();
+
+    return filteredQuestions;
+        });
   }
 
   Widget buildQuestionCard(CardQuestion question) => Card(
@@ -405,10 +419,23 @@ class _UserProfileView extends State<UserProfileView>
         .orderBy('postedDate', descending: true);
 
     return query.snapshots().asyncMap((snapshot) async {
-      final questions = snapshot.docs
-          .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
-          .toList();
+    final questions = snapshot.docs.map((doc) {
+      final questionData = doc.data() as Map<String, dynamic>;
+      final question = CardFT.fromJson(questionData);
+      question.docId = doc.id; // Set the docId to the actual document ID
+      return question;
+    }).toList();
+
       if (questions.isEmpty) return [];
+         // Query the Report collection to get accepted questionIds
+    QuerySnapshot<Map<String, dynamic>> reportSnapshot = await FirebaseFirestore.instance
+        .collection('Report')
+        .where('reportType', isEqualTo: 'Team')
+        .where('status', isEqualTo: 'Accepted')
+        .get();
+
+   Set<String> acceptedQuestionIds =
+    reportSnapshot.docs.map((doc) => doc['reportedItemId'] as String).toSet();
       final userIds = questions.map((question) => question.userId).toList();
       final userDocs = await FirebaseFirestore.instance
           .collection('RegularUser')
@@ -437,7 +464,11 @@ class _UserProfileView extends State<UserProfileView>
           }
         });
       });
-      return questions;
+        // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
+    List<CardFT> filteredQuestions =
+        questions.where((question) => !acceptedQuestionIds.contains(question.docId)).toList();
+
+    return filteredQuestions;
     });
   }
 
@@ -447,11 +478,24 @@ class _UserProfileView extends State<UserProfileView>
         .where('userId', isEqualTo: email)
         .orderBy('postedDate', descending: true);
 
-    return query.snapshots().asyncMap((snapshot) async {
-      final questions = snapshot.docs
-          .map((doc) => CardFT.fromJson(doc.data() as Map<String, dynamic>))
-          .toList();
+   return query.snapshots().asyncMap((snapshot) async {
+    final questions = snapshot.docs.map((doc) {
+      final questionData = doc.data() as Map<String, dynamic>;
+      final question = CardFT.fromJson(questionData);
+      question.docId = doc.id; // Set the docId to the actual document ID
+      return question;
+    }).toList();
       if (questions.isEmpty) return [];
+           // Query the Report collection to get accepted questionIds
+    QuerySnapshot<Map<String, dynamic>> reportSnapshot = await FirebaseFirestore.instance
+        .collection('Report')
+        .where('reportType', isEqualTo: 'Project')
+        .where('status', isEqualTo: 'Accepted')
+        .get();
+
+   Set<String> acceptedQuestionIds =
+    reportSnapshot.docs.map((doc) => doc['reportedItemId'] as String).toSet();
+
       final userIds = questions.map((question) => question.userId).toList();
       final userDocs = await FirebaseFirestore.instance
           .collection('RegularUser')
@@ -480,7 +524,11 @@ class _UserProfileView extends State<UserProfileView>
           }
         });
       });
-      return questions;
+      // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
+    List<CardFT> filteredQuestions =
+        questions.where((question) => !acceptedQuestionIds.contains(question.docId)).toList();
+
+    return filteredQuestions;
     });
   }
 

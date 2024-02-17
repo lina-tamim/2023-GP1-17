@@ -11,6 +11,8 @@ class CardQuestion {
   String userType;
   String reason;
   String reportedItemId;
+   String docId;
+
 
   CardQuestion({
     required this.title,
@@ -23,6 +25,8 @@ class CardQuestion {
     required this.userType,
     required this.reason,
     required this.reportedItemId,
+        this.docId = '',
+
   });
 
   Map<String, dynamic> toJson() => {
@@ -36,6 +40,7 @@ class CardQuestion {
         'userType': userType,
         'reason': reason,
         'reportedItemId': reportedItemId,
+        'docId': docId,
       };
   static CardQuestion fromJson(Map<String, dynamic> json) => CardQuestion(
         title: json['postTitle'],
@@ -48,5 +53,6 @@ class CardQuestion {
         userType: json['userType'] ?? '',
         reason: json['reason'] ?? '',
         reportedItemId: json['reportedItemId'] ?? '',
+        docId: json['docId'] ?? '',
       );
 }
