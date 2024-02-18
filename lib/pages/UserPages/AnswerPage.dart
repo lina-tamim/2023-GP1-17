@@ -615,6 +615,17 @@ IconButton(
           data['docId'] = doc.id; 
           return CardAnswer.fromJson(data);
         }).toList();
+
+          // Query the Report collection to get accepted questionIds
+    QuerySnapshot<Map<String, dynamic>> reportSnapshot = await FirebaseFirestore.instance
+        .collection('Report')
+        .where('reportType', isEqualTo: 'Answer')
+        .where('status', isEqualTo: 'Accepted')
+        .get();
+
+   Set<String> acceptedQuestionIds =
+    reportSnapshot.docs.map((doc) => doc['reportedItemId'] as String).toSet();
+
         final userIds = answers.map((answer) => answer.userId).toList();
         final userDocs = await FirebaseFirestore.instance
             .collection('RegularUser')
@@ -642,7 +653,10 @@ IconButton(
             });
           });
         });
-        return answers;
+         List<CardAnswer> filteredQuestions =
+        answers.where((answer) => !acceptedQuestionIds.contains(answer.docId)).toList();
+
+    return filteredQuestions;
       });
 
   @override

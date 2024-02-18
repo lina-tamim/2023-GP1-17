@@ -43,7 +43,7 @@ class CardAnswer {
 
   factory CardAnswer.fromJson(Map<String, dynamic> json) {
     return CardAnswer(
-      questionDocId: json['questionDocId'],
+      questionDocId: json['questionId'],
       userId: json['userId'] as String,
       answerText: json['answerText'] as String,
       upvoteCount: json['upvoteCount'] as int,

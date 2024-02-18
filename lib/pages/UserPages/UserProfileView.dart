@@ -768,6 +768,17 @@ Visibility(
         return cardAnswer;
       }).toList();
       if (questions.isEmpty) return [];
+
+       // Query the Report collection to get accepted questionIds
+    QuerySnapshot<Map<String, dynamic>> reportSnapshot = await FirebaseFirestore.instance
+        .collection('Report')
+        .where('reportType', isEqualTo: 'Answer')
+        .where('status', isEqualTo: 'Accepted')
+        .get();
+
+   Set<String> acceptedQuestionIds =
+    reportSnapshot.docs.map((doc) => doc['reportedItemId'] as String).toSet();
+
       final userIds = questions.map((question) => question.userId).toList();
       final userDocs = await FirebaseFirestore.instance
           .collection('RegularUser')
@@ -797,7 +808,10 @@ Visibility(
           }
         });
       });
-      return questions;
+        List<CardAnswer> filteredQuestions =
+        questions.where((question) => !acceptedQuestionIds.contains(question.docId)).toList();
+
+    return filteredQuestions;
     });
   }
 
