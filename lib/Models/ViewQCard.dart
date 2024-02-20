@@ -11,24 +11,27 @@ class CardQview {
   String questionDocId;
   String? reason;
   String userType;
-  String reportedItemId; 
+  String reportedItemId;
   String reportDocid;
-  
-  CardQview({
-    required this.title,
-    required this.description,
-    required this.topics,
-    required this.userId,
-    this.docId,
-    required this.username,
-    required this.userPhotoUrl,
-    required this.questionDocId,
-    this.reason,
-    required this.userType,
-    required this.reportedItemId, // Make sure it's included in the constructor
-    required this.reportDocid,
+  String? status;
+
+  CardQview(
+      {required this.title,
+      required this.description,
+      required this.topics,
+      required this.userId,
+      this.docId,
+      required this.username,
+      required this.userPhotoUrl,
+      required this.questionDocId,
+      this.reason,
+      required this.userType,
+      required this.reportedItemId, // Make sure it's included in the constructor
+      required this.reportDocid,
+      required this.status
+
 // Add the reason property
-  });
+      });
 
   Map<String, dynamic> toJson() => {
         'postTitle': title,
@@ -43,19 +46,22 @@ class CardQview {
         'userType': userType,
         'reportedItemId': reportedItemId,
         'reportDocid': reportDocid,
+        'status': status,
       };
 
   static CardQview fromJson(Map<String, dynamic> json) => CardQview(
-      title: json['postTitle'],
-      description: json['postDescription'],
-      topics: List<String>.from(json['selectedInterests']),
-      userId: json['userId'],
-      docId: json['docId'],
-      username: json['username'],
-      userPhotoUrl: json['userPhotoUrl'] as String?,
-      questionDocId: json['questionDocId'],
-      reason: json['reason'] as String?,
-      userType: json['userType'] ?? '',
-      reportedItemId: json['reportedItemId'] ?? '',
-      reportDocid: json['reportDocid'] ?? '');
+        title: json['postTitle'],
+        description: json['postDescription'],
+        topics: List<String>.from(json['selectedInterests']),
+        userId: json['userId'],
+        docId: json['docId'],
+        username: json['username'],
+        userPhotoUrl: json['userPhotoUrl'] as String?,
+        questionDocId: json['questionDocId'],
+        reason: json['reason'] as String?,
+        userType: json['userType'] ?? '',
+        reportedItemId: json['reportedItemId'] ?? '',
+        reportDocid: json['reportDocid'] ?? '',
+        status: json['status'] as String?,
+      );
 }
