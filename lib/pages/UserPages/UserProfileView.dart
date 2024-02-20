@@ -147,22 +147,24 @@ class _UserProfileView extends State<UserProfileView>
         .orderBy('postedDate', descending: true);
 
     return query.snapshots().asyncMap((snapshot) async {
-    final questions = snapshot.docs.map((doc) {
-      final questionData = doc.data() as Map<String, dynamic>;
-      final question = CardQuestion.fromJson(questionData);
-      question.docId = doc.id; // Set the docId to the actual document ID
-      return question;
-    }).toList();
+      final questions = snapshot.docs.map((doc) {
+        final questionData = doc.data() as Map<String, dynamic>;
+        final question = CardQuestion.fromJson(questionData);
+        question.docId = doc.id; // Set the docId to the actual document ID
+        return question;
+      }).toList();
       if (questions.isEmpty) return [];
- // Query the Report collection to get accepted questionIds
-    QuerySnapshot<Map<String, dynamic>> reportSnapshot = await FirebaseFirestore.instance
-        .collection('Report')
-        .where('reportType', isEqualTo: 'Question')
-        .where('status', isEqualTo: 'Accepted')
-        .get();
+      // Query the Report collection to get accepted questionIds
+      QuerySnapshot<Map<String, dynamic>> reportSnapshot =
+          await FirebaseFirestore.instance
+              .collection('Report')
+              .where('reportType', isEqualTo: 'Question')
+              .where('status', isEqualTo: 'Accepted')
+              .get();
 
-   Set<String> acceptedQuestionIds =
-    reportSnapshot.docs.map((doc) => doc['reportedItemId'] as String).toSet();
+      Set<String> acceptedQuestionIds = reportSnapshot.docs
+          .map((doc) => doc['reportedItemId'] as String)
+          .toSet();
 
       final userIds = questions.map((question) => question.userId).toList();
       final userDocs = await FirebaseFirestore.instance
@@ -196,11 +198,12 @@ class _UserProfileView extends State<UserProfileView>
         });
       });
 
- List<CardQuestion> filteredQuestions =
-        questions.where((question) => !acceptedQuestionIds.contains(question.docId)).toList();
+      List<CardQuestion> filteredQuestions = questions
+          .where((question) => !acceptedQuestionIds.contains(question.docId))
+          .toList();
 
-    return filteredQuestions;
-        });
+      return filteredQuestions;
+    });
   }
 
   Widget buildQuestionCard(CardQuestion question) => Card(
@@ -278,36 +281,37 @@ class _UserProfileView extends State<UserProfileView>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                  icon: Icon(
-                    Icons.bookmark,
-                    color: currentEmail == 'texelad1@gmail.com'
-                        ? const Color.fromARGB(24, 63, 63, 63)
-                        : Color.fromARGB(255, 63, 63, 63),
+                    icon: Icon(
+                      Icons.bookmark,
+                      color: currentEmail == 'texelad1@gmail.com'
+                          ? const Color.fromARGB(24, 63, 63, 63)
+                          : Color.fromARGB(255, 63, 63, 63),
+                    ),
+                    onPressed: currentEmail == 'texelad1@gmail.com'
+                        ? null
+                        : () {
+                            addQuestionToBookmarks(email, question);
+                          },
                   ),
-                  onPressed: currentEmail == 'texelad1@gmail.com'
-                      ? null
-                      : () {
-                          addQuestionToBookmarks(email, question);
-                        },
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.comment,
-                    color: currentEmail == 'texelad1@gmail.com'
-                        ? const Color.fromARGB(24, 63, 63, 63)
-                        : Color.fromARGB(255, 63, 63, 63),
+                  IconButton(
+                    icon: Icon(
+                      Icons.comment,
+                      color: currentEmail == 'texelad1@gmail.com'
+                          ? const Color.fromARGB(24, 63, 63, 63)
+                          : Color.fromARGB(255, 63, 63, 63),
+                    ),
+                    onPressed: currentEmail == 'texelad1@gmail.com'
+                        ? null
+                        : () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AnswerPage(
+                                    questionDocId: question.questionDocId),
+                              ),
+                            );
+                          },
                   ),
-                  onPressed: currentEmail == 'texelad1@gmail.com'
-                      ? null
-                      : () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AnswerPage(questionDocId: question.questionDocId),
-                            ),
-                          );
-                        },
-                ),
                   IconButton(
                     icon: currentEmail != email
                         ? Icon(Icons.report,
@@ -419,23 +423,25 @@ class _UserProfileView extends State<UserProfileView>
         .orderBy('postedDate', descending: true);
 
     return query.snapshots().asyncMap((snapshot) async {
-    final questions = snapshot.docs.map((doc) {
-      final questionData = doc.data() as Map<String, dynamic>;
-      final question = CardFT.fromJson(questionData);
-      question.docId = doc.id; // Set the docId to the actual document ID
-      return question;
-    }).toList();
+      final questions = snapshot.docs.map((doc) {
+        final questionData = doc.data() as Map<String, dynamic>;
+        final question = CardFT.fromJson(questionData);
+        question.docId = doc.id; // Set the docId to the actual document ID
+        return question;
+      }).toList();
 
       if (questions.isEmpty) return [];
-         // Query the Report collection to get accepted questionIds
-    QuerySnapshot<Map<String, dynamic>> reportSnapshot = await FirebaseFirestore.instance
-        .collection('Report')
-        .where('reportType', isEqualTo: 'Team')
-        .where('status', isEqualTo: 'Accepted')
-        .get();
+      // Query the Report collection to get accepted questionIds
+      QuerySnapshot<Map<String, dynamic>> reportSnapshot =
+          await FirebaseFirestore.instance
+              .collection('Report')
+              .where('reportType', isEqualTo: 'Team')
+              .where('status', isEqualTo: 'Accepted')
+              .get();
 
-   Set<String> acceptedQuestionIds =
-    reportSnapshot.docs.map((doc) => doc['reportedItemId'] as String).toSet();
+      Set<String> acceptedQuestionIds = reportSnapshot.docs
+          .map((doc) => doc['reportedItemId'] as String)
+          .toSet();
       final userIds = questions.map((question) => question.userId).toList();
       final userDocs = await FirebaseFirestore.instance
           .collection('RegularUser')
@@ -464,11 +470,12 @@ class _UserProfileView extends State<UserProfileView>
           }
         });
       });
-        // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
-    List<CardFT> filteredQuestions =
-        questions.where((question) => !acceptedQuestionIds.contains(question.docId)).toList();
+      // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
+      List<CardFT> filteredQuestions = questions
+          .where((question) => !acceptedQuestionIds.contains(question.docId))
+          .toList();
 
-    return filteredQuestions;
+      return filteredQuestions;
     });
   }
 
@@ -478,23 +485,25 @@ class _UserProfileView extends State<UserProfileView>
         .where('userId', isEqualTo: email)
         .orderBy('postedDate', descending: true);
 
-   return query.snapshots().asyncMap((snapshot) async {
-    final questions = snapshot.docs.map((doc) {
-      final questionData = doc.data() as Map<String, dynamic>;
-      final question = CardFT.fromJson(questionData);
-      question.docId = doc.id; // Set the docId to the actual document ID
-      return question;
-    }).toList();
+    return query.snapshots().asyncMap((snapshot) async {
+      final questions = snapshot.docs.map((doc) {
+        final questionData = doc.data() as Map<String, dynamic>;
+        final question = CardFT.fromJson(questionData);
+        question.docId = doc.id; // Set the docId to the actual document ID
+        return question;
+      }).toList();
       if (questions.isEmpty) return [];
-           // Query the Report collection to get accepted questionIds
-    QuerySnapshot<Map<String, dynamic>> reportSnapshot = await FirebaseFirestore.instance
-        .collection('Report')
-        .where('reportType', isEqualTo: 'Project')
-        .where('status', isEqualTo: 'Accepted')
-        .get();
+      // Query the Report collection to get accepted questionIds
+      QuerySnapshot<Map<String, dynamic>> reportSnapshot =
+          await FirebaseFirestore.instance
+              .collection('Report')
+              .where('reportType', isEqualTo: 'Project')
+              .where('status', isEqualTo: 'Accepted')
+              .get();
 
-   Set<String> acceptedQuestionIds =
-    reportSnapshot.docs.map((doc) => doc['reportedItemId'] as String).toSet();
+      Set<String> acceptedQuestionIds = reportSnapshot.docs
+          .map((doc) => doc['reportedItemId'] as String)
+          .toSet();
 
       final userIds = questions.map((question) => question.userId).toList();
       final userDocs = await FirebaseFirestore.instance
@@ -525,10 +534,11 @@ class _UserProfileView extends State<UserProfileView>
         });
       });
       // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
-    List<CardFT> filteredQuestions =
-        questions.where((question) => !acceptedQuestionIds.contains(question.docId)).toList();
+      List<CardFT> filteredQuestions = questions
+          .where((question) => !acceptedQuestionIds.contains(question.docId))
+          .toList();
 
-    return filteredQuestions;
+      return filteredQuestions;
     });
   }
 
@@ -603,131 +613,134 @@ class _UserProfileView extends State<UserProfileView>
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Visibility(
-  visible: currentEmail != email,
-  child: IconButton(
-    icon: Icon(
-      FontAwesomeIcons.solidMessage,
-      color: currentEmail == 'texelad1@gmail.com'
-          ? const Color.fromARGB(24, 63, 63, 63)
-          : Color.fromARGB(255, 63, 63, 63),
-      size: 18.5,
-    ),
-    onPressed: currentEmail == 'texelad1@gmail.com'
-        ? null
-        : () {
-            context
-                .read<ProfileProvider>()
-                .gotoChat(context, team.userId);
-            log('MK: clicked on Message: ${team.userId}' as int);
-          },
-  ),
-),
-Visibility(
-  visible: currentEmail != email,
-  child: IconButton(
-    icon: Icon(Icons.report, color: Color.fromARGB(255, 63, 63, 63)),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return StatefulBuilder(
-                        builder: (BuildContext context, StateSetter setState) {
-                          // Set the initial selectedOption to null
-                          String? initialOption = null;
-                          TextEditingController customReasonController =
-                              TextEditingController();
+                visible: currentEmail != email,
+                child: IconButton(
+                  icon: Icon(
+                    FontAwesomeIcons.solidMessage,
+                    color: currentEmail == 'texelad1@gmail.com'
+                        ? const Color.fromARGB(24, 63, 63, 63)
+                        : Color.fromARGB(255, 63, 63, 63),
+                    size: 18.5,
+                  ),
+                  onPressed: currentEmail == 'texelad1@gmail.com'
+                      ? null
+                      : () {
+                          context
+                              .read<ProfileProvider>()
+                              .gotoChat(context, team.userId);
+                          log('MK: clicked on Message: ${team.userId}' as int);
+                        },
+                ),
+              ),
+              Visibility(
+                visible: currentEmail != email,
+                child: IconButton(
+                  icon: Icon(Icons.report,
+                      color: Color.fromARGB(255, 63, 63, 63)),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return StatefulBuilder(
+                          builder:
+                              (BuildContext context, StateSetter setState) {
+                            // Set the initial selectedOption to null
+                            String? initialOption = null;
+                            TextEditingController customReasonController =
+                                TextEditingController();
 
-                          return AlertDialog(
-                            title: Text('Report Post'),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                DropdownButton<String>(
-                                  value: selectedOption,
-                                  hint: Text('Select a reason'),
-                                  onTap: () {
-                                    // Set the initialOption to the selectedOption
-                                    initialOption = selectedOption;
-                                  },
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      selectedOption = newValue!;
-                                    });
-                                  },
-                                  items: dropDownOptions.map((String option) {
-                                    return DropdownMenuItem<String>(
-                                      value: option,
-                                      child: Text(option),
-                                    );
-                                  }).toList(),
-                                ),
-                                Visibility(
-                                  visible: selectedOption == 'Others',
-                                  child: TextFormField(
-                                    controller: customReasonController,
-                                    decoration: InputDecoration(
-                                        labelText: 'Enter your reason'),
+                            return AlertDialog(
+                              title: Text('Report Post'),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  DropdownButton<String>(
+                                    value: selectedOption,
+                                    hint: Text('Select a reason'),
+                                    onTap: () {
+                                      // Set the initialOption to the selectedOption
+                                      initialOption = selectedOption;
+                                    },
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        selectedOption = newValue!;
+                                      });
+                                    },
+                                    items: dropDownOptions.map((String option) {
+                                      return DropdownMenuItem<String>(
+                                        value: option,
+                                        child: Text(option),
+                                      );
+                                    }).toList(),
                                   ),
-                                ),
-                              ],
-                            ),
-                            actions: [
-                              TextButton(
-                                child: Text('Cancel'),
-                                onPressed: () {
-                                  setState(() {
-                                    selectedOption = initialOption;
-                                  });
-                                  Navigator.of(context).pop();
-                                },
+                                  Visibility(
+                                    visible: selectedOption == 'Others',
+                                    child: TextFormField(
+                                      controller: customReasonController,
+                                      decoration: InputDecoration(
+                                          labelText: 'Enter your reason'),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              TextButton(
-                                child: Text('Report'),
-                                onPressed: () async {
-                                  if (selectedOption != null) {
-                                    String reason;
-                                    if (selectedOption == 'Others') {
-                                      reason = customReasonController.text;
-                                    } else {
-                                      reason = selectedOption!;
-                                    }
-
-                                    if (team is CardFT &&
-                                        team.teamDocId != null) {
-                                      String postId = team.teamDocId!;
-                                      bool isTeamPost = await checkIfPostExists(
-                                          'Team', postId);
-                                      bool isProjectPost =
-                                          await checkIfPostExists(
-                                              'Project', postId);
-
-                                      if (isTeamPost) {
-                                        handleReportTeam(email, team, reason);
-                                      } else if (isProjectPost) {
-                                        handleReportProject(
-                                            email, team, reason);
+                              actions: [
+                                TextButton(
+                                  child: Text('Cancel'),
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedOption = initialOption;
+                                    });
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: Text('Report'),
+                                  onPressed: () async {
+                                    if (selectedOption != null) {
+                                      String reason;
+                                      if (selectedOption == 'Others') {
+                                        reason = customReasonController.text;
                                       } else {
-                                        toastMessage('Invalid team');
+                                        reason = selectedOption!;
                                       }
 
-                                      toastMessage(
-                                          'Your report has been sent successfully');
-                                      Navigator.of(context).pop();
-                                    } else {
-                                      // Handle the cases when team is not an instance of CardFT or postId is null
-                                      toastMessage('Invalid team');
+                                      if (team is CardFT &&
+                                          team.teamDocId != null) {
+                                        String postId = team.teamDocId!;
+                                        bool isTeamPost =
+                                            await checkIfPostExists(
+                                                'Team', postId);
+                                        bool isProjectPost =
+                                            await checkIfPostExists(
+                                                'Project', postId);
+
+                                        if (isTeamPost) {
+                                          handleReportTeam(email, team, reason);
+                                        } else if (isProjectPost) {
+                                          handleReportProject(
+                                              email, team, reason);
+                                        } else {
+                                          toastMessage('Invalid team');
+                                        }
+
+                                        toastMessage(
+                                            'Your report has been sent successfully');
+                                        Navigator.of(context).pop();
+                                      } else {
+                                        // Handle the cases when team is not an instance of CardFT or postId is null
+                                        toastMessage('Invalid team');
+                                      }
                                     }
-                                  }
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  );
-                },
-               ),
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ],
           ),
@@ -769,15 +782,17 @@ Visibility(
       }).toList();
       if (questions.isEmpty) return [];
 
-       // Query the Report collection to get accepted questionIds
-    QuerySnapshot<Map<String, dynamic>> reportSnapshot = await FirebaseFirestore.instance
-        .collection('Report')
-        .where('reportType', isEqualTo: 'Answer')
-        .where('status', isEqualTo: 'Accepted')
-        .get();
+      // Query the Report collection to get accepted questionIds
+      QuerySnapshot<Map<String, dynamic>> reportSnapshot =
+          await FirebaseFirestore.instance
+              .collection('Report')
+              .where('reportType', isEqualTo: 'Answer')
+              .where('status', isEqualTo: 'Accepted')
+              .get();
 
-   Set<String> acceptedQuestionIds =
-    reportSnapshot.docs.map((doc) => doc['reportedItemId'] as String).toSet();
+      Set<String> acceptedQuestionIds = reportSnapshot.docs
+          .map((doc) => doc['reportedItemId'] as String)
+          .toSet();
 
       final userIds = questions.map((question) => question.userId).toList();
       final userDocs = await FirebaseFirestore.instance
@@ -808,10 +823,11 @@ Visibility(
           }
         });
       });
-        List<CardAnswer> filteredQuestions =
-        questions.where((question) => !acceptedQuestionIds.contains(question.docId)).toList();
+      List<CardAnswer> filteredQuestions = questions
+          .where((question) => !acceptedQuestionIds.contains(question.docId))
+          .toList();
 
-    return filteredQuestions;
+      return filteredQuestions;
     });
   }
 
@@ -826,7 +842,8 @@ Visibility(
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AnswerPage(questionDocId: answer.questionDocId),
+            builder: (context) =>
+                AnswerPage(questionDocId: answer.questionDocId),
           ),
         );
       },
@@ -885,8 +902,10 @@ Visibility(
                                         : Icons.arrow_circle_up,
                                 size: 28, // Adjust the size as needed
                                 color: upvotedUserIds.contains(currentEmail)
-                                    ? const Color.fromARGB(255, 49, 3, 0) // Color for arrow_circle_down
-                                    : const Color.fromARGB(255, 26, 33, 38), // Color for arrow_circle_up
+                                    ? const Color.fromARGB(255, 49, 3,
+                                        0) // Color for arrow_circle_down
+                                    : const Color.fromARGB(255, 26, 33,
+                                        38), // Color for arrow_circle_up
                               ),
                               onPressed: () {
                                 setState(() {
@@ -1221,16 +1240,16 @@ Visibility(
                         margin: const EdgeInsets.all(20),
                         child: OutlinedButton(
                           child: Text(
-                          currentEmail == email
-                              ? "My profile"
-                              : currentEmail == 'texelad1@gmail.com'
-                                  ? ""
-                                  : "Chat with $username",
-                          style: TextStyle(
-                            color: Color(0xFFFFFFFF),
-                            fontWeight: FontWeight.bold,
+                            currentEmail == email
+                                ? "My profile"
+                                : currentEmail == 'texelad1@gmail.com'
+                                    ? ""
+                                    : "Chat with $username",
+                            style: TextStyle(
+                              color: Color(0xFFFFFFFF),
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
                           onPressed: () {
                             if (currentEmail == email) {
                               Navigator.push(
@@ -1592,7 +1611,6 @@ Visibility(
     );
   }
 
-
   void launchGitHubURL(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
@@ -1643,6 +1661,7 @@ Visibility(
       'reportDate': DateTime.now(),
       'reportType': "Question",
       'status': 'Pending',
+      'reportedUserId': question.userId,
     });
 
     // Clear the selected option after reporting
@@ -1652,16 +1671,17 @@ Visibility(
   void handleReportTeam(
     String email,
     CardFT team,
-    String reason, 
+    String reason,
   ) async {
-    String? postId = team.teamDocId; 
+    String? postId = team.teamDocId;
 
     await FirebaseFirestore.instance.collection('Report').add({
       'reportedItemId': postId,
-      'reason': reason, 
+      'reason': reason,
       'reportDate': DateTime.now(),
       'reportType': "Team",
-      'status': 'Pending', 
+      'status': 'Pending',
+      'reportedUserId': team.userId,
     });
     selectedOption = null;
   }
@@ -1669,16 +1689,17 @@ Visibility(
   void handleReportProject(
     String email,
     CardFT team,
-    String reason, 
+    String reason,
   ) async {
-    String? postId = team.teamDocId; 
+    String? postId = team.teamDocId;
 
     await FirebaseFirestore.instance.collection('Report').add({
       'reportedItemId': postId,
-      'reason': reason, 
+      'reason': reason,
       'reportDate': DateTime.now(),
       'reportType': "Project",
-      'status': 'Pending', 
+      'status': 'Pending',
+      'reportedUserId': team.userId,
     });
     selectedOption = null;
   }

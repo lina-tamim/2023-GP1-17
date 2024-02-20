@@ -54,7 +54,6 @@ class _AnswerPageState extends State<AnswerPage> {
     fetchuseremail();
   }
 
-
   void fetchQuestionData() async {
     final List<CardQuestion> questionList = await readQuestion();
     _questionStreamController.add(questionList);
@@ -152,36 +151,38 @@ class _AnswerPageState extends State<AnswerPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-  icon: Icon(
-    Icons.bookmark,
-    color: email == 'texelad1@gmail.com'
-        ?Color.fromARGB(24, 63, 63, 63) // Color for texelad1@gmail.com
-        : Color.fromARGB(255, 63, 63, 63), // Default color
-  ),
-  onPressed: email == 'texelad1@gmail.com'
-      ? null
-      : () {
-          addQuestionToBookmarks(email, question);
-        },
-),
-IconButton(
-  icon: Icon(
-    Icons.comment,
-    color: email == 'texelad1@gmail.com'
-        ? Color.fromARGB(24, 63, 63, 63)
-        : Color.fromARGB(255, 63, 63, 63), // Default color
-  ),
-  onPressed: email == 'texelad1@gmail.com'
-      ? null
-      : () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AnswerPage(questionDocId: question.questionDocId),
-            ),
-          );
-        },
-),
+                    icon: Icon(
+                      Icons.bookmark,
+                      color: email == 'texelad1@gmail.com'
+                          ? Color.fromARGB(
+                              24, 63, 63, 63) // Color for texelad1@gmail.com
+                          : Color.fromARGB(255, 63, 63, 63), // Default color
+                    ),
+                    onPressed: email == 'texelad1@gmail.com'
+                        ? null
+                        : () {
+                            addQuestionToBookmarks(email, question);
+                          },
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.comment,
+                      color: email == 'texelad1@gmail.com'
+                          ? Color.fromARGB(24, 63, 63, 63)
+                          : Color.fromARGB(255, 63, 63, 63), // Default color
+                    ),
+                    onPressed: email == 'texelad1@gmail.com'
+                        ? null
+                        : () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AnswerPage(
+                                    questionDocId: question.questionDocId),
+                              ),
+                            );
+                          },
+                  ),
                   IconButton(
                     icon: Icon(Icons.report,
                         color: Color.fromARGB(255, 63, 63, 63)),
@@ -492,81 +493,85 @@ IconButton(
                               );
                             },
                           ),
-                        if (email != 'texelad1@gmail.com')
-                          IconButton(
-                            icon: Icon(
-                              upvotedUserIds.contains(currentEmail)
-                                  ? Icons.arrow_circle_down
-                                  : Icons.arrow_circle_up,
-                              size: 28, // Adjust the size as needed
-                              color: upvotedUserIds.contains(currentEmail)
-                                  ? const Color.fromARGB(255, 49, 3,
-                                      0) // Color for arrow_circle_down
-                                  : const Color.fromARGB(255, 26, 33,
-                                      38), // Color for arrow_circle_up
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                if (upvotedUserIds.contains(currentEmail)) {
-                                  upvotedUserIds.remove(currentEmail);
-                                  upvoteCount--;
+                          if (email != 'texelad1@gmail.com')
+                            IconButton(
+                              icon: Icon(
+                                upvotedUserIds.contains(currentEmail)
+                                    ? Icons.arrow_circle_down
+                                    : Icons.arrow_circle_up,
+                                size: 28, // Adjust the size as needed
+                                color: upvotedUserIds.contains(currentEmail)
+                                    ? const Color.fromARGB(255, 49, 3,
+                                        0) // Color for arrow_circle_down
+                                    : const Color.fromARGB(255, 26, 33,
+                                        38), // Color for arrow_circle_up
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  if (upvotedUserIds.contains(currentEmail)) {
+                                    upvotedUserIds.remove(currentEmail);
+                                    upvoteCount--;
 
-                                  // Decrease userScore in RegularUser collection
+                                    // Decrease userScore in RegularUser collection
+                                    FirebaseFirestore.instance
+                                        .collection('RegularUser')
+                                        .where('email',
+                                            isEqualTo: answer.userId)
+                                        .get()
+                                        .then(
+                                            (QuerySnapshot<Map<String, dynamic>>
+                                                snapshot) {
+                                      if (snapshot.docs.isNotEmpty) {
+                                        final documentId = snapshot.docs[0].id;
+
+                                        FirebaseFirestore.instance
+                                            .collection('RegularUser')
+                                            .doc(documentId)
+                                            .update({
+                                          'userScore': FieldValue.increment(-1),
+                                        }).catchError((error) {
+                                          // Handle error if the update fails
+                                        });
+                                      }
+                                    }).catchError((error) {});
+                                  } else {
+                                    upvotedUserIds.add(currentEmail);
+                                    upvoteCount++;
+                                    FirebaseFirestore.instance
+                                        .collection('RegularUser')
+                                        .where('email',
+                                            isEqualTo: answer.userId)
+                                        .get()
+                                        .then(
+                                            (QuerySnapshot<Map<String, dynamic>>
+                                                snapshot) {
+                                      if (snapshot.docs.isNotEmpty) {
+                                        final documentId = snapshot.docs[0].id;
+
+                                        FirebaseFirestore.instance
+                                            .collection('RegularUser')
+                                            .doc(documentId)
+                                            .update({
+                                          'userScore': FieldValue.increment(1),
+                                        }).catchError((error) {});
+                                      }
+                                    }).catchError((error) {});
+                                  }
+
+                                  answer.upvoteCount = upvoteCount;
+                                  answer.upvotedUserIds = upvotedUserIds;
                                   FirebaseFirestore.instance
-                                      .collection('RegularUser')
-                                      .where('email', isEqualTo: answer.userId)
-                                      .get()
-                                      .then((QuerySnapshot<Map<String, dynamic>>
-                                          snapshot) {
-                                    if (snapshot.docs.isNotEmpty) {
-                                      final documentId = snapshot.docs[0].id;
-
-                                      FirebaseFirestore.instance
-                                          .collection('RegularUser')
-                                          .doc(documentId)
-                                          .update({
-                                        'userScore': FieldValue.increment(-1),
-                                      }).catchError((error) {
-                                        // Handle error if the update fails
-                                      });
-                                    }
-                                  }).catchError((error) {});
-                                } else {
-                                  upvotedUserIds.add(currentEmail);
-                                  upvoteCount++;
-                                  FirebaseFirestore.instance
-                                      .collection('RegularUser')
-                                      .where('email', isEqualTo: answer.userId)
-                                      .get()
-                                      .then((QuerySnapshot<Map<String, dynamic>>
-                                          snapshot) {
-                                    if (snapshot.docs.isNotEmpty) {
-                                      final documentId = snapshot.docs[0].id;
-
-                                      FirebaseFirestore.instance
-                                          .collection('RegularUser')
-                                          .doc(documentId)
-                                          .update({
-                                        'userScore': FieldValue.increment(1),
-                                      }).catchError((error) {});
-                                    }
-                                  }).catchError((error) {});
-                                }
-
-                                answer.upvoteCount = upvoteCount;
-                                answer.upvotedUserIds = upvotedUserIds;
-                                FirebaseFirestore.instance
-                                    .collection('Answer')
-                                    .doc(answer.docId)
-                                    .update({
-                                  'upvoteCount': upvoteCount,
-                                  'upvotedUserIds': upvotedUserIds,
-                                }).catchError((error) {
-                                  // Handle error if the update fails
+                                      .collection('Answer')
+                                      .doc(answer.docId)
+                                      .update({
+                                    'upvoteCount': upvoteCount,
+                                    'upvotedUserIds': upvotedUserIds,
+                                  }).catchError((error) {
+                                    // Handle error if the update fails
+                                  });
                                 });
-                              });
-                            },
-                          ),
+                              },
+                            ),
                           SizedBox(
                             width: 2,
                           ), // Adjust the width to move the icons further to the right
@@ -612,19 +617,21 @@ IconButton(
           .asyncMap((snapshot) async {
         final answers = snapshot.docs.map((doc) {
           final data = doc.data();
-          data['docId'] = doc.id; 
+          data['docId'] = doc.id;
           return CardAnswer.fromJson(data);
         }).toList();
 
-          // Query the Report collection to get accepted questionIds
-    QuerySnapshot<Map<String, dynamic>> reportSnapshot = await FirebaseFirestore.instance
-        .collection('Report')
-        .where('reportType', isEqualTo: 'Answer')
-        .where('status', isEqualTo: 'Accepted')
-        .get();
+        // Query the Report collection to get accepted questionIds
+        QuerySnapshot<Map<String, dynamic>> reportSnapshot =
+            await FirebaseFirestore.instance
+                .collection('Report')
+                .where('reportType', isEqualTo: 'Answer')
+                .where('status', isEqualTo: 'Accepted')
+                .get();
 
-   Set<String> acceptedQuestionIds =
-    reportSnapshot.docs.map((doc) => doc['reportedItemId'] as String).toSet();
+        Set<String> acceptedQuestionIds = reportSnapshot.docs
+            .map((doc) => doc['reportedItemId'] as String)
+            .toSet();
 
         final userIds = answers.map((answer) => answer.userId).toList();
         final userDocs = await FirebaseFirestore.instance
@@ -653,10 +660,11 @@ IconButton(
             });
           });
         });
-         List<CardAnswer> filteredQuestions =
-        answers.where((answer) => !acceptedQuestionIds.contains(answer.docId)).toList();
+        List<CardAnswer> filteredQuestions = answers
+            .where((answer) => !acceptedQuestionIds.contains(answer.docId))
+            .toList();
 
-    return filteredQuestions;
+        return filteredQuestions;
       });
 
   @override
@@ -710,61 +718,62 @@ IconButton(
             ),
           ),
           if (email != 'texelad1@gmail.com')
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Form(
-              key: _formKey,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _answerController,
-                      decoration: InputDecoration(
-                        labelText: 'Enter your answer',
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Form(
+                key: _formKey,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _answerController,
+                        decoration: InputDecoration(
+                          labelText: 'Enter your answer',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter an answer';
+                          }
+                          if (value.length > 1024) {
+                            return 'Maximum character limit exceeded (1024 characters).';
+                          }
+                          return null;
+                        },
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter an answer';
-                        }
-                        if (value.length > 1024) {
-                          return 'Maximum character limit exceeded (1024 characters).';
-                        }
-                        return null;
-                      },
                     ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      final email = prefs.getString('loggedInEmail') ?? '';
-                      if (email != null) {
-                        _submitAnswer(email);
-                      }
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(
-                          const Color.fromRGBO(37, 6, 81, 0.898)),
-                      minimumSize: MaterialStateProperty.all(Size(100, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                    ElevatedButton(
+                      onPressed: () async {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        final email = prefs.getString('loggedInEmail') ?? '';
+                        if (email != null) {
+                          _submitAnswer(email);
+                        }
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(
+                            const Color.fromRGBO(37, 6, 81, 0.898)),
+                        minimumSize: MaterialStateProperty.all(Size(100, 60)),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                       ),
-                    ),
-                    child: Text(
-                      'Submit',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                      child: Text(
+                        'Submit',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -783,6 +792,7 @@ IconButton(
       'reportDate': DateTime.now(),
       'reportType': "Question",
       'status': 'Pending',
+      'reportedUserId': question.userId,
     });
 
     // Clear the selected option after reporting
@@ -798,10 +808,11 @@ IconButton(
 
     await _firestore.collection('Report').add({
       'reportedItemId': postId,
-      'reason': reason, 
+      'reason': reason,
       'reportDate': DateTime.now(),
       'reportType': "Answer",
       'status': 'Pending',
+      'reportedUserId': answer.userId,
     });
     selectedOption = null;
   }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 class CardAview {
   String questionDocId;
   String userId;
@@ -8,7 +10,6 @@ class CardAview {
   final String docId;
   String? userPhotoUrl;
   String userType;
-
 
   CardAview({
     required this.questionDocId,
@@ -35,8 +36,9 @@ class CardAview {
       };
 
   factory CardAview.fromJson(Map<String, dynamic> json) {
+    log('MK: json: ${json}');
     return CardAview(
-      questionDocId: json['questionDocId'],
+      questionDocId: json['questionDocId'] ?? json['questionId'],
       userId: json['userId'] as String,
       answerText: json['answerText'] as String,
       upvoteCount: json['upvoteCount'] as int,

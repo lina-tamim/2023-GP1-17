@@ -160,7 +160,6 @@ class UserBookmarkedPathways extends StatefulWidget {
 
 int _currentIndex = 0;
 
-
 class _UserBookmarkedPathwaysState extends State<UserBookmarkedPathways> {
   int id = 0;
   late FirebaseFirestore firestore;
@@ -840,18 +839,19 @@ class UserBookmarkedQuestions extends StatefulWidget {
   State<UserBookmarkedQuestions> createState() =>
       _UserBookmarkedQuestionsState();
 }
-  String? selectedOption;
-    List<String> dropDownOptions = [
-    'Inappropriate content',
-    'Spam',
-    'Harassment',
-    'False information',
-    'Violence',
-    'Hate speech',
-    'Bullying',
-    'Others'
-  ];
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+String? selectedOption;
+List<String> dropDownOptions = [
+  'Inappropriate content',
+  'Spam',
+  'Harassment',
+  'False information',
+  'Violence',
+  'Hate speech',
+  'Bullying',
+  'Others'
+];
+final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
   int _currentIndex = 0;
@@ -877,6 +877,7 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -890,10 +891,9 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
                 Align(
                   alignment: Alignment.topRight,
                   child: Material(
-                    elevation: 0, 
+                    elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(60),
+                      borderRadius: BorderRadius.circular(60),
                     ),
                     child: PopupMenuButton<int>(
                       itemBuilder: (context) => [
@@ -1112,15 +1112,15 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                AnswerPage(questionDocId: question.questionDocId)),
+                            builder: (context) => AnswerPage(
+                                questionDocId: question.questionDocId)),
                       );
                     },
                   ),
                   IconButton(
                     icon: Icon(Icons.report,
                         color: Color.fromARGB(255, 63, 63, 63)),
-                     onPressed: () {
+                    onPressed: () {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -1279,9 +1279,8 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
       'reportDate': DateTime.now(),
       'reportType': "Question",
       'status': 'Pending',
+      'reportedUserId': question.userId,
     });
     selectedOption = null;
   }
-
-
 }
