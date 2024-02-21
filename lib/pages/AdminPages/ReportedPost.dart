@@ -1092,6 +1092,8 @@ class _ReportedPostState extends State<ReportedPost> {
   ////END QUESTION
   //////TEAM
   ///
+  ///
+  
   Stream<List<CardFT>> readReportedTeam() {
     return FirebaseFirestore.instance
         .collection('Report')
