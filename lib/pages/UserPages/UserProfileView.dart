@@ -1166,11 +1166,11 @@ class _UserProfileView extends State<UserProfileView>
 
         // Add report to Firestore
         firestore.collection('Report').add({
-          'postId': postId,
+          'reportedItemId': postId,
           'reason': reason,
-          'userId': email,
           'reportDate': DateTime.now(),
-          'reportType': 'account'
+          'reportType': 'Account',
+          'status':'Pending',
         }).catchError((error) {
           print('Error submitting report: $error');
           // Handle error, show an error dialog, or take appropriate action

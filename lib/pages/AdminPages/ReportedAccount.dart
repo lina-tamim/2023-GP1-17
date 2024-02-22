@@ -384,7 +384,6 @@ Stream<List<Widget>> readReportedAccounts() {
             ),
           );
         }
-
         return reportedAccounts;
       });
 }
@@ -576,12 +575,34 @@ Future<int> getAccountReportCount(String reportedItemID) async {
   }
 }
 
-void rejectReportedAccount(String reportId) async {
+Future<void> rejectReportedAccount(String reportId) async {
   try {
+    // Get the reportedItemId of the current report
+    final currentReportSnapshot = await FirebaseFirestore.instance
+        .collection('Report')
+        .doc(reportId)
+        .get();
+    final reportedItemId = currentReportSnapshot.get('reportedItemId');
+
+    // Update the status of all reports with the same reportedItemId to 'Rejected'
+    await FirebaseFirestore.instance
+        .collection('Report')
+        .where('reportedItemId', isEqualTo: reportedItemId)
+        .get()
+        .then((querySnapshot) {
+      final batch = FirebaseFirestore.instance.batch();
+      querySnapshot.docs.forEach((doc) {
+        batch.update(doc.reference, {'status': 'Rejected'});
+      });
+      return batch.commit();
+    });
+
+    // Update the status of the current report to 'Rejected'
     await FirebaseFirestore.instance
         .collection('Report')
         .doc(reportId)
         .update({'status': 'Rejected'});
+
     toastMessage('Report Has Been Rejected');
   } catch (error) {
     toastMessage('Error While Rejecting Report');
@@ -590,18 +611,39 @@ void rejectReportedAccount(String reportId) async {
 }
 
 
-void acceptReportedAccount(String reportId, String username, String reason, String email) async {
-  print(reportId);
-  print(';;;;;;;;;;;;777788888889797');
+
+Future<void> acceptReportedAccount(String reportId, String username, String reason, String email) async {
   try {
+    // Get the reportedItemId of the current report
+    final currentReportSnapshot = await FirebaseFirestore.instance
+        .collection('Report')
+        .doc(reportId)
+        .get();
+    final reportedItemId = currentReportSnapshot.get('reportedItemId');
+
+    // Update the status of all reports with the same reportedItemId to 'Accepted'
+    await FirebaseFirestore.instance
+        .collection('Report')
+        .where('reportedItemId', isEqualTo: reportedItemId)
+        .get()
+        .then((querySnapshot) {
+      final batch = FirebaseFirestore.instance.batch();
+      querySnapshot.docs.forEach((doc) {
+        batch.update(doc.reference, {'status': 'Accepted'});
+      });
+      return batch.commit();
+    });
+
+    // Update the status of the current report to 'Accepted'
     await FirebaseFirestore.instance
         .collection('Report')
         .doc(reportId)
         .update({'status': 'Accepted'});
+
     toastMessage('Report Has Been Accepted');
   } catch (error) {
     toastMessage('Error While Accepting Report');
-    print('Error Accepting Report: $error');
+    print('Error Accepting Reports: $error');
   }
 
   final Uri emailUri = Uri(
