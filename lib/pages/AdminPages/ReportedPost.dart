@@ -1,3 +1,5 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,246 +25,6 @@ class _ReportedPostState extends State<ReportedPost> {
   bool showSearchBar = false;
   bool isLoading = true; // Added loading state
 
-/*
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 4,
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          iconTheme: IconThemeData(
-            color: Color.fromRGBO(37, 6, 81, 0.898),
-          ),
-          toolbarHeight: 100,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/Backgrounds/bg11.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          title: Builder(
-            builder: (context) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.arrow_back),
-                    ),
-                    const SizedBox(width: 0),
-                    const Text(
-                      'Reported Posts',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontFamily: "Poppins",
-                        color: Color.fromRGBO(37, 6, 81, 0.898),
-                      ),
-                    ),
-                    const SizedBox(width: 140),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          showSearchBar = !showSearchBar;
-                        });
-                      },
-                      icon:
-                          Icon(showSearchBar ? Icons.search_off : Icons.search),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                if (showSearchBar)
-                  TextField(
-                    controller: searchController,
-                    decoration: const InputDecoration(
-                      hintText: 'Search...',
-                      prefixIcon: Icon(Icons.search),
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 0,
-                      ),
-                      isDense: true,
-                    ),
-                    onChanged: (text) {
-                      setState(() {});
-                      // Handle search input changes
-                    },
-                  ),
-              ],
-            ),
-          ),
-          bottom: const TabBar(
-            indicator: UnderlineTabIndicator(
-              borderSide: BorderSide(
-                width: 5.0,
-                color: Color.fromARGB(
-                    255, 27, 5, 230), // Set the color of the underline
-              ),
-              // Adjust the insets if needed
-            ),
-            labelColor: Color.fromARGB(255, 27, 5, 230),
-            tabs: [
-              Tab(
-                child: Text(
-                  'Questions',
-                  style: TextStyle(),
-                ),
-              ),
-              Tab(
-                child: Text(
-                  'Build Team',
-                  style: TextStyle(),
-                ),
-              ),
-              Tab(
-                child: Text(
-                  'Project',
-                  style: TextStyle(),
-                ),
-              ),
-              Tab(
-                child: Text(
-                  'Answers',
-                  style: TextStyle(),
-                ),
-              ),
-            ],
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        body: Column(children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              onPressed: () {
-                // Handle button press
-              },
-              child: Text('ollld'),
-            ),
-          ),
-          Expanded(
-            child: TabBarView(
-              children: [
-                StreamBuilder<List<CardQview>>(
-                  stream: readReportedQuestion(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final q = snapshot.data!;
-                      if (q.isEmpty) {
-                        return Center(
-                          child: Text('No Reported Question'),
-                        );
-                      }
-                      return ListView(
-                        children: q
-                            .map((question) => buildQuestionCard(
-                                question, question.reportedItemId))
-                            .toList(),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text('Error: ${snapshot.error}'),
-                      );
-                    } else {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
-                ),
-                StreamBuilder<List<CardFT>>(
-                  stream: readReportedTeam(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final t = snapshot.data!;
-                      if (t.isEmpty) {
-                        return Center(
-                          child: Text('No Reported Build Team Post'),
-                        );
-                      }
-                      return ListView(
-                        children: t
-                            .map((team) => buildTeamCard(context, team))
-                            .toList(),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text('Error: ${snapshot.error}'),
-                      );
-                    } else {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
-                ),
-                StreamBuilder<List<CardFT>>(
-                  stream: readReportedProject(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final q = snapshot.data!;
-                      if (q.isEmpty) {
-                        return Center(
-                          child: Text('No Reported Question'),
-                        );
-                      }
-                      return ListView(
-                        children: q
-                            .map((team) => buildTeamCard(context, team))
-                            .toList(),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text('Error: ${snapshot.error}'),
-                      );
-                    } else {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
-                ),
-                StreamBuilder<List<CardAnswer>>(
-                  stream: readReportedAnswer(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final a = snapshot.data!;
-                      if (a.isEmpty) {
-                        return Center(
-                          child: Text('No Answers yet'),
-                        );
-                      }
-                      return ListView(
-                        children: a
-                            .map((answer) => buildAnswerCard(context, answer))
-                            .toList(),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text('Error: ${snapshot.error}'),
-                      );
-                    } else {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-        ]),
-      ),
-    );
-  }
-*/
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -725,22 +487,23 @@ class _ReportedPostState extends State<ReportedPost> {
         final username = userDoc?['username'] as String? ?? '';
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
-        final reportedPost = reportedPosts.firstWhere(
-          (post) => post['reportedItemId'] == question.questionDocId,
-          orElse: () => <String, dynamic>{},
-        );
-        final reason = reportedPost['reason'] as String? ?? '';
-        final reportedItemId = reportedPost['reportedItemId'] as String? ?? '';
-        final reportDocid = reportedPost['reportedPostId'] as String? ??
-            ''; // Add this line to retrieve the report document ID
+        final reportedPostsForQuestion = reportedPosts
+            .where((post) => post['reportedItemId'] == question.questionDocId)
+            .toList();
+        final reasons = reportedPostsForQuestion
+            .map((post) => post['reason'] as String)
+            .toList();
+        final reportIds = reportedPostsForQuestion
+            .map((post) => post['reportedPostId'] as String)
+            .toList();
 
         question.userType = userDoc?['userType'] as String? ?? '';
-        question.reportedItemId = reportedItemId;
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
-        question.reason = reason;
-        question.reportDocid =
-            reportDocid; // Assign the report document ID to the reportDocid variable
+        question.reasons =
+            reasons; // Add a list property to CardQview to hold reasons
+        question.reportIds =
+            reportIds; // Add a list property to CardQview to hold reportIds
       });
 
       return questions;
@@ -787,6 +550,27 @@ class _ReportedPostState extends State<ReportedPost> {
                         color: Colors.deepPurple,
                         size: 20,
                       ),
+                    SizedBox(
+                      width: 170,
+                    ),
+                    if (question.reportIds != null &&
+                        question.reportIds!
+                            .isNotEmpty) // Condition to check if reports exist
+                      Container(
+                          padding: EdgeInsets.all(6),
+                          margin: EdgeInsets.only(
+                              left: 5), // Adjust margin as needed
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.red,
+                          ),
+                          child: Text(
+                            '${question.reportIds!.length}', // Show the number of reports
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ))
                   ],
                 ),
               ),
@@ -845,7 +629,7 @@ class _ReportedPostState extends State<ReportedPost> {
                 height: 20,
               ),
               Text(
-                "Reason: ${question.reason ?? ''}", // Display the reason here
+                "Reasons: ${question.reasons?.join(', ')}",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
@@ -859,7 +643,9 @@ class _ReportedPostState extends State<ReportedPost> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      _updateReportStatus('Accepted', question.reportDocid);
+                      for (String reportId in question.reportIds ?? []) {
+                        _updateReportStatus('Accepted', reportId);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -873,7 +659,9 @@ class _ReportedPostState extends State<ReportedPost> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      _updateReportStatus('Rejected', question.reportDocid);
+                      for (String reportId in question.reportIds ?? []) {
+                        _updateReportStatus('Rejected', reportId);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -945,25 +733,24 @@ class _ReportedPostState extends State<ReportedPost> {
         final username = userDoc?['username'] as String? ?? '';
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
-        final reportedPost = reportedPosts.firstWhere(
-          (post) => post['reportedItemId'] == question.questionDocId,
-          orElse: () => <String, dynamic>{},
-        );
-        final reason = reportedPost['reason'] as String? ?? '';
-        final status = reportedPost['status'] as String? ?? '';
+        final reportedPostsForQuestion = reportedPosts
+            .where((post) => post['reportedItemId'] == question.questionDocId)
+            .toList();
 
-        final reportedItemId = reportedPost['reportedItemId'] as String? ?? '';
-        final reportDocid = reportedPost['reportedPostId'] as String? ??
-            ''; // Add this line to retrieve the report document ID
+        final reasons = reportedPostsForQuestion
+            .map((post) => post['reason'] as String)
+            .toList();
+        final reportIds = reportedPostsForQuestion
+            .map((post) => post['reportedPostId'] as String)
+            .toList();
 
         question.userType = userDoc?['userType'] as String? ?? '';
-        question.reportedItemId = reportedItemId;
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
-        question.reason = reason;
-        question.reportDocid = reportDocid;
-        question.status = status;
-        // Assign the report document ID to the reportDocid variable
+        question.reasons =
+            reasons; // Modify CardQview to hold a list of reasons
+        question.reportIds =
+            reportIds; // Modify CardQview to hold a list of report IDs
       });
 
       return questions;
@@ -1010,6 +797,27 @@ class _ReportedPostState extends State<ReportedPost> {
                         color: Colors.deepPurple,
                         size: 20,
                       ),
+                    SizedBox(
+                      width: 170,
+                    ),
+                    if (question.reportIds != null &&
+                        question.reportIds!
+                            .isNotEmpty) // Condition to check if reports exist
+                      Container(
+                          padding: EdgeInsets.all(6),
+                          margin: EdgeInsets.only(
+                              left: 5), // Adjust margin as needed
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.red,
+                          ),
+                          child: Text(
+                            '${question.reportIds!.length}', // Show the number of reports
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ))
                   ],
                 ),
               ),
@@ -1068,7 +876,7 @@ class _ReportedPostState extends State<ReportedPost> {
                 height: 20,
               ),
               Text(
-                "Reason: ${question.reason ?? ''}", // Display the reason here
+                "Reasons: ${question.reasons?.join(', ')}", // Display the reason here
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
@@ -1092,13 +900,10 @@ class _ReportedPostState extends State<ReportedPost> {
   ////END QUESTION
   //////TEAM
   ///
-  ///
-  
   Stream<List<CardFT>> readReportedTeam() {
     return FirebaseFirestore.instance
         .collection('Report')
         .where('status', isEqualTo: 'Pending') // Filter by status
-
         .orderBy('reportType', descending: true)
         .snapshots()
         .asyncMap((snapshot) async {
@@ -1146,17 +951,21 @@ class _ReportedPostState extends State<ReportedPost> {
         final username = userDoc?['username'] as String? ?? '';
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
-        final reportedPost = reportedPosts.firstWhere(
-          (post) => post['reportedItemId'] == team.docId, //
-          orElse: () => <String, dynamic>{},
-        );
-        final reason = reportedPost['reason'] as String? ?? '';
-        final reportDocid = reportedPost['reportedPostId'] as String? ?? '';
-        team.userType = userDoc?['userType'] as String? ?? "";
+        final teamReports = reportedPosts
+            .where((post) => post['reportedItemId'] == team.docId)
+            .toList();
+
+        final reasons =
+            teamReports.map((report) => report['reason'] as String).toList();
+        final reportIds = teamReports
+            .map((report) => report['reportedPostId'] as String)
+            .toList();
+
+        team.userType = userDoc?['userType'] as String? ?? '';
         team.username = username;
         team.userPhotoUrl = userPhotoUrl;
-        team.reason = reason;
-        team.reportDocid = reportDocid;
+        team.reasons = reasons;
+        team.reportDocids = reportIds;
       });
 
       return teams;
@@ -1215,17 +1024,21 @@ class _ReportedPostState extends State<ReportedPost> {
         final username = userDoc?['username'] as String? ?? '';
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
-        final reportedPost = reportedPosts.firstWhere(
-          (post) => post['reportedItemId'] == team.docId, //
-          orElse: () => <String, dynamic>{},
-        );
-        final reason = reportedPost['reason'] as String? ?? '';
-        final reportDocid = reportedPost['reportedPostId'] as String? ?? '';
-        team.userType = userDoc?['userType'] as String? ?? "";
+        final teamReports = reportedPosts
+            .where((post) => post['reportedItemId'] == team.docId)
+            .toList();
+
+        final reasons =
+            teamReports.map((report) => report['reason'] as String).toList();
+        final reportIds = teamReports
+            .map((report) => report['reportedPostId'] as String)
+            .toList();
+
+        team.userType = userDoc?['userType'] as String? ?? '';
         team.username = username;
         team.userPhotoUrl = userPhotoUrl;
-        team.reason = reason;
-        team.reportDocid = reportDocid;
+        team.reasons = reasons;
+        team.reportDocids = reportIds;
       });
 
       return teams;
@@ -1272,6 +1085,27 @@ class _ReportedPostState extends State<ReportedPost> {
                         color: Colors.deepPurple,
                         size: 20,
                       ),
+                    SizedBox(
+                      width: 170,
+                    ),
+                    if (team.reportDocids != null &&
+                        team.reportDocids!
+                            .isNotEmpty) // Condition to check if reports exist
+                      Container(
+                          padding: EdgeInsets.all(6),
+                          margin: EdgeInsets.only(
+                              left: 5), // Adjust margin as needed
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.red,
+                          ),
+                          child: Text(
+                            '${team.reportDocids!.length}', // Show the number of reports
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ))
                   ],
                 ),
               ),
@@ -1313,7 +1147,7 @@ class _ReportedPostState extends State<ReportedPost> {
                 height: 20,
               ),
               Text(
-                "Reason: ${team.reason ?? ''}", // Display the reason here
+                "Reasons: ${team.reasons?.join(', ')}",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
@@ -1327,7 +1161,9 @@ class _ReportedPostState extends State<ReportedPost> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      _updateReportStatus('Accepted', team.reportDocid);
+                      for (String reportId in team.reportDocids ?? []) {
+                        _updateReportStatus('Accepted', reportId);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -1341,7 +1177,9 @@ class _ReportedPostState extends State<ReportedPost> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      _updateReportStatus('Rejected', team.reportDocid);
+                      for (String reportId in team.reportDocids ?? []) {
+                        _updateReportStatus('Rejected', reportId);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -1402,6 +1240,27 @@ class _ReportedPostState extends State<ReportedPost> {
                         color: Colors.deepPurple,
                         size: 20,
                       ),
+                    SizedBox(
+                      width: 170,
+                    ),
+                    if (team.reportDocids != null &&
+                        team.reportDocids!
+                            .isNotEmpty) // Condition to check if reports exist
+                      Container(
+                          padding: EdgeInsets.all(6),
+                          margin: EdgeInsets.only(
+                              left: 5), // Adjust margin as needed
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.red,
+                          ),
+                          child: Text(
+                            '${team.reportDocids!.length}', // Show the number of reports
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ))
                   ],
                 ),
               ),
@@ -1443,7 +1302,7 @@ class _ReportedPostState extends State<ReportedPost> {
                 height: 20,
               ),
               Text(
-                "Reason: ${team.reason ?? ''}", // Display the reason here
+                "Reasons: ${team.reasons?.join(', ')}",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
@@ -1519,19 +1378,22 @@ class _ReportedPostState extends State<ReportedPost> {
         final username = userDoc?['username'] as String? ?? '';
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
-        final reportedPost = reportedPosts.firstWhere(
-          (post) => post['reportedItemId'] == project.docId, //
-          orElse: () => <String, dynamic>{},
-        );
-        final reason = reportedPost['reason'] as String? ?? '';
-        final reportDocid = reportedPost['reportedPostId'] as String? ?? '';
-        project.userType = userDoc?['userType'] as String? ?? "";
-        project.reportDocid = reportDocid;
+        final projectReports = reportedPosts
+            .where((post) => post['reportedItemId'] == project.docId)
+            .toList();
+
+        final reasons =
+            projectReports.map((report) => report['reason'] as String).toList();
+        final reportIds = projectReports
+            .map((report) => report['reportedPostId'] as String)
+            .toList();
+
+        project.userType = userDoc?['userType'] as String? ?? '';
         project.username = username;
         project.userPhotoUrl = userPhotoUrl;
-        project.reason = reason;
+        project.reasons = reasons;
+        project.reportDocids = reportIds;
       });
-
       return projects;
     });
   }
@@ -1588,17 +1450,21 @@ class _ReportedPostState extends State<ReportedPost> {
         final username = userDoc?['username'] as String? ?? '';
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
-        final reportedPost = reportedPosts.firstWhere(
-          (post) => post['reportedItemId'] == project.docId, //
-          orElse: () => <String, dynamic>{},
-        );
-        final reason = reportedPost['reason'] as String? ?? '';
-        final reportDocid = reportedPost['reportedPostId'] as String? ?? '';
-        project.userType = userDoc?['userType'] as String? ?? "";
-        project.reportDocid = reportDocid;
+        final projectReports = reportedPosts
+            .where((post) => post['reportedItemId'] == project.docId)
+            .toList();
+
+        final reasons =
+            projectReports.map((report) => report['reason'] as String).toList();
+        final reportIds = projectReports
+            .map((report) => report['reportedPostId'] as String)
+            .toList();
+
+        project.userType = userDoc?['userType'] as String? ?? '';
         project.username = username;
         project.userPhotoUrl = userPhotoUrl;
-        project.reason = reason;
+        project.reasons = reasons;
+        project.reportDocids = reportIds;
       });
 
       return projects;
@@ -1653,7 +1519,7 @@ class _ReportedPostState extends State<ReportedPost> {
               doc.data()! as Map<String, dynamic>,
             )),
       );
-
+/*
       Answers.forEach((Answer) {
         final userDoc = userMap[Answer.userId];
         final username = userDoc?['username'] as String? ?? '';
@@ -1671,6 +1537,27 @@ class _ReportedPostState extends State<ReportedPost> {
         Answer.userPhotoUrl = userPhotoUrl;
         Answer.reason = reason;
         Answer.reportDocid = reportDocid;
+      });*/
+      Answers.forEach((Answer) {
+        final userDoc = userMap[Answer.userId];
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+
+        final AnswerReports = reportedPosts
+            .where((post) => post['reportedItemId'] == Answer.docId)
+            .toList();
+
+        final reasons =
+            AnswerReports.map((report) => report['reason'] as String).toList();
+        final reportIds =
+            AnswerReports.map((report) => report['reportedPostId'] as String)
+                .toList();
+
+        Answer.userType = userDoc?['userType'] as String? ?? '';
+        Answer.username = username;
+        Answer.userPhotoUrl = userPhotoUrl;
+        Answer.reasons = reasons;
+        Answer.reportDocids = reportIds;
       });
 
       return Answers;
@@ -1729,18 +1616,21 @@ class _ReportedPostState extends State<ReportedPost> {
         final username = userDoc?['username'] as String? ?? '';
         final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
-        final reportedPost = reportedPosts.firstWhere(
-          (post) => post['reportedItemId'] == Answer.docId, //
-          orElse: () => <String, dynamic>{},
-        );
-        final reason = reportedPost['reason'] as String? ?? '';
-        final reportDocid = reportedPost['reportedPostId'] as String? ?? '';
+        final AnswerReports = reportedPosts
+            .where((post) => post['reportedItemId'] == Answer.docId)
+            .toList();
 
-        Answer.userType = userDoc?['userType'] as String? ?? "";
+        final reasons =
+            AnswerReports.map((report) => report['reason'] as String).toList();
+        final reportIds =
+            AnswerReports.map((report) => report['reportedPostId'] as String)
+                .toList();
+
+        Answer.userType = userDoc?['userType'] as String? ?? '';
         Answer.username = username;
         Answer.userPhotoUrl = userPhotoUrl;
-        Answer.reason = reason;
-        Answer.reportDocid = reportDocid;
+        Answer.reasons = reasons;
+        Answer.reportDocids = reportIds;
       });
 
       return Answers;
@@ -1806,6 +1696,27 @@ class _ReportedPostState extends State<ReportedPost> {
                       color: Colors.deepPurple,
                       size: 20,
                     ),
+                  SizedBox(
+                    width: 170,
+                  ),
+                  if (answer.reportDocids != null &&
+                      answer.reportDocids!
+                          .isNotEmpty) // Condition to check if reports exist
+                    Container(
+                        padding: EdgeInsets.all(6),
+                        margin:
+                            EdgeInsets.only(left: 5), // Adjust margin as needed
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                        child: Text(
+                          '${answer.reportDocids!.length}', // Show the number of reports
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ))
                 ],
               ),
               SizedBox(height: 10),
@@ -1839,7 +1750,7 @@ class _ReportedPostState extends State<ReportedPost> {
                 height: 10,
               ),
               Text(
-                "Reason: ${answer.reason ?? ''}", // Display the reason here
+                "Reasons: ${answer.reasons?.join(', ')}",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
@@ -1853,7 +1764,9 @@ class _ReportedPostState extends State<ReportedPost> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      _updateReportStatus('Accepted', answer.reportDocid);
+                      for (String reportId in answer.reportDocids ?? []) {
+                        _updateReportStatus('Accepted', reportId);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -1867,7 +1780,9 @@ class _ReportedPostState extends State<ReportedPost> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      _updateReportStatus('Rejected', answer.reportDocid);
+                      for (String reportId in answer.reportDocids ?? []) {
+                        _updateReportStatus('Rejected', reportId);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -1949,6 +1864,27 @@ class _ReportedPostState extends State<ReportedPost> {
                       color: Colors.deepPurple,
                       size: 20,
                     ),
+                  SizedBox(
+                    width: 170,
+                  ),
+                  if (answer.reportDocids != null &&
+                      answer.reportDocids!
+                          .isNotEmpty) // Condition to check if reports exist
+                    Container(
+                        padding: EdgeInsets.all(6),
+                        margin:
+                            EdgeInsets.only(left: 5), // Adjust margin as needed
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                        child: Text(
+                          '${answer.reportDocids!.length}', // Show the number of reports
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ))
                 ],
               ),
               SizedBox(height: 10),
@@ -1982,7 +1918,7 @@ class _ReportedPostState extends State<ReportedPost> {
                 height: 10,
               ),
               Text(
-                "Reason: ${answer.reason ?? ''}", // Display the reason here
+                "Reasons: ${answer.reasons?.join(', ')}",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),

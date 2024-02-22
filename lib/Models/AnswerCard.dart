@@ -11,7 +11,8 @@ class CardAnswer {
   String userType;
   String reportedItemId;
   String reportDocid;
-
+  List<String>? reasons;
+  List<String>? reportDocids;
   CardAnswer({
     required this.questionDocId,
     required this.userId,
@@ -55,7 +56,7 @@ class CardAnswer {
       userType: json['userType'] ?? '',
       reportedItemId: json['reportedItemId'] ?? '',
       reportDocid: json['reportDocid'] ?? '',
-
     );
   }
 }
+

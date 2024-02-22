@@ -17,6 +17,8 @@ class CardFT {
   String? teamDocId;
   String? projectDocId;
   String reportDocid;
+  List<String>? reasons;
+  List<String>? reportDocids;
 
   CardFT({
     required this.title,
@@ -69,3 +71,4 @@ class CardFT {
         reportDocid: json['reportDocid'] ?? '',
       );
 }
+

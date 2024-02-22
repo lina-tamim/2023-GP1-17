@@ -14,6 +14,8 @@ class CardQview {
   String reportedItemId;
   String reportDocid;
   String? status;
+  List<String>? reasons;
+  List<String>? reportIds;
 
   CardQview(
       {required this.title,
@@ -64,4 +66,5 @@ class CardQview {
         reportDocid: json['reportDocid'] ?? '',
         status: json['status'] as String?,
       );
+      
 }
