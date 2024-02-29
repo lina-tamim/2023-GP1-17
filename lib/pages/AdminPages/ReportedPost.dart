@@ -31,19 +31,20 @@ class _ReportedPostState extends State<ReportedPost> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+                backgroundColor:  Color.fromARGB(255, 242, 241, 243),
           automaticallyImplyLeading: false,
           iconTheme: IconThemeData(
             color: Color.fromRGBO(37, 6, 81, 0.898),
           ),
           toolbarHeight: 100,
-          flexibleSpace: Container(
+         /* flexibleSpace: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/Backgrounds/bg11.png'),
                 fit: BoxFit.cover,
               ),
             ),
-          ),
+          ),*/
           title: Builder(
             builder: (context) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -562,7 +563,7 @@ class _ReportedPostState extends State<ReportedPost> {
                               left: 5), // Adjust margin as needed
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.red,
+                            color:  Color.fromARGB(217, 122, 1, 1),
                           ),
                           child: Text(
                             '${question.reportIds!.length}', // Show the number of reports
@@ -809,7 +810,7 @@ class _ReportedPostState extends State<ReportedPost> {
                               left: 5), // Adjust margin as needed
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.red,
+                            color: Color.fromARGB(217, 122, 1, 1),
                           ),
                           child: Text(
                             '${question.reportIds!.length}', // Show the number of reports
@@ -1097,7 +1098,7 @@ class _ReportedPostState extends State<ReportedPost> {
                               left: 5), // Adjust margin as needed
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.red,
+                            color: Color.fromARGB(217, 122, 1, 1),
                           ),
                           child: Text(
                             '${team.reportDocids!.length}', // Show the number of reports
@@ -1252,7 +1253,7 @@ class _ReportedPostState extends State<ReportedPost> {
                               left: 5), // Adjust margin as needed
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.red,
+                            color:  Color.fromARGB(217, 122, 1, 1),
                           ),
                           child: Text(
                             '${team.reportDocids!.length}', // Show the number of reports
@@ -1708,7 +1709,7 @@ class _ReportedPostState extends State<ReportedPost> {
                             EdgeInsets.only(left: 5), // Adjust margin as needed
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.red,
+                          color: Color.fromARGB(217, 122, 1, 1),
                         ),
                         child: Text(
                           '${answer.reportDocids!.length}', // Show the number of reports
@@ -1876,7 +1877,7 @@ class _ReportedPostState extends State<ReportedPost> {
                             EdgeInsets.only(left: 5), // Adjust margin as needed
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.red,
+                          color:  Color.fromARGB(217, 122, 1, 1),
                         ),
                         child: Text(
                           '${answer.reportDocids!.length}', // Show the number of reports

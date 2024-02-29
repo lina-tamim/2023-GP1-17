@@ -350,18 +350,13 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
 
 AppBar buildAppBar(String titleText) {
   return AppBar(
+    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+    elevation: 0, // Set elevation to 0 to remove the shadow
     iconTheme: IconThemeData(
       color: Color.fromRGBO(37, 6, 81, 0.898),
     ),
-    toolbarHeight: 100,
-    flexibleSpace: Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/Backgrounds/bg11.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
-    ),
+    toolbarHeight: 90,
+    flexibleSpace: Container(),
     title: Text(
       titleText,
       style: const TextStyle(
@@ -388,17 +383,26 @@ void toastMessage(String message) {
 AppBar buildAppBarUser(String titleText, String loggedInImage) {
   return AppBar(
     automaticallyImplyLeading: false,
+    backgroundColor:  Color.fromARGB(255, 242, 241, 243),
+    elevation: 0,
     iconTheme: IconThemeData(
       color: Color.fromRGBO(37, 6, 81, 0.898),
     ),
-    toolbarHeight: 100,
-    flexibleSpace: Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/Backgrounds/bg11.png'),
-          fit: BoxFit.cover,
+    toolbarHeight: 90,
+    flexibleSpace: Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          alignment: Alignment.bottomCenter,
+          padding: EdgeInsets.only(bottom: 1),
+          child: Container(
+            height: 3,
+            color: const Color.fromARGB(60, 158, 158, 158), // Set the color of the horizontal bar
+          ),
         ),
-      ),
+        Container(),
+      ],
     ),
     title: Builder(
       builder: (context) => Column(

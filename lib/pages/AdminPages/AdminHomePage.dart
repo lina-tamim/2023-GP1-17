@@ -27,7 +27,7 @@ class _AdminHome extends State<AdminHome> {
         children: [
           Container(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
               decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(topLeft: Radius.circular(0)),
               ),

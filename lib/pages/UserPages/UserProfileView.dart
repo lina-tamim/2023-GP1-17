@@ -996,8 +996,8 @@ class _UserProfileView extends State<UserProfileView>
               children: [
                 buildReasonItem(context, 'Inappropriate Content'),
                 buildReasonItem(context, 'Spam'),
-                buildReasonItem(context, 'Harassment'),
-                buildReasonItem(context, 'Fake Account'),
+                buildReasonItem(context, 'Abuse & Harassment'),
+                buildReasonItem(context, 'Impersonation'),
                 buildOtherReasonItem(context),
               ],
             ),
@@ -1478,10 +1478,8 @@ class _UserProfileView extends State<UserProfileView>
                       alignment: Alignment.center,
                       child: TabBar(
                         controller: tabController,
-                        indicatorColor: const Color.fromARGB(
-                            255, 27, 5, 230), // Change the underline color here
-                        labelColor: const Color.fromARGB(
-                            255, 27, 5, 230), // Change the text color here
+                        indicatorColor: Color.fromARGB(255, 0, 0, 0), // Change the underline color here
+                        labelColor: Color.fromARGB(255, 0, 0, 0), // Change the text color here
                         tabs: [
                           Tab(text: 'Question'),
                           Tab(text: 'Build\nTeam'),

@@ -775,18 +775,19 @@ class __FHomePageState extends State<FHomePage> {
         ),
         appBar: AppBar(
             automaticallyImplyLeading: false,
+            backgroundColor:  Color.fromARGB(255, 242, 241, 243),
             iconTheme: IconThemeData(
               color: Color.fromRGBO(37, 6, 81, 0.898),
             ),
-            toolbarHeight: 100,
-            flexibleSpace: Container(
+            toolbarHeight: 80,
+           /* flexibleSpace: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/Backgrounds/bg11.png'),
                   fit: BoxFit.cover,
                 ),
               ),
-            ),
+            ),*/
             title: Builder(
               builder: (context) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -850,12 +851,11 @@ class __FHomePageState extends State<FHomePage> {
               indicator: UnderlineTabIndicator(
                 borderSide: BorderSide(
                   width: 5.0,
-                  color: Color.fromARGB(
-                      255, 27, 5, 230), // Set the color of the underline
+                  color: Color.fromARGB(255, 0, 0, 0), // Set the color of the underline
                 ),
                 // Adjust the insets if needed
               ),
-              labelColor: Color.fromARGB(255, 27, 5, 230),
+              labelColor: Color.fromARGB(255, 0, 0, 0),
               // Set the color of the selected tab's text
               tabs: [
                 Tab(
@@ -876,7 +876,7 @@ class __FHomePageState extends State<FHomePage> {
           onPressed: () async {
             showInputDialog();
           },
-          backgroundColor: Color.fromARGB(255, 13, 13, 15),
+          backgroundColor:  Color.fromARGB(255, 49, 0, 84),
           child: const Icon(
             Icons.add,
             color: Color.fromARGB(255, 255, 255, 255),

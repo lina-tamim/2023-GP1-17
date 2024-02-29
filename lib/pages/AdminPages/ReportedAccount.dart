@@ -25,19 +25,21 @@ Widget build(BuildContext context) {
     length: 2, 
     child: Scaffold(
       appBar: AppBar(
+              backgroundColor:  Color.fromARGB(255, 242, 241, 243),
+
         automaticallyImplyLeading: false,
         iconTheme: IconThemeData(
           color: Color.fromRGBO(37, 6, 81, 0.898),
         ),
         toolbarHeight: 100,
-        flexibleSpace: Container(
+        /*flexibleSpace: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
               image: AssetImage('assets/Backgrounds/bg11.png'),
               fit: BoxFit.cover,
             ),
           ),
-        ),
+        ),*/
         title: Builder(
           builder: (context) {
             return Column(
@@ -163,6 +165,7 @@ Widget build(BuildContext context) {
   );
 }
 
+//
 Stream<List<Widget>> readReportedAccounts() {
   return FirebaseFirestore.instance
       .collection('Report')
@@ -171,240 +174,23 @@ Stream<List<Widget>> readReportedAccounts() {
       .orderBy('reportDate', descending: true)
       .snapshots()
       .asyncMap((snapshot) async {
-        final reportedAccounts = <Widget>[];
-
-        for (final doc in snapshot.docs) {
-          final data = doc.data();
-          final reportedItemId = data['reportedItemId'];
-          final reason = data['reason'];
-
-          final userSnapshot = await FirebaseFirestore.instance
-              .collection('RegularUser')
-              .doc(reportedItemId)
-              .get();
-
-          if (userSnapshot.exists) {
-            final userData = userSnapshot.data();
-            final username = userData!['username'];
-            final email = userData!['email'];
-            final imageURL = userData!['imageURL'];
-            final profileImage = NetworkImage(imageURL);
-            final reportId = doc.id;
-            final count = await getAccountReportCount(reportedItemId);
-
-            final card = Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    UserProfileView(userId: email),
-                              ),
-                            );
-                          },
-                          child: CircleAvatar(
-                            backgroundImage: profileImage,
-                            radius: 35,
-                          ),
-                        ),
-                        SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          UserProfileView(userId: email),
-                                    ),
-                                  );
-                                },
-                                child: Text(
-                                  '@$username',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          UserProfileView(userId: email),
-                                    ),
-                                  );
-                                },
-                                child: Text(
-                                  '$email',
-                                  style: TextStyle(
-                                    color: Colors.grey[700],
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Text(
-                                    'Reason: ',
-                                    style: TextStyle(
-                                      color: Color.fromARGB(255, 92, 0, 0),
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  Text(
-                                    reason,
-                                    style: TextStyle(
-                                      color: Colors.grey[700],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Tooltip(
-                          child: Container(
-                            padding: EdgeInsets.all(7),
-                            decoration: BoxDecoration(
-                              color: Color.fromARGB(217, 122, 1, 1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Text(
-                              '$count',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                          message: 'Total number of reports on this account',
-                          padding: EdgeInsets.all(10),
-                          showDuration: Duration(seconds: 3),
-                          textStyle: TextStyle(color: Colors.white),
-                          preferBelow: false,
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            acceptReportedAccount(
-                                reportId, username, reason, email);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            primary: Color.fromARGB(255, 22, 146, 0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          child: Text(
-                            'Accept',
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            rejectReportedAccount(reportId);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            primary: Color.fromARGB(255, 122, 1, 1),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          child: Text(
-                            'Reject',
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-
-            reportedAccounts.add(
-              Container(
-                margin: EdgeInsets.only(bottom: 16),
-                child: card,
-              ),
-            );
-          }
-        }
-
-        if (reportedAccounts.isEmpty) {
-          reportedAccounts.add(
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: 280),
-                  Center(
-                    child: Text(
-                      "Completely Clean!\n\nNo Reported Accounts Found",
-                      style: TextStyle(
-                        fontSize: 19,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-        return reportedAccounts;
-      });
-}
-
-
-
-Stream<List<Widget>> readOldReportedAccounts() {
-  return FirebaseFirestore.instance
-      .collection('Report')
-      .where('reportType', isEqualTo: 'Account')
-      .where('status' , isEqualTo: 'Accepted')
-      .orderBy('reportDate', descending: true)  
-      .snapshots()
-      .asyncMap((snapshot) async {
     final reportedAccounts = <Widget>[];
+    final reportedItemsMap = <String, List<String>>{};
 
     for (final doc in snapshot.docs) {
       final data = doc.data();
       final reportedItemId = data['reportedItemId'];
       final reason = data['reason'];
 
+      if (reportedItemsMap.containsKey(reportedItemId)) {
+        reportedItemsMap[reportedItemId]!.add(reason);
+      } else {
+        reportedItemsMap[reportedItemId] = [reason];
+      }
+    }
+
+    for (final reportedItemId in reportedItemsMap.keys) {
+      final reasons = reportedItemsMap[reportedItemId]!;
       final userSnapshot = await FirebaseFirestore.instance
           .collection('RegularUser')
           .doc(reportedItemId)
@@ -416,6 +202,24 @@ Stream<List<Widget>> readOldReportedAccounts() {
         final email = userData!['email'];
         final imageURL = userData!['imageURL'];
         final profileImage = NetworkImage(imageURL);
+        final reportIds = snapshot.docs
+            .where((doc) => doc['reportedItemId'] == reportedItemId)
+            .map((doc) => doc.id)
+            .toList();
+        final count = await getAccountReportCount(reportedItemId);
+
+        final reasonsWidgets = reasons.map((reason) {
+          return Row(
+            children: [
+              Text(
+                reason,
+                style: TextStyle(
+                  color: Colors.grey[700],
+                ),
+              ),
+            ],
+          );
+        }).toList();
 
         final card = Card(
           elevation: 4,
@@ -423,96 +227,342 @@ Stream<List<Widget>> readOldReportedAccounts() {
             borderRadius: BorderRadius.circular(10),
           ),
           margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-child: Padding(
-  padding: const EdgeInsets.all(16.0),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        children: [
-          GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UserProfileView(userId: email),
-                      ),
-                    );
-                  }, child: 
-                  CircleAvatar(
-            backgroundImage: profileImage,
-            radius: 35,
-          ),
-          ),
-          SizedBox(width: 16),
-          Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UserProfileView(userId: email),
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                UserProfileView(userId: email),
+                          ),
+                        );
+                      },
+                      child: CircleAvatar(
+                        backgroundImage: profileImage,
+                        radius: 35,
                       ),
-                    );
-                  },
-                  child: Text(
-                    '@$username',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
                     ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UserProfileView(userId: email),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      UserProfileView(userId: email),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              '@$username',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      UserProfileView(userId: email),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              '$email',
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                             Text(
+                            'Reasons: ',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 92, 0, 0),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: reasonsWidgets,
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                  child: Text(
-                    '$email',
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
                     ),
-                  ),
-                ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Text(
-                        'Reason: ',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 92, 0, 0),
-                          fontWeight: FontWeight.w700,
+                    SizedBox(width: 8),
+                    Tooltip(
+                      child: Container(
+                        padding: EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(217, 122, 1, 1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '$count',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
-                      Text(
-                        reason,
-                        style: TextStyle(
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+                      message: 'Total number of reports on this account',
+                      padding: EdgeInsets.all(10),
+                      showDuration: Duration(seconds: 3),
+                      textStyle: TextStyle(color: Colors.white),
+                      preferBelow: false,
+                    ),
+                  ],
+                ),
                 SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text(
-                      'Report Accepted',
+                    ElevatedButton(
+                      onPressed: () {
+                        acceptReportedAccount(
+                            reportIds as String, username, reasons, email);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Color.fromARGB(255, 22, 146, 0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: Text(
+                        'Accept',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        rejectReportedAccount(reportIds);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Color.fromARGB(255, 201, 0, 0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: Text(
+                        'Reject',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+
+        reportedAccounts.add(card);
+      }
+    }
+
+    if (reportedAccounts.isEmpty) {
+      reportedAccounts.add(
+         Center(
+          child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+                  SizedBox(height: 280,),
+            Center(
+              child: Text(
+                "No Reports Found",
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
+      );
+    }
+
+    return reportedAccounts;
+  });
+}
+
+
+//
+
+//
+String status = 'Accepted';
+Stream<List<Widget>> readOldReportedAccounts() {
+  return FirebaseFirestore.instance
+      .collection('Report')
+      .where('reportType', isEqualTo: 'Account')
+      .where('status', whereIn: ['Accepted', 'Rejected'])
+      .orderBy('reportDate', descending: true)
+      .snapshots()
+      .asyncMap((snapshot) async {
+    final reportedAccounts = <Widget>[];
+    final reportedItemsMap = <String, List<String>>{};
+
+    for (final doc in snapshot.docs) {
+      final data = doc.data();
+      final reportedItemId = data['reportedItemId'];
+      final reason = data['reason'];
+      status = data['status'];
+
+      if (reportedItemsMap.containsKey(reportedItemId)) {
+        reportedItemsMap[reportedItemId]!.add(reason);
+      } else {
+        reportedItemsMap[reportedItemId] = [reason];
+      }
+    }
+
+    for (final reportedItemId in reportedItemsMap.keys) {
+      final reasons = reportedItemsMap[reportedItemId]!;
+      final userSnapshot = await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .doc(reportedItemId)
+          .get();
+
+      if (userSnapshot.exists) {
+        final userData = userSnapshot.data();
+        final username = userData!['username'];
+        final email = userData!['email'];
+        final imageURL = userData!['imageURL'];
+        final profileImage = NetworkImage(imageURL);
+        final reportIds = snapshot.docs
+            .where((doc) => doc['reportedItemId'] == reportedItemId)
+            .map((doc) => doc.id)
+            .toList();
+        final count = await getAccountReportCount(reportedItemId);
+
+        final reasonsWidgets = reasons.map((reason) {
+          return Row(
+            children: [
+              Text(
+                reason,
+                style: TextStyle(
+                  color: Colors.grey[700],
+                ),
+              ),
+            ],
+          );
+        }).toList();
+
+        final card = Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                UserProfileView(userId: email),
+                          ),
+                        );
+                      },
+                      child: CircleAvatar(
+                        backgroundImage: profileImage,
+                        radius: 35,
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      UserProfileView(userId: email),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              '@$username',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      UserProfileView(userId: email),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              '$email',
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                           Text(
+                            'Reasons: ',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 92, 0, 0),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: reasonsWidgets,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                         Text(
+                      '$status',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -526,23 +576,20 @@ child: Padding(
           ),
         );
 
-        reportedAccounts.add(Container(
-          margin: EdgeInsets.only(bottom: 16),
-          child: card,
-        ));
+        reportedAccounts.add(card);
       }
     }
 
     if (reportedAccounts.isEmpty) {
       reportedAccounts.add(
-        Center(
+         Center(
           child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
                   SizedBox(height: 280,),
             Center(
               child: Text(
-                "No Previous Accepted Reports Found",
+                "No Previous Reports Found",
                 style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.w600,
@@ -565,6 +612,7 @@ Future<int> getAccountReportCount(String reportedItemID) async {
   try {
     final querySnapshot = await FirebaseFirestore.instance
         .collection('Report')
+        .where('status', isEqualTo: 'Pending')
         .where('reportedItemId', isEqualTo: reportedItemID)
         .get();
 
@@ -575,44 +623,44 @@ Future<int> getAccountReportCount(String reportedItemID) async {
   }
 }
 
-Future<void> rejectReportedAccount(String reportId) async {
+Future<void> rejectReportedAccount(List<String> reportIds) async {
   try {
-    // Get the reportedItemId of the current report
-    final currentReportSnapshot = await FirebaseFirestore.instance
-        .collection('Report')
-        .doc(reportId)
-        .get();
-    final reportedItemId = currentReportSnapshot.get('reportedItemId');
+    for (final reportId in reportIds) {
+      final currentReportSnapshot = await FirebaseFirestore.instance
+          .collection('Report')
+          .doc(reportId)
+          .get();
+      final reportedItemId = currentReportSnapshot.get('reportedItemId');
 
-    // Update the status of all reports with the same reportedItemId to 'Rejected'
-    await FirebaseFirestore.instance
-        .collection('Report')
-        .where('reportedItemId', isEqualTo: reportedItemId)
-        .get()
-        .then((querySnapshot) {
-      final batch = FirebaseFirestore.instance.batch();
-      querySnapshot.docs.forEach((doc) {
-        batch.update(doc.reference, {'status': 'Rejected'});
+      await FirebaseFirestore.instance
+          .collection('Report')
+          .where('reportedItemId', isEqualTo: reportedItemId)
+          .get()
+          .then((querySnapshot) {
+        final batch = FirebaseFirestore.instance.batch();
+        querySnapshot.docs.forEach((doc) {
+          batch.update(doc.reference, {'status': 'Rejected'});
+        });
+        return batch.commit();
       });
-      return batch.commit();
-    });
 
-    // Update the status of the current report to 'Rejected'
-    await FirebaseFirestore.instance
-        .collection('Report')
-        .doc(reportId)
-        .update({'status': 'Rejected'});
+      await FirebaseFirestore.instance
+          .collection('Report')
+          .doc(reportId)
+          .update({'status': 'Rejected'});
+    }
 
-    toastMessage('Report Has Been Rejected');
+    toastMessage('Reports Have Been Rejected');
   } catch (error) {
-    toastMessage('Error While Rejecting Report');
-    print('Error Rejecting Report: $error');
+    toastMessage('Error While Rejecting Reports');
+    print('Error Rejecting Reports: $error');
   }
 }
 
 
 
-Future<void> acceptReportedAccount(String reportId, String username, String reason, String email) async {
+
+Future<void> acceptReportedAccount(String reportId, String username, List<String> reasons, String email) async {
   try {
     // Get the reportedItemId of the current report
     final currentReportSnapshot = await FirebaseFirestore.instance
@@ -654,7 +702,7 @@ Future<void> acceptReportedAccount(String reportId, String username, String reas
       'body':  '''
 Dear TeXel user,
 
-We would like to inform you that your account with the username "$username" has been reported for $reason. We kindly remind you to adhere to our community guidelines and maintain appropriate conduct within our platform.
+We would like to inform you that your account with the username "$username" has been reported for $reasons. We kindly remind you to adhere to our community guidelines and maintain appropriate conduct within our platform.
 
 We value the cooperation of all our users in creating a safe and respectful environment for everyone. If you have any questions or concerns, please don't hesitate to reach out to our support team.
 
@@ -674,5 +722,3 @@ The TeXel Team
 
 }
 }
-
-

@@ -682,19 +682,12 @@ class _UserPostsPageState extends State<UserPostsPage> {
         ),
 
         appBar: AppBar(
+          backgroundColor:  Color.fromARGB(255, 242, 241, 243),
           automaticallyImplyLeading: false,
           iconTheme: IconThemeData(
             color: Color.fromRGBO(37, 6, 81, 0.898),
           ),
           toolbarHeight: 100,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/Backgrounds/bg11.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
           title: Builder(
             builder: (context) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -744,31 +737,31 @@ class _UserPostsPageState extends State<UserPostsPage> {
                     child: Text(
                       'Questions',
                       style:
-                          TextStyle(fontSize: 13), // Adjust font size as needed
+                          TextStyle(fontSize: 13, fontWeight: FontWeight.w600), // Adjust font size as needed
                     ),
                   ),
                   Tab(
                     child: Text(
                       'Answers',
-                      style: TextStyle(fontSize: 13),
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                     ),
                   ),
                   Tab(
                     child: Text(
-                      'Build Team',
-                      style: TextStyle(fontSize: 13),
+                      'Team',
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                     ),
                   ),
                   Tab(
                     child: Text(
                       'Projects',
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                   ),
                   Tab(
                     child: Text(
-                      'Reported Post',
-                      style: TextStyle(fontSize: 12),
+                      'Reports',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
@@ -786,7 +779,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
             // _toggleFormVisibility();
             showInputDialog();
           },
-          backgroundColor: Color.fromARGB(255, 13, 13, 15),
+          backgroundColor: Color.fromARGB(255, 49, 0, 84),
           child: const Icon(
             Icons.add,
             color: Color.fromARGB(255, 255, 255, 255),

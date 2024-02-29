@@ -56,17 +56,14 @@ class _UserExplorePageState extends State<UserExplorePage>
   AppBar buildAppBarWithTabs(
       String titleText, TabController tabController, _loggedInImage) {
     return AppBar(
+      backgroundColor: Color.fromARGB(255, 242, 241, 243),
       automaticallyImplyLeading: false,
       iconTheme: IconThemeData(
         color: Color.fromRGBO(37, 6, 81, 0.898),
       ),
-      toolbarHeight: 100,
+      toolbarHeight: 80,
       flexibleSpace: Container(
         decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/Backgrounds/bg11.png'),
-            fit: BoxFit.cover,
-          ),
         ),
       ),
       title: Builder(
@@ -113,12 +110,11 @@ class _UserExplorePageState extends State<UserExplorePage>
         indicator: UnderlineTabIndicator(
           borderSide: BorderSide(
             width: 5.0,
-            color: Color.fromARGB(
-                255, 27, 5, 230), // Set the color of the underline
+            color: Color.fromARGB(255, 0, 0, 0), // Set the color of the underline
           ),
           // Adjust the insets if needed
         ),
-        labelColor: Color.fromARGB(255, 27, 5, 230),
+        labelColor: Color.fromARGB(255, 0, 0, 0),
         tabs: [
           Tab(
             child: Text(

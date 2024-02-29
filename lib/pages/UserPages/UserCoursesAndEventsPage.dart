@@ -54,7 +54,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
           clearAllFields();
           showInputDialog();
         },
-        backgroundColor: Color.fromARGB(255, 13, 13, 15),
+        backgroundColor:  Color.fromARGB(255, 49, 0, 84),
         child: const Tooltip(
           message: '  Add a course or event now!   ',
           child: Icon(

@@ -676,19 +676,12 @@ Future<void> fetchData(PathwayContainer pathway) async {
       resizeToAvoidBottomInset: true,
       drawer: const NavBarAdmin(),
       appBar: AppBar(
+              backgroundColor:  Color.fromARGB(255, 242, 241, 243),
         automaticallyImplyLeading: false,
         iconTheme: IconThemeData(
           color: Color.fromRGBO(37, 6, 81, 0.898),
         ),
         toolbarHeight: 100,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/Backgrounds/bg11.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
         title: Builder(
           builder: (context) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,

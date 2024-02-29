@@ -61,18 +61,11 @@ class _BookmarkPageState extends State<BookmarkPage>
       String titleText, TabController tabController, _loggedInImage) {
     return AppBar(
       automaticallyImplyLeading: false,
+      backgroundColor:  Color.fromARGB(255, 242, 241, 243),
       iconTheme: IconThemeData(
         color: Color.fromRGBO(37, 6, 81, 0.898),
       ),
       toolbarHeight: 100,
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/Backgrounds/bg11.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
       title: Builder(
         builder: (context) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,6 +114,7 @@ class _BookmarkPageState extends State<BookmarkPage>
               'Questions',
               style: TextStyle(
                 fontSize: 16,
+                fontWeight: FontWeight.w600
               ),
             ),
           ),
@@ -129,6 +123,7 @@ class _BookmarkPageState extends State<BookmarkPage>
               'Pathways',
               style: TextStyle(
                 fontSize: 16,
+                                fontWeight: FontWeight.w600
               ),
             ),
           ),
