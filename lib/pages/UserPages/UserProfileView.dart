@@ -935,6 +935,14 @@ class _UserProfileView extends State<UserProfileView>
                                         });
                                       }
                                     }).catchError((error) {});
+                                  FirebaseFirestore.instance
+                                      .collection('Question')
+                                      .doc(answer.questionDocId)
+                                      .update({
+                                    'totalUpvotes':  FieldValue.increment(-1),
+                                  }).catchError((error) {
+                                    // Handle error if the update fails
+                                  });
                                   } else {
                                     upvotedUserIds.add(currentEmail);
                                     upvoteCount++;
@@ -957,6 +965,13 @@ class _UserProfileView extends State<UserProfileView>
                                         }).catchError((error) {});
                                       }
                                     }).catchError((error) {});
+                                    FirebaseFirestore.instance
+                                      .collection('Question')
+                                      .doc(answer.questionDocId)
+                                      .update({
+                                    'totalUpvotes':  FieldValue.increment(1),
+                                  }).catchError((error) {
+                                  });
                                   }
 
                                   answer.upvoteCount = upvoteCount;
@@ -968,7 +983,6 @@ class _UserProfileView extends State<UserProfileView>
                                     'upvoteCount': upvoteCount,
                                     'upvotedUserIds': upvotedUserIds,
                                   }).catchError((error) {
-                                    // Handle error if the update fails
                                   });
                                 });
                               },

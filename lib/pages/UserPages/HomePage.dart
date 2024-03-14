@@ -1,4 +1,5 @@
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,9 +10,12 @@ import 'package:techxcel11/Models/FormCard.dart';
 import 'package:techxcel11/Models/PostCard.dart';
 import 'package:techxcel11/Models/QuestionCard.dart';
 import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
+import 'package:techxcel11/pages/UserPages/TestIntegration.dart';
 import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 import 'dart:developer';
 import 'package:techxcel11/providers/profile_provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class FHomePage extends StatefulWidget {
   const FHomePage({Key? key}) : super(key: key);
@@ -41,6 +45,8 @@ class __FHomePageState extends State<FHomePage> {
     'Others'
     // Add more options as needed
   ];
+  
+  String greetings = '';
 
   // Clear the selected option after reporting
 
@@ -408,6 +414,18 @@ class __FHomePageState extends State<FHomePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  IconButton(
+                    icon: Icon(Icons.monitor_heart,
+                        color: Color.fromARGB(255, 81, 0, 78)),
+                    onPressed: () {
+                      Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => TestIntegration()),
+              );
+
+                    }
+
+                  ),
                   IconButton(
                     icon: Icon(Icons.bookmark,
                         color: Color.fromARGB(255, 63, 63, 63)),

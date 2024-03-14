@@ -1084,7 +1084,15 @@ class _UserPostsPageState extends State<UserPostsPage> {
                                           });
                                         }
                                       }).catchError((error) {});
-                                    } else {
+                                    FirebaseFirestore.instance
+                                      .collection('Question')
+                                      .doc(answer.questionDocId)
+                                      .update({
+                                    'totalUpvotes':  FieldValue.increment(-1),
+                                  }).catchError((error) {
+                                    // Handle error if the update fails
+                                  });
+                                  } else {
                                       upvotedUserIds.add(currentEmail);
                                       upvoteCount++;
                                       FirebaseFirestore.instance
@@ -1108,6 +1116,14 @@ class _UserPostsPageState extends State<UserPostsPage> {
                                           }).catchError((error) {});
                                         }
                                       }).catchError((error) {});
+                                      FirebaseFirestore.instance
+                                      .collection('Question')
+                                      .doc(answer.questionDocId)
+                                      .update({
+                                    'totalUpvotes':  FieldValue.increment(1),
+                                  }).catchError((error) {
+                                    // Handle error if the update fails
+                                  });
                                     }
 
                                     answer.upvoteCount = upvoteCount;

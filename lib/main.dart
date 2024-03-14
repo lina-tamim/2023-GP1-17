@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:techxcel11/pages/StartPage.dart';
 import 'providers/profile_provider.dart';
+import 'Models/API.dart';
 
 //Gp2 3
 void main() async {
