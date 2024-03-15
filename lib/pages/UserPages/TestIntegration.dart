@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/Models/QuestionCard.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
@@ -59,8 +60,13 @@ if (snapshotQ.docs.isNotEmpty) {
         .toList();
     
     // Convert each question to JSON object
+    
     List<Map<String, dynamic>> questionsJson = [];
     allTheQuestions.forEach((question) {
+      Timestamp timestamp = question['postedDate']; // Get the Timestamp object
+      print('11111111111');
+      DateTime dateTime = timestamp.toDate(); // Convert Timestamp to DateTime
+            print('2222222222');
       Map<String, dynamic> jsonQuestion = {
         'selectedInterests': question['selectedInterests'],
         'noOfAnwers': question['noOfAnwers'],
@@ -69,12 +75,16 @@ if (snapshotQ.docs.isNotEmpty) {
         //'postTitle': question['postTitle'],
         //'userId': question['userId'],
         //'postDescription': question['postDescription'],
-        'postedDate': question['postedDate'].toString(), // Convert Timestamp to string
+    'postedDate': DateFormat.yMMMMd().add_jms().format(dateTime), // Format DateTime to string
+
+
       };
-      questionsJson.add(jsonQuestion);
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-  print(questionsJson);
   print('^^^^^^^^^^^^^^^^^^^^^^^^^^');
+  print(DateFormat.yMMMMd().add_jms().format(dateTime)); // Print formatted date string
+  questionsJson.add(jsonQuestion);
+  print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+print(jsonQuestion);
+print('777777777777777777');
     });
 
     // Send the JSON object to the server
