@@ -11,7 +11,140 @@ import 'package:techxcel11/pages/UserPages/BookmarkPage.dart';
 import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 
 
+
 class TestIntegration extends StatefulWidget {
+  @override
+  _TestIntegrationState createState() => _TestIntegrationState();
+}
+
+class _TestIntegrationState extends State<TestIntegration> {
+  String loggedInEmail = '';
+  List<String> userSkills = [];
+  List<String> userInterests = [];
+  List<String> recommendedQuestionIds = [];
+  List<Map<String, dynamic>> allTheQuestions = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> fetchUserDetails() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('loggedInEmail') ?? '';
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+        .collection('RegularUser')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final userData = snapshot.docs[0].data();
+      setState(() {
+        userSkills = List<String>.from(userData['skills'] ?? []);
+        userInterests = List<String>.from(userData['interests'] ?? []);
+      });
+    }
+
+    final QuerySnapshot<Map<String, dynamic>> snapshotQ = await _firestore
+        .collection('Question')
+        .get();
+//
+if (snapshotQ.docs.isNotEmpty) {
+  setState(() {
+    allTheQuestions = snapshotQ.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+    
+    // Convert each question to JSON object
+    List<Map<String, dynamic>> questionsJson = [];
+    allTheQuestions.forEach((question) {
+      Map<String, dynamic> jsonQuestion = {
+        'selectedInterests': question['selectedInterests'],
+        'noOfAnwers': question['noOfAnwers'],
+        'questionDocId': question['questionDocId'],
+         'totalUpvotes': question['totalUpvotes'] ?? 0,
+        //'postTitle': question['postTitle'],
+        //'userId': question['userId'],
+        //'postDescription': question['postDescription'],
+        'postedDate': question['postedDate'].toString(), // Convert Timestamp to string
+      };
+      questionsJson.add(jsonQuestion);
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+  print(questionsJson);
+  print('^^^^^^^^^^^^^^^^^^^^^^^^^^');
+    });
+
+    // Send the JSON object to the server
+    recommendQuestions(questionsJson);
+  });
+}
+
+//
+  }
+
+Future<void> recommendQuestions(List<Map<String, dynamic>> questionsJson) async {
+
+  // Send user preferences and all questions to the server
+  final Map<String, dynamic> requestBody = {
+    'user_skills': userSkills,
+    'user_interests': userInterests,
+    'all_questions': questionsJson,
+  };
+
+  final response = await http.post(
+    Uri.parse('http://10.0.2.2:5000/'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(requestBody),
+  );
+   if (response.statusCode == 200) {
+      // Parse response body as JSON
+      final List<dynamic> responseBody = json.decode(response.body);
+
+      // Extract question IDs from response
+      final List<String> ids = responseBody.cast<String>().toList();
+
+      // Update recommendedQuestionIds state
+      setState(() {
+        recommendedQuestionIds = ids;
+      });
+    } else {
+            print('77577777777777777777777777777777777777777777777777777777777');
+      throw Exception('Failed to fetch recommended questions');
+    }
+  } 
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Send User Preferences'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('Recommended Question IDs: $recommendedQuestionIds'),
+            ElevatedButton(
+              onPressed: () {
+               fetchUserDetails();
+              },
+              child: Text('Fetch Recommendations'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/*class TestIntegration extends StatefulWidget {
   const TestIntegration({Key? key}) : super(key: key);
 
   @override
@@ -66,7 +199,7 @@ final response = await http.get(uri);
       ),
     );
   }
-}
+}*/
 
 
 
