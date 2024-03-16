@@ -120,9 +120,6 @@ if (snapshotQ.docs.isNotEmpty) {
         'noOfAnwers': question['noOfAnwers'],
         'questionDocId': question['questionDocId'],
          'totalUpvotes': question['totalUpvotes'] ?? 0,
-        //'postTitle': question['postTitle'],
-        //'userId': question['userId'],
-        //'postDescription': question['postDescription'],
     'postedDate': DateFormat.yMMMMd().add_jms().format(dateTime), // Format DateTime to string
 
 
@@ -299,10 +296,11 @@ Future<void> recommendQuestions(List<Map<String, dynamic>> questionsJson) async 
       return filteredQuestions;
     });
   }
+  
 Stream<List<CardQuestion>> readQuestionRecommended() {
     Query<Map<String, dynamic>> query =
         FirebaseFirestore.instance.collection('Question');
-    //.where('dropdownValue', isEqualTo: 'Question');
+    /*.where('dropdownValue', isEqualTo: 'Question');
 
     if (searchController.text.isNotEmpty) {
       String searchText = searchController.text;
@@ -310,8 +308,8 @@ Stream<List<CardQuestion>> readQuestionRecommended() {
           .where('postDescription', isGreaterThanOrEqualTo: searchText)
           .where('postDescription', isLessThan: searchText + 'z');
     } else {
-      //query = query.orderBy('postedDate', descending: true);
-    }
+    query = query.orderBy('postedDate', descending: true);
+    }*/
 
     return query.snapshots().asyncMap((snapshot) async {
       final questions = snapshot.docs.map((doc) {
@@ -373,10 +371,9 @@ Stream<List<CardQuestion>> readQuestionRecommended() {
           .where((question) => !acceptedQuestionIds.contains(question.docId))
           .toList();
       // Filter questions based on recommendedQuestionIds
-    filteredQuestions = filteredQuestions
-        .where((question) => recommendedQuestionIds.contains(question.questionDocId))
-        .toList();
-        print("77566574746378");
+    filteredQuestions = recommendedQuestionIds.map((id) => filteredQuestions.firstWhere((question) => question.questionDocId == id)).toList();
+
+        print("RECOMMENDEDDEED HEEEEEEEEEEEEEEEREEEEEEEEEEE");
         //print(filteredQuestions);
         print(recommendedQuestionIds);
       return filteredQuestions;
@@ -1106,18 +1103,15 @@ StreamBuilder<List<CardQuestion>>(
   builder: (context, snapshot) {
     if (snapshot.hasData) {
       final q = snapshot.data!;
-
       if (q.isEmpty) {
         return Center(
           child: Text('No Posts Yet'),
         );
       }
-
       return ListView(
         children: [
           // First stream's content
           ...q.map(buildQuestionCard).toList(),
-
           // Second stream
           StreamBuilder<List<CardQuestion>>(
             stream: readQuestion(),
