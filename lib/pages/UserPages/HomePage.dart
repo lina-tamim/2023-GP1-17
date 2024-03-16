@@ -30,6 +30,11 @@ class __FHomePageState extends State<FHomePage> {
   String loggedInEmail = '';
   String loggedImage = '';
 
+   List<String> userSkills = [];
+  List<String> userInterests = [];
+  List<String> recommendedQuestionIds = [];
+  List<Map<String, dynamic>> allTheQuestions = [];
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 // lina add
@@ -69,7 +74,107 @@ class __FHomePageState extends State<FHomePage> {
     super.initState();
 
     fetchUserData();
+    fetchUserDetailsREC();
   }
+////RECOMMENDER
+///
+  Future<void> fetchUserDetailsREC() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('loggedInEmail') ?? '';
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+        .collection('RegularUser')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final userData = snapshot.docs[0].data();
+      setState(() {
+        userSkills = List<String>.from(userData['skills'] ?? []);
+        userInterests = List<String>.from(userData['interests'] ?? []);
+      });
+    }
+
+    final QuerySnapshot<Map<String, dynamic>> snapshotQ = await _firestore
+        .collection('Question')
+        .get();
+//
+if (snapshotQ.docs.isNotEmpty) {
+  setState(() {
+    allTheQuestions = snapshotQ.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+    
+    // Convert each question to JSON object
+    
+    List<Map<String, dynamic>> questionsJson = [];
+    allTheQuestions.forEach((question) {
+      Timestamp timestamp = question['postedDate']; // Get the Timestamp object
+      print('11111111111');
+      DateTime dateTime = timestamp.toDate(); // Convert Timestamp to DateTime
+            print('2222222222');
+      Map<String, dynamic> jsonQuestion = {
+        'selectedInterests': question['selectedInterests'],
+        'noOfAnwers': question['noOfAnwers'],
+        'questionDocId': question['questionDocId'],
+         'totalUpvotes': question['totalUpvotes'] ?? 0,
+        //'postTitle': question['postTitle'],
+        //'userId': question['userId'],
+        //'postDescription': question['postDescription'],
+    'postedDate': DateFormat.yMMMMd().add_jms().format(dateTime), // Format DateTime to string
+
+
+      };
+  print('^^^^^^^^^^^^^^^^^^^^^^^^^^');
+  print(DateFormat.yMMMMd().add_jms().format(dateTime)); // Print formatted date string
+  questionsJson.add(jsonQuestion);
+  print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+print(jsonQuestion);
+print('777777777777777777');
+    });
+
+    // Send the JSON object to the server
+    recommendQuestions(questionsJson);
+  });
+}
+
+//
+  }
+
+Future<void> recommendQuestions(List<Map<String, dynamic>> questionsJson) async {
+
+  // Send user preferences and all questions to the server
+  final Map<String, dynamic> requestBody = {
+    'user_skills': userSkills,
+    'user_interests': userInterests,
+    'all_questions': questionsJson,
+  };
+
+  final response = await http.post(
+    Uri.parse('http://10.0.2.2:5000/'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(requestBody),
+  );
+   if (response.statusCode == 200) {
+      // Parse response body as JSON
+      final List<dynamic> responseBody = json.decode(response.body);
+
+      // Extract question IDs from response
+      final List<String> ids = responseBody.cast<String>().toList();
+
+      // Update recommendedQuestionIds state
+      setState(() {
+        recommendedQuestionIds = ids;
+      });
+    } else {
+            print('77577777777777777777777777777777777777777777777777777777777');
+      throw Exception('Failed to fetch recommended questions');
+    }
+  } 
 
   Future<void> fetchUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -184,7 +289,96 @@ class __FHomePageState extends State<FHomePage> {
       List<CardQuestion> filteredQuestions = questions
           .where((question) => !acceptedQuestionIds.contains(question.docId))
           .toList();
+      // Filter questions based on recommendedQuestionIds
+    filteredQuestions = filteredQuestions
+        .where((question) => !recommendedQuestionIds.contains(question.questionDocId))
+        .toList();
+        print("77566574746378");
+        //print(filteredQuestions);
+        print(recommendedQuestionIds);
+      return filteredQuestions;
+    });
+  }
+Stream<List<CardQuestion>> readQuestionRecommended() {
+    Query<Map<String, dynamic>> query =
+        FirebaseFirestore.instance.collection('Question');
+    //.where('dropdownValue', isEqualTo: 'Question');
 
+    if (searchController.text.isNotEmpty) {
+      String searchText = searchController.text;
+      query = query
+          .where('postDescription', isGreaterThanOrEqualTo: searchText)
+          .where('postDescription', isLessThan: searchText + 'z');
+    } else {
+      //query = query.orderBy('postedDate', descending: true);
+    }
+
+    return query.snapshots().asyncMap((snapshot) async {
+      final questions = snapshot.docs.map((doc) {
+        final questionData = doc.data() as Map<String, dynamic>;
+        final question = CardQuestion.fromJson(questionData);
+        question.docId = doc.id; // Set the docId to the actual document ID
+        return question;
+      }).toList();
+      if (questions.isEmpty) return [];
+
+      final userIds = questions.map((question) => question.userId).toList();
+
+      // Query the Report collection to get accepted questionIds
+      QuerySnapshot<Map<String, dynamic>> reportSnapshot =
+          await FirebaseFirestore.instance
+              .collection('Report')
+              .where('reportType', isEqualTo: 'Question')
+              .where('status', isEqualTo: 'Accepted')
+              .get();
+
+      Set<String> acceptedQuestionIds = reportSnapshot.docs
+          .map((doc) => doc['reportedItemId'] as String)
+          .toSet();
+      print("@@@@@@@@@$acceptedQuestionIds");
+
+      final userDocs = await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .where('email', whereIn: userIds)
+          .get();
+
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+              doc.data() as Map<String, dynamic>)));
+
+      questions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
+        question.userType = userDoc?['userType'] as String? ?? "";
+        // question.userId = userDoc ?['userId'] as String;
+        print("22222222222 ${question.docId}");
+      });
+
+      final userIdsNotFound =
+          userIds.where((userId) => !userMap.containsKey(userId)).toList();
+      userIdsNotFound.forEach((userId) {
+        questions.forEach((question) {
+          if (question.userId == userId) {
+            question.username = 'DeactivatedUser';
+            question.userPhotoUrl = '';
+          }
+        });
+      });
+
+      // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
+      List<CardQuestion> filteredQuestions = questions
+          .where((question) => !acceptedQuestionIds.contains(question.docId))
+          .toList();
+      // Filter questions based on recommendedQuestionIds
+    filteredQuestions = filteredQuestions
+        .where((question) => recommendedQuestionIds.contains(question.questionDocId))
+        .toList();
+        print("77566574746378");
+        //print(filteredQuestions);
+        print(recommendedQuestionIds);
       return filteredQuestions;
     });
   }
@@ -906,32 +1100,66 @@ class __FHomePageState extends State<FHomePage> {
 
         body: TabBarView(
           children: [
-            // Display Question Cards
-            StreamBuilder<List<CardQuestion>>(
-              stream: readQuestion(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final q = snapshot.data!;
+          // Display Question Cards
+StreamBuilder<List<CardQuestion>>(
+  stream: readQuestionRecommended(),
+  builder: (context, snapshot) {
+    if (snapshot.hasData) {
+      final q = snapshot.data!;
 
-                  if (q.isEmpty) {
-                    return Center(
-                      child: Text('No Posts Yet'),
-                    );
-                  }
-                  return ListView(
-                    children: q.map(buildQuestionCard).toList(),
-                  );
-                } else if (snapshot.hasError) {
+      if (q.isEmpty) {
+        return Center(
+          child: Text('No Posts Yet'),
+        );
+      }
+
+      return ListView(
+        children: [
+          // First stream's content
+          ...q.map(buildQuestionCard).toList(),
+
+          // Second stream
+          StreamBuilder<List<CardQuestion>>(
+            stream: readQuestion(),
+            builder: (context, secondSnapshot) {
+              if (secondSnapshot.hasData) {
+                final secondQ = secondSnapshot.data!;
+
+                if (secondQ.isEmpty) {
                   return Center(
-                    child: Text('Error:${snapshot.error}'),
-                  );
-                } else {
-                  return Center(
-                    child: CircularProgressIndicator(),
+                    child: Text('No Second Stream Data'),
                   );
                 }
-              },
-            ),
+
+                return ListView(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  children: secondQ.map(buildQuestionCard).toList(),
+                );
+              } else if (secondSnapshot.hasError) {
+                return Center(
+                  child: Text('Error: ${secondSnapshot.error}'),
+                );
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
+          ),
+        ],
+      );
+    } else if (snapshot.hasError) {
+      return Center(
+        child: Text('Error: ${snapshot.error}'),
+      );
+    } else {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+  },
+),
 
             StreamBuilder<List<CardFT>>(
               stream: readTeam(),
