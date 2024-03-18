@@ -163,6 +163,14 @@ class _UserPostsPageState extends State<UserPostsPage> {
                       color: Colors.deepPurple,
                       size: 20,
                     ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 110.0),
+                    child: Text(
+                      DateFormat('dd/MM/yyyy').format(question.postedDate),
+                      style: TextStyle(fontSize: 12),
+                      // Use the desired date format in the DateFormat constructor
+                    ),
+                  ),
                 ],
               ),
               SizedBox(height: 5),
@@ -204,17 +212,22 @@ class _UserPostsPageState extends State<UserPostsPage> {
                         addQuestionToBookmarks(email, question);
                       },
                     ),
-                    IconButton(
-                      icon: Icon(Icons.comment,
-                          color: Color.fromARGB(255, 63, 63, 63)),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AnswerPage(
-                                  questionDocId: question.questionDocId)),
-                        );
-                      },
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.comment,
+                              color: Color.fromARGB(255, 63, 63, 63)),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AnswerPage(
+                                      questionDocId: question.questionDocId)),
+                            );
+                          },
+                        ),
+                        Text(question.noOfAnswers.toString()),
+                      ],
                     ),
                     PostDeleteButton(docId: question.docId, type: 'question'),
                   ],
@@ -460,14 +473,31 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: const Color.fromARGB(255, 34, 3, 87),
+                    fontSize: 16,
                   ),
                 ),
                 if (fandT.userType == "Freelancer")
-                  Icon(
-                    Icons.verified,
-                    color: Colors.deepPurple,
-                    size: 20,
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.verified,
+                        color: Colors.deepPurple,
+                        size: 20,
+                      ),
+                      SizedBox(
+                          width:
+                              4), // Adjust the spacing between the icon and the date
+                    ],
                   ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      DateFormat('dd/MM/yyyy').format(fandT.postedDate),
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ),
               ],
             ),
             SizedBox(height: 5),
@@ -588,14 +618,31 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: const Color.fromARGB(255, 34, 3, 87),
+                    fontSize: 16,
                   ),
                 ),
                 if (fandT.userType == "Freelancer")
-                  Icon(
-                    Icons.verified,
-                    color: Colors.deepPurple,
-                    size: 20,
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.verified,
+                        color: Colors.deepPurple,
+                        size: 20,
+                      ),
+                      SizedBox(
+                          width:
+                              4), // Adjust the spacing between the icon and the date
+                    ],
                   ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      DateFormat('dd/MM/yyyy').format(fandT.postedDate),
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ),
               ],
             ),
             SizedBox(height: 5),
@@ -682,7 +729,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
         ),
 
         appBar: AppBar(
-          backgroundColor:  Color.fromARGB(255, 242, 241, 243),
+          backgroundColor: Color.fromARGB(255, 242, 241, 243),
           automaticallyImplyLeading: false,
           iconTheme: IconThemeData(
             color: Color.fromRGBO(37, 6, 81, 0.898),
@@ -736,32 +783,38 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   Tab(
                     child: Text(
                       'Questions',
-                      style:
-                          TextStyle(fontSize: 13, fontWeight: FontWeight.w600), // Adjust font size as needed
+                      style: TextStyle(
+                          fontSize: 13,
+                          fontWeight:
+                              FontWeight.w600), // Adjust font size as needed
                     ),
                   ),
                   Tab(
                     child: Text(
                       'Answers',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                     ),
                   ),
                   Tab(
                     child: Text(
                       'Team',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                     ),
                   ),
                   Tab(
                     child: Text(
                       'Projects',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                   ),
                   Tab(
                     child: Text(
                       'Reports',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
@@ -1009,14 +1062,31 @@ class _UserPostsPageState extends State<UserPostsPage> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: const Color.fromARGB(255, 34, 3, 87),
+                      fontSize: 16,
                     ),
                   ),
                   if (answer.userType == "Freelancer")
-                    Icon(
-                      Icons.verified,
-                      color: Colors.deepPurple,
-                      size: 20,
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.verified,
+                          color: Colors.deepPurple,
+                          size: 20,
+                        ),
+                        SizedBox(
+                            width:
+                                4), // Adjust the spacing between the icon and the date
+                      ],
                     ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        DateFormat('dd/MM/yyyy').format(answer.postedDate),
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ),
                 ],
               ),
               SizedBox(height: 5),
@@ -1084,15 +1154,16 @@ class _UserPostsPageState extends State<UserPostsPage> {
                                           });
                                         }
                                       }).catchError((error) {});
-                                    FirebaseFirestore.instance
-                                      .collection('Question')
-                                      .doc(answer.questionDocId)
-                                      .update({
-                                    'totalUpvotes':  FieldValue.increment(-1),
-                                  }).catchError((error) {
-                                    // Handle error if the update fails
-                                  });
-                                  } else {
+                                      FirebaseFirestore.instance
+                                          .collection('Question')
+                                          .doc(answer.questionDocId)
+                                          .update({
+                                        'totalUpvotes':
+                                            FieldValue.increment(-1),
+                                      }).catchError((error) {
+                                        // Handle error if the update fails
+                                      });
+                                    } else {
                                       upvotedUserIds.add(currentEmail);
                                       upvoteCount++;
                                       FirebaseFirestore.instance
@@ -1117,13 +1188,13 @@ class _UserPostsPageState extends State<UserPostsPage> {
                                         }
                                       }).catchError((error) {});
                                       FirebaseFirestore.instance
-                                      .collection('Question')
-                                      .doc(answer.questionDocId)
-                                      .update({
-                                    'totalUpvotes':  FieldValue.increment(1),
-                                  }).catchError((error) {
-                                    // Handle error if the update fails
-                                  });
+                                          .collection('Question')
+                                          .doc(answer.questionDocId)
+                                          .update({
+                                        'totalUpvotes': FieldValue.increment(1),
+                                      }).catchError((error) {
+                                        // Handle error if the update fails
+                                      });
                                     }
 
                                     answer.upvoteCount = upvoteCount;
@@ -1247,7 +1318,30 @@ class PostDeleteButton extends StatelessWidget {
                           collectionName = '';
                           break;
                       }
-                      if (collectionName.isNotEmpty) {
+                      if (collectionName == 'Answer') {
+                        // Get the questionDocId associated with the answer
+                        var answerSnapshot = await FirebaseFirestore.instance
+                            .collection(collectionName)
+                            .doc(docId)
+                            .get();
+                        var questionDocId = answerSnapshot['questionId'];
+
+                        // Delete the answer
+                        await FirebaseFirestore.instance
+                            .collection(collectionName)
+                            .doc(docId)
+                            .delete();
+
+                        // Decrement the noOfAnswers attribute in the Question table
+                        await FirebaseFirestore.instance
+                            .collection('Question')
+                            .doc(questionDocId)
+                            .update({'noOfAnswers': FieldValue.increment(-1)});
+
+                        Navigator.of(context).pop();
+                      }
+                      if (collectionName.isNotEmpty &&
+                          collectionName != 'Answer') {
                         await FirebaseFirestore.instance
                             .collection(collectionName)
                             .doc(docId)
@@ -1267,9 +1361,6 @@ class PostDeleteButton extends StatelessWidget {
                         }
 
                         Navigator.of(context).pop();
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Invalid type')));
                       }
                     },
                   ),

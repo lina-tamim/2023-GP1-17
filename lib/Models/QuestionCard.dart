@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CardQuestion {
   final String title;
@@ -11,8 +12,9 @@ class CardQuestion {
   String userType;
   String reason;
   String reportedItemId;
-   String docId;
-
+  String docId;
+  DateTime postedDate;
+  int noOfAnswers;
 
   CardQuestion({
     required this.title,
@@ -25,8 +27,9 @@ class CardQuestion {
     required this.userType,
     required this.reason,
     required this.reportedItemId,
-        this.docId = '',
-
+    this.docId = '',
+    required this.postedDate,
+    required this.noOfAnswers,
   });
 
   Map<String, dynamic> toJson() => {
@@ -41,7 +44,10 @@ class CardQuestion {
         'reason': reason,
         'reportedItemId': reportedItemId,
         'docId': docId,
+        'postedDate': Timestamp.fromDate(postedDate),
+        'noOfAnswers': noOfAnswers,
       };
+
   static CardQuestion fromJson(Map<String, dynamic> json) => CardQuestion(
         title: json['postTitle'],
         description: json['postDescription'],
@@ -54,5 +60,8 @@ class CardQuestion {
         reason: json['reason'] ?? '',
         reportedItemId: json['reportedItemId'] ?? '',
         docId: json['docId'] ?? '',
+        postedDate: (json['postedDate'] as Timestamp).toDate(),
+        noOfAnswers:
+            json['noOfAnswers'] as int? ?? 0, // Set a default value if null
       );
 }

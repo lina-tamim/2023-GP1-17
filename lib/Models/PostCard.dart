@@ -19,6 +19,8 @@ class CardFT {
   String reportDocid;
   List<String>? reasons;
   List<String>? reportDocids;
+  DateTime postedDate;
+  DateTime reportDate;
 
   CardFT({
     required this.title,
@@ -35,6 +37,8 @@ class CardFT {
     required this.teamDocId,
     required this.projectDocId, // Provide a default value or make it nullable
     required this.reportDocid,
+    required this.postedDate,
+    required this.reportDate,
   });
 
   Map<String, dynamic> toJson() => {
@@ -52,6 +56,8 @@ class CardFT {
         'teamDocId': teamDocId,
         'projectDocId': projectDocId,
         'reportDocid': reportDocid,
+        'postedDate': Timestamp.fromDate(postedDate),
+        'reportDate': Timestamp.fromDate(reportDate),
       };
 
   static CardFT fromJson(Map<String, dynamic> json) => CardFT(
@@ -69,6 +75,8 @@ class CardFT {
         teamDocId: json['teamDocId'],
         projectDocId: json['projectDocId'],
         reportDocid: json['reportDocid'] ?? '',
+        postedDate: (json['postedDate'] as Timestamp).toDate(),
+        reportDate:
+            (json['reportDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       );
 }
-

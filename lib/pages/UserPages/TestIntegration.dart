@@ -11,8 +11,6 @@ import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
 import 'package:techxcel11/pages/UserPages/BookmarkPage.dart';
 import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 
-
-
 class TestIntegration extends StatefulWidget {
   @override
   _TestIntegrationState createState() => _TestIntegrationState();
@@ -49,69 +47,72 @@ class _TestIntegrationState extends State<TestIntegration> {
       });
     }
 
-    final QuerySnapshot<Map<String, dynamic>> snapshotQ = await _firestore
-        .collection('Question')
-        .get();
+    final QuerySnapshot<Map<String, dynamic>> snapshotQ =
+        await _firestore.collection('Question').get();
 //
-if (snapshotQ.docs.isNotEmpty) {
-  setState(() {
-    allTheQuestions = snapshotQ.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
-        .toList();
-    
-    // Convert each question to JSON object
-    
-    List<Map<String, dynamic>> questionsJson = [];
-    allTheQuestions.forEach((question) {
-      Timestamp timestamp = question['postedDate']; // Get the Timestamp object
-      print('11111111111');
-      DateTime dateTime = timestamp.toDate(); // Convert Timestamp to DateTime
-            print('2222222222');
-      Map<String, dynamic> jsonQuestion = {
-        'selectedInterests': question['selectedInterests'],
-        'noOfAnwers': question['noOfAnwers'],
-        'questionDocId': question['questionDocId'],
-         'totalUpvotes': question['totalUpvotes'] ?? 0,
-        //'postTitle': question['postTitle'],
-        //'userId': question['userId'],
-        //'postDescription': question['postDescription'],
-    'postedDate': DateFormat.yMMMMd().add_jms().format(dateTime), // Format DateTime to string
+    if (snapshotQ.docs.isNotEmpty) {
+      setState(() {
+        allTheQuestions = snapshotQ.docs
+            .map((doc) => doc.data() as Map<String, dynamic>)
+            .toList();
 
+        // Convert each question to JSON object
 
-      };
-  print('^^^^^^^^^^^^^^^^^^^^^^^^^^');
-  print(DateFormat.yMMMMd().add_jms().format(dateTime)); // Print formatted date string
-  questionsJson.add(jsonQuestion);
-  print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-print(jsonQuestion);
-print('777777777777777777');
-    });
+        List<Map<String, dynamic>> questionsJson = [];
+        allTheQuestions.forEach((question) {
+          Timestamp timestamp =
+              question['postedDate']; // Get the Timestamp object
+          print('11111111111');
+          DateTime dateTime =
+              timestamp.toDate(); // Convert Timestamp to DateTime
+          print('2222222222');
+          Map<String, dynamic> jsonQuestion = {
+            'selectedInterests': question['selectedInterests'],
+            'noOfAnswers': question['noOfAnswers'],
+            'questionDocId': question['questionDocId'],
+            'totalUpvotes': question['totalUpvotes'] ?? 0,
+            //'postTitle': question['postTitle'],
+            //'userId': question['userId'],
+            //'postDescription': question['postDescription'],
+            'postedDate': DateFormat.yMMMMd()
+                .add_jms()
+                .format(dateTime), // Format DateTime to string
+          };
+          print('^^^^^^^^^^^^^^^^^^^^^^^^^^');
+          print(DateFormat.yMMMMd()
+              .add_jms()
+              .format(dateTime)); // Print formatted date string
+          questionsJson.add(jsonQuestion);
+          print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+          print(jsonQuestion);
+          print('777777777777777777');
+        });
 
-    // Send the JSON object to the server
-    recommendQuestions(questionsJson);
-  });
-}
+        // Send the JSON object to the server
+        recommendQuestions(questionsJson);
+      });
+    }
 
 //
   }
 
-Future<void> recommendQuestions(List<Map<String, dynamic>> questionsJson) async {
+  Future<void> recommendQuestions(
+      List<Map<String, dynamic>> questionsJson) async {
+    // Send user preferences and all questions to the server
+    final Map<String, dynamic> requestBody = {
+      'user_skills': userSkills,
+      'user_interests': userInterests,
+      'all_questions': questionsJson,
+    };
 
-  // Send user preferences and all questions to the server
-  final Map<String, dynamic> requestBody = {
-    'user_skills': userSkills,
-    'user_interests': userInterests,
-    'all_questions': questionsJson,
-  };
-
-  final response = await http.post(
-    Uri.parse('http://10.0.2.2:5000/'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(requestBody),
-  );
-   if (response.statusCode == 200) {
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:5000/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(requestBody),
+    );
+    if (response.statusCode == 200) {
       // Parse response body as JSON
       final List<dynamic> responseBody = json.decode(response.body);
 
@@ -123,12 +124,10 @@ Future<void> recommendQuestions(List<Map<String, dynamic>> questionsJson) async 
         recommendedQuestionIds = ids;
       });
     } else {
-            print('77577777777777777777777777777777777777777777777777777777777');
+      print('77577777777777777777777777777777777777777777777777777777777');
       throw Exception('Failed to fetch recommended questions');
     }
-  } 
-
-
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +142,7 @@ Future<void> recommendQuestions(List<Map<String, dynamic>> questionsJson) async 
             Text('Recommended Question IDs: $recommendedQuestionIds'),
             ElevatedButton(
               onPressed: () {
-               fetchUserDetails();
+                fetchUserDetails();
               },
               child: Text('Fetch Recommendations'),
             ),

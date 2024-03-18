@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +9,7 @@ import 'package:techxcel11/Models/ViewQCard.dart';
 import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
 import 'package:techxcel11/pages/UserPages/UserPathwaysPage.dart';
 import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
+import 'package:intl/intl.dart';
 
 class ReportedPost extends StatefulWidget {
   const ReportedPost({Key? key}) : super(key: key);
@@ -31,13 +30,13 @@ class _ReportedPostState extends State<ReportedPost> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-                backgroundColor:  Color.fromARGB(255, 242, 241, 243),
+          backgroundColor: Color.fromARGB(255, 242, 241, 243),
           automaticallyImplyLeading: false,
           iconTheme: IconThemeData(
             color: Color.fromRGBO(37, 6, 81, 0.898),
           ),
           toolbarHeight: 100,
-         /* flexibleSpace: Container(
+          /* flexibleSpace: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/Backgrounds/bg11.png'),
@@ -498,6 +497,14 @@ class _ReportedPostState extends State<ReportedPost> {
             .map((post) => post['reportedPostId'] as String)
             .toList();
 
+        final reportDate = reportedPostsForQuestion
+            .map((report) => report['reportDate'] as Timestamp?)
+            .where((date) => date != null)
+            .toList();
+
+        question.reportDate =
+            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+
         question.userType = userDoc?['userType'] as String? ?? '';
         question.username = username;
         question.userPhotoUrl = userPhotoUrl;
@@ -563,7 +570,7 @@ class _ReportedPostState extends State<ReportedPost> {
                               left: 5), // Adjust margin as needed
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color:  Color.fromARGB(217, 122, 1, 1),
+                            color: Color.fromARGB(217, 122, 1, 1),
                           ),
                           child: Text(
                             '${question.reportIds!.length}', // Show the number of reports
@@ -631,6 +638,16 @@ class _ReportedPostState extends State<ReportedPost> {
               ),
               Text(
                 "Reasons: ${question.reasons?.join(', ')}",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 92, 0, 0),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                "Report Date: ${DateFormat('dd/MM/yyyy').format(question.reportDate)}",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
@@ -744,6 +761,14 @@ class _ReportedPostState extends State<ReportedPost> {
         final reportIds = reportedPostsForQuestion
             .map((post) => post['reportedPostId'] as String)
             .toList();
+
+        final reportDate = reportedPostsForQuestion
+            .map((report) => report['reportDate'] as Timestamp?)
+            .where((date) => date != null)
+            .toList();
+
+        question.reportDate =
+            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
 
         question.userType = userDoc?['userType'] as String? ?? '';
         question.username = username;
@@ -884,7 +909,17 @@ class _ReportedPostState extends State<ReportedPost> {
                 ),
               ),
               SizedBox(
-                height: 15,
+                height: 10,
+              ),
+              Text(
+                "Report Date: ${DateFormat('dd/MM/yyyy').format(question.reportDate)}",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 92, 0, 0),
+                ),
+              ),
+              SizedBox(
+                height: 20,
               ),
               Text(
                 "Report Accepted",
@@ -962,6 +997,14 @@ class _ReportedPostState extends State<ReportedPost> {
             .map((report) => report['reportedPostId'] as String)
             .toList();
 
+        final reportDate = teamReports
+            .map((report) => report['reportDate'] as Timestamp?)
+            .where((date) => date != null)
+            .toList();
+
+        team.reportDate =
+            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+
         team.userType = userDoc?['userType'] as String? ?? '';
         team.username = username;
         team.userPhotoUrl = userPhotoUrl;
@@ -1034,6 +1077,14 @@ class _ReportedPostState extends State<ReportedPost> {
         final reportIds = teamReports
             .map((report) => report['reportedPostId'] as String)
             .toList();
+
+        final reportDate = teamReports
+            .map((report) => report['reportDate'] as Timestamp?)
+            .where((date) => date != null)
+            .toList();
+
+        team.reportDate =
+            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
 
         team.userType = userDoc?['userType'] as String? ?? '';
         team.username = username;
@@ -1155,6 +1206,16 @@ class _ReportedPostState extends State<ReportedPost> {
                 ),
               ),
               SizedBox(
+                height: 10,
+              ),
+              Text(
+                "Report Date: ${DateFormat('dd/MM/yyyy').format(team.reportDate)}",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 92, 0, 0),
+                ),
+              ),
+              SizedBox(
                 height: 20,
               ),
               Row(
@@ -1253,7 +1314,7 @@ class _ReportedPostState extends State<ReportedPost> {
                               left: 5), // Adjust margin as needed
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color:  Color.fromARGB(217, 122, 1, 1),
+                            color: Color.fromARGB(217, 122, 1, 1),
                           ),
                           child: Text(
                             '${team.reportDocids!.length}', // Show the number of reports
@@ -1310,7 +1371,17 @@ class _ReportedPostState extends State<ReportedPost> {
                 ),
               ),
               SizedBox(
-                height: 15,
+                height: 10,
+              ),
+              Text(
+                "Report Date: ${DateFormat('dd/MM/yyyy').format(team.reportDate)}",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 92, 0, 0),
+                ),
+              ),
+              SizedBox(
+                height: 20,
               ),
               Text(
                 "Report Accepted",
@@ -1389,6 +1460,14 @@ class _ReportedPostState extends State<ReportedPost> {
             .map((report) => report['reportedPostId'] as String)
             .toList();
 
+        final reportDate = projectReports
+            .map((report) => report['reportDate'] as Timestamp?)
+            .where((date) => date != null)
+            .toList();
+
+        project.reportDate =
+            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+
         project.userType = userDoc?['userType'] as String? ?? '';
         project.username = username;
         project.userPhotoUrl = userPhotoUrl;
@@ -1460,6 +1539,14 @@ class _ReportedPostState extends State<ReportedPost> {
         final reportIds = projectReports
             .map((report) => report['reportedPostId'] as String)
             .toList();
+
+        final reportDate = projectReports
+            .map((report) => report['reportDate'] as Timestamp?)
+            .where((date) => date != null)
+            .toList();
+
+        project.reportDate =
+            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
 
         project.userType = userDoc?['userType'] as String? ?? '';
         project.username = username;
@@ -1554,6 +1641,14 @@ class _ReportedPostState extends State<ReportedPost> {
             AnswerReports.map((report) => report['reportedPostId'] as String)
                 .toList();
 
+        final reportDate =
+            AnswerReports.map((report) => report['reportDate'] as Timestamp?)
+                .where((date) => date != null)
+                .toList();
+
+        Answer.reportDate =
+            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+
         Answer.userType = userDoc?['userType'] as String? ?? '';
         Answer.username = username;
         Answer.userPhotoUrl = userPhotoUrl;
@@ -1626,6 +1721,14 @@ class _ReportedPostState extends State<ReportedPost> {
         final reportIds =
             AnswerReports.map((report) => report['reportedPostId'] as String)
                 .toList();
+
+        final reportDate =
+            AnswerReports.map((report) => report['reportDate'] as Timestamp?)
+                .where((date) => date != null)
+                .toList();
+
+        Answer.reportDate =
+            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
 
         Answer.userType = userDoc?['userType'] as String? ?? '';
         Answer.username = username;
@@ -1758,6 +1861,16 @@ class _ReportedPostState extends State<ReportedPost> {
                 ),
               ),
               SizedBox(
+                height: 10,
+              ),
+              Text(
+                "Report Date: ${DateFormat('dd/MM/yyyy').format(answer.reportDate)}",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 92, 0, 0),
+                ),
+              ),
+              SizedBox(
                 height: 20,
               ),
               Row(
@@ -1877,7 +1990,7 @@ class _ReportedPostState extends State<ReportedPost> {
                             EdgeInsets.only(left: 5), // Adjust margin as needed
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color:  Color.fromARGB(217, 122, 1, 1),
+                          color: Color.fromARGB(217, 122, 1, 1),
                         ),
                         child: Text(
                           '${answer.reportDocids!.length}', // Show the number of reports
@@ -1926,7 +2039,17 @@ class _ReportedPostState extends State<ReportedPost> {
                 ),
               ),
               SizedBox(
-                height: 15,
+                height: 10,
+              ),
+              Text(
+                "Report Date: ${DateFormat('dd/MM/yyyy').format(answer.reportDate)}",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 92, 0, 0),
+                ),
+              ),
+              SizedBox(
+                height: 20,
               ),
               Text(
                 "Report Accepted",

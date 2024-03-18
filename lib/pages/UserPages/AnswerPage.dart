@@ -534,14 +534,14 @@ class _AnswerPageState extends State<AnswerPage> {
                                         });
                                       }
                                     }).catchError((error) {});
-                                  FirebaseFirestore.instance
-                                      .collection('Question')
-                                      .doc(answer.questionDocId)
-                                      .update({
-                                    'totalUpvotes':  FieldValue.increment(-1),
-                                  }).catchError((error) {
-                                    // Handle error if the update fails
-                                  });
+                                    FirebaseFirestore.instance
+                                        .collection('Question')
+                                        .doc(answer.questionDocId)
+                                        .update({
+                                      'totalUpvotes': FieldValue.increment(-1),
+                                    }).catchError((error) {
+                                      // Handle error if the update fails
+                                    });
                                   } else {
                                     upvotedUserIds.add(currentEmail);
                                     upvoteCount++;
@@ -564,17 +564,16 @@ class _AnswerPageState extends State<AnswerPage> {
                                         }).catchError((error) {});
                                       }
                                     }).catchError((error) {});
-                                  FirebaseFirestore.instance
-                                      .collection('Question')
-                                      .doc(answer.questionDocId)
-                                      .update({
-                                    'totalUpvotes':  FieldValue.increment(1),
-                                  }).catchError((error) {
-                                    // Handle error if the update fails
-                                  });
-
+                                    FirebaseFirestore.instance
+                                        .collection('Question')
+                                        .doc(answer.questionDocId)
+                                        .update({
+                                      'totalUpvotes': FieldValue.increment(1),
+                                    }).catchError((error) {
+                                      // Handle error if the update fails
+                                    });
                                   }
-                                  
+
                                   answer.upvoteCount = upvoteCount;
                                   answer.upvotedUserIds = upvotedUserIds;
                                   FirebaseFirestore.instance
@@ -621,15 +620,21 @@ class _AnswerPageState extends State<AnswerPage> {
         'userId': email,
         'answerText': answerText,
         'upvoteCount': 0,
+        'postedDate': DateTime.now(),
       });
-        
 
-     final questionDocId = widget.questionDocId;
-      final questionDoc = await FirebaseFirestore.instance.collection('Question').doc(questionDocId).get();
-    final currentNoOfAnswers = questionDoc.data()!['noOfAnwers'] ?? 0;
-    await FirebaseFirestore.instance.collection('Question').doc(questionDocId).update({
-      'noOfAnwers': currentNoOfAnswers + 1,
-    });
+      final questionDocId = widget.questionDocId;
+      final questionDoc = await FirebaseFirestore.instance
+          .collection('Question')
+          .doc(questionDocId)
+          .get();
+      final currentNoOfAnswers = questionDoc.data()!['noOfAnswers'] ?? 0;
+      await FirebaseFirestore.instance
+          .collection('Question')
+          .doc(questionDocId)
+          .update({
+        'noOfAnswers': currentNoOfAnswers + 1,
+      });
 
       _answerController.clear();
     }

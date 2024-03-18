@@ -13,6 +13,8 @@ class CardFTview {
   String email;
   String userType;
   String? teamDocId;
+  DateTime postedDate;
+  int noOfAnswers;
 
   CardFTview({
     required this.title,
@@ -26,6 +28,8 @@ class CardFTview {
     required this.email,
     required this.userType,
     required this.teamDocId,
+    required this.postedDate,
+    required this.noOfAnswers,
   });
 
   Map<String, dynamic> toJson() => {
@@ -40,7 +44,8 @@ class CardFTview {
         'email': email,
         'userType': userType,
         'teamDocId': teamDocId,
-        // 'projectDocId': projectDocId,
+        'postedDate': Timestamp.fromDate(postedDate),
+        'noOfAnswers': noOfAnswers,
       };
 
   static CardFTview fromJson(Map<String, dynamic> json) => CardFTview(
@@ -55,6 +60,7 @@ class CardFTview {
         email: json['email'] ?? '',
         userType: json['userType'] ?? '',
         teamDocId: json['teamDocId'],
-        // projectDocId: json['projectDocId'],
+        postedDate: (json['postedDate'] as Timestamp).toDate(),
+        noOfAnswers: json['noOfAnswers'] as int? ?? 0,
       );
 }

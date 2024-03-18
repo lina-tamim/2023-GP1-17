@@ -61,7 +61,7 @@ class _BookmarkPageState extends State<BookmarkPage>
       String titleText, TabController tabController, _loggedInImage) {
     return AppBar(
       automaticallyImplyLeading: false,
-      backgroundColor:  Color.fromARGB(255, 242, 241, 243),
+      backgroundColor: Color.fromARGB(255, 242, 241, 243),
       iconTheme: IconThemeData(
         color: Color.fromRGBO(37, 6, 81, 0.898),
       ),
@@ -99,32 +99,26 @@ class _BookmarkPageState extends State<BookmarkPage>
       ),
       bottom: TabBar(
         controller: tabController,
-        indicator: UnderlineTabIndicator(
-          borderSide: BorderSide(
-            width: 5.0,
-            color: Color.fromARGB(
-                255, 27, 5, 230), // Set the color of the underline
-          ),
-          // Adjust the insets if needed
-        ),
-        labelColor: Color.fromARGB(255, 27, 5, 230),
+        //indicator: UnderlineTabIndicator(
+        //borderSide: BorderSide(
+        //width: 5.0,
+        //color: Color.fromARGB(
+        //  255, 27, 5, 230), // Set the color of the underline
+        //),
+        // Adjust the insets if needed
+        //),
+        //labelColor: Color.fromARGB(255, 27, 5, 230),
         tabs: [
           Tab(
             child: Text(
               'Questions',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
           Tab(
             child: Text(
               'Pathways',
-              style: TextStyle(
-                fontSize: 16,
-                                fontWeight: FontWeight.w600
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
         ],

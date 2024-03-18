@@ -241,11 +241,25 @@ class _UserProfileView extends State<UserProfileView>
                           fontSize: 16),
                     ),
                     if (question.userType == "Freelancer")
-                      Icon(
-                        Icons.verified,
-                        color: Colors.deepPurple,
-                        size: 20,
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.verified,
+                            color: Colors.deepPurple,
+                            size: 20,
+                          ),
+                          SizedBox(width: 4),
+                        ],
                       ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          DateFormat('dd/MM/yyyy').format(question.postedDate),
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -293,24 +307,29 @@ class _UserProfileView extends State<UserProfileView>
                             addQuestionToBookmarks(email, question);
                           },
                   ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.comment,
-                      color: currentEmail == 'texelad1@gmail.com'
-                          ? const Color.fromARGB(24, 63, 63, 63)
-                          : Color.fromARGB(255, 63, 63, 63),
-                    ),
-                    onPressed: currentEmail == 'texelad1@gmail.com'
-                        ? null
-                        : () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AnswerPage(
-                                    questionDocId: question.questionDocId),
-                              ),
-                            );
-                          },
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.comment,
+                          color: currentEmail == 'texelad1@gmail.com'
+                              ? const Color.fromARGB(24, 63, 63, 63)
+                              : Color.fromARGB(255, 63, 63, 63),
+                        ),
+                        onPressed: currentEmail == 'texelad1@gmail.com'
+                            ? null
+                            : () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AnswerPage(
+                                        questionDocId: question.questionDocId),
+                                  ),
+                                );
+                              },
+                      ),
+                      Text(question.noOfAnswers.toString()),
+                    ],
                   ),
                   IconButton(
                     icon: currentEmail != email
@@ -564,18 +583,35 @@ class _UserProfileView extends State<UserProfileView>
                 Row(
                   children: [
                     Text(
-                      team.username ?? '', // Display the username
+                      team.username ?? '',
                       style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 34, 3, 87),
-                          fontSize: 16),
+                        fontWeight: FontWeight.bold,
+                        color: const Color.fromARGB(255, 34, 3, 87),
+                        fontSize: 16,
+                      ),
                     ),
                     if (usertype == "Freelancer")
-                      Icon(
-                        Icons.verified,
-                        color: Colors.deepPurple,
-                        size: 20,
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.verified,
+                            color: Colors.deepPurple,
+                            size: 20,
+                          ),
+                          SizedBox(
+                              width:
+                                  4), // Adjust the spacing between the icon and the date
+                        ],
                       ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          DateFormat('dd/MM/yyyy').format(team.postedDate),
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(height: 5),
@@ -862,18 +898,35 @@ class _UserProfileView extends State<UserProfileView>
               Row(
                 children: [
                   Text(
-                    answer.username ?? '', // Display the username
+                    answer.username ?? '',
                     style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: const Color.fromARGB(255, 34, 3, 87),
-                        fontSize: 16),
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 34, 3, 87),
+                      fontSize: 16,
+                    ),
                   ),
                   if (usertype == "Freelancer")
-                    Icon(
-                      Icons.verified,
-                      color: Colors.deepPurple,
-                      size: 20,
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.verified,
+                          color: Colors.deepPurple,
+                          size: 20,
+                        ),
+                        SizedBox(
+                            width:
+                                4), // Adjust the spacing between the icon and the date
+                      ],
                     ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        DateFormat('dd/MM/yyyy').format(answer.postedDate),
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ),
                 ],
               ),
               SizedBox(height: 5),
@@ -935,14 +988,14 @@ class _UserProfileView extends State<UserProfileView>
                                         });
                                       }
                                     }).catchError((error) {});
-                                  FirebaseFirestore.instance
-                                      .collection('Question')
-                                      .doc(answer.questionDocId)
-                                      .update({
-                                    'totalUpvotes':  FieldValue.increment(-1),
-                                  }).catchError((error) {
-                                    // Handle error if the update fails
-                                  });
+                                    FirebaseFirestore.instance
+                                        .collection('Question')
+                                        .doc(answer.questionDocId)
+                                        .update({
+                                      'totalUpvotes': FieldValue.increment(-1),
+                                    }).catchError((error) {
+                                      // Handle error if the update fails
+                                    });
                                   } else {
                                     upvotedUserIds.add(currentEmail);
                                     upvoteCount++;
@@ -966,12 +1019,11 @@ class _UserProfileView extends State<UserProfileView>
                                       }
                                     }).catchError((error) {});
                                     FirebaseFirestore.instance
-                                      .collection('Question')
-                                      .doc(answer.questionDocId)
-                                      .update({
-                                    'totalUpvotes':  FieldValue.increment(1),
-                                  }).catchError((error) {
-                                  });
+                                        .collection('Question')
+                                        .doc(answer.questionDocId)
+                                        .update({
+                                      'totalUpvotes': FieldValue.increment(1),
+                                    }).catchError((error) {});
                                   }
 
                                   answer.upvoteCount = upvoteCount;
@@ -982,8 +1034,7 @@ class _UserProfileView extends State<UserProfileView>
                                       .update({
                                     'upvoteCount': upvoteCount,
                                     'upvotedUserIds': upvotedUserIds,
-                                  }).catchError((error) {
-                                  });
+                                  }).catchError((error) {});
                                 });
                               },
                             ),
@@ -1184,7 +1235,7 @@ class _UserProfileView extends State<UserProfileView>
           'reason': reason,
           'reportDate': DateTime.now(),
           'reportType': 'Account',
-          'status':'Pending',
+          'status': 'Pending',
         }).catchError((error) {
           print('Error submitting report: $error');
           // Handle error, show an error dialog, or take appropriate action
@@ -1492,8 +1543,10 @@ class _UserProfileView extends State<UserProfileView>
                       alignment: Alignment.center,
                       child: TabBar(
                         controller: tabController,
-                        indicatorColor: Color.fromARGB(255, 0, 0, 0), // Change the underline color here
-                        labelColor: Color.fromARGB(255, 0, 0, 0), // Change the text color here
+                        indicatorColor: Color.fromARGB(
+                            255, 0, 0, 0), // Change the underline color here
+                        labelColor: Color.fromARGB(
+                            255, 0, 0, 0), // Change the text color here
                         tabs: [
                           Tab(text: 'Question'),
                           Tab(text: 'Build\nTeam'),

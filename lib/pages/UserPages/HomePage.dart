@@ -30,7 +30,7 @@ class __FHomePageState extends State<FHomePage> {
   String loggedInEmail = '';
   String loggedImage = '';
 
-   List<String> userSkills = [];
+  List<String> userSkills = [];
   List<String> userInterests = [];
   List<String> recommendedQuestionIds = [];
   List<Map<String, dynamic>> allTheQuestions = [];
@@ -50,7 +50,7 @@ class __FHomePageState extends State<FHomePage> {
     'Others'
     // Add more options as needed
   ];
-  
+
   String greetings = '';
 
   // Clear the selected option after reporting
@@ -76,8 +76,9 @@ class __FHomePageState extends State<FHomePage> {
     fetchUserData();
     fetchUserDetailsREC();
   }
+
 ////RECOMMENDER
-///
+  ///
   Future<void> fetchUserDetailsREC() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('loggedInEmail') ?? '';
@@ -97,66 +98,69 @@ class __FHomePageState extends State<FHomePage> {
       });
     }
 
-    final QuerySnapshot<Map<String, dynamic>> snapshotQ = await _firestore
-        .collection('Question')
-        .get();
+    final QuerySnapshot<Map<String, dynamic>> snapshotQ =
+        await _firestore.collection('Question').get();
 //
-if (snapshotQ.docs.isNotEmpty) {
-  setState(() {
-    allTheQuestions = snapshotQ.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
-        .toList();
-    
-    // Convert each question to JSON object
-    
-    List<Map<String, dynamic>> questionsJson = [];
-    allTheQuestions.forEach((question) {
-      Timestamp timestamp = question['postedDate']; // Get the Timestamp object
-      print('11111111111');
-      DateTime dateTime = timestamp.toDate(); // Convert Timestamp to DateTime
-            print('2222222222');
-      Map<String, dynamic> jsonQuestion = {
-        'selectedInterests': question['selectedInterests'],
-        'noOfAnwers': question['noOfAnwers'],
-        'questionDocId': question['questionDocId'],
-         'totalUpvotes': question['totalUpvotes'] ?? 0,
-    'postedDate': DateFormat.yMMMMd().add_jms().format(dateTime), // Format DateTime to string
+    if (snapshotQ.docs.isNotEmpty) {
+      setState(() {
+        allTheQuestions = snapshotQ.docs
+            .map((doc) => doc.data() as Map<String, dynamic>)
+            .toList();
 
+        // Convert each question to JSON object
 
-      };
-  print('^^^^^^^^^^^^^^^^^^^^^^^^^^');
-  print(DateFormat.yMMMMd().add_jms().format(dateTime)); // Print formatted date string
-  questionsJson.add(jsonQuestion);
-  print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-print(jsonQuestion);
-print('777777777777777777');
-    });
+        List<Map<String, dynamic>> questionsJson = [];
+        allTheQuestions.forEach((question) {
+          Timestamp timestamp =
+              question['postedDate']; // Get the Timestamp object
+          print('11111111111');
+          DateTime dateTime =
+              timestamp.toDate(); // Convert Timestamp to DateTime
+          print('2222222222');
+          Map<String, dynamic> jsonQuestion = {
+            'selectedInterests': question['selectedInterests'],
+            'noOfAnswers': question['noOfAnswers'],
+            'questionDocId': question['questionDocId'],
+            'totalUpvotes': question['totalUpvotes'] ?? 0,
+            'postedDate': DateFormat.yMMMMd()
+                .add_jms()
+                .format(dateTime), // Format DateTime to string
+          };
+          print('^^^^^^^^^^^^^^^^^^^^^^^^^^');
+          print(DateFormat.yMMMMd()
+              .add_jms()
+              .format(dateTime)); // Print formatted date string
+          questionsJson.add(jsonQuestion);
+          print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+          print(jsonQuestion);
+          print('777777777777777777');
+        });
 
-    // Send the JSON object to the server
-    recommendQuestions(questionsJson);
-  });
-}
+        // Send the JSON object to the server
+        recommendQuestions(questionsJson);
+      });
+    }
 
 //
   }
 
-Future<void> recommendQuestions(List<Map<String, dynamic>> questionsJson) async {
+  Future<void> recommendQuestions(
+      List<Map<String, dynamic>> questionsJson) async {
+    // Send user preferences and all questions to the server
+    final Map<String, dynamic> requestBody = {
+      'user_skills': userSkills,
+      'user_interests': userInterests,
+      'all_questions': questionsJson,
+    };
 
-  // Send user preferences and all questions to the server
-  final Map<String, dynamic> requestBody = {
-    'user_skills': userSkills,
-    'user_interests': userInterests,
-    'all_questions': questionsJson,
-  };
-
-  final response = await http.post(
-    Uri.parse('http://10.0.2.2:5000/'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(requestBody),
-  );
-   if (response.statusCode == 200) {
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:5000/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(requestBody),
+    );
+    if (response.statusCode == 200) {
       // Parse response body as JSON
       final List<dynamic> responseBody = json.decode(response.body);
 
@@ -168,10 +172,10 @@ Future<void> recommendQuestions(List<Map<String, dynamic>> questionsJson) async 
         recommendedQuestionIds = ids;
       });
     } else {
-            print('77577777777777777777777777777777777777777777777777777777777');
+      print('77577777777777777777777777777777777777777777777777777777777');
       throw Exception('Failed to fetch recommended questions');
     }
-  } 
+  }
 
   Future<void> fetchUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -287,17 +291,18 @@ Future<void> recommendQuestions(List<Map<String, dynamic>> questionsJson) async 
           .where((question) => !acceptedQuestionIds.contains(question.docId))
           .toList();
       // Filter questions based on recommendedQuestionIds
-    filteredQuestions = filteredQuestions
-        .where((question) => !recommendedQuestionIds.contains(question.questionDocId))
-        .toList();
-        print("77566574746378");
-        //print(filteredQuestions);
-        print(recommendedQuestionIds);
+      filteredQuestions = filteredQuestions
+          .where((question) =>
+              !recommendedQuestionIds.contains(question.questionDocId))
+          .toList();
+      print("77566574746378");
+      //print(filteredQuestions);
+      print(recommendedQuestionIds);
       return filteredQuestions;
     });
   }
-  
-Stream<List<CardQuestion>> readQuestionRecommended() {
+
+  Stream<List<CardQuestion>> readQuestionRecommended() {
     Query<Map<String, dynamic>> query =
         FirebaseFirestore.instance.collection('Question');
     /*.where('dropdownValue', isEqualTo: 'Question');
@@ -371,11 +376,14 @@ Stream<List<CardQuestion>> readQuestionRecommended() {
           .where((question) => !acceptedQuestionIds.contains(question.docId))
           .toList();
       // Filter questions based on recommendedQuestionIds
-    filteredQuestions = recommendedQuestionIds.map((id) => filteredQuestions.firstWhere((question) => question.questionDocId == id)).toList();
+      filteredQuestions = recommendedQuestionIds
+          .map((id) => filteredQuestions
+              .firstWhere((question) => question.questionDocId == id))
+          .toList();
 
-        print("RECOMMENDEDDEED HEEEEEEEEEEEEEEEREEEEEEEEEEE");
-        //print(filteredQuestions);
-        print(recommendedQuestionIds);
+      print("RECOMMENDEDDEED HEEEEEEEEEEEEEEEREEEEEEEEEEE");
+      //print(filteredQuestions);
+      print(recommendedQuestionIds);
       return filteredQuestions;
     });
   }
@@ -562,15 +570,29 @@ Stream<List<CardQuestion>> readQuestionRecommended() {
                       question.username ?? '', // Display the username
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 34, 3, 87),
+                          color: Color.fromARGB(255, 24, 8, 53),
                           fontSize: 16),
                     ),
                     if (question.userType == "Freelancer")
-                      Icon(
-                        Icons.verified,
-                        color: Colors.deepPurple,
-                        size: 20,
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.verified,
+                            color: Colors.deepPurple,
+                            size: 20,
+                          ),
+                          SizedBox(width: 4),
+                        ],
                       ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          DateFormat('dd/MM/yyyy').format(question.postedDate),
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -606,17 +628,15 @@ Stream<List<CardQuestion>> readQuestionRecommended() {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.monitor_heart,
-                        color: Color.fromARGB(255, 81, 0, 78)),
-                    onPressed: () {
-                      Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => TestIntegration()),
-              );
-
-                    }
-
-                  ),
+                      icon: Icon(Icons.monitor_heart,
+                          color: Color.fromARGB(255, 81, 0, 78)),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TestIntegration()),
+                        );
+                      }),
                   IconButton(
                     icon: Icon(Icons.bookmark,
                         color: Color.fromARGB(255, 63, 63, 63)),
@@ -624,17 +644,22 @@ Stream<List<CardQuestion>> readQuestionRecommended() {
                       addQuestionToBookmarks(loggedInEmail, question);
                     },
                   ),
-                  IconButton(
-                    icon: Icon(Icons.comment,
-                        color: Color.fromARGB(255, 63, 63, 63)),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AnswerPage(
-                                questionDocId: question.questionDocId)),
-                      );
-                    },
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.comment,
+                            color: Color.fromARGB(255, 63, 63, 63)),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AnswerPage(
+                                    questionDocId: question.questionDocId)),
+                          );
+                        },
+                      ),
+                      Text(question.noOfAnswers.toString()),
+                    ],
                   ),
                   IconButton(
                     icon: Icon(Icons.report,
@@ -773,18 +798,35 @@ Stream<List<CardQuestion>> readQuestionRecommended() {
                   child: Row(
                     children: [
                       Text(
-                        team.username ?? '', // Display the username
+                        team.username ?? '',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: const Color.fromARGB(255, 34, 3, 87),
+                          fontSize: 16,
                         ),
                       ),
                       if (team.userType == "Freelancer")
-                        Icon(
-                          Icons.verified,
-                          color: Colors.deepPurple,
-                          size: 20,
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.verified,
+                              color: Colors.deepPurple,
+                              size: 20,
+                            ),
+                            SizedBox(
+                                width:
+                                    4), // Adjust the spacing between the icon and the date
+                          ],
                         ),
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            DateFormat('dd/MM/yyyy').format(team.postedDate),
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -984,12 +1026,12 @@ Stream<List<CardQuestion>> readQuestionRecommended() {
         ),
         appBar: AppBar(
             automaticallyImplyLeading: false,
-            backgroundColor:  Color.fromARGB(255, 242, 241, 243),
+            backgroundColor: Color.fromARGB(255, 242, 241, 243),
             iconTheme: IconThemeData(
               color: Color.fromRGBO(37, 6, 81, 0.898),
             ),
             toolbarHeight: 80,
-           /* flexibleSpace: Container(
+            /* flexibleSpace: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/Backgrounds/bg11.png'),
@@ -1060,7 +1102,8 @@ Stream<List<CardQuestion>> readQuestionRecommended() {
               indicator: UnderlineTabIndicator(
                 borderSide: BorderSide(
                   width: 5.0,
-                  color: Color.fromARGB(255, 0, 0, 0), // Set the color of the underline
+                  color: Color.fromARGB(
+                      255, 0, 0, 0), // Set the color of the underline
                 ),
                 // Adjust the insets if needed
               ),
@@ -1085,7 +1128,7 @@ Stream<List<CardQuestion>> readQuestionRecommended() {
           onPressed: () async {
             showInputDialog();
           },
-          backgroundColor:  Color.fromARGB(255, 49, 0, 84),
+          backgroundColor: Color.fromARGB(255, 49, 0, 84),
           child: const Icon(
             Icons.add,
             color: Color.fromARGB(255, 255, 255, 255),
@@ -1097,63 +1140,63 @@ Stream<List<CardQuestion>> readQuestionRecommended() {
 
         body: TabBarView(
           children: [
-          // Display Question Cards
-StreamBuilder<List<CardQuestion>>(
-  stream: readQuestionRecommended(),
-  builder: (context, snapshot) {
-    if (snapshot.hasData) {
-      final q = snapshot.data!;
-      if (q.isEmpty) {
-        return Center(
-          child: Text('No Posts Yet'),
-        );
-      }
-      return ListView(
-        children: [
-          // First stream's content
-          ...q.map(buildQuestionCard).toList(),
-          // Second stream
-          StreamBuilder<List<CardQuestion>>(
-            stream: readQuestion(),
-            builder: (context, secondSnapshot) {
-              if (secondSnapshot.hasData) {
-                final secondQ = secondSnapshot.data!;
+            // Display Question Cards
+            StreamBuilder<List<CardQuestion>>(
+              stream: readQuestionRecommended(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final q = snapshot.data!;
+                  if (q.isEmpty) {
+                    return Center(
+                      child: Text('No Posts Yet'),
+                    );
+                  }
+                  return ListView(
+                    children: [
+                      // First stream's content
+                      ...q.map(buildQuestionCard).toList(),
+                      // Second stream
+                      StreamBuilder<List<CardQuestion>>(
+                        stream: readQuestion(),
+                        builder: (context, secondSnapshot) {
+                          if (secondSnapshot.hasData) {
+                            final secondQ = secondSnapshot.data!;
 
-                if (secondQ.isEmpty) {
+                            if (secondQ.isEmpty) {
+                              return Center(
+                                child: Text('No Second Stream Data'),
+                              );
+                            }
+
+                            return ListView(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              children: secondQ.map(buildQuestionCard).toList(),
+                            );
+                          } else if (secondSnapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${secondSnapshot.error}'),
+                            );
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  );
+                } else if (snapshot.hasError) {
                   return Center(
-                    child: Text('No Second Stream Data'),
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator(),
                   );
                 }
-
-                return ListView(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  children: secondQ.map(buildQuestionCard).toList(),
-                );
-              } else if (secondSnapshot.hasError) {
-                return Center(
-                  child: Text('Error: ${secondSnapshot.error}'),
-                );
-              } else {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            },
-          ),
-        ],
-      );
-    } else if (snapshot.hasError) {
-      return Center(
-        child: Text('Error: ${snapshot.error}'),
-      );
-    } else {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-  },
-),
+              },
+            ),
 
             StreamBuilder<List<CardFT>>(
               stream: readTeam(),

@@ -1,3 +1,6 @@
+import 'dart:core';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class CardAnswer {
   String questionDocId;
   String userId;
@@ -13,6 +16,9 @@ class CardAnswer {
   String reportDocid;
   List<String>? reasons;
   List<String>? reportDocids;
+  DateTime postedDate;
+  DateTime reportDate;
+
   CardAnswer({
     required this.questionDocId,
     required this.userId,
@@ -26,7 +32,10 @@ class CardAnswer {
     required this.userType,
     required this.reportedItemId,
     required this.reportDocid,
+    required this.postedDate,
+    required this.reportDate,
   });
+
   Map<String, dynamic> toJson() => {
         'questionDocId': questionDocId,
         'userId': userId,
@@ -40,6 +49,8 @@ class CardAnswer {
         'userType': userType,
         'reportedItemId': reportedItemId,
         'reportDocid': reportDocid,
+        'postedDate': Timestamp.fromDate(postedDate),
+        'reportDate': Timestamp.fromDate(reportDate),
       };
 
   factory CardAnswer.fromJson(Map<String, dynamic> json) {
@@ -56,7 +67,9 @@ class CardAnswer {
       userType: json['userType'] ?? '',
       reportedItemId: json['reportedItemId'] ?? '',
       reportDocid: json['reportDocid'] ?? '',
+      postedDate: (json['postedDate'] as Timestamp).toDate(),
+      reportDate:
+          (json['reportDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 }
-

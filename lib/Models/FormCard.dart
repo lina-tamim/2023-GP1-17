@@ -141,8 +141,7 @@ class _FormWidgetState extends State<FormWidget> {
     };
 
     final List<String> items = topicGroups.keys.toList();
-    final List<String> selectedTopics = List<String>.from(
-        _selectedTopics); 
+    final List<String> selectedTopics = List<String>.from(_selectedTopics);
 
     final List<String>? result = await showDialog<List<String>>(
       context: context,
@@ -598,8 +597,6 @@ class _FormWidgetState extends State<FormWidget> {
     } else if (_selectedTopics.isEmpty) {
       toastMessage(interestsValidation ?? 'Invalid data');
     } else {
-
-
       DateTime postDate = DateTime.now();
       if (_selectedPostType == 'Question') {
         final questionCollection =
@@ -612,7 +609,7 @@ class _FormWidgetState extends State<FormWidget> {
           'postDescription': largeTextFieldValue[0].toUpperCase() +
               largeTextFieldValue.substring(1),
           'selectedInterests': _selectedTopics,
-          'noOfAnwers': count,
+          'noOfAnswers': count,
           'postedDate': postDate,
           'questionDocId': newFormDoc.id,
         });

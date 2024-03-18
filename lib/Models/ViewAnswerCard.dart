@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CardAview {
   String questionDocId;
@@ -10,6 +11,7 @@ class CardAview {
   final String docId;
   String? userPhotoUrl;
   String userType;
+  DateTime postedDate;
 
   CardAview({
     required this.questionDocId,
@@ -21,6 +23,7 @@ class CardAview {
     required this.username,
     required this.userPhotoUrl,
     required this.userType,
+    required this.postedDate,
   });
 
   Map<String, dynamic> toJson() => {
@@ -33,6 +36,7 @@ class CardAview {
         'docId': docId,
         'userPhotoUrl': userPhotoUrl,
         'userType': userType,
+        'postedDate': Timestamp.fromDate(postedDate),
       };
 
   factory CardAview.fromJson(Map<String, dynamic> json) {
@@ -47,6 +51,7 @@ class CardAview {
       username: json['username'] ?? '',
       userPhotoUrl: json['userPhotoUrl'] as String?,
       userType: json['userType'] ?? '',
+      postedDate: (json['postedDate'] as Timestamp).toDate(),
     );
   }
 }
