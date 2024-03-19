@@ -86,6 +86,7 @@ class _AnswerPageState extends State<AnswerPage> {
 
       question.username = username;
       question.userPhotoUrl = userPhotoUrl;
+      question.userType = userDoc?['userType'] as String? ?? "";
     });
 
     // Check if any userIds were not found in the 'User' collection
@@ -114,58 +115,58 @@ class _AnswerPageState extends State<AnswerPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
-               
-               Row(
-                  children: [
-                    Text(
-                      question.username ?? '', // Display the username
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 24, 8, 53),
-                          fontSize: 16),
-                    ),
-                    if (question.userType == "Freelancer")
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.verified,
-                            color: Colors.deepPurple,
-                            size: 20,
-                          ),
-                          SizedBox(width: 4),
-                        ],
-                      ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          DateFormat('dd/MM/yyyy').format(question.postedDate),
-                          style: TextStyle(fontSize: 12),
+              Row(
+                children: [
+                  Text(
+                    question.username ?? '', // Display the username
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 24, 8, 53),
+                        fontSize: 16),
+                  ),
+                  if (question.userType == "Freelancer")
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.verified,
+                          color: Colors.deepPurple,
+                          size: 20,
                         ),
+                        SizedBox(width: 4),
+                      ],
+                    ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        DateFormat('dd/MM/yyyy').format(question.postedDate),
+                        style: TextStyle(fontSize: 12),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
               SizedBox(height: 5),
               Text(
                 question.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                 fontSize: 15.4,
+                  fontSize: 15.4,
                 ),
               ),
               SizedBox(height: 5),
-              Text(question.description, style: TextStyle(
-                 fontSize: 15,
-                )),
+              Text(question.description,
+                  style: TextStyle(
+                    fontSize: 15,
+                  )),
             ],
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Wrap(
-                spacing:  -5,
-                runSpacing:  -5,
+                spacing: -5,
+                runSpacing: -5,
                 children: question.topics
                     .map(
                       (topic) => Chip(
@@ -382,40 +383,40 @@ class _AnswerPageState extends State<AnswerPage> {
                 }
               },
               child: Row(
-                  children: [
-                    Text(
-                      answer.username ?? '', // Display the username
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 52, 0, 80),
-                          fontSize: 16),
-                    ),
-                    if (answer.userType == "Freelancer")
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.verified,
-                            color: Colors.deepPurple,
-                            size: 20,
-                          ),
-                          SizedBox(width: 4),
-                        ],
-                      ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          DateFormat('dd/MM/yyyy').format(answer.postedDate),
-                          style: TextStyle(fontSize: 12),
+                children: [
+                  Text(
+                    answer.username ?? '', // Display the username
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 52, 0, 80),
+                        fontSize: 16),
+                  ),
+                  if (answer.userType == "Freelancer")
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.verified,
+                          color: Colors.deepPurple,
+                          size: 20,
                         ),
+                        SizedBox(width: 4),
+                      ],
+                    ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        DateFormat('dd/MM/yyyy').format(answer.postedDate),
+                        style: TextStyle(fontSize: 12),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
             ),
             SizedBox(height: 5),
             ListTile(
-              title: Text(answer.answerText , style: TextStyle(fontSize: 14)),
+              title: Text(answer.answerText, style: TextStyle(fontSize: 14)),
             ),
           ],
         ),
@@ -733,6 +734,7 @@ class _AnswerPageState extends State<AnswerPage> {
           final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
           answer.username = username;
           answer.userPhotoUrl = userPhotoUrl;
+          answer.userType = userDoc?['userType'] as String? ?? "";
           final userIdsNotFound =
               userIds.where((userId) => !userMap.containsKey(userId)).toList();
           userIdsNotFound.forEach((userId) {
@@ -777,7 +779,7 @@ class _AnswerPageState extends State<AnswerPage> {
                 }
 
                 final questions = snapshot.data!;
-                
+
                 return buildQuestionCard(questions[0]);
               },
             ),
