@@ -379,8 +379,8 @@ class _UserBookmarkedPathwaysState extends State<UserBookmarkedPathways> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Wrap(
-                            spacing: 4.0,
-                            runSpacing: 2.0,
+                            spacing:  -5,
+                            runSpacing: -5,
                             children: pathway.Key_topic.map(
                               (topic) => Chip(
                                 label: Text(
@@ -1069,8 +1069,8 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Wrap(
-                spacing: 4.0,
-                runSpacing: 2.0,
+                spacing:  -5,
+                runSpacing: -5,
                 children: question.topics
                     .map(
                       (topic) => Chip(

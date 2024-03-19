@@ -580,8 +580,8 @@ Future<void> fetchData(PathwayContainer pathway) async {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Wrap(
-                              spacing: 4.0,
-                              runSpacing: 2.0,
+                              spacing: -5,
+                              runSpacing: -5,
                               children: pathway.Key_topic.map(
                                 (topic) => Chip(
                                   label: Text(

@@ -278,8 +278,8 @@ class _UserProfileView extends State<UserProfileView>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Wrap(
-                spacing: 4.0,
-                runSpacing: 2.0,
+                spacing:  -5,
+                runSpacing: -5,
                 children: question.topics
                     .map(
                       (topic) => Chip(
@@ -629,8 +629,8 @@ class _UserProfileView extends State<UserProfileView>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Wrap(
-                  spacing: 4.0,
-                  runSpacing: 2.0,
+                  spacing:  -5,
+                  runSpacing: -5,
                   children: team.topics
                       .map(
                         (topic) => Chip(

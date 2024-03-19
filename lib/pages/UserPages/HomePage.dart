@@ -611,8 +611,8 @@ class __FHomePageState extends State<FHomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Wrap(
-                spacing: 4.0,
-                runSpacing: 2.0,
+                spacing: -5,
+                runSpacing: -5,
                 children: question.topics
                     .map(
                       (topic) => Chip(
@@ -627,16 +627,6 @@ class __FHomePageState extends State<FHomePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  IconButton(
-                      icon: Icon(Icons.monitor_heart,
-                          color: Color.fromARGB(255, 81, 0, 78)),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TestIntegration()),
-                        );
-                      }),
                   IconButton(
                     icon: Icon(Icons.bookmark,
                         color: Color.fromARGB(255, 63, 63, 63)),
@@ -845,8 +835,8 @@ class __FHomePageState extends State<FHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Wrap(
-                  spacing: 4.0,
-                  runSpacing: 2.0,
+                  spacing: -5,
+                  runSpacing:  -5,
                   children: team.topics
                       .map(
                         (topic) => Chip(
@@ -990,7 +980,7 @@ class __FHomePageState extends State<FHomePage> {
             padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
             decoration: BoxDecoration(
               color: deadlineDate.isBefore(currentDate)
-                  ? Colors.red
+                  ? Color.fromARGB(255, 166, 11, 0)
                   : Color.fromARGB(255, 11, 0, 135),
               borderRadius: BorderRadius.circular(8.0),
             ),
@@ -1111,13 +1101,19 @@ class __FHomePageState extends State<FHomePage> {
               // Set the color of the selected tab's text
               tabs: [
                 Tab(
-                  child: Text('Questions'),
+                  child: Text('Questions', style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                )),
                 ),
                 Tab(
-                  child: Text('Build Team'),
+                  child: Text('Teams', style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                )),
                 ),
                 Tab(
-                  child: Text('Projects'),
+                  child: Text('Projects', style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                )),
                 ),
               ],
             )),

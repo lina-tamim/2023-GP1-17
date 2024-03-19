@@ -440,23 +440,6 @@ class _FormWidgetState extends State<FormWidget> {
                 const SizedBox(height: 25),
                 Row(
                   children: [
-                    Text(
-                      'Skill/s',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 0, 0, 0).withOpacity(0.9),
-                        fontSize: 16,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      '*',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () async {
                     _showMultiSelectTopics();
@@ -469,6 +452,25 @@ class _FormWidgetState extends State<FormWidget> {
                     }
                   },
                   child: Text('${postTypeTopics[_selectedPostType]}'),
+                  style: ElevatedButton.styleFrom(
+                        primary: Color.fromRGBO(37, 6, 81, 0.898),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        elevation: 10,
+                        shadowColor:
+                            Color.fromARGB(255, 0, 0, 0).withOpacity(1),
+                      ),
+                ),
+                
+                SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      '*',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ]
                 ),
                 const Divider(
                   height: 10,
@@ -612,6 +614,8 @@ class _FormWidgetState extends State<FormWidget> {
           'noOfAnswers': count,
           'postedDate': postDate,
           'questionDocId': newFormDoc.id,
+          'totalUpvotes':0,
+
         });
       } else if (_selectedPostType == 'Team Collaberation') {
         final teamCollabCollection =

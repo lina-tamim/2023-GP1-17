@@ -188,8 +188,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Wrap(
-                spacing: 4.0,
-                runSpacing: 2.0,
+                spacing:  -5,
+                runSpacing:  -5,
                 children: question.topics
                     .map(
                       (topic) => Chip(
@@ -515,8 +515,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Wrap(
-              spacing: 4.0,
-              runSpacing: 2.0,
+              spacing:  -5,
+              runSpacing:  -5,
               children: fandT.topics
                   .map(
                     (topic) => Chip(
@@ -662,8 +662,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Wrap(
-              spacing: 4.0,
-              runSpacing: 2.0,
+              spacing:  -5,
+              runSpacing:  -5,
               children: fandT.topics
                   .map(
                     (topic) => Chip(
