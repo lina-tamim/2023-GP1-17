@@ -190,7 +190,7 @@ class _ReportedPostState extends State<ReportedPost> {
                                 final t = snapshot.data!;
                                 if (t.isEmpty) {
                                   return Center(
-                                    child: Text('No Reported Build Team Post'),
+                                    child: Text('No Reported Teams Post'),
                                   );
                                 }
                                 return ListView(
@@ -344,7 +344,7 @@ class _ReportedPostState extends State<ReportedPost> {
                                 final t = snapshot.data!;
                                 if (t.isEmpty) {
                                   return Center(
-                                    child: Text('No Reported Build Team Post'),
+                                    child: Text('No Reported Teams Post'),
                                   );
                                 }
                                 return ListView(
@@ -587,10 +587,13 @@ class _ReportedPostState extends State<ReportedPost> {
                 question.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
+                 fontSize: 15.4,
                 ),
               ),
               SizedBox(height: 5),
-              Text(question.description),
+              Text(question.description, style: TextStyle(
+                 fontSize: 15,
+                )),
               SizedBox(height: 5),
             ],
           ),
@@ -848,14 +851,17 @@ class _ReportedPostState extends State<ReportedPost> {
                 ),
               ),
               SizedBox(height: 5),
-              Text(
+               Text(
                 question.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
+                 fontSize: 15.4,
                 ),
               ),
               SizedBox(height: 5),
-              Text(question.description),
+              Text(question.description, style: TextStyle(
+                 fontSize: 15,
+                )),
               SizedBox(height: 5),
             ],
           ),

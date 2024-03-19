@@ -174,14 +174,17 @@ class _UserPostsPageState extends State<UserPostsPage> {
                 ],
               ),
               SizedBox(height: 5),
-              Text(
+               Text(
                 question.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
+                 fontSize: 15.4,
                 ),
               ),
               SizedBox(height: 5),
-              Text(question.description),
+              Text(question.description, style: TextStyle(
+                 fontSize: 15,
+                )),
             ],
           ),
           subtitle: Column(

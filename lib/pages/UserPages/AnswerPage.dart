@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/Models/QuestionCard.dart';
 import 'package:techxcel11/Models/AnswerCard.dart';
@@ -113,21 +114,50 @@ class _AnswerPageState extends State<AnswerPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
-              Text(
-                question.username ?? '',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 0, 0, 0)),
-              ),
+               
+               Row(
+                  children: [
+                    Text(
+                      question.username ?? '', // Display the username
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 24, 8, 53),
+                          fontSize: 16),
+                    ),
+                    if (question.userType == "Freelancer")
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.verified,
+                            color: Colors.deepPurple,
+                            size: 20,
+                          ),
+                          SizedBox(width: 4),
+                        ],
+                      ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          DateFormat('dd/MM/yyyy').format(question.postedDate),
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               SizedBox(height: 5),
               Text(
                 question.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
+                 fontSize: 15.4,
                 ),
               ),
               SizedBox(height: 5),
-              Text(question.description),
+              Text(question.description, style: TextStyle(
+                 fontSize: 15,
+                )),
             ],
           ),
           subtitle: Column(
@@ -351,17 +381,41 @@ class _AnswerPageState extends State<AnswerPage> {
                   );
                 }
               },
-              child: Text(
-                answer.username ?? '',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
+              child: Row(
+                  children: [
+                    Text(
+                      answer.username ?? '', // Display the username
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 52, 0, 80),
+                          fontSize: 16),
+                    ),
+                    if (answer.userType == "Freelancer")
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.verified,
+                            color: Colors.deepPurple,
+                            size: 20,
+                          ),
+                          SizedBox(width: 4),
+                        ],
+                      ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          DateFormat('dd/MM/yyyy').format(answer.postedDate),
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
             ),
             SizedBox(height: 5),
             ListTile(
-              title: Text(answer.answerText),
+              title: Text(answer.answerText , style: TextStyle(fontSize: 14)),
             ),
           ],
         ),
@@ -723,6 +777,7 @@ class _AnswerPageState extends State<AnswerPage> {
                 }
 
                 final questions = snapshot.data!;
+                
                 return buildQuestionCard(questions[0]);
               },
             ),

@@ -264,14 +264,17 @@ class _UserProfileView extends State<UserProfileView>
                 ),
               ),
               SizedBox(height: 5),
-              Text(
+               Text(
                 question.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
+                 fontSize: 15.4,
                 ),
               ),
               SizedBox(height: 5),
-              Text(question.description),
+              Text(question.description, style: TextStyle(
+                 fontSize: 15,
+                )),
             ],
           ),
           subtitle: Column(
@@ -1548,10 +1551,10 @@ class _UserProfileView extends State<UserProfileView>
                         labelColor: Color.fromARGB(
                             255, 0, 0, 0), // Change the text color here
                         tabs: [
-                          Tab(text: 'Question'),
-                          Tab(text: 'Build\nTeam'),
-                          Tab(text: 'Project'),
-                          Tab(text: 'Answer'),
+                          Tab(text: 'Questions'),
+                          Tab(text: 'Teams'),
+                          Tab(text: 'Projects'),
+                          Tab(text: 'Answers'),
                         ],
                       )),
                 ),
