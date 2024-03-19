@@ -907,6 +907,15 @@ class _Signup extends State<Signup> {
                             onPressed:
                                 _showMultiSelectSkills, // Corrected method name
                             child: const Text('Select Skills'),
+                            style: ElevatedButton.styleFrom(
+                        primary: Color.fromRGBO(37, 6, 81, 0.898),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        elevation: 10,
+                        shadowColor:
+                            Color.fromARGB(255, 0, 0, 0).withOpacity(1),
+                      ),
                           ),
                           const Divider(
                             height: 10,
@@ -968,6 +977,15 @@ class _Signup extends State<Signup> {
                             onPressed:
                                 _showMultiSelectInterests, // Corrected method name
                             child: const Text('Select Interests'),
+                            style: ElevatedButton.styleFrom(
+                        primary: Color.fromRGBO(37, 6, 81, 0.898),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        elevation: 10,
+                        shadowColor:
+                            Color.fromARGB(255, 0, 0, 0).withOpacity(1),
+                      ),
                           ),
                           const Divider(
                             height: 10,

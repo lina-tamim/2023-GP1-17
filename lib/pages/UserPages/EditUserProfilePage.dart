@@ -140,7 +140,6 @@ class _EditProfile2State extends State<EditProfile2> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
             Center(
               child: Container(
                 padding: EdgeInsets.all(20),
@@ -543,7 +542,17 @@ class _EditProfile2State extends State<EditProfile2> {
             ElevatedButton(
               onPressed: _showMultiSelectInterests, // Corrected method name
               child: const Text('Select Interests'),
+              style: ElevatedButton.styleFrom(
+                        primary: Color.fromRGBO(37, 6, 81, 0.898),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        elevation: 10,
+                        shadowColor:
+                            Color.fromARGB(255, 0, 0, 0).withOpacity(1),
+                      ),
             ),
+          
 
             // Display the selected items
             Wrap(
@@ -593,6 +602,15 @@ class _EditProfile2State extends State<EditProfile2> {
             ElevatedButton(
               onPressed: _showMultiSelectSkills, // Corrected method name
               child: const Text('Select Skills'),
+              style: ElevatedButton.styleFrom(
+                        primary: Color.fromRGBO(37, 6, 81, 0.898),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        elevation: 10,
+                        shadowColor:
+                            Color.fromARGB(255, 0, 0, 0).withOpacity(1),
+                      ),
             ),
 
             // Display the selected items
