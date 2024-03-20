@@ -597,17 +597,18 @@ class __FHomePageState extends State<FHomePage> {
                 ),
               ),
               SizedBox(height: 5),
-               Text(
+              Text(
                 question.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                 fontSize: 15.4,
+                  fontSize: 15.4,
                 ),
               ),
               SizedBox(height: 5),
-              Text(question.description, style: TextStyle(
-                 fontSize: 15,
-                )),
+              Text(question.description,
+                  style: TextStyle(
+                    fontSize: 15,
+                  )),
             ],
           ),
           subtitle: Column(
@@ -754,6 +755,256 @@ class __FHomePageState extends State<FHomePage> {
         ),
       );
 
+  Widget buildRecommendedQuestionCard(CardQuestion question) => Card(
+        color: Color.fromARGB(255, 229, 229, 229),
+        child: ListTile(
+          leading: CircleAvatar(
+            radius: 30, // Adjust the radius to make the avatar bigger
+            backgroundImage: question.userPhotoUrl != ''
+                ? NetworkImage(question.userPhotoUrl!)
+                : const AssetImage('assets/Backgrounds/defaultUserPic.png')
+                    as ImageProvider<Object>, // Cast to ImageProvider<Object>
+          ),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 5),
+              GestureDetector(
+                onTap: () {
+                  if (question.userId != null &&
+                      question.userId.isNotEmpty &&
+                      question.userId != "DeactivatedUser") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            UserProfileView(userId: question.userId),
+                      ),
+                    );
+                  }
+                },
+                child: Row(
+                  children: [
+                    Text(
+                      question.username ?? '', // Display the username
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 24, 8, 53),
+                          fontSize: 16),
+                    ),
+                    if (question.userType == "Freelancer")
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.verified,
+                            color: Colors.deepPurple,
+                            size: 20,
+                          ),
+                          SizedBox(width: 4),
+                        ],
+                      ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          DateFormat('dd/MM/yyyy').format(question.postedDate),
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 5),
+              Text(
+                question.title,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15.4,
+                ),
+              ),
+              SizedBox(height: 5),
+              Text(question.description,
+                  style: TextStyle(
+                    fontSize: 15,
+                  )),
+            ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: -5,
+                runSpacing: -5,
+                children: question.topics
+                    .map(
+                      (topic) => Chip(
+                        label: Text(
+                          topic,
+                          style: TextStyle(fontSize: 12.0),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.bookmark,
+                        color: Color.fromARGB(255, 63, 63, 63)),
+                    onPressed: () {
+                      addQuestionToBookmarks(loggedInEmail, question);
+                    },
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.comment,
+                            color: Color.fromARGB(255, 63, 63, 63)),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AnswerPage(
+                                    questionDocId: question.questionDocId)),
+                          );
+                        },
+                      ),
+                      Text(question.noOfAnswers.toString()),
+                    ],
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.report,
+                        color: Color.fromARGB(255, 63, 63, 63)),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return StatefulBuilder(
+                            builder:
+                                (BuildContext context, StateSetter setState) {
+                              String? initialOption = null;
+                              TextEditingController customReasonController =
+                                  TextEditingController();
+
+                              return AlertDialog(
+                                title: Text('Report Post'),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    DropdownButton<String>(
+                                      value: selectedOption,
+                                      hint: Text('Select a reason'),
+                                      onTap: () {
+                                        // Set the initialOption to the selectedOption
+                                        initialOption = selectedOption;
+                                      },
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          selectedOption = newValue!;
+                                        });
+                                      },
+                                      items:
+                                          dropDownOptions.map((String option) {
+                                        return DropdownMenuItem<String>(
+                                          value: option,
+                                          child: Text(option),
+                                        );
+                                      }).toList(),
+                                    ),
+                                    Visibility(
+                                      visible: selectedOption == 'Others',
+                                      child: TextFormField(
+                                        controller: customReasonController,
+                                        decoration: InputDecoration(
+                                            labelText: 'Enter your reason'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () {
+                                      // Reset the selectedOption to the initialOption when canceling
+                                      setState(() {
+                                        selectedOption = initialOption;
+                                      });
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Report'),
+                                    onPressed: () {
+                                      if (selectedOption != null) {
+                                        String reason;
+                                        if (selectedOption == 'Others') {
+                                          reason = customReasonController.text;
+                                        } else {
+                                          reason = selectedOption!;
+                                        }
+                                        if (reason.isNotEmpty) {
+                                          // Check if a reason is provided
+                                          handleReportQuestion(
+                                              loggedInEmail, question, reason);
+                                          toastMessage(
+                                              'Your report has been sent successfully');
+                                          Navigator.of(context).pop();
+                                        } else {
+                                          // Show an error message or handle the case where no reason is provided
+                                          print(
+                                              'Please provide a reason for reporting.');
+                                        }
+                                      }
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+              Divider(
+                color: Colors.black,
+              ),
+              Center(child: Text("Is this content relevant to you?")),
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        recordFeedback(loggedInEmail, question, true);
+                      },
+                      icon: Icon(
+                        Icons.thumb_up_alt,
+                        color: Color.fromARGB(255, 63, 63, 63),
+                        size: 19,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        recordFeedback(loggedInEmail, question, false);
+                      },
+                      icon: Icon(
+                        Icons.thumb_down_alt,
+                        color: Color.fromARGB(255, 63, 63, 63),
+                        size: 19,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+
   Widget buildTeamCard(CardFT team) {
     DateTime deadlineDate = team.date as DateTime;
     DateTime currentDate = DateTime.now();
@@ -839,7 +1090,7 @@ class __FHomePageState extends State<FHomePage> {
               children: [
                 Wrap(
                   spacing: -5,
-                  runSpacing:  -5,
+                  runSpacing: -5,
                   children: team.topics
                       .map(
                         (topic) => Chip(
@@ -1104,19 +1355,22 @@ class __FHomePageState extends State<FHomePage> {
               // Set the color of the selected tab's text
               tabs: [
                 Tab(
-                  child: Text('Questions', style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                )),
+                  child: Text('Questions',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      )),
                 ),
                 Tab(
-                  child: Text('Teams', style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                )),
+                  child: Text('Teams',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      )),
                 ),
                 Tab(
-                  child: Text('Projects', style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                )),
+                  child: Text('Projects',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      )),
                 ),
               ],
             )),
@@ -1153,7 +1407,7 @@ class __FHomePageState extends State<FHomePage> {
                   return ListView(
                     children: [
                       // First stream's content
-                      ...q.map(buildQuestionCard).toList(),
+                      ...q.map(buildRecommendedQuestionCard).toList(),
                       // Second stream
                       StreamBuilder<List<CardQuestion>>(
                         stream: readQuestion(),
@@ -1250,6 +1504,23 @@ class __FHomePageState extends State<FHomePage> {
         ),
       ),
     );
+  }
+
+  Future<void> recordFeedback(
+      String email, CardQuestion question, bool isThumbUp) async {
+    try {
+      print(question.questionDocId);
+      String relevant = isThumbUp ? 'Yes' : 'No';
+
+      await FirebaseFirestore.instance.collection('RecommenderMeasure').add({
+        'questionId': question.questionDocId,
+        'relevant': relevant,
+        'userId': email,
+      });
+      toastMessage('Feedback Send');
+    } catch (error) {
+      print('Error adding question to bookmarks: $error');
+    }
   }
 
   Future<void> addQuestionToBookmarks(
