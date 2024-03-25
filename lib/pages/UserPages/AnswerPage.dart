@@ -164,20 +164,33 @@ class _AnswerPageState extends State<AnswerPage> {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Wrap(
-                spacing: -5,
-                runSpacing: -5,
-                children: question.topics
-                    .map(
-                      (topic) => Chip(
-                        label: Text(
-                          topic,
-                          style: TextStyle(fontSize: 12.0),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
+              SizedBox(height: 7,),
+              Container(
+                              width:
+                                  400, // Set a fixed width for the skills container
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: List.generate(
+                                    question.topics.length,
+                                    (intrestsIndex) {
+                                      final intrest =
+                                          question.topics[intrestsIndex] as String;
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 8.0),
+                                        child: Chip(
+                                          label: Text(
+                                            intrest,
+                                            style: TextStyle(fontSize: 12.0),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [

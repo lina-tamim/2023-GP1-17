@@ -17,6 +17,7 @@ import 'package:techxcel11/providers/profile_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+
 class FHomePage extends StatefulWidget {
   const FHomePage({Key? key}) : super(key: key);
 
@@ -116,7 +117,6 @@ class __FHomePageState extends State<FHomePage> {
           print('11111111111');
           DateTime dateTime =
               timestamp.toDate(); // Convert Timestamp to DateTime
-          print('2222222222');
           Map<String, dynamic> jsonQuestion = {
             'selectedInterests': question['selectedInterests'],
             'noOfAnswers': question['noOfAnswers'],
@@ -272,7 +272,6 @@ class __FHomePageState extends State<FHomePage> {
         question.userPhotoUrl = userPhotoUrl;
         question.userType = userDoc?['userType'] as String? ?? "";
         // question.userId = userDoc ?['userId'] as String;
-        print("22222222222 ${question.docId}");
       });
 
       final userIdsNotFound =
@@ -357,7 +356,6 @@ class __FHomePageState extends State<FHomePage> {
         question.userPhotoUrl = userPhotoUrl;
         question.userType = userDoc?['userType'] as String? ?? "";
         // question.userId = userDoc ?['userId'] as String;
-        print("22222222222 ${question.docId}");
       });
 
       final userIdsNotFound =
@@ -538,7 +536,8 @@ class __FHomePageState extends State<FHomePage> {
   }
 
   Widget buildQuestionCard(CardQuestion question) => Card(
-        child: ListTile(
+        elevation: 0.4, // Set elevation to 0 to remove the shadow
+         child: ListTile(
           leading: CircleAvatar(
             radius: 30, // Adjust the radius to make the avatar bigger
             backgroundImage: question.userPhotoUrl != ''
@@ -549,7 +548,6 @@ class __FHomePageState extends State<FHomePage> {
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 5),
               GestureDetector(
                 onTap: () {
                   if (question.userId != null &&
@@ -614,20 +612,33 @@ class __FHomePageState extends State<FHomePage> {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Wrap(
-                spacing: -5,
-                runSpacing: -5,
-                children: question.topics
-                    .map(
-                      (topic) => Chip(
-                        label: Text(
-                          topic,
-                          style: TextStyle(fontSize: 12.0),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
+              SizedBox(height: 7,),
+              Container(
+                              width:
+                                  400, // Set a fixed width for the skills container
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: List.generate(
+                                    question.topics.length,
+                                    (intrestsIndex) {
+                                      final intrest =
+                                          question.topics[intrestsIndex] as String;
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 8.0),
+                                        child: Chip(
+                                          label: Text(
+                                            intrest,
+                                            style: TextStyle(fontSize: 12.0),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -748,6 +759,7 @@ class __FHomePageState extends State<FHomePage> {
                       );
                     },
                   ),
+                  SizedBox(height: 60,)
                 ],
               ),
             ],
@@ -756,7 +768,8 @@ class __FHomePageState extends State<FHomePage> {
       );
 
   Widget buildRecommendedQuestionCard(CardQuestion question) => Card(
-        color: Color.fromARGB(255, 229, 229, 229),
+       color: Color.fromARGB(255, 253, 251, 255),
+        elevation: 0.4, // Set elevation to 0 to remove the shadow
         child: ListTile(
           leading: CircleAvatar(
             radius: 30, // Adjust the radius to make the avatar bigger
@@ -768,7 +781,6 @@ class __FHomePageState extends State<FHomePage> {
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 5),
               GestureDetector(
                 onTap: () {
                   if (question.userId != null &&
@@ -820,33 +832,46 @@ class __FHomePageState extends State<FHomePage> {
                 question.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 15.4,
+                  fontSize: 15,
                 ),
               ),
               SizedBox(height: 5),
               Text(question.description,
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 13,
                   )),
             ],
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Wrap(
-                spacing: -5,
-                runSpacing: -5,
-                children: question.topics
-                    .map(
-                      (topic) => Chip(
-                        label: Text(
-                          topic,
-                          style: TextStyle(fontSize: 12.0),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
+             SizedBox(height: 7,),
+              Container(
+                              width:
+                                  400, // Set a fixed width for the skills container
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: List.generate(
+                                    question.topics.length,
+                                    (intrestsIndex) {
+                                      final intrest =
+                                          question.topics[intrestsIndex] as String;
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 8.0),
+                                        child: Chip(
+                                          label: Text(
+                                            intrest,
+                                            style: TextStyle(fontSize: 12.0),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -969,37 +994,51 @@ class __FHomePageState extends State<FHomePage> {
                   ),
                 ],
               ),
-              Divider(
-                color: Colors.black,
-              ),
-              Center(child: Text("Is this content relevant to you?")),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        recordFeedback(loggedInEmail, question, true);
-                      },
-                      icon: Icon(
-                        Icons.thumb_up_alt,
-                        color: Color.fromARGB(255, 63, 63, 63),
-                        size: 19,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        recordFeedback(loggedInEmail, question, false);
-                      },
-                      icon: Icon(
-                        Icons.thumb_down_alt,
-                        color: Color.fromARGB(255, 63, 63, 63),
-                        size: 19,
-                      ),
-                    )
-                  ],
-                ),
-              ),
+              SizedBox(height: 6,),
+             Align(
+  alignment: Alignment.bottomLeft,
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.start,
+    children: [
+      Image.asset(
+      'assets/icons/sparkle.png', 
+      width: 17, 
+      height: 17,
+    ),
+        SizedBox(width:5),
+      Text(
+        "Is this content relevant to you?",
+        style: TextStyle(fontSize: 12),
+      ),
+      SizedBox(width:15),
+      GestureDetector(
+      onTap: () {
+        recordFeedback(loggedInEmail, question, true);
+      },
+      child: Image.asset(
+        'assets/icons/thumbUp.png', 
+        width: 15, 
+        height: 15,
+        color: Color.fromARGB(255, 116, 116, 116), 
+      ),
+      ),
+      SizedBox(width:20),
+     GestureDetector(
+      onTap: () {
+        recordFeedback(loggedInEmail, question, false);
+      },
+      child: Image.asset(
+        'assets/icons/thumbDown.png', 
+        width: 15, 
+        height: 15,
+        color: Color.fromARGB(255, 116, 116, 116), 
+      ),
+      ),
+    ],
+  ),
+),
+              SizedBox(height: 6,),
+
             ],
           ),
         ),
