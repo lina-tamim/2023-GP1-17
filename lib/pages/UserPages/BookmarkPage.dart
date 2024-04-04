@@ -112,13 +112,13 @@ class _BookmarkPageState extends State<BookmarkPage>
           Tab(
             child: Text(
               'Questions',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
             ),
           ),
           Tab(
             child: Text(
               'Pathways',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
             ),
           ),
         ],

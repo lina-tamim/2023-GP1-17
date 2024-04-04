@@ -304,16 +304,8 @@ class __FHomePageState extends State<FHomePage> {
   Stream<List<CardQuestion>> readQuestionRecommended() {
     Query<Map<String, dynamic>> query =
         FirebaseFirestore.instance.collection('Question');
-    /*.where('dropdownValue', isEqualTo: 'Question');
-
-    if (searchController.text.isNotEmpty) {
-      String searchText = searchController.text;
-      query = query
-          .where('postDescription', isGreaterThanOrEqualTo: searchText)
-          .where('postDescription', isLessThan: searchText + 'z');
-    } else {
-    query = query.orderBy('postedDate', descending: true);
-    }*/
+    
+    
 
     return query.snapshots().asyncMap((snapshot) async {
       final questions = snapshot.docs.map((doc) {
@@ -382,6 +374,7 @@ class __FHomePageState extends State<FHomePage> {
       print("RECOMMENDEDDEED HEEEEEEEEEEEEEEEREEEEEEEEEEE");
       //print(filteredQuestions);
       print(recommendedQuestionIds);
+      
       return filteredQuestions;
     });
   }
@@ -1348,7 +1341,7 @@ class __FHomePageState extends State<FHomePage> {
                         ),
                       ),
                       const SizedBox(width: 120),
-                      IconButton(
+                    /*  IconButton(
                         onPressed: () {
                           setState(() {
                             showSearchBar = !showSearchBar;
@@ -1356,7 +1349,7 @@ class __FHomePageState extends State<FHomePage> {
                         },
                         icon: Icon(
                             showSearchBar ? Icons.search_off : Icons.search),
-                      ),
+                      ),*/
                     ],
                   ),
                   const SizedBox(

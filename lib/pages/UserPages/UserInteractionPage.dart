@@ -791,10 +791,10 @@ class _UserPostsPageState extends State<UserPostsPage> {
                 indicator: UnderlineTabIndicator(
                   borderSide: BorderSide(
                     width: 5.0,
-                    color: Color.fromARGB(255, 27, 5, 230),
+                    color: Colors.black,
                   ),
                 ),
-                labelColor: Color.fromARGB(255, 27, 5, 230),
+                labelColor: Colors.black,
                 tabs: [
                   Tab(
                     child: Text(

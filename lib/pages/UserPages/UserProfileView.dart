@@ -1266,11 +1266,21 @@ class _UserProfileView extends State<UserProfileView>
     });
   }
 
+String _extractUsername(String githubURL) {
+  List<String> parts = githubURL.split('/');
+  if (parts.length >= 4) {
+    return parts[3];
+  } else {
+    return 'GitHub';
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     final TabController tabController = TabController(length: 4, vsync: this);
     int randomIndex = Random().nextInt(imageList.length);
     String randomImage = imageList[randomIndex];
+      String Githubusername = githubURL != null ? _extractUsername(githubURL!) : 'GitHub';
 
     return Scaffold(
       body: isLoading
@@ -1418,12 +1428,17 @@ class _UserProfileView extends State<UserProfileView>
                                       color: const Color.fromARGB(255, 0, 0, 0),
                                     ),
                                   ),
+                                 TextSpan(text:'      '),
                                   TextSpan(
-                                    text: '     GitHub',
-                                    style: TextStyle(
+                                    text:   githubURL != null ? '$Githubusername' : 'GitHub',
+                                    style: githubURL != null ? TextStyle(
+                                      fontSize: 15,
+                                      color: Color.fromARGB(255, 0, 49, 146),
+                                       decoration: TextDecoration.underline ,
+                                    )  : TextStyle(
                                       fontSize: 17.5,
-                                      color: Colors.black,
-                                    ),
+                                      color: const Color.fromARGB(255, 0, 0, 0),
+                                    ), 
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
                                         // Handle the tap on the GitHub link

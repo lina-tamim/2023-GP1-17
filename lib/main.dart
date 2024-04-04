@@ -6,7 +6,7 @@ import 'package:techxcel11/pages/StartPage.dart';
 import 'providers/profile_provider.dart';
 import 'Models/API.dart';
 
-//Gp2 3
+//Gp2 this is the one
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
