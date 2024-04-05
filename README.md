@@ -1,15 +1,15 @@
-##  TechXcel
+##  TeXel
 ### Introduction
 
-Welcome to TechXcel! Our mobile app simplifies access to technical assistance, knowledge sharing, and self-development resources in the technology field. With TechXcel, you'll have a user-friendly platform powered by advanced AI technology, improving your experience and providing valuable support. Easily access comprehensive technical assistance, stay updated with industry information, and explore self-development resources seamlessly. Our AI integration offers personalized recommendations based on your needs and goals, keeping you informed about the latest trends. Experience a streamlined platform that empowers both professionals and users, equipping you with the tools you need to succeed in the world of technology.
+Welcome to TeXel! Our mobile app simplifies access to technical assistance, knowledge sharing, and self-development resources in the technology field. With TeXel, you'll have a user-friendly platform powered by advanced AI technology, improving your experience and providing valuable support. Easily access comprehensive technical assistance, stay updated with industry information, and explore self-development resources seamlessly. Our AI integration offers personalized recommendations based on your needs and goals, keeping you informed about the latest trends. Experience a streamlined platform that empowers both professionals and users, equipping you with the tools you need to succeed in the world of technology.
 
 ### Technology
 
-TechXcel is built using the Flutter framework and the Dart programming language, providing a robust and cross-platform mobile application experience. The application leverages SQL and Firebase for efficient data storage, management, and real-time communication. Additionally, Python is utilized for AI technology integration, enabling personalized recommendations and enhancing the user experience.
+TeXel is built using the Flutter framework and the Dart programming language, providing a robust and cross-platform mobile application experience. The application leverages SQL and Firebase for efficient data storage, management, and real-time communication. Additionally, Python is utilized for AI technology integration, enabling personalized recommendations and enhancing the user experience.
 
 ### Launching Instructions
 
-To experience the benefits of TechXcel, follow these instructions:
+To experience the benefits of TeXel, follow these instructions:
 
 Prerequisites:
 
@@ -21,7 +21,7 @@ Prerequisites:
 To run the app:
 
 
-1- Clone the TechXcel repository from GitHub.
+1- Clone the TeXel repository from GitHub.
 
 2- Open a terminal or command prompt and navigate to the project directory.
 
@@ -31,10 +31,10 @@ To run the app:
 
 5- Connect your device or emulator to your development environment.
 
-6- Run the command flutter run to launch the TechXcel app on your device or emulator.
+6- Run the command flutter run to launch the TeXel app on your device or emulator.
 
 
-That's it! The TechXcel app should now be up and running on your device or emulator, allowing you to explore its features and functionality.
+That's it! The TeXel app should now be up and running on your device or emulator, allowing you to explore its features and functionality.
 
 ### Note: 
 
