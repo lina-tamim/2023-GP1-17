@@ -378,6 +378,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
         'location': locationController.text,
         'imageURL': imageURL,
         'approval': 'Pending',
+        'clickedBy': [], 
       });
     } else {
       await newFormDoc.set({
@@ -393,6 +394,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
         'createdAt': postDate,
         'imageURL': imageURL,
         'approval': 'Pending',
+        'clickedBy': [], 
       });
     }
     clearAllFields();
@@ -1319,23 +1321,24 @@ class CoursesWidget extends StatelessWidget {
                     if (item.link != null)
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: TextButton(
-                          onPressed: () async {
-                            if (await canLaunchUrl(Uri.parse(item.link!))) {
-                              await launchUrl(Uri.parse(item.link!));
-                            } else {
-                              toastMessage('Unable to show details');
-                            }
-                          },
-                          child: const Text(
-                            'More Details ->',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 63, 63, 63),
-                              fontWeight: FontWeight.bold,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ),
+                      child: TextButton(
+                              onPressed: () async {
+                                if (await canLaunch(item.link!)) {
+                                  await launch(item.link!);
+                                  await addUserEmailToClickedBy(); // Call function to add email to Firestore
+                                } else {
+                                  toastMessage('Unable to show details');
+                                }
+                              },
+                              child: Text(
+                                'More Details ->',
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 63, 63, 63),
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            )
                       ),
                   ],
                 ),
@@ -1344,4 +1347,17 @@ class CoursesWidget extends StatelessWidget {
           ),
         ));
   }
+  
+ Future<void> addUserEmailToClickedBy() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+      final email = prefs.getString('loggedInEmail') ?? '';
+  try {
+    await FirebaseFirestore.instance.collection('Program').doc(item.docId).update({
+      'clickedBy': FieldValue.arrayUnion([email])
+    });
+    print('User email added to clickedBy array.');
+  } catch (e) {
+    print('Error adding user email to clickedBy array: $e');
+  }
+}
 }

@@ -379,6 +379,7 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
         'location': locationController.text,
         'imageURL': imageURL,
         'approval': 'Yes',
+        'clickedBy': [], 
       });
     } else {
       await newFormDoc.set({
@@ -394,6 +395,7 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
         'createdAt': postDate,
         'imageURL': imageURL,
         'approval': 'Yes',
+        'clickedBy': [], 
       });
     }
 
