@@ -14,6 +14,9 @@ class Course {
   final String? docId;
   final String imageURL;
   final String? approval;
+  final String? city;
+  final String? country;
+  final String? state;
 
   Course({
     this.createdAt,
@@ -29,6 +32,9 @@ class Course {
     this.docId,
     required this.imageURL,
     this.approval,
+    this.city,
+    this.country,
+    this.state,
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
@@ -50,6 +56,9 @@ class Course {
       docId: json['docId'],
       imageURL: json['imageURL'],
       approval: json['approval'],
+      city: json['city'],
+      country: json['country'],
+      state: json['state'],
     );
   }
 
@@ -67,7 +76,10 @@ class Course {
       'userEmail': userId,
       'docId': docId,
       'imageURL': imageURL,
-      'approval':approval,
+      'approval': approval,
+      'city':city,
+      'country':country,
+      'state':state,
     };
   }
 
@@ -78,8 +90,7 @@ class Course {
       'location': location,
       'startDate': startDate?.toIso8601String(),
       'title': title,
-      'my_id':id,
+      'my_id': id,
     };
   }
 }
- 

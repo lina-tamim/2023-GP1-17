@@ -12,6 +12,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:techxcel11/Models/CourseEventImage.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
 import 'package:techxcel11/Models/CourseModel.dart';
+import "package:csc_picker/csc_picker.dart";
 
 class UserCoursesAndEventsPage extends StatefulWidget {
   const UserCoursesAndEventsPage({super.key, required this.searchQuery});
@@ -43,6 +44,9 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
   String selectedAttendanceType = "Onsite";
   bool showSearchBar = false;
   bool _loading = false;
+  String selectedCountry = '';
+  String selectedCity = '';
+  String selectedState = '';
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +58,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
           clearAllFields();
           showInputDialog();
         },
-        backgroundColor:  Color.fromARGB(255, 49, 0, 84),
+        backgroundColor: Color.fromARGB(255, 49, 0, 84),
         child: const Tooltip(
           message: '  Add a course or event now!   ',
           child: Icon(
@@ -290,6 +294,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       toastMessage("Failed to save to Calendar: $e");
     }
   }
+
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -333,6 +338,9 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
     courseStartDate = item.startDate;
     courseEndDate = item.endDate;
     this.item = item;
+    selectedCountry = item.country ?? '';
+    selectedCity = item.city ?? '';
+    selectedState = item.state ?? '';
   }
 
   Future<void> _submitForm() async {
@@ -378,7 +386,10 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
         'location': locationController.text,
         'imageURL': imageURL,
         'approval': 'Pending',
-        'clickedBy': [], 
+        'clickedBy': [],
+        'city': selectedCity,
+        'country': selectedCountry,
+        'state': selectedState,
       });
     } else {
       await newFormDoc.set({
@@ -394,7 +405,10 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
         'createdAt': postDate,
         'imageURL': imageURL,
         'approval': 'Pending',
-        'clickedBy': [], 
+        'clickedBy': [],
+        'city': selectedCity,
+        'country': selectedCountry,
+        'state': selectedState,
       });
     }
     clearAllFields();
@@ -441,9 +455,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
     _selectedImage = null;
   }
 
-
-
- Stream<List<Course>> readCourses({String type = 'Course'}) {
+  Stream<List<Course>> readCourses({String type = 'Course'}) {
     Query<Map<String, dynamic>> query = FirebaseFirestore.instance
         .collection('Program')
         .where('type', isEqualTo: type)
@@ -469,11 +481,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       return courses;
     });
   }
-
-
-
-
-
 
   void showInputDialog() {
     showAlertDialog(
@@ -738,6 +745,63 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                 const SizedBox(height: 14),
                 Visibility(
                   visible: selectedAttendanceType == 'Onsite',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Row(
+                          children: [
+                            Text(
+                              'Select Your Country',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              '*',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              'State and City',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              '*',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        CSCPicker(
+                          onCountryChanged: (value) {
+                            setState(() {
+                              selectedCountry = value.toString();
+                            });
+                          },
+                          onStateChanged: (value) {
+                            setState(() {
+                              selectedState = value.toString();
+                            });
+                          },
+                          onCityChanged: (value) {
+                            setState(() {
+                              selectedCity = value.toString();
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: selectedAttendanceType == 'Onsite',
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: Column(
@@ -829,6 +893,12 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                               toastMessage("Please enter a valid date");
                             } else if (selectedCourseType == '') {
                               toastMessage("Please select a type");
+                            } else if (selectedCountry.isEmpty &&
+                                selectedAttendanceType == 'Onsite') {
+                              toastMessage("Please enter  a Country");
+                            } else if (selectedCity.isEmpty &&
+                                selectedAttendanceType == 'Onsite') {
+                              toastMessage("Please enter  a City");
                             } else if (locationController.text.isEmpty &&
                                 selectedAttendanceType == 'Onsite') {
                               toastMessage("Please enter  a location");
@@ -1197,6 +1267,34 @@ class CoursesWidget extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Expanded(
+                          child: Text(
+                            '${item.country ?? ''}, ${item.city ?? ''}', // Concatenate country and city with comma
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: "Poppins",
+                              color: mainColor.withOpacity(0.6),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 5),
+                Visibility(
+                  visible: item.attendanceType == 'Onsite',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
                         Icon(
                           Icons.location_on_outlined,
                           color: mainColor.withOpacity(0.6),
@@ -1320,26 +1418,25 @@ class CoursesWidget extends StatelessWidget {
                     ),
                     if (item.link != null)
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: TextButton(
-                              onPressed: () async {
-                                if (await canLaunch(item.link!)) {
-                                  await launch(item.link!);
-                                  await addUserEmailToClickedBy(); // Call function to add email to Firestore
-                                } else {
-                                  toastMessage('Unable to show details');
-                                }
-                              },
-                              child: Text(
-                                'More Details ->',
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 63, 63, 63),
-                                  fontWeight: FontWeight.bold,
-                                  decoration: TextDecoration.underline,
-                                ),
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: TextButton(
+                            onPressed: () async {
+                              if (await canLaunch(item.link!)) {
+                                await launch(item.link!);
+                                await addUserEmailToClickedBy(); // Call function to add email to Firestore
+                              } else {
+                                toastMessage('Unable to show details');
+                              }
+                            },
+                            child: Text(
+                              'More Details ->',
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 63, 63, 63),
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
                               ),
-                            )
-                      ),
+                            ),
+                          )),
                   ],
                 ),
               ],
@@ -1347,17 +1444,20 @@ class CoursesWidget extends StatelessWidget {
           ),
         ));
   }
-  
- Future<void> addUserEmailToClickedBy() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-      final email = prefs.getString('loggedInEmail') ?? '';
-  try {
-    await FirebaseFirestore.instance.collection('Program').doc(item.docId).update({
-      'clickedBy': FieldValue.arrayUnion([email])
-    });
-    print('User email added to clickedBy array.');
-  } catch (e) {
-    print('Error adding user email to clickedBy array: $e');
+
+  Future<void> addUserEmailToClickedBy() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('loggedInEmail') ?? '';
+    try {
+      await FirebaseFirestore.instance
+          .collection('Program')
+          .doc(item.docId)
+          .update({
+        'clickedBy': FieldValue.arrayUnion([email])
+      });
+      print('User email added to clickedBy array.');
+    } catch (e) {
+      print('Error adding user email to clickedBy array: $e');
+    }
   }
-}
 }

@@ -12,6 +12,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:techxcel11/Models/CourseEventImage.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
 import 'package:techxcel11/Models/CourseModel.dart';
+import "package:csc_picker/csc_picker.dart";
 
 const Color mainColor = Color.fromRGBO(37, 6, 81, 0.898);
 const Color secondaryColor = Color(0xffffffff);
@@ -42,18 +43,21 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
   String selectedAttendanceType = "Onsite";
   bool showSearchBar = false;
   bool _loading = false;
+  String selectedCountry = '';
+  String selectedCity = '';
+  String selectedState = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-         backgroundColor:  Color.fromARGB(255, 242, 241, 243),
+        backgroundColor: Color.fromARGB(255, 242, 241, 243),
         automaticallyImplyLeading: false,
         iconTheme: IconThemeData(
           color: Color.fromRGBO(37, 6, 81, 0.898),
         ),
-        toolbarHeight: 100,        
+        toolbarHeight: 100,
         title: Builder(
           builder: (context) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,6 +296,9 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
     courseStartDate = item.startDate;
     courseEndDate = item.endDate;
     this.item = item;
+    selectedCountry = item.country ?? '';
+    selectedCity = item.city ?? '';
+    selectedState = item.state ?? '';
   }
 
   deleteEvent(Course item, type) {
@@ -379,7 +386,10 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
         'location': locationController.text,
         'imageURL': imageURL,
         'approval': 'Yes',
-        'clickedBy': [], 
+        'clickedBy': [],
+        'city': selectedCity,
+        'country': selectedCountry,
+        'state': selectedState,
       });
     } else {
       await newFormDoc.set({
@@ -395,7 +405,10 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
         'createdAt': postDate,
         'imageURL': imageURL,
         'approval': 'Yes',
-        'clickedBy': [], 
+        'clickedBy': [],
+        'city': selectedCity,
+        'country': selectedCountry,
+        'state': selectedState,
       });
     }
 
@@ -419,8 +432,7 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
     _selectedImage = null;
   }
 
-
-Stream<List<Course>> readCourses({String type = 'Course'}) {
+  Stream<List<Course>> readCourses({String type = 'Course'}) {
     Query<Map<String, dynamic>> query = FirebaseFirestore.instance
         .collection('Program')
         .where('type', isEqualTo: type)
@@ -447,7 +459,6 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
       return courses;
     });
   }
-
 
   void showInputDialog() {
     showAlertDialog(
@@ -709,6 +720,63 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                   ],
                 ),
                 const SizedBox(height: 14),
+                Visibility(
+                  visible: selectedAttendanceType == 'Onsite',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Row(
+                          children: [
+                            Text(
+                              'Select Your Country',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              '*',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              'State and City',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              '*',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        CSCPicker(
+                          onCountryChanged: (value) {
+                            setState(() {
+                              selectedCountry = value.toString();
+                            });
+                          },
+                          onStateChanged: (value) {
+                            setState(() {
+                              selectedState = value.toString();
+                            });
+                          },
+                          onCityChanged: (value) {
+                            setState(() {
+                              selectedCity = value.toString();
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 14),
                 Visibility(
                   visible: selectedAttendanceType == 'Onsite',
@@ -803,6 +871,12 @@ Stream<List<Course>> readCourses({String type = 'Course'}) {
                               toastMessage("Please enter a valid date");
                             } else if (selectedCourseType == '') {
                               toastMessage("Please select a type");
+                            } else if (selectedCountry.isEmpty &&
+                                selectedAttendanceType == 'Onsite') {
+                              toastMessage("Please enter  a Country");
+                            } else if (selectedCity.isEmpty &&
+                                selectedAttendanceType == 'Onsite') {
+                              toastMessage("Please enter  a City");
                             } else if (locationController.text.isEmpty &&
                                 selectedAttendanceType == 'Onsite') {
                               toastMessage("Please enter  a location");
@@ -989,6 +1063,34 @@ class CoursesWidget extends StatelessWidget {
                         color: const Color.fromARGB(255, 81, 81, 81)),
                     softWrap: true,
                     maxLines: null,
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              Visibility(
+                visible: item.attendanceType == 'Onsite',
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Expanded(
+                        child: Text(
+                          '${item.country ?? ''}, ${item.city ?? ''}', // Concatenate country and city with comma
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontFamily: "Poppins",
+                            color: mainColor.withOpacity(0.6),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
