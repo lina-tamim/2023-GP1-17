@@ -6,7 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techxcel11/Models/QuestionCard.dart';
 import 'package:techxcel11/Models/AnswerCard.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
+import 'package:techxcel11/pages/CommonPages/misc_widgets.dart';
 import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
+import 'package:techxcel11/widgets/misc_widgets.dart';
 
 class AnswerPage extends StatefulWidget {
   final String questionDocId;
@@ -48,6 +50,7 @@ class _AnswerPageState extends State<AnswerPage> {
 
   Stream<List<CardQuestion>> get questionStream =>
       _questionStreamController.stream;
+
   @override
   void initState() {
     super.initState();
@@ -69,128 +72,76 @@ class _AnswerPageState extends State<AnswerPage> {
 
     final questions =
         snapshot.docs.map((doc) => CardQuestion.fromJson(doc.data())).toList();
-    final userIds = questions.map((question) => question.userId).toList();
-    final userDocs = await FirebaseFirestore.instance
-        .collection('RegularUser')
-        .where('email', whereIn: userIds)
-        .get();
+    // final userIds = questions.map((question) => question.userId).toList();
+    // final userDocs = await FirebaseFirestore.instance
+    //     .collection('RegularUser')
+    //     .where('email', whereIn: userIds)
+    //     .get();
 
-    final userMap = Map<String, Map<String, dynamic>>.fromEntries(userDocs.docs
-        .map((doc) => MapEntry(doc.data()['email'] as String,
-            doc.data() as Map<String, dynamic>)));
+    // final userMap = Map<String, Map<String, dynamic>>.fromEntries(userDocs.docs
+    //     .map((doc) => MapEntry(doc.data()['email'] as String,
+    //         doc.data() as Map<String, dynamic>)));
 
-    questions.forEach((question) {
-      final userDoc = userMap[question.userId];
-      final username = userDoc?['username'] as String? ?? '';
-      final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-
-      question.username = username;
-      question.userPhotoUrl = userPhotoUrl;
-      question.userType = userDoc?['userType'] as String? ?? "";
-    });
+    // questions.forEach((question) {
+    //   final userDoc = userMap[question.userId];
+    //   final username = userDoc?['username'] as String? ?? '';
+    //   final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+    //
+    //   question.username = username;
+    //   question.userPhotoUrl = userPhotoUrl;
+    //   question.userType = userDoc?['userType'] as String? ?? "";
+    // });
 
     // Check if any userIds were not found in the 'User' collection
-    final userIdsNotFound =
-        userIds.where((userId) => !userMap.containsKey(userId)).toList();
-    userIdsNotFound.forEach((userId) {
-      questions.forEach((question) {
-        if (question.userId == userId) {
-          question.username = 'DeactivatedUser';
-          question.userPhotoUrl = '';
-        }
-      });
-    });
+    // final userIdsNotFound =
+    //     userIds.where((userId) => !userMap.containsKey(userId)).toList();
+    // userIdsNotFound.forEach((userId) {
+    //   questions.forEach((question) {
+    //     if (question.userId == userId) {
+    //       question.username = 'DeactivatedUser';
+    //       question.userPhotoUrl = '';
+    //     }
+    //   });
+    // });
     return questions;
   }
 
   Widget buildQuestionCard(CardQuestion question) => Card(
-        child: ListTile(
-          leading: CircleAvatar(
-            backgroundImage: question.userPhotoUrl != ''
-                ? NetworkImage(question.userPhotoUrl!)
-                : AssetImage('assets/Backgrounds/defaultUserPic.png')
-                    as ImageProvider<Object>,
-          ),
-          title: Column(
+        child: UserInfoWidget(
+          title: question.title,
+          description: question.description,
+          postedDate: question.postedDate,
+          userId: question.userId,
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 5),
-              Row(
-                children: [
-                  Text(
-                    question.username ?? '', // Display the username
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 24, 8, 53),
-                        fontSize: 16),
-                  ),
-                  if (question.userType == "Freelancer")
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.verified,
-                          color: Colors.deepPurple,
-                          size: 20,
-                        ),
-                        SizedBox(width: 4),
-                      ],
-                    ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        DateFormat('dd/MM/yyyy').format(question.postedDate),
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
-                  ),
-                ],
+              SizedBox(
+                height: 7,
               ),
-              SizedBox(height: 5),
-              Text(
-                question.title,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15.4,
+              Container(
+                width: 400, // Set a fixed width for the skills container
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(
+                      question.topics.length,
+                      (intrestsIndex) {
+                        final intrest =
+                            question.topics[intrestsIndex] as String;
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Chip(
+                            label: Text(
+                              intrest,
+                              style: TextStyle(fontSize: 12.0),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ),
-              SizedBox(height: 5),
-              Text(question.description,
-                  style: TextStyle(
-                    fontSize: 15,
-                  )),
-            ],
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 7,),
-              Container(
-                              width:
-                                  400, // Set a fixed width for the skills container
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: List.generate(
-                                    question.topics.length,
-                                    (intrestsIndex) {
-                                      final intrest =
-                                          question.topics[intrestsIndex] as String;
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: Chip(
-                                          label: Text(
-                                            intrest,
-                                            style: TextStyle(fontSize: 12.0),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -325,6 +276,229 @@ class _AnswerPageState extends State<AnswerPage> {
               ),
             ],
           ),
+          // child: ListTile(
+          //   leading: CircleAvatar(
+          //     backgroundImage: question.userPhotoUrl != ''
+          //         ? NetworkImage(question.userPhotoUrl!)
+          //         : AssetImage('assets/Backgrounds/defaultUserPic.png')
+          //             as ImageProvider<Object>,
+          //   ),
+          //   title: Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       SizedBox(height: 5),
+          //       Row(
+          //         children: [
+          //           Text(
+          //             question.username ?? '', // Display the username
+          //             style: TextStyle(
+          //                 fontWeight: FontWeight.bold,
+          //                 color: Color.fromARGB(255, 24, 8, 53),
+          //                 fontSize: 16),
+          //           ),
+          //           if (question.userType == "Freelancer")
+          //             Row(
+          //               children: [
+          //                 Icon(
+          //                   Icons.verified,
+          //                   color: Colors.deepPurple,
+          //                   size: 20,
+          //                 ),
+          //                 SizedBox(width: 4),
+          //               ],
+          //             ),
+          //           Expanded(
+          //             child: Align(
+          //               alignment: Alignment.centerRight,
+          //               child: Text(
+          //                 DateFormat('dd/MM/yyyy').format(question.postedDate),
+          //                 style: TextStyle(fontSize: 12),
+          //               ),
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //       SizedBox(height: 5),
+          //       Text(
+          //         question.title,
+          //         style: TextStyle(
+          //           fontWeight: FontWeight.bold,
+          //           fontSize: 15.4,
+          //         ),
+          //       ),
+          //       SizedBox(height: 5),
+          //       Text(question.description,
+          //           style: TextStyle(
+          //             fontSize: 15,
+          //           )),
+          //     ],
+          //   ),
+          //   subtitle: Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       SizedBox(
+          //         height: 7,
+          //       ),
+          //       Container(
+          //         width: 400, // Set a fixed width for the skills container
+          //         child: SingleChildScrollView(
+          //           scrollDirection: Axis.horizontal,
+          //           child: Row(
+          //             children: List.generate(
+          //               question.topics.length,
+          //               (intrestsIndex) {
+          //                 final intrest =
+          //                     question.topics[intrestsIndex] as String;
+          //                 return Padding(
+          //                   padding: const EdgeInsets.only(left: 8.0),
+          //                   child: Chip(
+          //                     label: Text(
+          //                       intrest,
+          //                       style: TextStyle(fontSize: 12.0),
+          //                     ),
+          //                   ),
+          //                 );
+          //               },
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //       Row(
+          //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //         children: [
+          //           IconButton(
+          //             icon: Icon(
+          //               Icons.bookmark,
+          //               color: email == 'texelad1@gmail.com'
+          //                   ? Color.fromARGB(
+          //                       24, 63, 63, 63) // Color for texelad1@gmail.com
+          //                   : Color.fromARGB(255, 63, 63, 63), // Default color
+          //             ),
+          //             onPressed: email == 'texelad1@gmail.com'
+          //                 ? null
+          //                 : () {
+          //                     addQuestionToBookmarks(email, question);
+          //                   },
+          //           ),
+          //           IconButton(
+          //             icon: Icon(
+          //               Icons.comment,
+          //               color: email == 'texelad1@gmail.com'
+          //                   ? Color.fromARGB(24, 63, 63, 63)
+          //                   : Color.fromARGB(255, 63, 63, 63), // Default color
+          //             ),
+          //             onPressed: email == 'texelad1@gmail.com'
+          //                 ? null
+          //                 : () {
+          //                     Navigator.push(
+          //                       context,
+          //                       MaterialPageRoute(
+          //                         builder: (context) => AnswerPage(
+          //                             questionDocId: question.questionDocId),
+          //                       ),
+          //                     );
+          //                   },
+          //           ),
+          //           IconButton(
+          //             icon: Icon(Icons.report,
+          //                 color: Color.fromARGB(255, 63, 63, 63)),
+          //             onPressed: () {
+          //               showDialog(
+          //                 context: context,
+          //                 builder: (BuildContext context) {
+          //                   return StatefulBuilder(
+          //                     builder:
+          //                         (BuildContext context, StateSetter setState) {
+          //                       // Set the initial selectedOption to null
+          //                       String? initialOption = null;
+          //                       TextEditingController customReasonController =
+          //                           TextEditingController();
+          //
+          //                       return AlertDialog(
+          //                         title: Text('Report Post'),
+          //                         content: Column(
+          //                           mainAxisSize: MainAxisSize.min,
+          //                           children: <Widget>[
+          //                             DropdownButton<String>(
+          //                               value: selectedOption,
+          //                               hint: Text('Select a reason'),
+          //                               onTap: () {
+          //                                 // Set the initialOption to the selectedOption
+          //                                 initialOption = selectedOption;
+          //                               },
+          //                               onChanged: (String? newValue) {
+          //                                 setState(() {
+          //                                   selectedOption = newValue!;
+          //                                 });
+          //                               },
+          //                               items: dropDownOptions
+          //                                   .map((String option) {
+          //                                 return DropdownMenuItem<String>(
+          //                                   value: option,
+          //                                   child: Text(option),
+          //                                 );
+          //                               }).toList(),
+          //                             ),
+          //                             Visibility(
+          //                               visible: selectedOption == 'Others',
+          //                               child: TextFormField(
+          //                                 controller: customReasonController,
+          //                                 decoration: InputDecoration(
+          //                                     labelText: 'Enter your reason'),
+          //                               ),
+          //                             ),
+          //                           ],
+          //                         ),
+          //                         actions: [
+          //                           TextButton(
+          //                             child: Text('Cancel'),
+          //                             onPressed: () {
+          //                               // Reset the selectedOption to the initialOption when canceling
+          //                               setState(() {
+          //                                 selectedOption = initialOption;
+          //                               });
+          //                               Navigator.of(context).pop();
+          //                             },
+          //                           ),
+          //                           TextButton(
+          //                             child: Text('Report'),
+          //                             onPressed: () {
+          //                               if (selectedOption != null) {
+          //                                 String reason;
+          //                                 if (selectedOption == 'Others') {
+          //                                   reason =
+          //                                       customReasonController.text;
+          //                                 } else {
+          //                                   reason = selectedOption!;
+          //                                 }
+          //                                 if (reason.isNotEmpty) {
+          //                                   // Check if a reason is provided
+          //                                   handleReportQuestion(
+          //                                       email, question, reason);
+          //                                   toastMessage(
+          //                                       'Your report has been sent successfully');
+          //                                   Navigator.of(context).pop();
+          //                                 } else {
+          //                                   // Show an error message or handle the case where no reason is provided
+          //                                   print(
+          //                                       'Please provide a reason for reporting.');
+          //                                 }
+          //                               }
+          //                             },
+          //                           ),
+          //                         ],
+          //                       );
+          //                     },
+          //                   );
+          //                 },
+          //               );
+          //             },
+          //           ),
+          //         ],
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ),
       );
 
@@ -370,70 +544,12 @@ class _AnswerPageState extends State<AnswerPage> {
     String doc = answer.docId;
     print("7777777777777 $doc");
     return Card(
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: answer.userPhotoUrl != ''
-              ? NetworkImage(answer.userPhotoUrl!)
-              : AssetImage('assets/Backgrounds/defaultUserPic.png')
-                  as ImageProvider<Object>,
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 5),
-            GestureDetector(
-              onTap: () {
-                if (answer.userId != null &&
-                    answer.userId.isNotEmpty &&
-                    answer.userId != "DeactivatedUser") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          UserProfileView(userId: answer.userId),
-                    ),
-                  );
-                }
-              },
-              child: Row(
-                children: [
-                  Text(
-                    answer.username ?? '', // Display the username
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 52, 0, 80),
-                        fontSize: 16),
-                  ),
-                  if (answer.userType == "Freelancer")
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.verified,
-                          color: Colors.deepPurple,
-                          size: 20,
-                        ),
-                        SizedBox(width: 4),
-                      ],
-                    ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        DateFormat('dd/MM/yyyy').format(answer.postedDate),
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 5),
-            ListTile(
-              title: Text(answer.answerText, style: TextStyle(fontSize: 14)),
-            ),
-          ],
-        ),
-        subtitle: Column(
+      child: UserInfoWidget(
+        // title: answer.answerText,
+        description: answer.answerText,
+        postedDate: answer.postedDate,
+        userId: answer.userId,
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -658,7 +774,8 @@ class _AnswerPageState extends State<AnswerPage> {
                             ),
                           SizedBox(
                             width: 2,
-                          ), // Adjust the width to move the icons further to the right
+                          ),
+                          // Adjust the width to move the icons further to the right
                           Text('Upvotes: $upvoteCount'),
                         ],
                       );
@@ -669,6 +786,307 @@ class _AnswerPageState extends State<AnswerPage> {
             ),
           ],
         ),
+        // child: ListTile(
+        //   leading: CircleAvatar(
+        //     backgroundImage: answer.userPhotoUrl != ''
+        //         ? NetworkImage(answer.userPhotoUrl!)
+        //         : AssetImage('assets/Backgrounds/defaultUserPic.png')
+        //             as ImageProvider<Object>,
+        //   ),
+        //   title: Column(
+        //     crossAxisAlignment: CrossAxisAlignment.start,
+        //     children: [
+        //       SizedBox(height: 5),
+        //       GestureDetector(
+        //         onTap: () {
+        //           if (answer.userId != null &&
+        //               answer.userId.isNotEmpty &&
+        //               answer.userId != "DeactivatedUser") {
+        //             Navigator.push(
+        //               context,
+        //               MaterialPageRoute(
+        //                 builder: (context) =>
+        //                     UserProfileView(userId: answer.userId),
+        //               ),
+        //             );
+        //           }
+        //         },
+        //         child: Row(
+        //           children: [
+        //             Text(
+        //               answer.username ?? '', // Display the username
+        //               style: TextStyle(
+        //                   fontWeight: FontWeight.bold,
+        //                   color: Color.fromARGB(255, 52, 0, 80),
+        //                   fontSize: 16),
+        //             ),
+        //             if (answer.userType == "Freelancer")
+        //               Row(
+        //                 children: [
+        //                   Icon(
+        //                     Icons.verified,
+        //                     color: Colors.deepPurple,
+        //                     size: 20,
+        //                   ),
+        //                   SizedBox(width: 4),
+        //                 ],
+        //               ),
+        //             Expanded(
+        //               child: Align(
+        //                 alignment: Alignment.centerRight,
+        //                 child: Text(
+        //                   DateFormat('dd/MM/yyyy').format(answer.postedDate),
+        //                   style: TextStyle(fontSize: 12),
+        //                 ),
+        //               ),
+        //             ),
+        //           ],
+        //         ),
+        //       ),
+        //       SizedBox(height: 5),
+        //       ListTile(
+        //         title: Text(answer.answerText, style: TextStyle(fontSize: 14)),
+        //       ),
+        //     ],
+        //   ),
+        //   subtitle: Column(
+        //     crossAxisAlignment: CrossAxisAlignment.start,
+        //     children: [
+        //       Row(
+        //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //         children: [
+        //           FutureBuilder<String>(
+        //             future: getCurrentUserEmail(),
+        //             builder: (context, snapshot) {
+        //               if (snapshot.connectionState == ConnectionState.waiting) {
+        //                 return CircularProgressIndicator();
+        //               } else if (snapshot.hasError) {
+        //                 return Text('Error: ${snapshot.error}');
+        //               } else {
+        //                 currentEmail = snapshot.data!;
+        //                 print("11111111111 $currentEmail");
+        //                 print('@@@@@@@@@@@@@@@@@@@@))-----))  ');
+        //
+        //                 if (answer.docId == null) {
+        //                   return Text('No document ID');
+        //                 }
+        //                 return Row(
+        //                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //                   children: [
+        //                     SizedBox(
+        //                       width: 80,
+        //                     ),
+        //                     IconButton(
+        //                       icon: Icon(Icons.report,
+        //                           color: Color.fromARGB(255, 63, 63, 63)),
+        //                       onPressed: () {
+        //                         showDialog(
+        //                           context: context,
+        //                           builder: (BuildContext context) {
+        //                             return StatefulBuilder(
+        //                               builder: (BuildContext context,
+        //                                   StateSetter setState) {
+        //                                 // Set the initial selectedOption to null
+        //                                 String? initialOption = null;
+        //                                 TextEditingController
+        //                                     customReasonController =
+        //                                     TextEditingController();
+        //
+        //                                 return AlertDialog(
+        //                                   title: Text('Report Post'),
+        //                                   content: Column(
+        //                                     mainAxisSize: MainAxisSize.min,
+        //                                     children: <Widget>[
+        //                                       DropdownButton<String>(
+        //                                         value: selectedOption,
+        //                                         hint: Text('Select a reason'),
+        //                                         onTap: () {
+        //                                           // Set the initialOption to the selectedOption
+        //                                           initialOption = selectedOption;
+        //                                         },
+        //                                         onChanged: (String? newValue) {
+        //                                           setState(() {
+        //                                             selectedOption = newValue!;
+        //                                           });
+        //                                         },
+        //                                         items: dropDownOptions
+        //                                             .map((String option) {
+        //                                           return DropdownMenuItem<String>(
+        //                                             value: option,
+        //                                             child: Text(option),
+        //                                           );
+        //                                         }).toList(),
+        //                                       ),
+        //                                       Visibility(
+        //                                         visible:
+        //                                             selectedOption == 'Others',
+        //                                         child: TextFormField(
+        //                                           controller:
+        //                                               customReasonController,
+        //                                           decoration: InputDecoration(
+        //                                               labelText:
+        //                                                   'Enter your reason'),
+        //                                         ),
+        //                                       ),
+        //                                     ],
+        //                                   ),
+        //                                   actions: [
+        //                                     TextButton(
+        //                                       child: Text('Cancel'),
+        //                                       onPressed: () {
+        //                                         // Reset the selectedOption to the initialOption when canceling
+        //                                         setState(() {
+        //                                           selectedOption = initialOption;
+        //                                         });
+        //                                         Navigator.of(context).pop();
+        //                                       },
+        //                                     ),
+        //                                     TextButton(
+        //                                       child: Text('Report'),
+        //                                       onPressed: () {
+        //                                         if (selectedOption != null) {
+        //                                           String reason;
+        //                                           if (selectedOption ==
+        //                                               'Others') {
+        //                                             reason =
+        //                                                 customReasonController
+        //                                                     .text;
+        //                                           } else {
+        //                                             reason = selectedOption!;
+        //                                           }
+        //                                           if (reason.isNotEmpty) {
+        //                                             // Check if a reason is provided
+        //                                             handleReportAnswer(
+        //                                                 email, answer, reason);
+        //                                             toastMessage(
+        //                                                 'Your report has been sent successfully');
+        //                                             Navigator.of(context).pop();
+        //                                           } else {
+        //                                             // Show an error message or handle the case where no reason is provided
+        //                                             print(
+        //                                                 'Please provide a reason for reporting.');
+        //                                           }
+        //                                         }
+        //                                       },
+        //                                     ),
+        //                                   ],
+        //                                 );
+        //                               },
+        //                             );
+        //                           },
+        //                         );
+        //                       },
+        //                     ),
+        //                     if (email != 'texelad1@gmail.com')
+        //                       IconButton(
+        //                         icon: Icon(
+        //                           upvotedUserIds.contains(currentEmail)
+        //                               ? Icons.arrow_circle_down
+        //                               : Icons.arrow_circle_up,
+        //                           size: 28, // Adjust the size as needed
+        //                           color: upvotedUserIds.contains(currentEmail)
+        //                               ? const Color.fromARGB(255, 49, 3,
+        //                                   0) // Color for arrow_circle_down
+        //                               : const Color.fromARGB(255, 26, 33,
+        //                                   38), // Color for arrow_circle_up
+        //                         ),
+        //                         onPressed: () {
+        //                           setState(() {
+        //                             if (upvotedUserIds.contains(currentEmail)) {
+        //                               upvotedUserIds.remove(currentEmail);
+        //                               upvoteCount--;
+        //
+        //                               // Decrease userScore in RegularUser collection
+        //                               FirebaseFirestore.instance
+        //                                   .collection('RegularUser')
+        //                                   .where('email',
+        //                                       isEqualTo: answer.userId)
+        //                                   .get()
+        //                                   .then(
+        //                                       (QuerySnapshot<Map<String, dynamic>>
+        //                                           snapshot) {
+        //                                 if (snapshot.docs.isNotEmpty) {
+        //                                   final documentId = snapshot.docs[0].id;
+        //
+        //                                   FirebaseFirestore.instance
+        //                                       .collection('RegularUser')
+        //                                       .doc(documentId)
+        //                                       .update({
+        //                                     'userScore': FieldValue.increment(-1),
+        //                                   }).catchError((error) {
+        //                                     // Handle error if the update fails
+        //                                   });
+        //                                 }
+        //                               }).catchError((error) {});
+        //                               FirebaseFirestore.instance
+        //                                   .collection('Question')
+        //                                   .doc(answer.questionDocId)
+        //                                   .update({
+        //                                 'totalUpvotes': FieldValue.increment(-1),
+        //                               }).catchError((error) {
+        //                                 // Handle error if the update fails
+        //                               });
+        //                             } else {
+        //                               upvotedUserIds.add(currentEmail);
+        //                               upvoteCount++;
+        //                               FirebaseFirestore.instance
+        //                                   .collection('RegularUser')
+        //                                   .where('email',
+        //                                       isEqualTo: answer.userId)
+        //                                   .get()
+        //                                   .then(
+        //                                       (QuerySnapshot<Map<String, dynamic>>
+        //                                           snapshot) {
+        //                                 if (snapshot.docs.isNotEmpty) {
+        //                                   final documentId = snapshot.docs[0].id;
+        //
+        //                                   FirebaseFirestore.instance
+        //                                       .collection('RegularUser')
+        //                                       .doc(documentId)
+        //                                       .update({
+        //                                     'userScore': FieldValue.increment(1),
+        //                                   }).catchError((error) {});
+        //                                 }
+        //                               }).catchError((error) {});
+        //                               FirebaseFirestore.instance
+        //                                   .collection('Question')
+        //                                   .doc(answer.questionDocId)
+        //                                   .update({
+        //                                 'totalUpvotes': FieldValue.increment(1),
+        //                               }).catchError((error) {
+        //                                 // Handle error if the update fails
+        //                               });
+        //                             }
+        //
+        //                             answer.upvoteCount = upvoteCount;
+        //                             answer.upvotedUserIds = upvotedUserIds;
+        //                             FirebaseFirestore.instance
+        //                                 .collection('Answer')
+        //                                 .doc(answer.docId)
+        //                                 .update({
+        //                               'upvoteCount': upvoteCount,
+        //                               'upvotedUserIds': upvotedUserIds,
+        //                             }).catchError((error) {
+        //                               // Handle error if the update fails
+        //                             });
+        //                           });
+        //                         },
+        //                       ),
+        //                     SizedBox(
+        //                       width: 2,
+        //                     ),
+        //                     // Adjust the width to move the icons further to the right
+        //                     Text('Upvotes: $upvoteCount'),
+        //                   ],
+        //                 );
+        //               }
+        //             },
+        //           ),
+        //         ],
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ),
     );
   }
@@ -731,34 +1149,34 @@ class _AnswerPageState extends State<AnswerPage> {
             .map((doc) => doc['reportedItemId'] as String)
             .toSet();
 
-        final userIds = answers.map((answer) => answer.userId).toList();
-        final userDocs = await FirebaseFirestore.instance
-            .collection('RegularUser')
-            .where('email', whereIn: userIds)
-            .get();
+        // final userIds = answers.map((answer) => answer.userId).toList();
+        // final userDocs = await FirebaseFirestore.instance
+        //     .collection('RegularUser')
+        //     .where('email', whereIn: userIds)
+        //     .get();
 
-        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-            userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-                doc.data() as Map<String, dynamic>)));
+        // final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+        //     userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+        //         doc.data() as Map<String, dynamic>)));
 
-        answers.forEach((answer) {
-          final userDoc = userMap[answer.userId];
-          final username = userDoc?['username'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-          answer.username = username;
-          answer.userPhotoUrl = userPhotoUrl;
-          answer.userType = userDoc?['userType'] as String? ?? "";
-          final userIdsNotFound =
-              userIds.where((userId) => !userMap.containsKey(userId)).toList();
-          userIdsNotFound.forEach((userId) {
-            answers.forEach((answer) {
-              if (answer.userId == userId) {
-                answer.username = 'DeactivatedUser';
-                answer.userPhotoUrl = '';
-              }
-            });
-          });
-        });
+        // answers.forEach((answer) {
+        //   final userDoc = userMap[answer.userId];
+        //   final username = userDoc?['username'] as String? ?? '';
+        //   final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        //   answer.username = username;
+        //   answer.userPhotoUrl = userPhotoUrl;
+        //   answer.userType = userDoc?['userType'] as String? ?? "";
+        //   final userIdsNotFound =
+        //       userIds.where((userId) => !userMap.containsKey(userId)).toList();
+        //   userIdsNotFound.forEach((userId) {
+        //     answers.forEach((answer) {
+        //       if (answer.userId == userId) {
+        //         answer.username = 'DeactivatedUser';
+        //         answer.userPhotoUrl = '';
+        //       }
+        //     });
+        //   });
+        // });
         List<CardAnswer> filteredQuestions = answers
             .where((answer) => !acceptedQuestionIds.contains(answer.docId))
             .toList();

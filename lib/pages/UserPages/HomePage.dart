@@ -9,6 +9,7 @@ import 'package:techxcel11/Models/ReusedElements.dart';
 import 'package:techxcel11/Models/FormCard.dart';
 import 'package:techxcel11/Models/PostCard.dart';
 import 'package:techxcel11/Models/QuestionCard.dart';
+import 'package:techxcel11/pages/CommonPages/misc_widgets.dart';
 import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
 import 'package:techxcel11/pages/UserPages/TestIntegration.dart';
 import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
@@ -17,6 +18,7 @@ import 'package:techxcel11/providers/profile_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../../widgets/misc_widgets.dart';
 
 class FHomePage extends StatefulWidget {
   const FHomePage({Key? key}) : super(key: key);
@@ -240,7 +242,9 @@ class __FHomePageState extends State<FHomePage> {
       }).toList();
       if (questions.isEmpty) return [];
 
-      final userIds = questions.map((question) => question.userId).toList();
+      // final userIds = questions.map((question) => question.userId).toList();
+
+      // log('MK: list length: ${questions.length} and ${userIds.length}');
 
       // Query the Report collection to get accepted questionIds
       QuerySnapshot<Map<String, dynamic>> reportSnapshot =
@@ -255,35 +259,35 @@ class __FHomePageState extends State<FHomePage> {
           .toSet();
       print("@@@@@@@@@$acceptedQuestionIds");
 
-      final userDocs = await FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', whereIn: userIds)
-          .get();
+      // final userDocs = await FirebaseFirestore.instance
+      //     .collection('RegularUser')
+      //     .where('email', whereIn: userIds)
+      //     .get();
 
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-              doc.data() as Map<String, dynamic>)));
+      // final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+      //     userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+      //         doc.data() as Map<String, dynamic>)));
 
-      questions.forEach((question) {
-        final userDoc = userMap[question.userId];
-        final username = userDoc?['username'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-        question.username = username;
-        question.userPhotoUrl = userPhotoUrl;
-        question.userType = userDoc?['userType'] as String? ?? "";
-        // question.userId = userDoc ?['userId'] as String;
-      });
+      // questions.forEach((question) {
+      //   final userDoc = userMap[question.userId];
+      //   final username = userDoc?['username'] as String? ?? '';
+      //   final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+      //   question.username = username;
+      //   question.userPhotoUrl = userPhotoUrl;
+      //   question.userType = userDoc?['userType'] as String? ?? "";
+      //   // question.userId = userDoc ?['userId'] as String;
+      // });
 
-      final userIdsNotFound =
-          userIds.where((userId) => !userMap.containsKey(userId)).toList();
-      userIdsNotFound.forEach((userId) {
-        questions.forEach((question) {
-          if (question.userId == userId) {
-            question.username = 'DeactivatedUser';
-            question.userPhotoUrl = '';
-          }
-        });
-      });
+      // final userIdsNotFound =
+      //     userIds.where((userId) => !userMap.containsKey(userId)).toList();
+      // userIdsNotFound.forEach((userId) {
+      //   questions.forEach((question) {
+      //     if (question.userId == userId) {
+      //       question.username = 'DeactivatedUser';
+      //       question.userPhotoUrl = '';
+      //     }
+      //   });
+      // });
 
       // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
       List<CardQuestion> filteredQuestions = questions
@@ -304,8 +308,6 @@ class __FHomePageState extends State<FHomePage> {
   Stream<List<CardQuestion>> readQuestionRecommended() {
     Query<Map<String, dynamic>> query =
         FirebaseFirestore.instance.collection('Question');
-    
-    
 
     return query.snapshots().asyncMap((snapshot) async {
       final questions = snapshot.docs.map((doc) {
@@ -316,7 +318,7 @@ class __FHomePageState extends State<FHomePage> {
       }).toList();
       if (questions.isEmpty) return [];
 
-      final userIds = questions.map((question) => question.userId).toList();
+      // final userIds = questions.map((question) => question.userId).toList();
 
       // Query the Report collection to get accepted questionIds
       QuerySnapshot<Map<String, dynamic>> reportSnapshot =
@@ -331,35 +333,35 @@ class __FHomePageState extends State<FHomePage> {
           .toSet();
       print("@@@@@@@@@$acceptedQuestionIds");
 
-      final userDocs = await FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', whereIn: userIds)
-          .get();
-
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-              doc.data() as Map<String, dynamic>)));
-
-      questions.forEach((question) {
-        final userDoc = userMap[question.userId];
-        final username = userDoc?['username'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-        question.username = username;
-        question.userPhotoUrl = userPhotoUrl;
-        question.userType = userDoc?['userType'] as String? ?? "";
-        // question.userId = userDoc ?['userId'] as String;
-      });
-
-      final userIdsNotFound =
-          userIds.where((userId) => !userMap.containsKey(userId)).toList();
-      userIdsNotFound.forEach((userId) {
-        questions.forEach((question) {
-          if (question.userId == userId) {
-            question.username = 'DeactivatedUser';
-            question.userPhotoUrl = '';
-          }
-        });
-      });
+      // final userDocs = await FirebaseFirestore.instance
+      //     .collection('RegularUser')
+      //     .where('email', whereIn: userIds)
+      //     .get();
+      //
+      // final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+      //     userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+      //         doc.data() as Map<String, dynamic>)));
+      //
+      // questions.forEach((question) {
+      //   final userDoc = userMap[question.userId];
+      //   final username = userDoc?['username'] as String? ?? '';
+      //   final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+      //   question.username = username;
+      //   question.userPhotoUrl = userPhotoUrl;
+      //   question.userType = userDoc?['userType'] as String? ?? "";
+      //   // question.userId = userDoc ?['userId'] as String;
+      // });
+      //
+      // final userIdsNotFound =
+      //     userIds.where((userId) => !userMap.containsKey(userId)).toList();
+      // userIdsNotFound.forEach((userId) {
+      //   questions.forEach((question) {
+      //     if (question.userId == userId) {
+      //       question.username = 'DeactivatedUser';
+      //       question.userPhotoUrl = '';
+      //     }
+      //   });
+      // });
 
       // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
       List<CardQuestion> filteredQuestions = questions
@@ -374,7 +376,7 @@ class __FHomePageState extends State<FHomePage> {
       print("RECOMMENDEDDEED HEEEEEEEEEEEEEEEREEEEEEEEEEE");
       //print(filteredQuestions);
       print(recommendedQuestionIds);
-      
+
       return filteredQuestions;
     });
   }
@@ -404,7 +406,7 @@ class __FHomePageState extends State<FHomePage> {
       }).toList();
 
       if (questions.isEmpty) return [];
-      final userIds = questions.map((question) => question.userId).toList();
+      // final userIds = questions.map((question) => question.userId).toList();
 
       // Query the Report collection to get accepted questionIds
       QuerySnapshot<Map<String, dynamic>> reportSnapshot =
@@ -418,34 +420,34 @@ class __FHomePageState extends State<FHomePage> {
           .map((doc) => doc['reportedItemId'] as String)
           .toSet();
 
-      final userDocs = await FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', whereIn: userIds)
-          .get();
+      // final userDocs = await FirebaseFirestore.instance
+      //     .collection('RegularUser')
+      //     .where('email', whereIn: userIds)
+      //     .get();
 
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-              doc.data() as Map<String, dynamic>)));
-
-      questions.forEach((question) {
-        final userDoc = userMap[question.userId];
-        final username = userDoc?['username'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-        question.username = username;
-        question.userPhotoUrl = userPhotoUrl;
-        question.userType = userDoc?['userType'] as String? ?? '';
-      });
-
-      final userIdsNotFound =
-          userIds.where((userId) => !userMap.containsKey(userId)).toList();
-      userIdsNotFound.forEach((userId) {
-        questions.forEach((question) {
-          if (question.userId == userId) {
-            question.username = 'DeactivatedUser';
-            question.userPhotoUrl = '';
-          }
-        });
-      });
+      // final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+      //     userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+      //         doc.data() as Map<String, dynamic>)));
+      //
+      // questions.forEach((question) {
+      //   final userDoc = userMap[question.userId];
+      //   final username = userDoc?['username'] as String? ?? '';
+      //   final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+      //   question.username = username;
+      //   question.userPhotoUrl = userPhotoUrl;
+      //   question.userType = userDoc?['userType'] as String? ?? '';
+      // });
+      //
+      // final userIdsNotFound =
+      //     userIds.where((userId) => !userMap.containsKey(userId)).toList();
+      // userIdsNotFound.forEach((userId) {
+      //   questions.forEach((question) {
+      //     if (question.userId == userId) {
+      //       question.username = 'DeactivatedUser';
+      //       question.userPhotoUrl = '';
+      //     }
+      //   });
+      // });
 
       // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
       List<CardFT> filteredQuestions = questions
@@ -479,7 +481,7 @@ class __FHomePageState extends State<FHomePage> {
         return question;
       }).toList();
       if (questions.isEmpty) return [];
-      final userIds = questions.map((question) => question.userId).toList();
+      // final userIds = questions.map((question) => question.userId).toList();
 
       // Query the Report collection to get accepted questionIds
       QuerySnapshot<Map<String, dynamic>> reportSnapshot =
@@ -488,37 +490,37 @@ class __FHomePageState extends State<FHomePage> {
               .where('reportType', isEqualTo: 'Project')
               .where('status', isEqualTo: 'Accepted')
               .get();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', whereIn: userIds)
-          .get();
+      // final userDocs = await FirebaseFirestore.instance
+      //     .collection('RegularUser')
+      //     .where('email', whereIn: userIds)
+      //     .get();
       Set<String> acceptedQuestionIds = reportSnapshot.docs
           .map((doc) => doc['reportedItemId'] as String)
           .toSet();
 
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-          userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-              doc.data() as Map<String, dynamic>)));
+      // final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+      //     userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
+      //         doc.data() as Map<String, dynamic>)));
 
-      questions.forEach((question) {
-        final userDoc = userMap[question.userId];
-        final username = userDoc?['username'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-        question.username = username;
-        question.userPhotoUrl = userPhotoUrl;
-        question.userType = userDoc?['userType'] as String? ?? '';
-      });
+      // questions.forEach((question) {
+      //   final userDoc = userMap[question.userId];
+      //   final username = userDoc?['username'] as String? ?? '';
+      //   final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+      //   question.username = username;
+      //   question.userPhotoUrl = userPhotoUrl;
+      //   question.userType = userDoc?['userType'] as String? ?? '';
+      // });
 
-      final userIdsNotFound =
-          userIds.where((userId) => !userMap.containsKey(userId)).toList();
-      userIdsNotFound.forEach((userId) {
-        questions.forEach((question) {
-          if (question.userId == userId) {
-            question.username = 'DeactivatedUser';
-            question.userPhotoUrl = '';
-          }
-        });
-      });
+      // final userIdsNotFound =
+      //     userIds.where((userId) => !userMap.containsKey(userId)).toList();
+      // userIdsNotFound.forEach((userId) {
+      //   questions.forEach((question) {
+      //     if (question.userId == userId) {
+      //       question.username = 'DeactivatedUser';
+      //       question.userPhotoUrl = '';
+      //     }
+      //   });
+      // });
       // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
       List<CardFT> filteredQuestions = questions
           .where((question) => !acceptedQuestionIds.contains(question.docId))
@@ -529,109 +531,42 @@ class __FHomePageState extends State<FHomePage> {
   }
 
   Widget buildQuestionCard(CardQuestion question) => Card(
-        elevation: 0.4, // Set elevation to 0 to remove the shadow
-         child: ListTile(
-          leading: CircleAvatar(
-            radius: 30, // Adjust the radius to make the avatar bigger
-            backgroundImage: question.userPhotoUrl != ''
-                ? NetworkImage(question.userPhotoUrl!)
-                : const AssetImage('assets/Backgrounds/defaultUserPic.png')
-                    as ImageProvider<Object>, // Cast to ImageProvider<Object>
-          ),
-          title: Column(
+        elevation: 0.4,
+        child: UserInfoWidget(
+          userId: question.userId,
+          postedDate: question.postedDate,
+          title: question.title,
+          description: question.description,
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GestureDetector(
-                onTap: () {
-                  if (question.userId != null &&
-                      question.userId.isNotEmpty &&
-                      question.userId != "DeactivatedUser") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            UserProfileView(userId: question.userId),
-                      ),
-                    );
-                  }
-                },
-                child: Row(
-                  children: [
-                    Text(
-                      question.username ?? '', // Display the username
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 24, 8, 53),
-                          fontSize: 16),
-                    ),
-                    if (question.userType == "Freelancer")
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.verified,
-                            color: Colors.deepPurple,
-                            size: 20,
-                          ),
-                          SizedBox(width: 4),
-                        ],
-                      ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          DateFormat('dd/MM/yyyy').format(question.postedDate),
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              SizedBox(
+                height: 7,
               ),
-              SizedBox(height: 5),
-              Text(
-                question.title,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15.4,
-                ),
-              ),
-              SizedBox(height: 5),
-              Text(question.description,
-                  style: TextStyle(
-                    fontSize: 15,
-                  )),
-            ],
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 7,),
               Container(
-                              width:
-                                  400, // Set a fixed width for the skills container
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: List.generate(
-                                    question.topics.length,
-                                    (intrestsIndex) {
-                                      final intrest =
-                                          question.topics[intrestsIndex] as String;
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: Chip(
-                                          label: Text(
-                                            intrest,
-                                            style: TextStyle(fontSize: 12.0),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
+                width: 400, // Set a fixed width for the skills container
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(
+                      question.topics.length,
+                      (intrestsIndex) {
+                        final intrest =
+                            question.topics[intrestsIndex] as String;
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Chip(
+                            label: Text(
+                              intrest,
+                              style: TextStyle(fontSize: 12.0),
                             ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -752,119 +687,288 @@ class __FHomePageState extends State<FHomePage> {
                       );
                     },
                   ),
-                  SizedBox(height: 60,)
+                  SizedBox(
+                    height: 60,
+                  )
                 ],
               ),
             ],
           ),
+          // child: Card(
+          //       elevation: 0.4, // Set elevation to 0 to remove the shadow
+          //       child: ListTile(
+          //         leading: CircleAvatar(
+          //           radius: 30, // Adjust the radius to make the avatar bigger
+          //           backgroundImage: question.userPhotoUrl != '' &&
+          //                   question.userPhotoUrl != null
+          //               ? NetworkImage(question.userPhotoUrl!)
+          //               : const AssetImage('assets/Backgrounds/defaultUserPic.png')
+          //                   as ImageProvider<Object>, // Cast to ImageProvider<Object>
+          //         ),
+          //         title: Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           children: [
+          //             GestureDetector(
+          //               onTap: () {
+          //                 if (question.userId != null &&
+          //                     question.userId.isNotEmpty &&
+          //                     question.userId != "DeactivatedUser") {
+          //                   Navigator.push(
+          //                     context,
+          //                     MaterialPageRoute(
+          //                       builder: (context) =>
+          //                           UserProfileView(userId: question.userId),
+          //                     ),
+          //                   );
+          //                 }
+          //               },
+          //               child: Row(
+          //                 children: [
+          //                   Text(
+          //                     question.username ?? '', // Display the username
+          //                     style: TextStyle(
+          //                         fontWeight: FontWeight.bold,
+          //                         color: Color.fromARGB(255, 24, 8, 53),
+          //                         fontSize: 16),
+          //                   ),
+          //                   if (question.userType == "Freelancer")
+          //                     Row(
+          //                       children: [
+          //                         Icon(
+          //                           Icons.verified,
+          //                           color: Colors.deepPurple,
+          //                           size: 20,
+          //                         ),
+          //                         SizedBox(width: 4),
+          //                       ],
+          //                     ),
+          //                   Expanded(
+          //                     child: Align(
+          //                       alignment: Alignment.centerRight,
+          //                       child: Text(
+          //                         DateFormat('dd/MM/yyyy').format(question.postedDate),
+          //                         style: TextStyle(fontSize: 12),
+          //                       ),
+          //                     ),
+          //                   ),
+          //                 ],
+          //               ),
+          //             ),
+          //             SizedBox(height: 5),
+          //             Text(
+          //               question.title,
+          //               style: TextStyle(
+          //                 fontWeight: FontWeight.bold,
+          //                 fontSize: 15.4,
+          //               ),
+          //             ),
+          //             SizedBox(height: 5),
+          //             Text(question.description,
+          //                 style: TextStyle(
+          //                   fontSize: 15,
+          //                 )),
+          //           ],
+          //         ),
+          //         subtitle: Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           children: [
+          //             SizedBox(
+          //               height: 7,
+          //             ),
+          //             Container(
+          //               width: 400, // Set a fixed width for the skills container
+          //               child: SingleChildScrollView(
+          //                 scrollDirection: Axis.horizontal,
+          //                 child: Row(
+          //                   children: List.generate(
+          //                     question.topics.length,
+          //                     (intrestsIndex) {
+          //                       final intrest =
+          //                           question.topics[intrestsIndex] as String;
+          //                       return Padding(
+          //                         padding: const EdgeInsets.only(left: 8.0),
+          //                         child: Chip(
+          //                           label: Text(
+          //                             intrest,
+          //                             style: TextStyle(fontSize: 12.0),
+          //                           ),
+          //                         ),
+          //                       );
+          //                     },
+          //                   ),
+          //                 ),
+          //               ),
+          //             ),
+          //             Row(
+          //               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //               children: [
+          //                 IconButton(
+          //                   icon: Icon(Icons.bookmark,
+          //                       color: Color.fromARGB(255, 63, 63, 63)),
+          //                   onPressed: () {
+          //                     addQuestionToBookmarks(loggedInEmail, question);
+          //                   },
+          //                 ),
+          //                 Row(
+          //                   children: [
+          //                     IconButton(
+          //                       icon: Icon(Icons.comment,
+          //                           color: Color.fromARGB(255, 63, 63, 63)),
+          //                       onPressed: () {
+          //                         Navigator.push(
+          //                           context,
+          //                           MaterialPageRoute(
+          //                               builder: (context) => AnswerPage(
+          //                                   questionDocId: question.questionDocId)),
+          //                         );
+          //                       },
+          //                     ),
+          //                     Text(question.noOfAnswers.toString()),
+          //                   ],
+          //                 ),
+          //                 IconButton(
+          //                   icon: Icon(Icons.report,
+          //                       color: Color.fromARGB(255, 63, 63, 63)),
+          //                   onPressed: () {
+          //                     showDialog(
+          //                       context: context,
+          //                       builder: (BuildContext context) {
+          //                         return StatefulBuilder(
+          //                           builder:
+          //                               (BuildContext context, StateSetter setState) {
+          //                             String? initialOption = null;
+          //                             TextEditingController customReasonController =
+          //                                 TextEditingController();
+          //
+          //                             return AlertDialog(
+          //                               title: Text('Report Post'),
+          //                               content: Column(
+          //                                 mainAxisSize: MainAxisSize.min,
+          //                                 children: <Widget>[
+          //                                   DropdownButton<String>(
+          //                                     value: selectedOption,
+          //                                     hint: Text('Select a reason'),
+          //                                     onTap: () {
+          //                                       // Set the initialOption to the selectedOption
+          //                                       initialOption = selectedOption;
+          //                                     },
+          //                                     onChanged: (String? newValue) {
+          //                                       setState(() {
+          //                                         selectedOption = newValue!;
+          //                                       });
+          //                                     },
+          //                                     items:
+          //                                         dropDownOptions.map((String option) {
+          //                                       return DropdownMenuItem<String>(
+          //                                         value: option,
+          //                                         child: Text(option),
+          //                                       );
+          //                                     }).toList(),
+          //                                   ),
+          //                                   Visibility(
+          //                                     visible: selectedOption == 'Others',
+          //                                     child: TextFormField(
+          //                                       controller: customReasonController,
+          //                                       decoration: InputDecoration(
+          //                                           labelText: 'Enter your reason'),
+          //                                     ),
+          //                                   ),
+          //                                 ],
+          //                               ),
+          //                               actions: [
+          //                                 TextButton(
+          //                                   child: Text('Cancel'),
+          //                                   onPressed: () {
+          //                                     // Reset the selectedOption to the initialOption when canceling
+          //                                     setState(() {
+          //                                       selectedOption = initialOption;
+          //                                     });
+          //                                     Navigator.of(context).pop();
+          //                                   },
+          //                                 ),
+          //                                 TextButton(
+          //                                   child: Text('Report'),
+          //                                   onPressed: () {
+          //                                     if (selectedOption != null) {
+          //                                       String reason;
+          //                                       if (selectedOption == 'Others') {
+          //                                         reason = customReasonController.text;
+          //                                       } else {
+          //                                         reason = selectedOption!;
+          //                                       }
+          //                                       if (reason.isNotEmpty) {
+          //                                         // Check if a reason is provided
+          //                                         handleReportQuestion(
+          //                                             loggedInEmail, question, reason);
+          //                                         toastMessage(
+          //                                             'Your report has been sent successfully');
+          //                                         Navigator.of(context).pop();
+          //                                       } else {
+          //                                         // Show an error message or handle the case where no reason is provided
+          //                                         print(
+          //                                             'Please provide a reason for reporting.');
+          //                                       }
+          //                                     }
+          //                                   },
+          //                                 ),
+          //                               ],
+          //                             );
+          //                           },
+          //                         );
+          //                       },
+          //                     );
+          //                   },
+          //                 ),
+          //                 SizedBox(
+          //                   height: 60,
+          //                 )
+          //               ],
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
         ),
       );
 
   Widget buildRecommendedQuestionCard(CardQuestion question) => Card(
-       color: Color.fromARGB(255, 253, 251, 255),
+        color: Color.fromARGB(255, 253, 251, 255),
         elevation: 0.4, // Set elevation to 0 to remove the shadow
-        child: ListTile(
-          leading: CircleAvatar(
-            radius: 30, // Adjust the radius to make the avatar bigger
-            backgroundImage: question.userPhotoUrl != ''
-                ? NetworkImage(question.userPhotoUrl!)
-                : const AssetImage('assets/Backgrounds/defaultUserPic.png')
-                    as ImageProvider<Object>, // Cast to ImageProvider<Object>
-          ),
-          title: Column(
+        child: UserInfoWidget(
+          title: question.title,
+          description: question.description,
+          postedDate: question.postedDate,
+          userId: question.userId,
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GestureDetector(
-                onTap: () {
-                  if (question.userId != null &&
-                      question.userId.isNotEmpty &&
-                      question.userId != "DeactivatedUser") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            UserProfileView(userId: question.userId),
-                      ),
-                    );
-                  }
-                },
-                child: Row(
-                  children: [
-                    Text(
-                      question.username ?? '', // Display the username
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 24, 8, 53),
-                          fontSize: 16),
-                    ),
-                    if (question.userType == "Freelancer")
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.verified,
-                            color: Colors.deepPurple,
-                            size: 20,
-                          ),
-                          SizedBox(width: 4),
-                        ],
-                      ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          DateFormat('dd/MM/yyyy').format(question.postedDate),
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              SizedBox(
+                height: 7,
               ),
-              SizedBox(height: 5),
-              Text(
-                question.title,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                ),
-              ),
-              SizedBox(height: 5),
-              Text(question.description,
-                  style: TextStyle(
-                    fontSize: 13,
-                  )),
-            ],
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-             SizedBox(height: 7,),
               Container(
-                              width:
-                                  400, // Set a fixed width for the skills container
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: List.generate(
-                                    question.topics.length,
-                                    (intrestsIndex) {
-                                      final intrest =
-                                          question.topics[intrestsIndex] as String;
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: Chip(
-                                          label: Text(
-                                            intrest,
-                                            style: TextStyle(fontSize: 12.0),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
+                width: 400, // Set a fixed width for the skills container
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(
+                      question.topics.length,
+                      (intrestsIndex) {
+                        final intrest =
+                            question.topics[intrestsIndex] as String;
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Chip(
+                            label: Text(
+                              intrest,
+                              style: TextStyle(fontSize: 12.0),
                             ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -987,53 +1091,331 @@ class __FHomePageState extends State<FHomePage> {
                   ),
                 ],
               ),
-              SizedBox(height: 6,),
-             Align(
-  alignment: Alignment.bottomLeft,
-  child: Row(
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: [
-      Image.asset(
-      'assets/icons/sparkle.png', 
-      width: 17, 
-      height: 17,
-    ),
-        SizedBox(width:5),
-      Text(
-        "Is this content relevant to you?",
-        style: TextStyle(fontSize: 12),
-      ),
-      SizedBox(width:15),
-      GestureDetector(
-      onTap: () {
-        recordFeedback(loggedInEmail, question, true);
-      },
-      child: Image.asset(
-        'assets/icons/thumbUp.png', 
-        width: 15, 
-        height: 15,
-        color: Color.fromARGB(255, 116, 116, 116), 
-      ),
-      ),
-      SizedBox(width:20),
-     GestureDetector(
-      onTap: () {
-        recordFeedback(loggedInEmail, question, false);
-      },
-      child: Image.asset(
-        'assets/icons/thumbDown.png', 
-        width: 15, 
-        height: 15,
-        color: Color.fromARGB(255, 116, 116, 116), 
-      ),
-      ),
-    ],
-  ),
-),
-              SizedBox(height: 6,),
-
+              SizedBox(
+                height: 6,
+              ),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Image.asset(
+                      'assets/icons/sparkle.png',
+                      width: 17,
+                      height: 17,
+                    ),
+                    SizedBox(width: 5),
+                    Text(
+                      "Is this content relevant to you?",
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    SizedBox(width: 15),
+                    GestureDetector(
+                      onTap: () {
+                        recordFeedback(loggedInEmail, question, true);
+                      },
+                      child: Image.asset(
+                        'assets/icons/thumbUp.png',
+                        width: 15,
+                        height: 15,
+                        color: Color.fromARGB(255, 116, 116, 116),
+                      ),
+                    ),
+                    SizedBox(width: 20),
+                    GestureDetector(
+                      onTap: () {
+                        recordFeedback(loggedInEmail, question, false);
+                      },
+                      child: Image.asset(
+                        'assets/icons/thumbDown.png',
+                        width: 15,
+                        height: 15,
+                        color: Color.fromARGB(255, 116, 116, 116),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 6,
+              ),
             ],
           ),
+          // child: ListTile(
+          //   leading: CircleAvatar(
+          //     radius: 30, // Adjust the radius to make the avatar bigger
+          //     backgroundImage: question.userPhotoUrl != ''
+          //         ? NetworkImage(question.userPhotoUrl!)
+          //         : const AssetImage('assets/Backgrounds/defaultUserPic.png')
+          //             as ImageProvider<Object>, // Cast to ImageProvider<Object>
+          //   ),
+          //   title: Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       GestureDetector(
+          //         onTap: () {
+          //           if (question.userId != null &&
+          //               question.userId.isNotEmpty &&
+          //               question.userId != "DeactivatedUser") {
+          //             Navigator.push(
+          //               context,
+          //               MaterialPageRoute(
+          //                 builder: (context) =>
+          //                     UserProfileView(userId: question.userId),
+          //               ),
+          //             );
+          //           }
+          //         },
+          //         child: Row(
+          //           children: [
+          //             Text(
+          //               question.username ?? '', // Display the username
+          //               style: TextStyle(
+          //                   fontWeight: FontWeight.bold,
+          //                   color: Color.fromARGB(255, 24, 8, 53),
+          //                   fontSize: 16),
+          //             ),
+          //             if (question.userType == "Freelancer")
+          //               Row(
+          //                 children: [
+          //                   Icon(
+          //                     Icons.verified,
+          //                     color: Colors.deepPurple,
+          //                     size: 20,
+          //                   ),
+          //                   SizedBox(width: 4),
+          //                 ],
+          //               ),
+          //             Expanded(
+          //               child: Align(
+          //                 alignment: Alignment.centerRight,
+          //                 child: Text(
+          //                   DateFormat('dd/MM/yyyy').format(question.postedDate),
+          //                   style: TextStyle(fontSize: 12),
+          //                 ),
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //       SizedBox(height: 5),
+          //       Text(
+          //         question.title,
+          //         style: TextStyle(
+          //           fontWeight: FontWeight.bold,
+          //           fontSize: 15,
+          //         ),
+          //       ),
+          //       SizedBox(height: 5),
+          //       Text(question.description,
+          //           style: TextStyle(
+          //             fontSize: 13,
+          //           )),
+          //     ],
+          //   ),
+          //   subtitle: Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       SizedBox(
+          //         height: 7,
+          //       ),
+          //       Container(
+          //         width: 400, // Set a fixed width for the skills container
+          //         child: SingleChildScrollView(
+          //           scrollDirection: Axis.horizontal,
+          //           child: Row(
+          //             children: List.generate(
+          //               question.topics.length,
+          //               (intrestsIndex) {
+          //                 final intrest =
+          //                     question.topics[intrestsIndex] as String;
+          //                 return Padding(
+          //                   padding: const EdgeInsets.only(left: 8.0),
+          //                   child: Chip(
+          //                     label: Text(
+          //                       intrest,
+          //                       style: TextStyle(fontSize: 12.0),
+          //                     ),
+          //                   ),
+          //                 );
+          //               },
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //       Row(
+          //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //         children: [
+          //           IconButton(
+          //             icon: Icon(Icons.bookmark,
+          //                 color: Color.fromARGB(255, 63, 63, 63)),
+          //             onPressed: () {
+          //               addQuestionToBookmarks(loggedInEmail, question);
+          //             },
+          //           ),
+          //           Row(
+          //             children: [
+          //               IconButton(
+          //                 icon: Icon(Icons.comment,
+          //                     color: Color.fromARGB(255, 63, 63, 63)),
+          //                 onPressed: () {
+          //                   Navigator.push(
+          //                     context,
+          //                     MaterialPageRoute(
+          //                         builder: (context) => AnswerPage(
+          //                             questionDocId: question.questionDocId)),
+          //                   );
+          //                 },
+          //               ),
+          //               Text(question.noOfAnswers.toString()),
+          //             ],
+          //           ),
+          //           IconButton(
+          //             icon: Icon(Icons.report,
+          //                 color: Color.fromARGB(255, 63, 63, 63)),
+          //             onPressed: () {
+          //               showDialog(
+          //                 context: context,
+          //                 builder: (BuildContext context) {
+          //                   return StatefulBuilder(
+          //                     builder:
+          //                         (BuildContext context, StateSetter setState) {
+          //                       String? initialOption = null;
+          //                       TextEditingController customReasonController =
+          //                           TextEditingController();
+          //
+          //                       return AlertDialog(
+          //                         title: Text('Report Post'),
+          //                         content: Column(
+          //                           mainAxisSize: MainAxisSize.min,
+          //                           children: <Widget>[
+          //                             DropdownButton<String>(
+          //                               value: selectedOption,
+          //                               hint: Text('Select a reason'),
+          //                               onTap: () {
+          //                                 // Set the initialOption to the selectedOption
+          //                                 initialOption = selectedOption;
+          //                               },
+          //                               onChanged: (String? newValue) {
+          //                                 setState(() {
+          //                                   selectedOption = newValue!;
+          //                                 });
+          //                               },
+          //                               items:
+          //                                   dropDownOptions.map((String option) {
+          //                                 return DropdownMenuItem<String>(
+          //                                   value: option,
+          //                                   child: Text(option),
+          //                                 );
+          //                               }).toList(),
+          //                             ),
+          //                             Visibility(
+          //                               visible: selectedOption == 'Others',
+          //                               child: TextFormField(
+          //                                 controller: customReasonController,
+          //                                 decoration: InputDecoration(
+          //                                     labelText: 'Enter your reason'),
+          //                               ),
+          //                             ),
+          //                           ],
+          //                         ),
+          //                         actions: [
+          //                           TextButton(
+          //                             child: Text('Cancel'),
+          //                             onPressed: () {
+          //                               // Reset the selectedOption to the initialOption when canceling
+          //                               setState(() {
+          //                                 selectedOption = initialOption;
+          //                               });
+          //                               Navigator.of(context).pop();
+          //                             },
+          //                           ),
+          //                           TextButton(
+          //                             child: Text('Report'),
+          //                             onPressed: () {
+          //                               if (selectedOption != null) {
+          //                                 String reason;
+          //                                 if (selectedOption == 'Others') {
+          //                                   reason = customReasonController.text;
+          //                                 } else {
+          //                                   reason = selectedOption!;
+          //                                 }
+          //                                 if (reason.isNotEmpty) {
+          //                                   // Check if a reason is provided
+          //                                   handleReportQuestion(
+          //                                       loggedInEmail, question, reason);
+          //                                   toastMessage(
+          //                                       'Your report has been sent successfully');
+          //                                   Navigator.of(context).pop();
+          //                                 } else {
+          //                                   // Show an error message or handle the case where no reason is provided
+          //                                   print(
+          //                                       'Please provide a reason for reporting.');
+          //                                 }
+          //                               }
+          //                             },
+          //                           ),
+          //                         ],
+          //                       );
+          //                     },
+          //                   );
+          //                 },
+          //               );
+          //             },
+          //           ),
+          //         ],
+          //       ),
+          //       SizedBox(
+          //         height: 6,
+          //       ),
+          //       Align(
+          //         alignment: Alignment.bottomLeft,
+          //         child: Row(
+          //           mainAxisAlignment: MainAxisAlignment.start,
+          //           children: [
+          //             Image.asset(
+          //               'assets/icons/sparkle.png',
+          //               width: 17,
+          //               height: 17,
+          //             ),
+          //             SizedBox(width: 5),
+          //             Text(
+          //               "Is this content relevant to you?",
+          //               style: TextStyle(fontSize: 12),
+          //             ),
+          //             SizedBox(width: 15),
+          //             GestureDetector(
+          //               onTap: () {
+          //                 recordFeedback(loggedInEmail, question, true);
+          //               },
+          //               child: Image.asset(
+          //                 'assets/icons/thumbUp.png',
+          //                 width: 15,
+          //                 height: 15,
+          //                 color: Color.fromARGB(255, 116, 116, 116),
+          //               ),
+          //             ),
+          //             SizedBox(width: 20),
+          //             GestureDetector(
+          //               onTap: () {
+          //                 recordFeedback(loggedInEmail, question, false);
+          //               },
+          //               child: Image.asset(
+          //                 'assets/icons/thumbDown.png',
+          //                 width: 15,
+          //                 height: 15,
+          //                 color: Color.fromARGB(255, 116, 116, 116),
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //       SizedBox(
+          //         height: 6,
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ),
       );
 
@@ -1046,78 +1428,12 @@ class __FHomePageState extends State<FHomePage> {
     return Card(
       child: Column(
         children: [
-          ListTile(
-            leading: CircleAvatar(
-              backgroundImage: team.userPhotoUrl != ''
-                  ? NetworkImage(team.userPhotoUrl!)
-                  : const AssetImage('assets/Backgrounds/defaultUserPic.png')
-                      as ImageProvider<Object>, // Cast to ImageProvider<Object>
-            ),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 5),
-                GestureDetector(
-                  onTap: () {
-                    if (team.userId != null &&
-                        team.userId.isNotEmpty &&
-                        team.userId != "DeactivatedUser") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              UserProfileView(userId: team.userId),
-                        ),
-                      );
-                    }
-                  },
-                  child: Row(
-                    children: [
-                      Text(
-                        team.username ?? '',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 34, 3, 87),
-                          fontSize: 16,
-                        ),
-                      ),
-                      if (team.userType == "Freelancer")
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.verified,
-                              color: Colors.deepPurple,
-                              size: 20,
-                            ),
-                            SizedBox(
-                                width:
-                                    4), // Adjust the spacing between the icon and the date
-                          ],
-                        ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            DateFormat('dd/MM/yyyy').format(team.postedDate),
-                            style: TextStyle(fontSize: 12),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  team.title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(team.description),
-              ],
-            ),
-            subtitle: Column(
+          UserInfoWidget(
+            title: team.title,
+            description: team.description,
+            postedDate: team.postedDate,
+            userId: team.userId,
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Wrap(
@@ -1136,6 +1452,96 @@ class __FHomePageState extends State<FHomePage> {
                 ),
               ],
             ),
+            // child: ListTile(
+            //   leading: CircleAvatar(
+            //     backgroundImage: team.userPhotoUrl != ''
+            //         ? NetworkImage(team.userPhotoUrl!)
+            //         : const AssetImage('assets/Backgrounds/defaultUserPic.png')
+            //             as ImageProvider<Object>, // Cast to ImageProvider<Object>
+            //   ),
+            //   title: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       SizedBox(height: 5),
+            //       GestureDetector(
+            //         onTap: () {
+            //           if (team.userId != null &&
+            //               team.userId.isNotEmpty &&
+            //               team.userId != "DeactivatedUser") {
+            //             Navigator.push(
+            //               context,
+            //               MaterialPageRoute(
+            //                 builder: (context) =>
+            //                     UserProfileView(userId: team.userId),
+            //               ),
+            //             );
+            //           }
+            //         },
+            //         child: Row(
+            //           children: [
+            //             Text(
+            //               team.username ?? '',
+            //               style: TextStyle(
+            //                 fontWeight: FontWeight.bold,
+            //                 color: const Color.fromARGB(255, 34, 3, 87),
+            //                 fontSize: 16,
+            //               ),
+            //             ),
+            //             if (team.userType == "Freelancer")
+            //               Row(
+            //                 children: [
+            //                   Icon(
+            //                     Icons.verified,
+            //                     color: Colors.deepPurple,
+            //                     size: 20,
+            //                   ),
+            //                   SizedBox(width: 4),
+            //                   // Adjust the spacing between the icon and the date
+            //                 ],
+            //               ),
+            //             Expanded(
+            //               child: Align(
+            //                 alignment: Alignment.centerRight,
+            //                 child: Text(
+            //                   DateFormat('dd/MM/yyyy').format(team.postedDate),
+            //                   style: TextStyle(fontSize: 12),
+            //                 ),
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //       SizedBox(height: 5),
+            //       Text(
+            //         team.title,
+            //         style: TextStyle(
+            //           fontWeight: FontWeight.bold,
+            //         ),
+            //       ),
+            //       SizedBox(height: 5),
+            //       Text(team.description),
+            //     ],
+            //   ),
+            //   subtitle: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       Wrap(
+            //         spacing: -5,
+            //         runSpacing: -5,
+            //         children: team.topics
+            //             .map(
+            //               (topic) => Chip(
+            //                 label: Text(
+            //                   topic,
+            //                   style: TextStyle(fontSize: 12.0),
+            //                 ),
+            //               ),
+            //             )
+            //             .toList(),
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1150,7 +1556,7 @@ class __FHomePageState extends State<FHomePage> {
                   context
                       .read<ProfileProvider>()
                       .gotoChat(context, team.userId);
-                  log('MK: clicked on Message: ${team.userId}');
+                  // log('MK: clicked on Message: ${team.userId}');
                 },
               ),
               IconButton(
@@ -1341,7 +1747,7 @@ class __FHomePageState extends State<FHomePage> {
                         ),
                       ),
                       const SizedBox(width: 120),
-                    /*  IconButton(
+                      /*  IconButton(
                         onPressed: () {
                           setState(() {
                             showSearchBar = !showSearchBar;
@@ -1426,6 +1832,38 @@ class __FHomePageState extends State<FHomePage> {
         body: TabBarView(
           children: [
             // Display Question Cards
+
+            /////below is temporary for the case when fetching recommendations are not feasible
+            // true
+            //     ? StreamBuilder<List<CardQuestion>>(
+            //         stream: readQuestion(),
+            //         builder: (context, secondSnapshot) {
+            //           if (secondSnapshot.hasData) {
+            //             final secondQ = secondSnapshot.data!;
+            //
+            //             if (secondQ.isEmpty) {
+            //               return Center(
+            //                 child: Text('No Second Stream Data'),
+            //               );
+            //             }
+            //
+            //             return ListView(
+            //               shrinkWrap: true,
+            //               // physics: NeverScrollableScrollPhysics(),
+            //               children: secondQ.map(buildQuestionCard).toList(),
+            //             );
+            //           } else if (secondSnapshot.hasError) {
+            //             return Center(
+            //               child: Text('Error: ${secondSnapshot.error}'),
+            //             );
+            //           } else {
+            //             return Center(
+            //               child: CircularProgressIndicator(),
+            //             );
+            //           }
+            //         },
+            //       )
+            //     :
             StreamBuilder<List<CardQuestion>>(
               stream: readQuestionRecommended(),
               builder: (context, snapshot) {

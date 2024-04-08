@@ -458,61 +458,84 @@ class _ReportedPostState extends State<ReportedPost> {
           .map((post) => post['reportedItemId'] as String)
           .toList();
 
-      final questionDocs = await FirebaseFirestore.instance
-          .collection('Question')
-          .where(FieldPath.documentId, whereIn: questionIds)
-          .get();
+      List<CardQview> questions = [];
 
-      final questions = questionDocs.docs.map((doc) {
-        Map<String, dynamic> data = doc.data()!;
-        data['docId'] = doc.id;
-        return CardQview.fromJson(data);
-      }).toList();
+      // Paginate the query to avoid `whereIn` limitations
+      for (int i = 0; i < questionIds.length; i += 10) {
+        List<String> batchIds = questionIds.sublist(
+            i, (i + 10 < questionIds.length) ? i + 10 : questionIds.length);
 
-      final userIds = questions.map((question) => question.userId).toSet();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', whereIn: userIds.toList())
-          .get();
+        final questionDocs = await FirebaseFirestore.instance
+            .collection('Question')
+            .where(FieldPath.documentId, whereIn: batchIds)
+            .get();
 
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-        userDocs.docs.map((doc) => MapEntry(
-              doc.data()!['email'] as String,
-              doc.data()! as Map<String, dynamic>,
-            )),
-      );
+        final batchQuestions = questionDocs.docs.map((doc) {
+          Map<String, dynamic> data = doc.data()!;
+          data['docId'] = doc.id;
+          return CardQview.fromJson(data);
+        }).toList();
 
-      questions.forEach((question) {
-        final userDoc = userMap[question.userId];
-        final username = userDoc?['username'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        final userIds =
+            batchQuestions.map((question) => question.userId).toSet();
+        final userDocs = await FirebaseFirestore.instance
+            .collection('RegularUser')
+            .where('email', whereIn: userIds.toList())
+            .get();
 
-        final reportedPostsForQuestion = reportedPosts
-            .where((post) => post['reportedItemId'] == question.questionDocId)
-            .toList();
-        final reasons = reportedPostsForQuestion
-            .map((post) => post['reason'] as String)
-            .toList();
-        final reportIds = reportedPostsForQuestion
-            .map((post) => post['reportedPostId'] as String)
-            .toList();
+        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+          userDocs.docs.map((doc) => MapEntry(
+                doc.data()!['email'] as String,
+                doc.data()! as Map<String, dynamic>,
+              )),
+        );
 
-        final reportDate = reportedPostsForQuestion
-            .map((report) => report['reportDate'] as Timestamp?)
-            .where((date) => date != null)
-            .toList();
+        batchQuestions.forEach((question) {
+          final userDoc = userMap[question.userId];
+          final username = userDoc?['username'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
-        question.reportDate =
-            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+          final reportedPostsForQuestion = reportedPosts
+              .where((post) => post['reportedItemId'] == question.questionDocId)
+              .toList();
+          final reasons = reportedPostsForQuestion
+              .map((post) => post['reason'] as String)
+              .toList();
+          final reportIds = reportedPostsForQuestion
+              .map((post) => post['reportedPostId'] as String)
+              .toList();
 
-        question.userType = userDoc?['userType'] as String? ?? '';
-        question.username = username;
-        question.userPhotoUrl = userPhotoUrl;
-        question.reasons =
-            reasons; // Add a list property to CardQview to hold reasons
-        question.reportIds =
-            reportIds; // Add a list property to CardQview to hold reportIds
-      });
+          final reportDate = reportedPostsForQuestion
+              .map((report) => report['reportDate'] as Timestamp?)
+              .where((date) => date != null)
+              .toList();
+
+          question.reportDate = reportDate.isNotEmpty
+              ? reportDate.first!.toDate()
+              : DateTime.now();
+
+          question.userType = userDoc?['userType'] as String? ?? '';
+          question.username = username;
+          question.userPhotoUrl = userPhotoUrl;
+          question.reasons =
+              reasons; // Add a list property to CardQview to hold reasons
+          question.reportIds =
+              reportIds; // Add a list property to CardQview to hold reportIds
+        });
+
+        questions.addAll(batchQuestions);
+      }
+
+      // final questionDocs = await FirebaseFirestore.instance
+      //     .collection('Question')
+      //     .where(FieldPath.documentId, whereIn: questionIds)
+      //     .get();
+
+      // final questions = questionDocs.docs.map((doc) {
+      //   Map<String, dynamic> data = doc.data()!;
+      //   data['docId'] = doc.id;
+      //   return CardQview.fromJson(data);
+      // }).toList();
 
       return questions;
     });
@@ -573,7 +596,8 @@ class _ReportedPostState extends State<ReportedPost> {
                             color: Color.fromARGB(217, 122, 1, 1),
                           ),
                           child: Text(
-                            '${question.reportIds!.length}', // Show the number of reports
+                            '${question.reportIds!.length}',
+                            // Show the number of reports
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -587,46 +611,47 @@ class _ReportedPostState extends State<ReportedPost> {
                 question.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                 fontSize: 15.4,
+                  fontSize: 15.4,
                 ),
               ),
               SizedBox(height: 5),
-              Text(question.description, style: TextStyle(
-                 fontSize: 15,
-                )),
+              Text(question.description,
+                  style: TextStyle(
+                    fontSize: 15,
+                  )),
               SizedBox(height: 5),
             ],
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 7,),
+              SizedBox(
+                height: 7,
+              ),
               Container(
-                              width:
-                                  400, // Set a fixed width for the skills container
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: List.generate(
-                                    question.topics.length,
-                                    (intrestsIndex) {
-                                      final intrest =
-                                          question.topics[intrestsIndex] as String;
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: Chip(
-                                          label: Text(
-                                            intrest,
-                                            style: TextStyle(fontSize: 12.0),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
+                width: 400, // Set a fixed width for the skills container
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(
+                      question.topics.length,
+                      (intrestsIndex) {
+                        final intrest =
+                            question.topics[intrestsIndex] as String;
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Chip(
+                            label: Text(
+                              intrest,
+                              style: TextStyle(fontSize: 12.0),
                             ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -738,62 +763,89 @@ class _ReportedPostState extends State<ReportedPost> {
           .map((post) => post['reportedItemId'] as String)
           .toList();
 
-      final questionDocs = await FirebaseFirestore.instance
-          .collection('Question')
-          .where(FieldPath.documentId, whereIn: questionIds)
-          .get();
+      List<CardQview> questions = [];
 
-      final questions = questionDocs.docs.map((doc) {
-        Map<String, dynamic> data = doc.data()!;
-        data['docId'] = doc.id;
-        return CardQview.fromJson(data);
-      }).toList();
+      // Paginate the query to avoid `whereIn` limitations
+      for (int i = 0; i < questionIds.length; i += 10) {
+        List<String> batchIds = questionIds.sublist(
+            i, (i + 10 < questionIds.length) ? i + 10 : questionIds.length);
 
-      final userIds = questions.map((question) => question.userId).toSet();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', whereIn: userIds.toList())
-          .get();
+        if (batchIds.isEmpty) continue;
+        final questionDocs = await FirebaseFirestore.instance
+            .collection('Question')
+            .where(FieldPath.documentId, whereIn: batchIds)
+            .get();
 
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-        userDocs.docs.map((doc) => MapEntry(
-              doc.data()!['email'] as String,
-              doc.data()! as Map<String, dynamic>,
-            )),
-      );
+        final batchQuestions = questionDocs.docs.map((doc) {
+          Map<String, dynamic> data = doc.data()!;
+          data['docId'] = doc.id;
+          return CardQview.fromJson(data);
+        }).toList();
 
-      questions.forEach((question) {
-        final userDoc = userMap[question.userId];
-        final username = userDoc?['username'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        final userIds = questions.map((question) => question.userId).toSet();
 
-        final reportedPostsForQuestion = reportedPosts
-            .where((post) => post['reportedItemId'] == question.questionDocId)
-            .toList();
+        dynamic userMap = {};
+        if (userIds.isNotEmpty) {
+          final userDocs = await FirebaseFirestore.instance
+              .collection('RegularUser')
+              .where('email', whereIn: userIds.toList())
+              .get();
 
-        final reasons = reportedPostsForQuestion
-            .map((post) => post['reason'] as String)
-            .toList();
-        final reportIds = reportedPostsForQuestion
-            .map((post) => post['reportedPostId'] as String)
-            .toList();
+          userMap = Map<String, Map<String, dynamic>>.fromEntries(
+            userDocs.docs.map((doc) => MapEntry(
+                  doc.data()!['email'] as String,
+                  doc.data()! as Map<String, dynamic>,
+                )),
+          );
+        }
 
-        final reportDate = reportedPostsForQuestion
-            .map((report) => report['reportDate'] as Timestamp?)
-            .where((date) => date != null)
-            .toList();
+        questions.forEach((question) {
+          final userDoc = userMap[question.userId];
+          final username = userDoc?['username'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
-        question.reportDate =
-            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+          final reportedPostsForQuestion = reportedPosts
+              .where((post) => post['reportedItemId'] == question.questionDocId)
+              .toList();
 
-        question.userType = userDoc?['userType'] as String? ?? '';
-        question.username = username;
-        question.userPhotoUrl = userPhotoUrl;
-        question.reasons =
-            reasons; // Modify CardQview to hold a list of reasons
-        question.reportIds =
-            reportIds; // Modify CardQview to hold a list of report IDs
-      });
+          final reasons = reportedPostsForQuestion
+              .map((post) => post['reason'] as String)
+              .toList();
+          final reportIds = reportedPostsForQuestion
+              .map((post) => post['reportedPostId'] as String)
+              .toList();
+
+          final reportDate = reportedPostsForQuestion
+              .map((report) => report['reportDate'] as Timestamp?)
+              .where((date) => date != null)
+              .toList();
+
+          question.reportDate = reportDate.isNotEmpty
+              ? reportDate.first!.toDate()
+              : DateTime.now();
+
+          question.userType = userDoc?['userType'] as String? ?? '';
+          question.username = username;
+          question.userPhotoUrl = userPhotoUrl;
+          question.reasons =
+              reasons; // Modify CardQview to hold a list of reasons
+          question.reportIds =
+              reportIds; // Modify CardQview to hold a list of report IDs
+        });
+
+        questions.addAll(batchQuestions);
+      }
+
+      // final questionDocs = await FirebaseFirestore.instance
+      //     .collection('Question')
+      //     .where(FieldPath.documentId, whereIn: questionIds)
+      //     .get();
+      //
+      // final questions = questionDocs.docs.map((doc) {
+      //   Map<String, dynamic> data = doc.data()!;
+      //   data['docId'] = doc.id;
+      //   return CardQview.fromJson(data);
+      // }).toList();
 
       return questions;
     });
@@ -854,7 +906,8 @@ class _ReportedPostState extends State<ReportedPost> {
                             color: Color.fromARGB(217, 122, 1, 1),
                           ),
                           child: Text(
-                            '${question.reportIds!.length}', // Show the number of reports
+                            '${question.reportIds!.length}',
+                            // Show the number of reports
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -864,50 +917,51 @@ class _ReportedPostState extends State<ReportedPost> {
                 ),
               ),
               SizedBox(height: 5),
-               Text(
+              Text(
                 question.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                 fontSize: 15.4,
+                  fontSize: 15.4,
                 ),
               ),
               SizedBox(height: 5),
-              Text(question.description, style: TextStyle(
-                 fontSize: 15,
-                )),
+              Text(question.description,
+                  style: TextStyle(
+                    fontSize: 15,
+                  )),
               SizedBox(height: 5),
             ],
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 7,),
+              SizedBox(
+                height: 7,
+              ),
               Container(
-                              width:
-                                  400, // Set a fixed width for the skills container
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: List.generate(
-                                    question.topics.length,
-                                    (intrestsIndex) {
-                                      final intrest =
-                                          question.topics[intrestsIndex] as String;
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: Chip(
-                                          label: Text(
-                                            intrest,
-                                            style: TextStyle(fontSize: 12.0),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
+                width: 400, // Set a fixed width for the skills container
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(
+                      question.topics.length,
+                      (intrestsIndex) {
+                        final intrest =
+                            question.topics[intrestsIndex] as String;
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Chip(
+                            label: Text(
+                              intrest,
+                              style: TextStyle(fontSize: 12.0),
                             ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -934,7 +988,8 @@ class _ReportedPostState extends State<ReportedPost> {
                 height: 20,
               ),
               Text(
-                "Reasons: ${question.reasons?.join(', ')}", // Display the reason here
+                "Reasons: ${question.reasons?.join(', ')}",
+                // Display the reason here
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
@@ -989,60 +1044,86 @@ class _ReportedPostState extends State<ReportedPost> {
           .map((post) => post['reportedItemId'] as String)
           .toList();
 
-      final teamDocs = await FirebaseFirestore.instance
-          .collection('Team')
-          .where(FieldPath.documentId, whereIn: teamIds)
-          .get();
+      List<CardFT> teams = [];
 
-      final teams = teamDocs.docs.map((doc) {
-        Map<String, dynamic> data = doc.data()!;
-        data['docId'] = doc.id;
-        return CardFT.fromJson(data);
-      }).toList();
+      // Paginate the query to avoid `whereIn` limitations
+      for (int i = 0; i < teamIds.length; i += 10) {
+        List<String> batchIds = teamIds.sublist(
+            i, (i + 10 < teamIds.length) ? i + 10 : teamIds.length);
 
-      // Get user-related information for each question
-      final userIds = teams.map((team) => team.userId).toSet();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', whereIn: userIds.toList())
-          .get();
+        if (batchIds.isEmpty) continue;
+        final questionDocs = await FirebaseFirestore.instance
+            .collection('Team')
+            .where(FieldPath.documentId, whereIn: batchIds)
+            .get();
 
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-        userDocs.docs.map((doc) => MapEntry(
-              doc.data()!['email'] as String,
-              doc.data()! as Map<String, dynamic>,
-            )),
-      );
+        final batchQuestions = questionDocs.docs.map((doc) {
+          Map<String, dynamic> data = doc.data()!;
+          data['docId'] = doc.id;
+          return CardFT.fromJson(data);
+        }).toList();
+        // Get user-related information for each question
+        final userIds = batchQuestions.map((team) => team.userId).toSet();
 
-      teams.forEach((team) {
-        final userDoc = userMap[team.userId];
-        final username = userDoc?['username'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        dynamic userMap = {};
+        if (userIds.isNotEmpty) {
+          final userDocs = await FirebaseFirestore.instance
+              .collection('RegularUser')
+              .where('email', whereIn: userIds.toList())
+              .get();
 
-        final teamReports = reportedPosts
-            .where((post) => post['reportedItemId'] == team.docId)
-            .toList();
+          userMap = Map<String, Map<String, dynamic>>.fromEntries(
+            userDocs.docs.map((doc) => MapEntry(
+                  doc.data()!['email'] as String,
+                  doc.data()! as Map<String, dynamic>,
+                )),
+          );
+        }
 
-        final reasons =
-            teamReports.map((report) => report['reason'] as String).toList();
-        final reportIds = teamReports
-            .map((report) => report['reportedPostId'] as String)
-            .toList();
+        batchQuestions.forEach((team) {
+          final userDoc = userMap[team.userId];
+          final username = userDoc?['username'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
-        final reportDate = teamReports
-            .map((report) => report['reportDate'] as Timestamp?)
-            .where((date) => date != null)
-            .toList();
+          final teamReports = reportedPosts
+              .where((post) => post['reportedItemId'] == team.docId)
+              .toList();
 
-        team.reportDate =
-            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+          final reasons =
+              teamReports.map((report) => report['reason'] as String).toList();
+          final reportIds = teamReports
+              .map((report) => report['reportedPostId'] as String)
+              .toList();
 
-        team.userType = userDoc?['userType'] as String? ?? '';
-        team.username = username;
-        team.userPhotoUrl = userPhotoUrl;
-        team.reasons = reasons;
-        team.reportDocids = reportIds;
-      });
+          final reportDate = teamReports
+              .map((report) => report['reportDate'] as Timestamp?)
+              .where((date) => date != null)
+              .toList();
+
+          team.reportDate = reportDate.isNotEmpty
+              ? reportDate.first!.toDate()
+              : DateTime.now();
+
+          team.userType = userDoc?['userType'] as String? ?? '';
+          team.username = username;
+          team.userPhotoUrl = userPhotoUrl;
+          team.reasons = reasons;
+          team.reportDocids = reportIds;
+        });
+
+        teams.addAll(batchQuestions);
+      }
+
+      // final teamDocs = await FirebaseFirestore.instance
+      //     .collection('Team')
+      //     .where(FieldPath.documentId, whereIn: teamIds)
+      //     .get();
+      //
+      // final teams = teamDocs.docs.map((doc) {
+      //   Map<String, dynamic> data = doc.data()!;
+      //   data['docId'] = doc.id;
+      //   return CardFT.fromJson(data);
+      // }).toList();
 
       return teams;
     });
@@ -1070,60 +1151,86 @@ class _ReportedPostState extends State<ReportedPost> {
           .map((post) => post['reportedItemId'] as String)
           .toList();
 
-      final teamDocs = await FirebaseFirestore.instance
-          .collection('Team')
-          .where(FieldPath.documentId, whereIn: teamIds)
-          .get();
+      List<CardFT> teams = [];
 
-      final teams = teamDocs.docs.map((doc) {
-        Map<String, dynamic> data = doc.data()!;
-        data['docId'] = doc.id;
-        return CardFT.fromJson(data);
-      }).toList();
+      // Paginate the query to avoid `whereIn` limitations
+      for (int i = 0; i < teamIds.length; i += 10) {
+        List<String> batchIds = teamIds.sublist(
+            i, (i + 10 < teamIds.length) ? i + 10 : teamIds.length);
 
-      // Get user-related information for each question
-      final userIds = teams.map((team) => team.userId).toSet();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', whereIn: userIds.toList())
-          .get();
+        if (batchIds.isEmpty) continue;
+        final questionDocs = await FirebaseFirestore.instance
+            .collection('Team')
+            .where(FieldPath.documentId, whereIn: batchIds)
+            .get();
 
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-        userDocs.docs.map((doc) => MapEntry(
-              doc.data()!['email'] as String,
-              doc.data()! as Map<String, dynamic>,
-            )),
-      );
+        final batchQuestions = questionDocs.docs.map((doc) {
+          Map<String, dynamic> data = doc.data()!;
+          data['docId'] = doc.id;
+          return CardFT.fromJson(data);
+        }).toList();
 
-      teams.forEach((team) {
-        final userDoc = userMap[team.userId];
-        final username = userDoc?['username'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        // Get user-related information for each question
+        final userIds = teams.map((team) => team.userId).toSet();
+        dynamic userMap = {};
+        if (userIds.isNotEmpty) {
+          final userDocs = await FirebaseFirestore.instance
+              .collection('RegularUser')
+              .where('email', whereIn: userIds.toList())
+              .get();
 
-        final teamReports = reportedPosts
-            .where((post) => post['reportedItemId'] == team.docId)
-            .toList();
+          userMap = Map<String, Map<String, dynamic>>.fromEntries(
+            userDocs.docs.map((doc) => MapEntry(
+                  doc.data()!['email'] as String,
+                  doc.data()! as Map<String, dynamic>,
+                )),
+          );
+        }
 
-        final reasons =
-            teamReports.map((report) => report['reason'] as String).toList();
-        final reportIds = teamReports
-            .map((report) => report['reportedPostId'] as String)
-            .toList();
+        teams.forEach((team) {
+          final userDoc = userMap[team.userId];
+          final username = userDoc?['username'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
-        final reportDate = teamReports
-            .map((report) => report['reportDate'] as Timestamp?)
-            .where((date) => date != null)
-            .toList();
+          final teamReports = reportedPosts
+              .where((post) => post['reportedItemId'] == team.docId)
+              .toList();
 
-        team.reportDate =
-            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+          final reasons =
+              teamReports.map((report) => report['reason'] as String).toList();
+          final reportIds = teamReports
+              .map((report) => report['reportedPostId'] as String)
+              .toList();
 
-        team.userType = userDoc?['userType'] as String? ?? '';
-        team.username = username;
-        team.userPhotoUrl = userPhotoUrl;
-        team.reasons = reasons;
-        team.reportDocids = reportIds;
-      });
+          final reportDate = teamReports
+              .map((report) => report['reportDate'] as Timestamp?)
+              .where((date) => date != null)
+              .toList();
+
+          team.reportDate = reportDate.isNotEmpty
+              ? reportDate.first!.toDate()
+              : DateTime.now();
+
+          team.userType = userDoc?['userType'] as String? ?? '';
+          team.username = username;
+          team.userPhotoUrl = userPhotoUrl;
+          team.reasons = reasons;
+          team.reportDocids = reportIds;
+        });
+
+        teams.addAll(batchQuestions);
+      }
+
+      // final teamDocs = await FirebaseFirestore.instance
+      //     .collection('Team')
+      //     .where(FieldPath.documentId, whereIn: teamIds)
+      //     .get();
+      //
+      // final teams = teamDocs.docs.map((doc) {
+      //   Map<String, dynamic> data = doc.data()!;
+      //   data['docId'] = doc.id;
+      //   return CardFT.fromJson(data);
+      // }).toList();
 
       return teams;
     });
@@ -1184,7 +1291,8 @@ class _ReportedPostState extends State<ReportedPost> {
                             color: Color.fromARGB(217, 122, 1, 1),
                           ),
                           child: Text(
-                            '${team.reportDocids!.length}', // Show the number of reports
+                            '${team.reportDocids!.length}',
+                            // Show the number of reports
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -1209,8 +1317,8 @@ class _ReportedPostState extends State<ReportedPost> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Wrap(
-                spacing:  -5,
-                runSpacing:  -5,
+                spacing: -5,
+                runSpacing: -5,
                 children: team.topics
                     .map(
                       (topic) => Chip(
@@ -1349,7 +1457,8 @@ class _ReportedPostState extends State<ReportedPost> {
                             color: Color.fromARGB(217, 122, 1, 1),
                           ),
                           child: Text(
-                            '${team.reportDocids!.length}', // Show the number of reports
+                            '${team.reportDocids!.length}',
+                            // Show the number of reports
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -1374,7 +1483,7 @@ class _ReportedPostState extends State<ReportedPost> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Wrap(
-                spacing:  -5,
+                spacing: -5,
                 runSpacing: -5,
                 children: team.topics
                     .map(
@@ -1452,60 +1561,89 @@ class _ReportedPostState extends State<ReportedPost> {
           .map((post) => post['reportedItemId'] as String)
           .toList();
 
-      final projectDocs = await FirebaseFirestore.instance
-          .collection('Project')
-          .where(FieldPath.documentId, whereIn: projectIds)
-          .get();
+      List<CardFT> projects = [];
 
-      final projects = projectDocs.docs.map((doc) {
-        Map<String, dynamic> data = doc.data()!;
-        data['docId'] = doc.id;
-        return CardFT.fromJson(data);
-      }).toList();
+      // Paginate the query to avoid `whereIn` limitations
+      for (int i = 0; i < projectIds.length; i += 10) {
+        List<String> batchIds = projectIds.sublist(
+            i, (i + 10 < projectIds.length) ? i + 10 : projectIds.length);
 
-      // Get user-related information for each question
-      final userIds = projects.map((project) => project.userId).toSet();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', whereIn: userIds.toList())
-          .get();
+        if (batchIds.isEmpty) continue;
+        final questionDocs = await FirebaseFirestore.instance
+            .collection('Project')
+            .where(FieldPath.documentId, whereIn: batchIds)
+            .get();
 
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-        userDocs.docs.map((doc) => MapEntry(
-              doc.data()!['email'] as String,
-              doc.data()! as Map<String, dynamic>,
-            )),
-      );
+        final batchQuestions = questionDocs.docs.map((doc) {
+          Map<String, dynamic> data = doc.data()!;
+          data['docId'] = doc.id;
+          return CardFT.fromJson(data);
+        }).toList();
+        // Get user-related information for each question
+        // Get user-related information for each question
+        final userIds = projects.map((project) => project.userId).toSet();
 
-      projects.forEach((project) {
-        final userDoc = userMap[project.userId];
-        final username = userDoc?['username'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        dynamic userMap = {};
+        if (userIds.isNotEmpty) {
+          final userDocs = await FirebaseFirestore.instance
+              .collection('RegularUser')
+              .where('email', whereIn: userIds.toList())
+              .get();
 
-        final projectReports = reportedPosts
-            .where((post) => post['reportedItemId'] == project.docId)
-            .toList();
+          userMap = Map<String, Map<String, dynamic>>.fromEntries(
+            userDocs.docs.map((doc) => MapEntry(
+                  doc.data()!['email'] as String,
+                  doc.data()! as Map<String, dynamic>,
+                )),
+          );
+        }
 
-        final reasons =
-            projectReports.map((report) => report['reason'] as String).toList();
-        final reportIds = projectReports
-            .map((report) => report['reportedPostId'] as String)
-            .toList();
+        projects.forEach((project) {
+          final userDoc = userMap[project.userId];
+          final username = userDoc?['username'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
-        final reportDate = projectReports
-            .map((report) => report['reportDate'] as Timestamp?)
-            .where((date) => date != null)
-            .toList();
+          final projectReports = reportedPosts
+              .where((post) => post['reportedItemId'] == project.docId)
+              .toList();
 
-        project.reportDate =
-            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+          final reasons = projectReports
+              .map((report) => report['reason'] as String)
+              .toList();
+          final reportIds = projectReports
+              .map((report) => report['reportedPostId'] as String)
+              .toList();
 
-        project.userType = userDoc?['userType'] as String? ?? '';
-        project.username = username;
-        project.userPhotoUrl = userPhotoUrl;
-        project.reasons = reasons;
-        project.reportDocids = reportIds;
-      });
+          final reportDate = projectReports
+              .map((report) => report['reportDate'] as Timestamp?)
+              .where((date) => date != null)
+              .toList();
+
+          project.reportDate = reportDate.isNotEmpty
+              ? reportDate.first!.toDate()
+              : DateTime.now();
+
+          project.userType = userDoc?['userType'] as String? ?? '';
+          project.username = username;
+          project.userPhotoUrl = userPhotoUrl;
+          project.reasons = reasons;
+          project.reportDocids = reportIds;
+        });
+
+        projects.addAll(batchQuestions);
+      }
+
+      // final projectDocs = await FirebaseFirestore.instance
+      //     .collection('Project')
+      //     .where(FieldPath.documentId, whereIn: projectIds)
+      //     .get();
+      //
+      // final projects = projectDocs.docs.map((doc) {
+      //   Map<String, dynamic> data = doc.data()!;
+      //   data['docId'] = doc.id;
+      //   return CardFT.fromJson(data);
+      // }).toList();
+
       return projects;
     });
   }
@@ -1532,60 +1670,87 @@ class _ReportedPostState extends State<ReportedPost> {
           .map((post) => post['reportedItemId'] as String)
           .toList();
 
-      final projectDocs = await FirebaseFirestore.instance
-          .collection('Project')
-          .where(FieldPath.documentId, whereIn: projectIds)
-          .get();
+      List<CardFT> projects = [];
 
-      final projects = projectDocs.docs.map((doc) {
-        Map<String, dynamic> data = doc.data()!;
-        data['docId'] = doc.id;
-        return CardFT.fromJson(data);
-      }).toList();
+      // Paginate the query to avoid `whereIn` limitations
+      for (int i = 0; i < projectIds.length; i += 10) {
+        List<String> batchIds = projectIds.sublist(
+            i, (i + 10 < projectIds.length) ? i + 10 : projectIds.length);
 
-      // Get user-related information for each question
-      final userIds = projects.map((project) => project.userId).toSet();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', whereIn: userIds.toList())
-          .get();
+        if (batchIds.isEmpty) continue;
+        final questionDocs = await FirebaseFirestore.instance
+            .collection('Project')
+            .where(FieldPath.documentId, whereIn: batchIds)
+            .get();
 
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-        userDocs.docs.map((doc) => MapEntry(
-              doc.data()!['email'] as String,
-              doc.data()! as Map<String, dynamic>,
-            )),
-      );
+        final batchQuestions = questionDocs.docs.map((doc) {
+          Map<String, dynamic> data = doc.data()!;
+          data['docId'] = doc.id;
+          return CardFT.fromJson(data);
+        }).toList();
 
-      projects.forEach((project) {
-        final userDoc = userMap[project.userId];
-        final username = userDoc?['username'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        // Get user-related information for each question
+        final userIds = projects.map((project) => project.userId).toSet();
+        dynamic userMap = {};
+        if (userIds.isNotEmpty) {
+          final userDocs = await FirebaseFirestore.instance
+              .collection('RegularUser')
+              .where('email', whereIn: userIds.toList())
+              .get();
 
-        final projectReports = reportedPosts
-            .where((post) => post['reportedItemId'] == project.docId)
-            .toList();
+          userMap = Map<String, Map<String, dynamic>>.fromEntries(
+            userDocs.docs.map((doc) => MapEntry(
+                  doc.data()!['email'] as String,
+                  doc.data()! as Map<String, dynamic>,
+                )),
+          );
+        }
 
-        final reasons =
-            projectReports.map((report) => report['reason'] as String).toList();
-        final reportIds = projectReports
-            .map((report) => report['reportedPostId'] as String)
-            .toList();
+        projects.forEach((project) {
+          final userDoc = userMap[project.userId];
+          final username = userDoc?['username'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
-        final reportDate = projectReports
-            .map((report) => report['reportDate'] as Timestamp?)
-            .where((date) => date != null)
-            .toList();
+          final projectReports = reportedPosts
+              .where((post) => post['reportedItemId'] == project.docId)
+              .toList();
 
-        project.reportDate =
-            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+          final reasons = projectReports
+              .map((report) => report['reason'] as String)
+              .toList();
+          final reportIds = projectReports
+              .map((report) => report['reportedPostId'] as String)
+              .toList();
 
-        project.userType = userDoc?['userType'] as String? ?? '';
-        project.username = username;
-        project.userPhotoUrl = userPhotoUrl;
-        project.reasons = reasons;
-        project.reportDocids = reportIds;
-      });
+          final reportDate = projectReports
+              .map((report) => report['reportDate'] as Timestamp?)
+              .where((date) => date != null)
+              .toList();
+
+          project.reportDate = reportDate.isNotEmpty
+              ? reportDate.first!.toDate()
+              : DateTime.now();
+
+          project.userType = userDoc?['userType'] as String? ?? '';
+          project.username = username;
+          project.userPhotoUrl = userPhotoUrl;
+          project.reasons = reasons;
+          project.reportDocids = reportIds;
+        });
+
+        projects.addAll(batchQuestions);
+      }
+
+      // final projectDocs = await FirebaseFirestore.instance
+      //     .collection('Project')
+      //     .where(FieldPath.documentId, whereIn: projectIds)
+      //     .get();
+      //
+      // final projects = projectDocs.docs.map((doc) {
+      //   Map<String, dynamic> data = doc.data()!;
+      //   data['docId'] = doc.id;
+      //   return CardFT.fromJson(data);
+      // }).toList();
 
       return projects;
     });
@@ -1615,30 +1780,40 @@ class _ReportedPostState extends State<ReportedPost> {
           .map((post) => post['reportedItemId'] as String)
           .toList();
 
-      final AnswerDocs = await FirebaseFirestore.instance
-          .collection('Answer')
-          .where(FieldPath.documentId, whereIn: AnswerIds)
-          .get();
+      List<CardAnswer> Answers = [];
 
-      final Answers = AnswerDocs.docs.map((doc) {
-        Map<String, dynamic> data = doc.data()!;
-        data['docId'] = doc.id;
-        return CardAnswer.fromJson(data);
-      }).toList();
+      // Paginate the query to avoid `whereIn` limitations
+      for (int i = 0; i < AnswerIds.length; i += 10) {
+        List<String> batchIds = AnswerIds.sublist(
+            i, (i + 10 < AnswerIds.length) ? i + 10 : AnswerIds.length);
 
-      // Get user-related information for each question
-      final userIds = Answers.map((Answer) => Answer.userId).toSet();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', whereIn: userIds.toList())
-          .get();
+        if (batchIds.isEmpty) continue;
+        final questionDocs = await FirebaseFirestore.instance
+            .collection('Answer')
+            .where(FieldPath.documentId, whereIn: batchIds)
+            .get();
 
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-        userDocs.docs.map((doc) => MapEntry(
-              doc.data()!['email'] as String,
-              doc.data()! as Map<String, dynamic>,
-            )),
-      );
+        final batchQuestions = questionDocs.docs.map((doc) {
+          Map<String, dynamic> data = doc.data()!;
+          data['docId'] = doc.id;
+          return CardAnswer.fromJson(data);
+        }).toList();
+
+        final userIds = Answers.map((Answer) => Answer.userId).toSet();
+        dynamic userMap = {};
+        if (userIds.isNotEmpty) {
+          final userDocs = await FirebaseFirestore.instance
+              .collection('RegularUser')
+              .where('email', whereIn: userIds.toList())
+              .get();
+
+          userMap = Map<String, Map<String, dynamic>>.fromEntries(
+            userDocs.docs.map((doc) => MapEntry(
+                  doc.data()!['email'] as String,
+                  doc.data()! as Map<String, dynamic>,
+                )),
+          );
+        }
 /*
       Answers.forEach((Answer) {
         final userDoc = userMap[Answer.userId];
@@ -1658,35 +1833,51 @@ class _ReportedPostState extends State<ReportedPost> {
         Answer.reason = reason;
         Answer.reportDocid = reportDocid;
       });*/
-      Answers.forEach((Answer) {
-        final userDoc = userMap[Answer.userId];
-        final username = userDoc?['username'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        Answers.forEach((Answer) {
+          final userDoc = userMap[Answer.userId];
+          final username = userDoc?['username'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
-        final AnswerReports = reportedPosts
-            .where((post) => post['reportedItemId'] == Answer.docId)
-            .toList();
+          final AnswerReports = reportedPosts
+              .where((post) => post['reportedItemId'] == Answer.docId)
+              .toList();
 
-        final reasons =
-            AnswerReports.map((report) => report['reason'] as String).toList();
-        final reportIds =
-            AnswerReports.map((report) => report['reportedPostId'] as String)
-                .toList();
+          final reasons =
+              AnswerReports.map((report) => report['reason'] as String)
+                  .toList();
+          final reportIds =
+              AnswerReports.map((report) => report['reportedPostId'] as String)
+                  .toList();
 
-        final reportDate =
-            AnswerReports.map((report) => report['reportDate'] as Timestamp?)
-                .where((date) => date != null)
-                .toList();
+          final reportDate =
+              AnswerReports.map((report) => report['reportDate'] as Timestamp?)
+                  .where((date) => date != null)
+                  .toList();
 
-        Answer.reportDate =
-            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+          Answer.reportDate = reportDate.isNotEmpty
+              ? reportDate.first!.toDate()
+              : DateTime.now();
 
-        Answer.userType = userDoc?['userType'] as String? ?? '';
-        Answer.username = username;
-        Answer.userPhotoUrl = userPhotoUrl;
-        Answer.reasons = reasons;
-        Answer.reportDocids = reportIds;
-      });
+          Answer.userType = userDoc?['userType'] as String? ?? '';
+          Answer.username = username;
+          Answer.userPhotoUrl = userPhotoUrl;
+          Answer.reasons = reasons;
+          Answer.reportDocids = reportIds;
+        });
+
+        Answers.addAll(batchQuestions);
+      }
+
+      // final AnswerDocs = await FirebaseFirestore.instance
+      //     .collection('Answer')
+      //     .where(FieldPath.documentId, whereIn: AnswerIds)
+      //     .get();
+      //
+      // final Answers = AnswerDocs.docs.map((doc) {
+      //   Map<String, dynamic> data = doc.data()!;
+      //   data['docId'] = doc.id;
+      //   return CardAnswer.fromJson(data);
+      // }).toList();
 
       return Answers;
     });
@@ -1714,60 +1905,129 @@ class _ReportedPostState extends State<ReportedPost> {
           .map((post) => post['reportedItemId'] as String)
           .toList();
 
-      final AnswerDocs = await FirebaseFirestore.instance
-          .collection('Answer')
-          .where(FieldPath.documentId, whereIn: AnswerIds)
-          .get();
+      // final AnswerDocs = await FirebaseFirestore.instance
+      //     .collection('Answer')
+      //     .where(FieldPath.documentId, whereIn: AnswerIds)
+      //     .get();
 
-      final Answers = AnswerDocs.docs.map((doc) {
-        Map<String, dynamic> data = doc.data()!;
-        data['docId'] = doc.id;
-        return CardAnswer.fromJson(data);
-      }).toList();
+      // final Answers = AnswerDocs.docs.map((doc) {
+      //   Map<String, dynamic> data = doc.data()!;
+      //   data['docId'] = doc.id;
+      //   return CardAnswer.fromJson(data);
+      // }).toList();
+
+      List<CardAnswer> Answers = [];
+
+      // Paginate the query to avoid `whereIn` limitations
+      for (int i = 0; i < AnswerIds.length; i += 10) {
+        List<String> batchIds = AnswerIds.sublist(
+            i, (i + 10 < AnswerIds.length) ? i + 10 : AnswerIds.length);
+
+        if (batchIds.isEmpty) continue;
+        final questionDocs = await FirebaseFirestore.instance
+            .collection('Answer')
+            .where(FieldPath.documentId, whereIn: batchIds)
+            .get();
+
+        final batchQuestions = questionDocs.docs.map((doc) {
+          Map<String, dynamic> data = doc.data()!;
+          data['docId'] = doc.id;
+          return CardAnswer.fromJson(data);
+        }).toList();
+        // Get user-related information for each question
+        final userIds = batchQuestions.map((team) => team.userId).toSet();
+        dynamic userMap = {};
+        if (userIds.isNotEmpty) {
+          final userDocs = await FirebaseFirestore.instance
+              .collection('RegularUser')
+              .where('email', whereIn: userIds.toList())
+              .get();
+
+          userMap = Map<String, Map<String, dynamic>>.fromEntries(
+            userDocs.docs.map((doc) => MapEntry(
+                  doc.data()!['email'] as String,
+                  doc.data()! as Map<String, dynamic>,
+                )),
+          );
+        }
+
+        batchQuestions.forEach((team) {
+          final userDoc = userMap[team.userId];
+          final username = userDoc?['username'] as String? ?? '';
+          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+
+          final teamReports = reportedPosts
+              .where((post) => post['reportedItemId'] == team.docId)
+              .toList();
+
+          final reasons =
+              teamReports.map((report) => report['reason'] as String).toList();
+          final reportIds = teamReports
+              .map((report) => report['reportedPostId'] as String)
+              .toList();
+
+          final reportDate = teamReports
+              .map((report) => report['reportDate'] as Timestamp?)
+              .where((date) => date != null)
+              .toList();
+
+          team.reportDate = reportDate.isNotEmpty
+              ? reportDate.first!.toDate()
+              : DateTime.now();
+
+          team.userType = userDoc?['userType'] as String? ?? '';
+          team.username = username;
+          team.userPhotoUrl = userPhotoUrl;
+          team.reasons = reasons;
+          team.reportDocids = reportIds;
+        });
+
+        Answers.addAll(batchQuestions);
+      }
 
       // Get user-related information for each question
-      final userIds = Answers.map((Answer) => Answer.userId).toSet();
-      final userDocs = await FirebaseFirestore.instance
-          .collection('RegularUser')
-          .where('email', whereIn: userIds.toList())
-          .get();
-
-      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-        userDocs.docs.map((doc) => MapEntry(
-              doc.data()!['email'] as String,
-              doc.data()! as Map<String, dynamic>,
-            )),
-      );
-
-      Answers.forEach((Answer) {
-        final userDoc = userMap[Answer.userId];
-        final username = userDoc?['username'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-
-        final AnswerReports = reportedPosts
-            .where((post) => post['reportedItemId'] == Answer.docId)
-            .toList();
-
-        final reasons =
-            AnswerReports.map((report) => report['reason'] as String).toList();
-        final reportIds =
-            AnswerReports.map((report) => report['reportedPostId'] as String)
-                .toList();
-
-        final reportDate =
-            AnswerReports.map((report) => report['reportDate'] as Timestamp?)
-                .where((date) => date != null)
-                .toList();
-
-        Answer.reportDate =
-            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
-
-        Answer.userType = userDoc?['userType'] as String? ?? '';
-        Answer.username = username;
-        Answer.userPhotoUrl = userPhotoUrl;
-        Answer.reasons = reasons;
-        Answer.reportDocids = reportIds;
-      });
+      // final userIds = Answers.map((Answer) => Answer.userId).toSet();
+      // final userDocs = await FirebaseFirestore.instance
+      //     .collection('RegularUser')
+      //     .where('email', whereIn: userIds.toList())
+      //     .get();
+      //
+      // final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+      //   userDocs.docs.map((doc) => MapEntry(
+      //         doc.data()!['email'] as String,
+      //         doc.data()! as Map<String, dynamic>,
+      //       )),
+      // );
+      //
+      // Answers.forEach((Answer) {
+      //   final userDoc = userMap[Answer.userId];
+      //   final username = userDoc?['username'] as String? ?? '';
+      //   final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+      //
+      //   final AnswerReports = reportedPosts
+      //       .where((post) => post['reportedItemId'] == Answer.docId)
+      //       .toList();
+      //
+      //   final reasons =
+      //       AnswerReports.map((report) => report['reason'] as String).toList();
+      //   final reportIds =
+      //       AnswerReports.map((report) => report['reportedPostId'] as String)
+      //           .toList();
+      //
+      //   final reportDate =
+      //       AnswerReports.map((report) => report['reportDate'] as Timestamp?)
+      //           .where((date) => date != null)
+      //           .toList();
+      //
+      //   Answer.reportDate =
+      //       reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+      //
+      //   Answer.userType = userDoc?['userType'] as String? ?? '';
+      //   Answer.username = username;
+      //   Answer.userPhotoUrl = userPhotoUrl;
+      //   Answer.reasons = reasons;
+      //   Answer.reportDocids = reportIds;
+      // });
 
       return Answers;
     });
@@ -1847,7 +2107,8 @@ class _ReportedPostState extends State<ReportedPost> {
                           color: Color.fromARGB(217, 122, 1, 1),
                         ),
                         child: Text(
-                          '${answer.reportDocids!.length}', // Show the number of reports
+                          '${answer.reportDocids!.length}',
+                          // Show the number of reports
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -2025,7 +2286,8 @@ class _ReportedPostState extends State<ReportedPost> {
                           color: Color.fromARGB(217, 122, 1, 1),
                         ),
                         child: Text(
-                          '${answer.reportDocids!.length}', // Show the number of reports
+                          '${answer.reportDocids!.length}',
+                          // Show the number of reports
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
