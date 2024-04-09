@@ -18,11 +18,13 @@ class ChatTextField extends StatefulWidget {
   const ChatTextField({
     required this.chat,
     required this.scrollDown,
+    required this.stateRefresher,
     Key? key,
     // required this.chatWith,
   }) : super(key: key);
   final Chat chat;
   final dynamic scrollDown;
+  final dynamic stateRefresher;
 
   // final User chatWith;
 
@@ -287,6 +289,7 @@ class _ChatTextFieldState extends State<ChatTextField> {
                     widget.chat.unseenMessages.add(msg);
                     if (widget.chat.deletedBy != null) {
                       widget.chat.deletedBy = null;
+                      widget.stateRefresher();
                     }
                     await ChatAPI()
                         .sendMessage(chat: widget.chat, selfId: meUID);

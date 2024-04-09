@@ -183,7 +183,9 @@ class _ChatScreenState extends State<ChatScreen> {
           ChatTextField(
             chat: widget.chat,
             scrollDown: scrollingDown,
-            // chatWith: widget.chatWith,
+            stateRefresher: () {
+              setState(() {});
+            },
           ),
         ],
       ),
