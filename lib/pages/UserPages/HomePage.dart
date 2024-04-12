@@ -17,7 +17,7 @@ import 'dart:developer';
 import 'package:techxcel11/providers/profile_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:algolia/algolia.dart';
 import '../../widgets/misc_widgets.dart';
 
 class FHomePage extends StatefulWidget {
@@ -40,6 +40,14 @@ class __FHomePageState extends State<FHomePage> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+//search extention 
+
+final Algolia algolia = Algolia.init(
+  applicationId: 'PTLT3VDSB8',
+  apiKey: '6236d82b883664fa54ad458c616d39ca',
+);
+String currentTab = "None";
+//
 // lina add
   String? selectedOption;
   List<String> dropDownOptions = [
@@ -218,20 +226,65 @@ class __FHomePageState extends State<FHomePage> {
       FormWidget(),
     );
   }
+List<String> searchQuestionIds = [];
+
+  Future<Stream<List<CardQuestion>>> readQuestionSearch() async {
+  if (searchController.text.isNotEmpty) {
+    
+    final String searchText = searchController.text;
+
+    // Perform Algolia search for questions, searching within the postDescription field
+    final AlgoliaQuerySnapshot response = await algolia
+        .instance
+        .index('Question_index')
+        .query(searchText)
+        .getObjects();
+print("###########");
+print(response);
+    final List<AlgoliaObjectSnapshot> hits = response.hits;
+    final List<String> questionIds =
+        hits.map((snapshot) => snapshot.objectID).toList();
+searchQuestionIds.clear();
+searchQuestionIds.addAll(questionIds); // Add the IDs to the list
+print("DDDDDDDDDDDDdd");
+print(searchQuestionIds);
+    final snapshot = await FirebaseFirestore.instance
+        .collection('Question')
+        .where(FieldPath.documentId, whereIn: questionIds)
+        .get();
+print("###########");
+print(snapshot);
+    final questions = snapshot.docs.map((doc) {
+      final questionData = doc.data() as Map<String, dynamic>;
+      final question = CardQuestion.fromJson(questionData);
+      question.docId = doc.id; // Set the docId to the actual document ID
+      return question;
+    }).toList();
+
+    return Stream.value(questions);
+  } else {
+    Query<Map<String, dynamic>> query =
+        FirebaseFirestore.instance.collection('Question');
+
+    query = query.orderBy('postedDate', descending: true);
+
+    return query.snapshots().map((snapshot) {
+      final questions = snapshot.docs.map((doc) {
+        final questionData = doc.data() as Map<String, dynamic>;
+        final question = CardQuestion.fromJson(questionData);
+        question.docId = doc.id; // Set the docId to the actual document ID
+        return question;
+      }).toList();
+
+      return questions;
+    });
+  }
+}
 
   Stream<List<CardQuestion>> readQuestion() {
     Query<Map<String, dynamic>> query =
-        FirebaseFirestore.instance.collection('Question');
-    //.where('dropdownValue', isEqualTo: 'Question');
-
-    if (searchController.text.isNotEmpty) {
-      String searchText = searchController.text;
-      query = query
-          .where('postDescription', isGreaterThanOrEqualTo: searchText)
-          .where('postDescription', isLessThan: searchText + 'z');
-    } else {
-      query = query.orderBy('postedDate', descending: true);
-    }
+        FirebaseFirestore.instance.collection('Question')
+         .orderBy('postedDate', descending: true);
 
     return query.snapshots().asyncMap((snapshot) async {
       final questions = snapshot.docs.map((doc) {
@@ -298,9 +351,12 @@ class __FHomePageState extends State<FHomePage> {
           .where((question) =>
               !recommendedQuestionIds.contains(question.questionDocId))
           .toList();
-      print("77566574746378");
-      //print(filteredQuestions);
-      print(recommendedQuestionIds);
+      if (searchController.text.isNotEmpty ) {
+        print("inside the otheeeeeeeeeeeeeeeeeeeeeer!!!!!!!!!!!");
+      filteredQuestions = filteredQuestions
+          .where((question) => searchQuestionIds.contains(question.docId))
+          .toList();
+    }
       return filteredQuestions;
     });
   }
@@ -373,29 +429,76 @@ class __FHomePageState extends State<FHomePage> {
               .firstWhere((question) => question.questionDocId == id))
           .toList();
 
-      print("RECOMMENDEDDEED HEEEEEEEEEEEEEEEREEEEEEEEEEE");
-      //print(filteredQuestions);
-      print(recommendedQuestionIds);
+    if (searchController.text.isNotEmpty ) {
+      print("2222222222222222222");
+      filteredQuestions = filteredQuestions
+          .where((question) => searchQuestionIds.contains(question.docId))
+          .toList();
+    }
 
       return filteredQuestions;
     });
   }
+List<String> searchTeamIds = [];
 
-  Stream<List<CardFT>> readTeam() {
+Future<Stream<List<CardFT>>> readTeamSearch() async {
+  if (searchController.text.isNotEmpty) {
+  
+    final String searchText = searchController.text;
+
+    // Perform Algolia search for questions, searching within the postDescription field
+    final AlgoliaQuerySnapshot response = await algolia
+        .instance
+        .index('Team_index')
+        .query(searchText)
+        .getObjects();
+print("###########");
+print(response);
+    final List<AlgoliaObjectSnapshot> hits = response.hits;
+    final List<String> questionIds =
+        hits.map((snapshot) => snapshot.objectID).toList();
+  searchTeamIds.clear();
+searchTeamIds.addAll(questionIds); // Add the IDs to the list
+print("wwwwwwwwwwwww");
+print(searchTeamIds);
+    final snapshot = await FirebaseFirestore.instance
+        .collection('Team')
+        .where(FieldPath.documentId, whereIn: questionIds)
+        .get();
+print("###########");
+print(snapshot);
+    final questions = snapshot.docs.map((doc) {
+      final questionData = doc.data() as Map<String, dynamic>;
+      final question = CardFT.fromJson(questionData);
+      question.docId = doc.id; // Set the docId to the actual document ID
+      return question;
+    }).toList();
+
+    return Stream.value(questions);
+  } else {
     Query<Map<String, dynamic>> query =
         FirebaseFirestore.instance.collection('Team');
-    //.where('dropdownValue', isEqualTo: 'Team Collaberation');
 
-    if (searchController.text.isNotEmpty) {
-      String searchText = searchController.text;
-      //String newVal = searchText[0].toUpperCase() + searchText.substring(1);
-      //.toLowerCase(); // Convert search text to lowercase
-      query = query
-          .where('postTitle', isGreaterThanOrEqualTo: searchText)
-          .where('postTitle', isLessThan: searchText + 'z');
-    } else {
-      query = query.orderBy('postedDate', descending: true);
-    }
+    query = query.orderBy('postedDate', descending: true);
+
+    return query.snapshots().map((snapshot) {
+      final questions = snapshot.docs.map((doc) {
+        final questionData = doc.data() as Map<String, dynamic>;
+        final question = CardFT.fromJson(questionData);
+        question.docId = doc.id; // Set the docId to the actual document ID
+        return question;
+      }).toList();
+
+      return questions;
+    });
+  }
+}
+  Stream<List<CardFT>> readTeam() {
+    Query<Map<String, dynamic>> query =
+        FirebaseFirestore.instance.collection('Team')
+        .orderBy('postedDate', descending: true);
+
+   
 
     return query.snapshots().asyncMap((snapshot) async {
       final questions = snapshot.docs.map((doc) {
@@ -453,25 +556,72 @@ class __FHomePageState extends State<FHomePage> {
       List<CardFT> filteredQuestions = questions
           .where((question) => !acceptedQuestionIds.contains(question.docId))
           .toList();
-
+if (searchController.text.isNotEmpty && currentTab == "Team") {
+       filteredQuestions = filteredQuestions
+          .where((question) => searchTeamIds.contains(question.docId))
+          .toList();
+    }
       return filteredQuestions;
     });
   }
+List<String> searchProjectIds = [];
 
-  Stream<List<CardFT>> readProjects() {
+Future<Stream<List<CardFT>>> readProjectSearch() async {
+  if (searchController.text.isNotEmpty) {
+    final String searchText = searchController.text;
+
+    // Perform Algolia search for questions, searching within the postDescription field
+    final AlgoliaQuerySnapshot response = await algolia
+        .instance
+        .index('Project_index')
+        .query(searchText)
+        .getObjects();
+print("###########PPPPP");
+print(response);
+    final List<AlgoliaObjectSnapshot> hits = response.hits;
+    final List<String> projectIds =
+        hits.map((snapshot) => snapshot.objectID).toList();
+
+ searchProjectIds.clear();
+searchProjectIds.addAll(projectIds); // Add the IDs to the list
+print("wwwwwwwwwwwwwPPPPPPPPPP");
+print(searchProjectIds);
+    final snapshot = await FirebaseFirestore.instance
+        .collection('Project')
+        .where(FieldPath.documentId, whereIn: projectIds)
+        .get();
+print("###########");
+print(snapshot);
+    final projects = snapshot.docs.map((doc) {
+      final projectData = doc.data() as Map<String, dynamic>;
+      final project = CardFT.fromJson(projectData);
+      project.docId = doc.id; // Set the docId to the actual document ID
+      return project;
+    }).toList();
+
+    return Stream.value(projects);
+  } else {
     Query<Map<String, dynamic>> query =
         FirebaseFirestore.instance.collection('Project');
-    //.where('dropdownValue', isEqualTo: 'Project');
 
-    if (searchController.text.isNotEmpty) {
-      String searchText = searchController.text;
-      //.toLowerCase(); // Convert search text to lowercase
-      query = query
-          .where('postTitle', isGreaterThanOrEqualTo: searchText)
-          .where('postTitle', isLessThan: searchText + 'z');
-    } else {
-      query = query.orderBy('postedDate', descending: true);
-    }
+    query = query.orderBy('postedDate', descending: true);
+
+    return query.snapshots().map((snapshot) {
+      final projects = snapshot.docs.map((doc) {
+        final projectData = doc.data() as Map<String, dynamic>;
+        final project = CardFT.fromJson(projectData);
+        project.docId = doc.id; // Set the docId to the actual document ID
+        return project;
+      }).toList();
+
+      return projects;
+    });
+  }
+}
+  Stream<List<CardFT>> readProjects() {
+    Query<Map<String, dynamic>> query =
+        FirebaseFirestore.instance.collection('Project')
+        .orderBy('postedDate', descending: true);
 
     return query.snapshots().asyncMap((snapshot) async {
       final questions = snapshot.docs.map((doc) {
@@ -525,7 +675,11 @@ class __FHomePageState extends State<FHomePage> {
       List<CardFT> filteredQuestions = questions
           .where((question) => !acceptedQuestionIds.contains(question.docId))
           .toList();
-
+if (searchController.text.isNotEmpty && currentTab == "Project") {
+       filteredQuestions = filteredQuestions
+          .where((question) => searchProjectIds.contains(question.docId))
+          .toList();
+    } 
       return filteredQuestions;
     });
   }
@@ -1747,7 +1901,7 @@ class __FHomePageState extends State<FHomePage> {
                         ),
                       ),
                       const SizedBox(width: 120),
-                      /*  IconButton(
+                       IconButton(
                         onPressed: () {
                           setState(() {
                             showSearchBar = !showSearchBar;
@@ -1755,7 +1909,7 @@ class __FHomePageState extends State<FHomePage> {
                         },
                         icon: Icon(
                             showSearchBar ? Icons.search_off : Icons.search),
-                      ),*/
+                      ),
                     ],
                   ),
                   const SizedBox(
@@ -1773,8 +1927,24 @@ class __FHomePageState extends State<FHomePage> {
                         isDense: true,
                       ),
                       onChanged: (text) {
-                        setState(() {});
-                        // Handle search input changes
+                        setState(() {
+
+
+                           if(currentTab =="Question") {
+                            print("inside the calling!!!!!!!!!!!");
+                            readQuestionSearch();
+                           
+                          }
+                          if(currentTab == "Team"){
+                            readTeamSearch();
+                           
+                          }
+                           if(currentTab == "Project"){
+                            readProjectSearch();
+                           
+                          }
+                        });
+                         
                       },
                     ),
                 ],
@@ -1869,7 +2039,9 @@ class __FHomePageState extends State<FHomePage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final q = snapshot.data!;
+                  currentTab = "Question";
                   if (q.isEmpty) {
+                    currentTab = "Question";
                     return Center(
                       child: Text('No Posts Yet'),
                     );
@@ -1884,8 +2056,9 @@ class __FHomePageState extends State<FHomePage> {
                         builder: (context, secondSnapshot) {
                           if (secondSnapshot.hasData) {
                             final secondQ = secondSnapshot.data!;
-
+                            currentTab = "Question";
                             if (secondQ.isEmpty) {
+                              currentTab = "Question";
                               return Center(
                                 child: Text('No Second Stream Data'),
                               );
@@ -1926,6 +2099,7 @@ class __FHomePageState extends State<FHomePage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final t = snapshot.data!;
+                  currentTab = "Team";
                   if (t.isEmpty) {
                     return Center(
                       child: Text('No posts yet'),
@@ -1951,6 +2125,7 @@ class __FHomePageState extends State<FHomePage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final p = snapshot.data!;
+                  currentTab = "Project";
                   if (p.isEmpty) {
                     return Center(
                       child: Text('No posts yet'),
