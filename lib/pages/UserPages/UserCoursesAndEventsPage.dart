@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:techxcel11/pages/UserPages/TestIntegration.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:techxcel11/Models/CourseEventImage.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
@@ -157,6 +158,19 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                   ],
                 ),
               ),
+              Row(children: [ ElevatedButton.icon(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TestIntegration()),
+      );
+  },
+  icon: Icon(Icons.person_pin_circle), // Use Icon widget instead of Icons.
+  label: Text('TEST INTEGRATION'), // Wrap label text with Text widget.
+)],
+),
+          
               StreamBuilder<List<Course>>(
                 stream: readCourses(type: 'Course'),
                 builder: (context, snapshot) {

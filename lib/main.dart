@@ -5,7 +5,7 @@ import 'firebase_options.dart';
 import 'package:techxcel11/pages/StartPage.dart';
 import 'providers/profile_provider.dart';
 
-//Gp2 this is the one
+//Gp2 (main updates search in homepage and recommender for Courses and events)
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

@@ -1866,28 +1866,20 @@ if (searchController.text.isNotEmpty && currentTab == "Project") {
             iconTheme: IconThemeData(
               color: Color.fromRGBO(37, 6, 81, 0.898),
             ),
-            toolbarHeight: 80,
-            /* flexibleSpace: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/Backgrounds/bg11.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),*/
+            toolbarHeight: 82,
             title: Builder(
               builder: (context) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      if (loggedImage.isNotEmpty)
+                      if (loggedImage.isNotEmpty && !showSearchBar)
                         GestureDetector(
                           onTap: () {
                             Scaffold.of(context).openDrawer();
                           },
                           child: CircleAvatar(
-                            radius: 25,
+                            radius: 35,
                             backgroundImage: NetworkImage(loggedImage),
                           ),
                         ),
@@ -1900,7 +1892,10 @@ if (searchController.text.isNotEmpty && currentTab == "Project") {
                           color: Color.fromRGBO(37, 6, 81, 0.898),
                         ),
                       ),
-                      const SizedBox(width: 120),
+                      if(!showSearchBar)
+                      const SizedBox(width: 150),
+                      if(showSearchBar)
+                      const SizedBox(width: 220),
                        IconButton(
                         onPressed: () {
                           setState(() {
@@ -1912,24 +1907,28 @@ if (searchController.text.isNotEmpty && currentTab == "Project") {
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 8,
-                  ),
+                
                   if (showSearchBar)
-                    TextField(
+                    Container(
+                    height: 40.0, // Adjust the height as needed
+                    child: TextField(
                       controller: searchController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Search...',
-                        prefixIcon: Icon(Icons.search),
-                        contentPadding: EdgeInsets.symmetric(
-                          vertical: 0,
+                        hintStyle: TextStyle(color: Colors.grey),
+                        prefixIcon: Icon(Icons.search, color: Colors.grey),
+                        filled: true,
+                        fillColor:  Color.fromARGB(255, 242, 241, 243),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                          //borderSide: BorderSide.bottom ,
                         ),
-                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                        isDense: false,
                       ),
+                      style: TextStyle(color: Colors.black, fontSize: 14.0),
                       onChanged: (text) {
                         setState(() {
-
-
                            if(currentTab =="Question") {
                             print("inside the calling!!!!!!!!!!!");
                             readQuestionSearch();
@@ -1946,6 +1945,7 @@ if (searchController.text.isNotEmpty && currentTab == "Project") {
                         });
                          
                       },
+                    ),
                     ),
                 ],
               ),
@@ -2060,7 +2060,7 @@ if (searchController.text.isNotEmpty && currentTab == "Project") {
                             if (secondQ.isEmpty) {
                               currentTab = "Question";
                               return Center(
-                                child: Text('No Second Stream Data'),
+                                child: Text(''),
                               );
                             }
 

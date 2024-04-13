@@ -1,15 +1,8 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techxcel11/Models/QuestionCard.dart';
-import 'package:techxcel11/Models/ReusedElements.dart';
-import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
-import 'package:techxcel11/pages/UserPages/BookmarkPage.dart';
-import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
 
 class TestIntegration extends StatefulWidget {
   @override
@@ -18,82 +11,139 @@ class TestIntegration extends StatefulWidget {
 
 class _TestIntegrationState extends State<TestIntegration> {
   String loggedInEmail = '';
+  String loggedinEmaill = '';
   List<String> userSkills = [];
   List<String> userInterests = [];
-  List<String> recommendedQuestionIds = [];
-  List<Map<String, dynamic>> allTheQuestions = [];
+  List<String> recommendedCEIds = [];
+  List<Map<String, dynamic>> alltheCE = [];
+  List<Map<String, dynamic>> allUsers = [];
+
+
 
   @override
   void initState() {
     super.initState();
   }
 
-  Future<void> fetchUserDetails() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final email = prefs.getString('loggedInEmail') ?? '';
-    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+Future<void> fetchUserDetails() async {
+    List<Map<String, dynamic>> UsersJson = [];
+   List<Map<String, dynamic>> CEJson = [];
+SharedPreferences prefs = await SharedPreferences.getInstance();
+   loggedinEmaill = prefs.getString('loggedInEmail') ?? '';
+/////////////
 
-    final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
-        .collection('RegularUser')
-        .where('email', isEqualTo: email)
-        .limit(1)
-        .get();
+final QuerySnapshot<Map<String, dynamic>> snapshotUsers = await FirebaseFirestore.instance
+      .collection('RegularUser')
+      .get();
 
-    if (snapshot.docs.isNotEmpty) {
-      final userData = snapshot.docs[0].data();
-      setState(() {
-        userSkills = List<String>.from(userData['skills'] ?? []);
-        userInterests = List<String>.from(userData['interests'] ?? []);
-      });
-    }
 
-    final QuerySnapshot<Map<String, dynamic>> snapshotQ =
-        await _firestore.collection('Question').get();
-//
-    if (snapshotQ.docs.isNotEmpty) {
-      setState(() {
-        allTheQuestions = snapshotQ.docs
-            .map((doc) => doc.data() as Map<String, dynamic>)
-            .toList();
+if (snapshotUsers.docs.isNotEmpty) {
+  setState(() {
+    allUsers = snapshotUsers.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
 
-        // Convert each question to JSON object
+    // Convert each question to JSON object
 
-        List<Map<String, dynamic>> questionsJson = [];
-        allTheQuestions.forEach((question) {
-          Timestamp timestamp =
-              question['postedDate']; // Get the Timestamp object
-          print('11111111111');
-          DateTime dateTime =
-              timestamp.toDate(); // Convert Timestamp to DateTime
-          print('2222222222');
-          Map<String, dynamic> jsonQuestion = {
-            'selectedInterests': question['selectedInterests'],
-            'noOfAnswers': question['noOfAnswers'],
-            'questionDocId': question['questionDocId'],
-            'totalUpvotes': question['totalUpvotes'] ?? 0,
-            //'postTitle': question['postTitle'],
-            //'userId': question['userId'],
-            //'postDescription': question['postDescription'],
-            'postedDate': DateFormat.yMMMMd()
-                .add_jms()
-                .format(dateTime), // Format DateTime to string
-          };
-          print('^^^^^^^^^^^^^^^^^^^^^^^^^^');
-          print(DateFormat.yMMMMd()
-              .add_jms()
-              .format(dateTime)); // Print formatted date string
-          questionsJson.add(jsonQuestion);
-          print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-          print(jsonQuestion);
-          print('777777777777777777');
+    allUsers.forEach((User) {
+      print('2222222222');
+      Map<String, dynamic> jsonUsers = {
+        'attendancePreference': User['attendancePreference'],
+        'email': User['email'], // Accessing document ID directly from doc
+        'interests': User['interests'],
+        'skills': User['skills'],
+        'country': User['country'],
+        'state': User['state'],
+        'city': User['city'],
+      };
+      UsersJson.add(jsonUsers);
+    });
+
+  } ); }
+
+//////////
+  DateTime current_date = DateTime.now();
+  final QuerySnapshot<Map<String, dynamic>> snapshotCE = await FirebaseFirestore.instance
+      .collection('Program')
+      .where('approval', isEqualTo: 'Yes')
+      .where('endDate', isGreaterThanOrEqualTo: current_date)
+      .get();
+
+  if (snapshotCE.docs.isNotEmpty) {
+    setState(() {
+      alltheCE = snapshotCE.docs
+          .map((doc) {
+            // Access the document ID using 'doc.id'
+            Map<String, dynamic> CE = doc.data() as Map<String, dynamic>;
+            CE['CE_Id'] = doc.id; // Assign document ID to 'CE_Id'
+            return CE;
+          })
+          .toList();
+
+      // Convert each question to JSON object
+      alltheCE.forEach((CE) {
+        print('2222222222');
+        CEJson.add({
+          'attendanceType': CE['attendanceType'],
+          'CE_Id': CE['CE_Id'], // Use 'CE_Id' assigned above
+          'clickedBy': CE['clickedBy'],
+          'country': CE['country'],
+          'state': CE['state'],
+          'city': CE['city'],
         });
-
-        // Send the JSON object to the server
-        recommendQuestions(questionsJson);
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+        print(CEJson.last);
+        print('CCCOOOUUURRSSEESSS ANNNDDD EEEVVEEENNNTTTTSSSSSSS UUUUUPP');
+          print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+        print(UsersJson.last);
+        print('UUSSSEEERRRSSS DDDAAATTAAA UUPPPP');
       });
-    }
 
-//
+      // Send the JSON object to the server
+      recommendCE(CEJson, UsersJson);
+    });
+  }
+}
+
+///
+///
+
+
+  Future<void> recommendCE(
+      List<Map<String, dynamic>> CEJson, List<Map<String, dynamic>> UsersJson ) async {
+    // Send user preferences and all questions to the server
+          print('********************\n\n');
+                print(loggedinEmaill);
+      print('********************kokokokokokokokokokokokokokokokok\n\n');
+
+    final Map<String, dynamic> requestBody = {
+      'user_Email': 'maha.ibrahimrw@gmail.com',
+      'all_users': UsersJson,
+      'all_CE': CEJson,
+    };
+
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:5000/recommendCE'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(requestBody),
+    );
+    if (response.statusCode == 200) {
+      // Parse response body as JSON
+      final List<dynamic> responseBody = json.decode(response.body);
+
+      // Extract question IDs from response
+      final List<String> ids = responseBody.cast<String>().toList();
+
+      // Update recommendedQuestionIds state
+      setState(() {
+        recommendedCEIds = ids;
+      });
+    } else {
+      print('77577777777777777777777777777777777777777777777777777777777');
+      throw Exception('Failed to fetch recommended questions');
+    }
   }
 
   Future<void> recommendQuestions(
@@ -121,7 +171,7 @@ class _TestIntegrationState extends State<TestIntegration> {
 
       // Update recommendedQuestionIds state
       setState(() {
-        recommendedQuestionIds = ids;
+        recommendedCEIds = ids;
       });
     } else {
       print('77577777777777777777777777777777777777777777777777777777777');
@@ -139,7 +189,7 @@ class _TestIntegrationState extends State<TestIntegration> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Recommended Question IDs: $recommendedQuestionIds'),
+            Text('Recommended Question IDs: $recommendedCEIds'),
             ElevatedButton(
               onPressed: () {
                 fetchUserDetails();
