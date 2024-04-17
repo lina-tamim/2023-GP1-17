@@ -4,81 +4,77 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class TestIntegration extends StatefulWidget {
-  @override
-  _TestIntegrationState createState() => _TestIntegrationState();
-}
+class TestIntegration // extends StatefulWidget
+{
+//   @override
+//   _TestIntegrationState createState() => _TestIntegrationState();
+// }
+//
+// class _TestIntegrationState extends State<TestIntegration> {
+//   String loggedInEmail = '';
+  static String loggedinEmaill = '';
+  static List<String> userSkills = [];
+  static List<String> userInterests = [];
+  static List<String> recommendedCEIds = [];
+  static List<Map<String, dynamic>> alltheCE = [];
+  static List<Map<String, dynamic>> allUsers = [];
 
-class _TestIntegrationState extends State<TestIntegration> {
-  String loggedInEmail = '';
-  String loggedinEmaill = '';
-  List<String> userSkills = [];
-  List<String> userInterests = [];
-  List<String> recommendedCEIds = [];
-  List<Map<String, dynamic>> alltheCE = [];
-  List<Map<String, dynamic>> allUsers = [];
+  // @override
+  // void initState() {
+  //   super.initState();
+  // }
 
-
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-Future<void> fetchUserDetails() async {
+  static Future<List<String>> fetchUserDetails() async {
     List<Map<String, dynamic>> UsersJson = [];
-   List<Map<String, dynamic>> CEJson = [];
-SharedPreferences prefs = await SharedPreferences.getInstance();
-   loggedinEmaill = prefs.getString('loggedInEmail') ?? '';
+    List<Map<String, dynamic>> CEJson = [];
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    loggedinEmaill = prefs.getString('loggedInEmail') ?? '';
 /////////////
 
-final QuerySnapshot<Map<String, dynamic>> snapshotUsers = await FirebaseFirestore.instance
-      .collection('RegularUser')
-      .get();
+    final QuerySnapshot<Map<String, dynamic>> snapshotUsers =
+        await FirebaseFirestore.instance.collection('RegularUser').get();
 
+    if (snapshotUsers.docs.isNotEmpty) {
+      // setState(() {
+      allUsers = snapshotUsers.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
 
-if (snapshotUsers.docs.isNotEmpty) {
-  setState(() {
-    allUsers = snapshotUsers.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
-        .toList();
+      // Convert each question to JSON object
 
-    // Convert each question to JSON object
-
-    allUsers.forEach((User) {
-      print('2222222222');
-      Map<String, dynamic> jsonUsers = {
-        'attendancePreference': User['attendancePreference'],
-        'email': User['email'], // Accessing document ID directly from doc
-        'interests': User['interests'],
-        'skills': User['skills'],
-        'country': User['country'],
-        'state': User['state'],
-        'city': User['city'],
-      };
-      UsersJson.add(jsonUsers);
-    });
-
-  } ); }
+      allUsers.forEach((User) {
+        print('2222222222');
+        Map<String, dynamic> jsonUsers = {
+          'attendancePreference': User['attendancePreference'],
+          'email': User['email'], // Accessing document ID directly from doc
+          'interests': User['interests'],
+          'skills': User['skills'],
+          'country': User['country'],
+          'state': User['state'],
+          'city': User['city'],
+        };
+        UsersJson.add(jsonUsers);
+      });
+      // });
+    }
 
 //////////
-  DateTime current_date = DateTime.now();
-  final QuerySnapshot<Map<String, dynamic>> snapshotCE = await FirebaseFirestore.instance
-      .collection('Program')
-      .where('approval', isEqualTo: 'Yes')
-      .where('endDate', isGreaterThanOrEqualTo: current_date)
-      .get();
+    DateTime current_date = DateTime.now();
+    final QuerySnapshot<Map<String, dynamic>> snapshotCE =
+        await FirebaseFirestore.instance
+            .collection('Program')
+            .where('approval', isEqualTo: 'Yes')
+            .where('endDate', isGreaterThanOrEqualTo: current_date)
+            .get();
 
-  if (snapshotCE.docs.isNotEmpty) {
-    setState(() {
-      alltheCE = snapshotCE.docs
-          .map((doc) {
-            // Access the document ID using 'doc.id'
-            Map<String, dynamic> CE = doc.data() as Map<String, dynamic>;
-            CE['CE_Id'] = doc.id; // Assign document ID to 'CE_Id'
-            return CE;
-          })
-          .toList();
+    if (snapshotCE.docs.isNotEmpty) {
+      // setState(() {
+      alltheCE = snapshotCE.docs.map((doc) {
+        // Access the document ID using 'doc.id'
+        Map<String, dynamic> CE = doc.data() as Map<String, dynamic>;
+        CE['CE_Id'] = doc.id; // Assign document ID to 'CE_Id'
+        return CE;
+      }).toList();
 
       // Convert each question to JSON object
       alltheCE.forEach((CE) {
@@ -94,27 +90,27 @@ if (snapshotUsers.docs.isNotEmpty) {
         print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
         print(CEJson.last);
         print('CCCOOOUUURRSSEESSS ANNNDDD EEEVVEEENNNTTTTSSSSSSS UUUUUPP');
-          print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
         print(UsersJson.last);
         print('UUSSSEEERRRSSS DDDAAATTAAA UUPPPP');
       });
 
       // Send the JSON object to the server
-      recommendCE(CEJson, UsersJson);
-    });
+      return await recommendCE(CEJson, UsersJson);
+      // });
+    }
+    return [];
   }
-}
 
-///
-///
+  ///
+  ///
 
-
-  Future<void> recommendCE(
-      List<Map<String, dynamic>> CEJson, List<Map<String, dynamic>> UsersJson ) async {
+  static Future<List<String>> recommendCE(List<Map<String, dynamic>> CEJson,
+      List<Map<String, dynamic>> UsersJson) async {
     // Send user preferences and all questions to the server
-          print('********************\n\n');
-                print(loggedinEmaill);
-      print('********************kokokokokokokokokokokokokokokokok\n\n');
+    print('********************\n\n');
+    print(loggedinEmaill);
+    print('********************kokokokokokokokokokokokokokokokok\n\n');
 
     final Map<String, dynamic> requestBody = {
       'user_Email': 'maha.ibrahimrw@gmail.com',
@@ -137,16 +133,18 @@ if (snapshotUsers.docs.isNotEmpty) {
       final List<String> ids = responseBody.cast<String>().toList();
 
       // Update recommendedQuestionIds state
-      setState(() {
-        recommendedCEIds = ids;
-      });
+      // setState(() {
+      recommendedCEIds = ids;
+      // });
+      return recommendedCEIds;
     } else {
       print('77577777777777777777777777777777777777777777777777777777777');
-      throw Exception('Failed to fetch recommended questions');
+      return [];
+      // throw Exception('Failed to fetch recommended questions');
     }
   }
 
-  Future<void> recommendQuestions(
+  static Future<void> recommendQuestions(
       List<Map<String, dynamic>> questionsJson) async {
     // Send user preferences and all questions to the server
     final Map<String, dynamic> requestBody = {
@@ -170,37 +168,37 @@ if (snapshotUsers.docs.isNotEmpty) {
       final List<String> ids = responseBody.cast<String>().toList();
 
       // Update recommendedQuestionIds state
-      setState(() {
-        recommendedCEIds = ids;
-      });
+      // setState(() {
+      recommendedCEIds = ids;
+      // });
     } else {
       print('77577777777777777777777777777777777777777777777777777777777');
       throw Exception('Failed to fetch recommended questions');
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Send User Preferences'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('Recommended Question IDs: $recommendedCEIds'),
-            ElevatedButton(
-              onPressed: () {
-                fetchUserDetails();
-              },
-              child: Text('Fetch Recommendations'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+// @override
+// Widget build(BuildContext context) {
+//   return Scaffold(
+//     appBar: AppBar(
+//       title: Text('Send User Preferences'),
+//     ),
+//     body: Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: <Widget>[
+//           Text('Recommended Question IDs: $recommendedCEIds'),
+//           ElevatedButton(
+//             onPressed: () {
+//               fetchUserDetails();
+//             },
+//             child: Text('Fetch Recommendations'),
+//           ),
+//         ],
+//       ),
+//     ),
+//   );
+// }
 }
 
 /*class TestIntegration extends StatefulWidget {
@@ -239,7 +237,7 @@ class _TestIntegrationState extends State<TestIntegration> {
 
 
 final response = await http.get(uri);
- 
+
                                                 print('[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]');
 
                     final decoded = json.decode(response.body) as Map<String, dynamic>;
@@ -260,12 +258,6 @@ final response = await http.get(uri);
   }
 }*/
 
-
-
-
-
-
-
 /*
 class TestIntegration extends StatefulWidget {
   const TestIntegration({Key? key}) : super(key: key);
@@ -282,9 +274,9 @@ class _TestIntegrationState extends State<TestIntegration> {
 
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+
   TabController? tabController;
-  
+
   bool isLoading = false;
 
   @override
@@ -384,7 +376,7 @@ class _TestIntegrationState extends State<TestIntegration> {
             ),
     );
   }
-  
+
 
   Stream<List<CardQuestion>> readQuestion() {
     return Stream.fromFuture(fetchUserData()).asyncMap((_) async {
@@ -392,7 +384,7 @@ class _TestIntegrationState extends State<TestIntegration> {
 
       Query<Map<String, dynamic>> query =
           FirebaseFirestore.instance.collection('Question');
-      
+
       // Filter questions based on recommended question IDs
       query = query.where(FieldPath.documentId, whereIn: recommendedQuestionIds);
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -49,6 +50,26 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
   String selectedCity = '';
   String selectedState = '';
 
+  bool coursesLoading = true;
+  List<String> recommendedObjects = [];
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        recommendedObjects = await TestIntegration.fetchUserDetails();
+      } catch (e) {
+        log('MK: error occured while loading recommendedCE: $e');
+      }
+      setState(() {
+        coursesLoading = false;
+        recommendedObjects = recommendedObjects;
+      });
+      log('MK: recommendedCE: ${recommendedObjects}');
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,6 +99,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
                       "Courses",
@@ -88,7 +110,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    const SizedBox(width: 124),
+                    // const SizedBox(width: 114),
                     PopupMenuButton<String>(
                       onSelected: (value) {
                         if (value == 'my_requests') {
@@ -158,117 +180,126 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                   ],
                 ),
               ),
-              Row(children: [ ElevatedButton.icon(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TestIntegration()),
-      );
-  },
-  icon: Icon(Icons.person_pin_circle), // Use Icon widget instead of Icons.
-  label: Text('TEST INTEGRATION'), // Wrap label text with Text widget.
-)],
-),
-          
-              StreamBuilder<List<Course>>(
-                stream: readCourses(type: 'Course'),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final list = snapshot.data!;
+              // Row(
+              //   children: [
+              //     ElevatedButton.icon(
+              //       onPressed: () {
+              //         Navigator.push(
+              //           context,
+              //           MaterialPageRoute(
+              //               builder: (context) => TestIntegration()),
+              //         );
+              //       },
+              //       icon: Icon(Icons.person_pin_circle),
+              //       // Use Icon widget instead of Icons.
+              //       label: Text(
+              //           'TEST INTEGRATION'), // Wrap label text with Text widget.
+              //     )
+              //   ],
+              // ),
+              // if (coursesLoading)
+              //   CircularProgressIndicator()
+              // else
+              ...[
+                StreamBuilder<List<Course>>(
+                  stream: readCoursesNew(type: 'Course'),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final list = snapshot.data!;
 
-                    if (list.isEmpty) {
-                      return const SizedBox(
-                        height: 200,
-                        child: Center(
-                          child: Text('No Courses'),
-                        ),
+                      if (list.isEmpty) {
+                        return const SizedBox(
+                          height: 200,
+                          child: Center(
+                            child: Text('No Courses'),
+                          ),
+                        );
+                      }
+                      return Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        height: 470,
+                        child: ListView.builder(
+                            itemCount: list.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 2),
+                                child: CoursesWidget(
+                                  item: list[index],
+                                ),
+                              );
+                            }),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text('Error:${snapshot.error}'),
+                      );
+                    } else {
+                      return const Center(
+                        child: CircularProgressIndicator(),
                       );
                     }
-                    return Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      height: 470,
-                      child: ListView.builder(
-                          itemCount: list.length,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 2),
-                              child: CoursesWidget(
-                                item: list[index],
-                              ),
-                            );
-                          }),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error:${snapshot.error}'),
-                    );
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                },
-              ),
-              const Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Events",
-                      style: TextStyle(
-                          fontSize: 22,
-                          fontFamily: "Poppins",
-                          color: Colors.black,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ],
+                  },
                 ),
-              ),
-              StreamBuilder<List<Course>>(
-                stream: readCourses(type: 'Event'),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final list = snapshot.data!;
+                const Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Events",
+                        style: TextStyle(
+                            fontSize: 22,
+                            fontFamily: "Poppins",
+                            color: Colors.black,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
+                ),
+                StreamBuilder<List<Course>>(
+                  stream: readCoursesNew(type: 'Event'),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final list = snapshot.data!;
 
-                    if (list.isEmpty) {
-                      return const SizedBox(
-                        height: 200,
-                        child: Center(
-                          child: Text('No Events'),
-                        ),
+                      if (list.isEmpty) {
+                        return const SizedBox(
+                          height: 200,
+                          child: Center(
+                            child: Text('No Events'),
+                          ),
+                        );
+                      }
+                      return Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        height: 470,
+                        child: ListView.builder(
+                            itemCount: list.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 2),
+                                child: CoursesWidget(
+                                  item: list[index],
+                                ),
+                              );
+                            }),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text('Error:${snapshot.error}'),
+                      );
+                    } else {
+                      return const Center(
+                        child: CircularProgressIndicator(),
                       );
                     }
-                    return Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      height: 470,
-                      child: ListView.builder(
-                          itemCount: list.length,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 2),
-                              child: CoursesWidget(
-                                item: list[index],
-                              ),
-                            );
-                          }),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error:${snapshot.error}'),
-                    );
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                },
-              ),
+                  },
+                )
+              ],
             ],
           ),
         ),
@@ -493,6 +524,53 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       }).toList();
 
       return courses;
+    });
+  }
+
+  Stream<List<Course>> readCoursesNew({String type = 'Course'}) {
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+        .collection('Program')
+        .where('type', isEqualTo: type)
+        .where('approval', isEqualTo: 'Yes');
+
+    if (widget.searchQuery.isNotEmpty) {
+      query = query
+          .where('title',
+              isGreaterThanOrEqualTo: widget.searchQuery.toLowerCase())
+          .where('title',
+              isLessThanOrEqualTo: widget.searchQuery.toLowerCase() + '\uf8ff');
+    } else {
+      query = query.orderBy('createdAt', descending: true);
+    }
+
+    log('MK: trying to read courses: ${recommendedObjects.length}');
+
+    // Fetch all documents
+    return query.snapshots().map((snapshot) {
+      final courses = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        data['docId'] = doc.id;
+        return Course.fromJson(data);
+      }).toList();
+
+      // Sort courses into recommended and other lists
+      List<Course> recommendedCourses = [];
+      List<Course> otherCourses = [];
+      for (Course course in courses) {
+        if (recommendedObjects.contains(course.docId) &&
+            recommendedCourses.length < 5) {
+          course.isRecommended = true;
+          recommendedCourses.add(course);
+        } else {
+          otherCourses.add(course);
+        }
+      }
+
+      log('MK: recommendedCourses: ${recommendedCourses.length}');
+
+      // Combine recommended and other courses
+      List<Course> sortedCourses = [...recommendedCourses, ...otherCourses];
+      return sortedCourses;
     });
   }
 
@@ -1208,7 +1286,8 @@ class CoursesWidget extends StatelessWidget {
         child: Container(
           width: MediaQuery.of(context).size.width * 0.8,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color:
+                item.isRecommended ? Colors.lightGreen.shade50 : Colors.white,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -1286,7 +1365,8 @@ class CoursesWidget extends StatelessWidget {
                         ),
                         Expanded(
                           child: Text(
-                            '${item.country ?? ''}, ${item.city ?? ''}', // Concatenate country and city with comma
+                            '${item.country ?? ''}, ${item.city ?? ''}',
+                            // Concatenate country and city with comma
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -1435,6 +1515,8 @@ class CoursesWidget extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: TextButton(
                             onPressed: () async {
+                              print('MK: course id: ${item.docId}');
+                              return;
                               if (await canLaunch(item.link!)) {
                                 await launch(item.link!);
                                 await addUserEmailToClickedBy(); // Call function to add email to Firestore

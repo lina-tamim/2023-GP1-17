@@ -17,6 +17,7 @@ class Course {
   final String? city;
   final String? country;
   final String? state;
+  bool isRecommended;
 
   Course({
     this.createdAt,
@@ -35,6 +36,7 @@ class Course {
     this.city,
     this.country,
     this.state,
+    this.isRecommended = false,
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
@@ -77,9 +79,9 @@ class Course {
       'docId': docId,
       'imageURL': imageURL,
       'approval': approval,
-      'city':city,
-      'country':country,
-      'state':state,
+      'city': city,
+      'country': country,
+      'state': state,
     };
   }
 
