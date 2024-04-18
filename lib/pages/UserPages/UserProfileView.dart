@@ -1251,6 +1251,7 @@ class _UserProfileView extends State<UserProfileView>
           'reason': reason,
           'reportDate': DateTime.now(),
           'reportType': 'Account',
+          'reportedUserId': email,
           'status': 'Pending',
         }).catchError((error) {
           print('Error submitting report: $error');

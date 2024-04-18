@@ -171,7 +171,7 @@ Stream<List<Widget>> readReportedAccounts() {
       .collection('Report')
       .where('reportType', isEqualTo: 'Account')
       .where('status', isEqualTo: 'Pending')
-      .orderBy('reportDate', descending: true)
+      .orderBy('reportDate', descending: false)
       .snapshots()
       .asyncMap((snapshot) async {
     final reportedAccounts = <Widget>[];
@@ -337,7 +337,7 @@ Stream<List<Widget>> readReportedAccounts() {
                     ElevatedButton(
                       onPressed: () {
                         acceptReportedAccount(
-                            reportIds as String, username, reasons, email);
+                            reportIds, username, reasons, email);
                       },
                       style: ElevatedButton.styleFrom(
                         primary: Color.fromARGB(255, 22, 146, 0),
@@ -414,8 +414,10 @@ Stream<List<Widget>> readReportedAccounts() {
 
 //
 String status = 'Accepted';
+String status2 = '';
 Stream<List<Widget>> readOldReportedAccounts() {
-  return FirebaseFirestore.instance
+
+ return FirebaseFirestore.instance
       .collection('Report')
       .where('reportType', isEqualTo: 'Account')
       .where('status', whereIn: ['Accepted', 'Rejected'])
@@ -429,7 +431,6 @@ Stream<List<Widget>> readOldReportedAccounts() {
       final data = doc.data();
       final reportedItemId = data['reportedItemId'];
       final reason = data['reason'];
-      status = data['status'];
 
       if (reportedItemsMap.containsKey(reportedItemId)) {
         reportedItemsMap[reportedItemId]!.add(reason);
@@ -456,6 +457,17 @@ Stream<List<Widget>> readOldReportedAccounts() {
             .map((doc) => doc.id)
             .toList();
         final count = await getAccountReportCount(reportedItemId);
+
+
+final statusSnapshot = await FirebaseFirestore.instance
+        .collection('Report')
+        .where('reportedItemId', isEqualTo: reportedItemId)
+        .get();
+
+    String status10 = 'lolo';
+    if (statusSnapshot.docs.isNotEmpty) {
+      status10 = statusSnapshot.docs.first['status'];
+    }
 
         final reasonsWidgets = reasons.map((reason) {
           return Row(
@@ -541,7 +553,7 @@ Stream<List<Widget>> readOldReportedAccounts() {
                             ),
                           ),
                           SizedBox(height: 8),
-                           Text(
+                             Text(
                             'Reasons: ',
                             style: TextStyle(
                               color: Color.fromARGB(255, 92, 0, 0),
@@ -555,23 +567,42 @@ Stream<List<Widget>> readOldReportedAccounts() {
                         ],
                       ),
                     ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                         Text(
-                      '$status',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromRGBO(0, 0, 0, 1),
+                    SizedBox(width: 8),
+                    Tooltip(
+                      child: Container(
+                        padding: EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(217, 122, 1, 1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '$count',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
                       ),
+                      message: 'Total number of reports on this account',
+                      padding: EdgeInsets.all(10),
+                      showDuration: Duration(seconds: 3),
+                      textStyle: TextStyle(color: Colors.white),
+                      preferBelow: false,
                     ),
                   ],
                 ),
-              ],
+                SizedBox(height: 16),
+                Center(
+                  child:  Text(
+                        '$status10',
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 0, 0, 0),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                ),
+  ],
             ),
           ),
         );
@@ -589,7 +620,7 @@ Stream<List<Widget>> readOldReportedAccounts() {
                   SizedBox(height: 280,),
             Center(
               child: Text(
-                "No Previous Reports Found",
+                "No Reports Found",
                 style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.w600,
@@ -660,8 +691,11 @@ Future<void> rejectReportedAccount(List<String> reportIds) async {
 
 
 
-Future<void> acceptReportedAccount(String reportId, String username, List<String> reasons, String email) async {
+Future<void> acceptReportedAccount(List<String> reportIds, String username, List<String> reasons, String email) async {
   try {
+    print('ARRRAAAAYYYYY $reportIds');
+
+    final reportId = reportIds[0];
     // Get the reportedItemId of the current report
     final currentReportSnapshot = await FirebaseFirestore.instance
         .collection('Report')

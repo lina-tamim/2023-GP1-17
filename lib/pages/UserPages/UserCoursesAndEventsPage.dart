@@ -1287,7 +1287,7 @@ class CoursesWidget extends StatelessWidget {
           width: MediaQuery.of(context).size.width * 0.8,
           decoration: BoxDecoration(
             color:
-                item.isRecommended ? Colors.lightGreen.shade50 : Colors.white,
+                item.isRecommended ? Color.fromARGB(255, 240, 245, 254) : Colors.white,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -1516,7 +1516,6 @@ class CoursesWidget extends StatelessWidget {
                           child: TextButton(
                             onPressed: () async {
                               print('MK: course id: ${item.docId}');
-                              return;
                               if (await canLaunch(item.link!)) {
                                 await launch(item.link!);
                                 await addUserEmailToClickedBy(); // Call function to add email to Firestore
