@@ -174,49 +174,50 @@ class _UserPostsPageState extends State<UserPostsPage> {
                 ],
               ),
               SizedBox(height: 5),
-               Text(
+              Text(
                 question.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                 fontSize: 15.4,
+                  fontSize: 15.4,
                 ),
               ),
               SizedBox(height: 5),
-              Text(question.description, style: TextStyle(
-                 fontSize: 15,
-                )),
+              Text(question.description,
+                  style: TextStyle(
+                    fontSize: 15,
+                  )),
             ],
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 7,),
+              SizedBox(
+                height: 7,
+              ),
               Container(
-                              width:
-                                  400, // Set a fixed width for the skills container
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: List.generate(
-                                    question.topics.length,
-                                    (intrestsIndex) {
-                                      final intrest =
-                                          question.topics[intrestsIndex] as String;
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: Chip(
-                                          label: Text(
-                                            intrest,
-                                            style: TextStyle(fontSize: 12.0),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
+                width: 400, // Set a fixed width for the skills container
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(
+                      question.topics.length,
+                      (intrestsIndex) {
+                        final intrest =
+                            question.topics[intrestsIndex] as String;
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Chip(
+                            label: Text(
+                              intrest,
+                              style: TextStyle(fontSize: 12.0),
                             ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
               if (!isReported)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -531,8 +532,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Wrap(
-              spacing:  -5,
-              runSpacing:  -5,
+              spacing: -5,
+              runSpacing: -5,
               children: fandT.topics
                   .map(
                     (topic) => Chip(
@@ -678,8 +679,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Wrap(
-              spacing:  -5,
-              runSpacing:  -5,
+              spacing: -5,
+              runSpacing: -5,
               children: fandT.topics
                   .map(
                     (topic) => Chip(
@@ -951,7 +952,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
 
                           if (t.isEmpty) {
                             return Center(
-                              child: Text('You didn’t post anything yet'),
+                              child: Text('You didn’t post team posts yet'),
                             );
                           }
                           return ListView(
@@ -988,7 +989,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
 
                           if (p.isEmpty) {
                             return Center(
-                              child: Text('You didn’t post anything yet'),
+                              child: Text('You didn’t post project posts yet'),
                             );
                           }
                           return ListView(

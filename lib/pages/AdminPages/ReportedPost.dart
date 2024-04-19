@@ -102,13 +102,13 @@ class _ReportedPostState extends State<ReportedPost> {
           bottom: TabBar(
             indicator: UnderlineTabIndicator(
               borderSide: BorderSide(
-                width: 5.0,
-                color: Color.fromARGB(
-                    255, 27, 5, 230), // Set the color of the underline
+                width: 3.0,
+                color: Color.fromRGBO(37, 6, 81, 0.898),
+                // Set the color of the underline
               ),
               // Adjust the insets if needed
             ),
-            labelColor: Color.fromARGB(255, 27, 5, 230),
+            labelColor: Color.fromARGB(255, 31, 5, 67),
             tabs: [
               Tab(
                 text: 'Active Request',
@@ -129,13 +129,13 @@ class _ReportedPostState extends State<ReportedPost> {
                     TabBar(
                       indicator: UnderlineTabIndicator(
                         borderSide: BorderSide(
-                          width: 5.0,
-                          color: Color.fromARGB(255, 27, 5,
-                              230), // Set the color of the underline
+                          width: 3.0,
+                          color: Color.fromRGBO(37, 6, 81, 0.898),
+                          // Set the color of the underline
                         ),
                         // Adjust the insets if needed
                       ),
-                      labelColor: Color.fromARGB(255, 27, 5, 230),
+                      labelColor: Color.fromARGB(255, 31, 5, 67),
                       tabs: [
                         Tab(
                           text: 'Question',
@@ -219,7 +219,7 @@ class _ReportedPostState extends State<ReportedPost> {
                                 final q = snapshot.data!;
                                 if (q.isEmpty) {
                                   return Center(
-                                    child: Text('No Reported Question'),
+                                    child: Text('No Reported Projects'),
                                   );
                                 }
                                 return ListView(
@@ -283,13 +283,13 @@ class _ReportedPostState extends State<ReportedPost> {
                     TabBar(
                       indicator: UnderlineTabIndicator(
                         borderSide: BorderSide(
-                          width: 5.0,
-                          color: Color.fromARGB(255, 27, 5,
-                              230), // Set the color of the underline
-                        ),
+                            width: 3.0,
+                            color: Color.fromRGBO(37, 6, 81,
+                                0.898) // Set the color of the underline
+                            ),
                         // Adjust the insets if needed
                       ),
-                      labelColor: Color.fromARGB(255, 27, 5, 230),
+                      labelColor: Color.fromARGB(255, 31, 5, 67),
                       tabs: [
                         Tab(
                           text: 'Question',
@@ -373,7 +373,7 @@ class _ReportedPostState extends State<ReportedPost> {
                                 final q = snapshot.data!;
                                 if (q.isEmpty) {
                                   return Center(
-                                    child: Text('No Reported Question'),
+                                    child: Text('No Reported Projects Post'),
                                   );
                                 }
                                 return ListView(
@@ -401,7 +401,7 @@ class _ReportedPostState extends State<ReportedPost> {
                                 final a = snapshot.data!;
                                 if (a.isEmpty) {
                                   return Center(
-                                    child: Text('No Answers yet'),
+                                    child: Text('No Reported Answers Post'),
                                   );
                                 }
                                 return ListView(
@@ -526,17 +526,6 @@ class _ReportedPostState extends State<ReportedPost> {
         questions.addAll(batchQuestions);
       }
 
-      // final questionDocs = await FirebaseFirestore.instance
-      //     .collection('Question')
-      //     .where(FieldPath.documentId, whereIn: questionIds)
-      //     .get();
-
-      // final questions = questionDocs.docs.map((doc) {
-      //   Map<String, dynamic> data = doc.data()!;
-      //   data['docId'] = doc.id;
-      //   return CardQview.fromJson(data);
-      // }).toList();
-
       return questions;
     });
   }
@@ -552,59 +541,70 @@ class _ReportedPostState extends State<ReportedPost> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
-              GestureDetector(
-                onTap: () {
-                  if (question.userId != null &&
-                      question.userId.isNotEmpty &&
-                      question.userId != "DeactivatedUser") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            UserProfileView(userId: question.userId),
-                      ),
-                    );
-                  }
-                },
-                child: Row(
-                  children: [
-                    Text(
-                      question.username ?? '', // Display the username
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 34, 3, 87),
-                          fontSize: 16),
-                    ),
-                    if (question.userType == "Freelancer")
-                      Icon(
-                        Icons.verified,
-                        color: Colors.deepPurple,
-                        size: 20,
-                      ),
-                    SizedBox(
-                      width: 170,
-                    ),
-                    if (question.reportIds != null &&
-                        question.reportIds!
-                            .isNotEmpty) // Condition to check if reports exist
-                      Container(
-                          padding: EdgeInsets.all(6),
-                          margin: EdgeInsets.only(
-                              left: 5), // Adjust margin as needed
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color.fromARGB(217, 122, 1, 1),
+              Stack(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (question.userId != null &&
+                          question.userId.isNotEmpty &&
+                          question.userId != "DeactivatedUser") {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                UserProfileView(userId: question.userId),
                           ),
-                          child: Text(
-                            '${question.reportIds!.length}',
-                            // Show the number of reports
-                            style: TextStyle(
-                              color: Colors.white,
+                        );
+                      }
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          question.username ?? '', // Display the username
+                          style: TextStyle(
                               fontWeight: FontWeight.bold,
-                            ),
-                          ))
-                  ],
-                ),
+                              color: const Color.fromARGB(255, 34, 3, 87),
+                              fontSize: 16),
+                        ),
+                        if (question.userType == "Freelancer")
+                          Icon(
+                            Icons.verified,
+                            color: Colors.deepPurple,
+                            size: 20,
+                          ),
+                        SizedBox(
+                          width: 140,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top:
+                        -8, // Adjust this value to give the tooltip some extra space from the top
+                    child: Tooltip(
+                      child: Container(
+                        padding: EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color.fromARGB(217, 122, 1, 1),
+                        ),
+                        child: Text(
+                          '${question.reportIds!.length}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      message: 'Total number of reports on this post',
+                      padding: EdgeInsets.all(10),
+                      showDuration: Duration(seconds: 3),
+                      textStyle: TextStyle(color: Colors.white),
+                      preferBelow: true,
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 5),
               Text(
@@ -770,7 +770,6 @@ class _ReportedPostState extends State<ReportedPost> {
         List<String> batchIds = questionIds.sublist(
             i, (i + 10 < questionIds.length) ? i + 10 : questionIds.length);
 
-        if (batchIds.isEmpty) continue;
         final questionDocs = await FirebaseFirestore.instance
             .collection('Question')
             .where(FieldPath.documentId, whereIn: batchIds)
@@ -782,24 +781,21 @@ class _ReportedPostState extends State<ReportedPost> {
           return CardQview.fromJson(data);
         }).toList();
 
-        final userIds = questions.map((question) => question.userId).toSet();
+        final userIds =
+            batchQuestions.map((question) => question.userId).toSet();
+        final userDocs = await FirebaseFirestore.instance
+            .collection('RegularUser')
+            .where('email', whereIn: userIds.toList())
+            .get();
 
-        dynamic userMap = {};
-        if (userIds.isNotEmpty) {
-          final userDocs = await FirebaseFirestore.instance
-              .collection('RegularUser')
-              .where('email', whereIn: userIds.toList())
-              .get();
+        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+          userDocs.docs.map((doc) => MapEntry(
+                doc.data()!['email'] as String,
+                doc.data()! as Map<String, dynamic>,
+              )),
+        );
 
-          userMap = Map<String, Map<String, dynamic>>.fromEntries(
-            userDocs.docs.map((doc) => MapEntry(
-                  doc.data()!['email'] as String,
-                  doc.data()! as Map<String, dynamic>,
-                )),
-          );
-        }
-
-        questions.forEach((question) {
+        batchQuestions.forEach((question) {
           final userDoc = userMap[question.userId];
           final username = userDoc?['username'] as String? ?? '';
           final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
@@ -807,7 +803,6 @@ class _ReportedPostState extends State<ReportedPost> {
           final reportedPostsForQuestion = reportedPosts
               .where((post) => post['reportedItemId'] == question.questionDocId)
               .toList();
-
           final reasons = reportedPostsForQuestion
               .map((post) => post['reason'] as String)
               .toList();
@@ -828,197 +823,168 @@ class _ReportedPostState extends State<ReportedPost> {
           question.username = username;
           question.userPhotoUrl = userPhotoUrl;
           question.reasons =
-              reasons; // Modify CardQview to hold a list of reasons
+              reasons; // Add a list property to CardQview to hold reasons
           question.reportIds =
-              reportIds; // Modify CardQview to hold a list of report IDs
+              reportIds; // Add a list property to CardQview to hold reportIds
         });
 
         questions.addAll(batchQuestions);
       }
 
-      // final questionDocs = await FirebaseFirestore.instance
-      //     .collection('Question')
-      //     .where(FieldPath.documentId, whereIn: questionIds)
-      //     .get();
-      //
-      // final questions = questionDocs.docs.map((doc) {
-      //   Map<String, dynamic> data = doc.data()!;
-      //   data['docId'] = doc.id;
-      //   return CardQview.fromJson(data);
-      // }).toList();
-
       return questions;
     });
   }
 
-  Widget buildOldQuestionCard(CardQview question, String postId) => Card(
-        child: ListTile(
-          leading: CircleAvatar(
-            backgroundImage: question.userPhotoUrl != null
-                ? NetworkImage(question.userPhotoUrl!)
-                : null,
-          ),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 5),
-              GestureDetector(
-                onTap: () {
-                  if (question.userId != null &&
-                      question.userId.isNotEmpty &&
-                      question.userId != "DeactivatedUser") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            UserProfileView(userId: question.userId),
-                      ),
-                    );
-                  }
-                },
-                child: Row(
-                  children: [
-                    Text(
-                      question.username ?? '', // Display the username
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 34, 3, 87),
-                          fontSize: 16),
-                    ),
-                    if (question.userType == "Freelancer")
-                      Icon(
-                        Icons.verified,
-                        color: Colors.deepPurple,
-                        size: 20,
-                      ),
-                    SizedBox(
-                      width: 170,
-                    ),
-                    if (question.reportIds != null &&
-                        question.reportIds!
-                            .isNotEmpty) // Condition to check if reports exist
-                      Container(
-                          padding: EdgeInsets.all(6),
-                          margin: EdgeInsets.only(
-                              left: 5), // Adjust margin as needed
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color.fromARGB(217, 122, 1, 1),
-                          ),
-                          child: Text(
-                            '${question.reportIds!.length}',
-                            // Show the number of reports
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ))
-                  ],
-                ),
-              ),
-              SizedBox(height: 5),
-              Text(
-                question.title,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15.4,
-                ),
-              ),
-              SizedBox(height: 5),
-              Text(question.description,
-                  style: TextStyle(
-                    fontSize: 15,
-                  )),
-              SizedBox(height: 5),
-            ],
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 7,
-              ),
-              Container(
-                width: 400, // Set a fixed width for the skills container
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: List.generate(
-                      question.topics.length,
-                      (intrestsIndex) {
-                        final intrest =
-                            question.topics[intrestsIndex] as String;
-                        return Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Chip(
-                            label: Text(
-                              intrest,
-                              style: TextStyle(fontSize: 12.0),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.comment,
-                        color: Color.fromARGB(255, 63, 63, 63)),
-                    onPressed: () {
+  Widget buildOldQuestionCard(CardQview question, String postId) {
+    return Card(
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundImage: question.userPhotoUrl != null
+              ? NetworkImage(question.userPhotoUrl!)
+              : null,
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 5),
+            Stack(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    if (question.userId != null &&
+                        question.userId.isNotEmpty &&
+                        question.userId != "DeactivatedUser") {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => AnswerPage(
-                                questionDocId: question.questionDocId)),
+                          builder: (context) =>
+                              UserProfileView(userId: question.userId),
+                        ),
+                      );
+                    }
+                  },
+                  child: Row(
+                    children: [
+                      Text(
+                        question.username ?? '', // Display the username
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: const Color.fromARGB(255, 34, 3, 87),
+                            fontSize: 16),
+                      ),
+                      if (question.userType == "Freelancer")
+                        Icon(
+                          Icons.verified,
+                          color: Colors.deepPurple,
+                          size: 20,
+                        ),
+                      SizedBox(
+                        width: 140,
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  right: 0,
+                  top:
+                      -8, // Adjust this value to give the tooltip some extra space from the top
+                  child: Tooltip(
+                    child: Container(
+                      padding: EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color.fromARGB(217, 122, 1, 1),
+                      ),
+                      child: Text(
+                        '${question.reportIds!.length}',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    message: 'Total number of reports on this post',
+                    padding: EdgeInsets.all(10),
+                    showDuration: Duration(seconds: 3),
+                    textStyle: TextStyle(color: Colors.white),
+                    preferBelow: true,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 5),
+            Text(
+              question.title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15.4,
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(
+              question.description ?? '', // Ensure description is not null
+              style: TextStyle(
+                fontSize: 15,
+              ),
+            ),
+            SizedBox(height: 5),
+          ],
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 7),
+            Container(
+              width: 400,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(
+                    question.topics.length,
+                    (index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Chip(
+                          label: Text(
+                            question.topics[index],
+                            style: TextStyle(fontSize: 12.0),
+                          ),
+                        ),
                       );
                     },
                   ),
-                ],
-              ),
-              Container(
-                width: 550.0,
-                height: 1.0,
-                color: Colors.grey, // Customize the color if needed
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                "Reasons: ${question.reasons?.join(', ')}",
-                // Display the reason here
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 92, 0, 0),
                 ),
               ),
-              SizedBox(
-                height: 10,
+            ),
+            SizedBox(height: 10),
+            Text(
+              "Reasons: ${question.reasons?.isNotEmpty == true ? question.reasons!.join(', ') : 'Reasons not provided'}",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 92, 0, 0),
               ),
-              Text(
-                "Report Date: ${DateFormat('dd/MM/yyyy').format(question.reportDate)}",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 92, 0, 0),
-                ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              "Report Date: ${DateFormat('dd/MM/yyyy').format(question.reportDate)}",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 92, 0, 0),
               ),
-              SizedBox(
-                height: 20,
+            ),
+            SizedBox(height: 20),
+            Text(
+              "Report Accepted",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 2, 106, 8),
               ),
-              Text(
-                "Report Accepted",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 2, 106, 8),
-                ),
-              )
-            ],
-          ),
+            )
+          ],
         ),
-      );
+      ),
+    );
+  }
 
   ////END QUESTION
   //////TEAM
@@ -1114,17 +1080,6 @@ class _ReportedPostState extends State<ReportedPost> {
         teams.addAll(batchQuestions);
       }
 
-      // final teamDocs = await FirebaseFirestore.instance
-      //     .collection('Team')
-      //     .where(FieldPath.documentId, whereIn: teamIds)
-      //     .get();
-      //
-      // final teams = teamDocs.docs.map((doc) {
-      //   Map<String, dynamic> data = doc.data()!;
-      //   data['docId'] = doc.id;
-      //   return CardFT.fromJson(data);
-      // }).toList();
-
       return teams;
     });
   }
@@ -1133,7 +1088,6 @@ class _ReportedPostState extends State<ReportedPost> {
     return FirebaseFirestore.instance
         .collection('Report')
         .where('status', isEqualTo: 'Accepted') // Filter by status
-
         .orderBy('reportType', descending: true)
         .snapshots()
         .asyncMap((snapshot) async {
@@ -1169,9 +1123,9 @@ class _ReportedPostState extends State<ReportedPost> {
           data['docId'] = doc.id;
           return CardFT.fromJson(data);
         }).toList();
-
         // Get user-related information for each question
-        final userIds = teams.map((team) => team.userId).toSet();
+        final userIds = batchQuestions.map((team) => team.userId).toSet();
+
         dynamic userMap = {};
         if (userIds.isNotEmpty) {
           final userDocs = await FirebaseFirestore.instance
@@ -1187,7 +1141,7 @@ class _ReportedPostState extends State<ReportedPost> {
           );
         }
 
-        teams.forEach((team) {
+        batchQuestions.forEach((team) {
           final userDoc = userMap[team.userId];
           final username = userDoc?['username'] as String? ?? '';
           final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
@@ -1221,17 +1175,6 @@ class _ReportedPostState extends State<ReportedPost> {
         teams.addAll(batchQuestions);
       }
 
-      // final teamDocs = await FirebaseFirestore.instance
-      //     .collection('Team')
-      //     .where(FieldPath.documentId, whereIn: teamIds)
-      //     .get();
-      //
-      // final teams = teamDocs.docs.map((doc) {
-      //   Map<String, dynamic> data = doc.data()!;
-      //   data['docId'] = doc.id;
-      //   return CardFT.fromJson(data);
-      // }).toList();
-
       return teams;
     });
   }
@@ -1247,59 +1190,70 @@ class _ReportedPostState extends State<ReportedPost> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
-              GestureDetector(
-                onTap: () {
-                  if (team.userId != null &&
-                      team.userId.isNotEmpty &&
-                      team.userId != "DeactivatedUser") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            UserProfileView(userId: team.userId),
-                      ),
-                    );
-                  }
-                },
-                child: Row(
-                  children: [
-                    Text(
-                      team.username ?? '', // Display the username
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 34, 3, 87),
-                          fontSize: 16),
-                    ),
-                    if (team.userType == "Freelancer")
-                      Icon(
-                        Icons.verified,
-                        color: Colors.deepPurple,
-                        size: 20,
-                      ),
-                    SizedBox(
-                      width: 170,
-                    ),
-                    if (team.reportDocids != null &&
-                        team.reportDocids!
-                            .isNotEmpty) // Condition to check if reports exist
-                      Container(
-                          padding: EdgeInsets.all(6),
-                          margin: EdgeInsets.only(
-                              left: 5), // Adjust margin as needed
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color.fromARGB(217, 122, 1, 1),
+              Stack(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (team.userId != null &&
+                          team.userId.isNotEmpty &&
+                          team.userId != "DeactivatedUser") {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                UserProfileView(userId: team.userId),
                           ),
-                          child: Text(
-                            '${team.reportDocids!.length}',
-                            // Show the number of reports
-                            style: TextStyle(
-                              color: Colors.white,
+                        );
+                      }
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          team.username ?? '', // Display the username
+                          style: TextStyle(
                               fontWeight: FontWeight.bold,
-                            ),
-                          ))
-                  ],
-                ),
+                              color: const Color.fromARGB(255, 34, 3, 87),
+                              fontSize: 16),
+                        ),
+                        if (team.userType == "Freelancer")
+                          Icon(
+                            Icons.verified,
+                            color: Colors.deepPurple,
+                            size: 20,
+                          ),
+                        SizedBox(
+                          width: 160,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    right: 3,
+                    top: -6,
+                    child: Tooltip(
+                      child: Container(
+                        padding: EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(217, 122, 1, 1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '${team.reportDocids!.length}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      message: 'Total number of reports on this post',
+                      padding: EdgeInsets.all(10),
+                      showDuration: Duration(seconds: 3),
+                      textStyle: TextStyle(color: Colors.white),
+                      preferBelow:
+                          true, // Ensure the tooltip appears below the widget
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 5),
               Text(
@@ -1413,59 +1367,70 @@ class _ReportedPostState extends State<ReportedPost> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
-              GestureDetector(
-                onTap: () {
-                  if (team.userId != null &&
-                      team.userId.isNotEmpty &&
-                      team.userId != "DeactivatedUser") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            UserProfileView(userId: team.userId),
-                      ),
-                    );
-                  }
-                },
-                child: Row(
-                  children: [
-                    Text(
-                      team.username ?? '', // Display the username
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 34, 3, 87),
-                          fontSize: 16),
-                    ),
-                    if (team.userType == "Freelancer")
-                      Icon(
-                        Icons.verified,
-                        color: Colors.deepPurple,
-                        size: 20,
-                      ),
-                    SizedBox(
-                      width: 170,
-                    ),
-                    if (team.reportDocids != null &&
-                        team.reportDocids!
-                            .isNotEmpty) // Condition to check if reports exist
-                      Container(
-                          padding: EdgeInsets.all(6),
-                          margin: EdgeInsets.only(
-                              left: 5), // Adjust margin as needed
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color.fromARGB(217, 122, 1, 1),
+              Stack(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (team.userId != null &&
+                          team.userId.isNotEmpty &&
+                          team.userId != "DeactivatedUser") {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                UserProfileView(userId: team.userId),
                           ),
-                          child: Text(
-                            '${team.reportDocids!.length}',
-                            // Show the number of reports
-                            style: TextStyle(
-                              color: Colors.white,
+                        );
+                      }
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          team.username ?? '', // Display the username
+                          style: TextStyle(
                               fontWeight: FontWeight.bold,
-                            ),
-                          ))
-                  ],
-                ),
+                              color: const Color.fromARGB(255, 34, 3, 87),
+                              fontSize: 16),
+                        ),
+                        if (team.userType == "Freelancer")
+                          Icon(
+                            Icons.verified,
+                            color: Colors.deepPurple,
+                            size: 20,
+                          ),
+                        SizedBox(
+                          width: 160,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    right: 3,
+                    top: -6,
+                    child: Tooltip(
+                      child: Container(
+                        padding: EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(217, 122, 1, 1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '${team.reportDocids!.length}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      message: 'Total number of reports on this post',
+                      padding: EdgeInsets.all(10),
+                      showDuration: Duration(seconds: 3),
+                      textStyle: TextStyle(color: Colors.white),
+                      preferBelow:
+                          true, // Ensure the tooltip appears below the widget
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 5),
               Text(
@@ -1543,7 +1508,6 @@ class _ReportedPostState extends State<ReportedPost> {
     return FirebaseFirestore.instance
         .collection('Report')
         .where('status', isEqualTo: 'Pending') // Filter by status
-
         .orderBy('reportType', descending: true)
         .snapshots()
         .asyncMap((snapshot) async {
@@ -1580,8 +1544,7 @@ class _ReportedPostState extends State<ReportedPost> {
           return CardFT.fromJson(data);
         }).toList();
         // Get user-related information for each question
-        // Get user-related information for each question
-        final userIds = projects.map((project) => project.userId).toSet();
+        final userIds = batchQuestions.map((project) => project.userId).toSet();
 
         dynamic userMap = {};
         if (userIds.isNotEmpty) {
@@ -1598,7 +1561,7 @@ class _ReportedPostState extends State<ReportedPost> {
           );
         }
 
-        projects.forEach((project) {
+        batchQuestions.forEach((project) {
           final userDoc = userMap[project.userId];
           final username = userDoc?['username'] as String? ?? '';
           final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
@@ -1632,17 +1595,6 @@ class _ReportedPostState extends State<ReportedPost> {
 
         projects.addAll(batchQuestions);
       }
-
-      // final projectDocs = await FirebaseFirestore.instance
-      //     .collection('Project')
-      //     .where(FieldPath.documentId, whereIn: projectIds)
-      //     .get();
-      //
-      // final projects = projectDocs.docs.map((doc) {
-      //   Map<String, dynamic> data = doc.data()!;
-      //   data['docId'] = doc.id;
-      //   return CardFT.fromJson(data);
-      // }).toList();
 
       return projects;
     });
@@ -1652,7 +1604,6 @@ class _ReportedPostState extends State<ReportedPost> {
     return FirebaseFirestore.instance
         .collection('Report')
         .where('status', isEqualTo: 'Accepted') // Filter by status
-
         .orderBy('reportType', descending: true)
         .snapshots()
         .asyncMap((snapshot) async {
@@ -1688,9 +1639,9 @@ class _ReportedPostState extends State<ReportedPost> {
           data['docId'] = doc.id;
           return CardFT.fromJson(data);
         }).toList();
-
         // Get user-related information for each question
-        final userIds = projects.map((project) => project.userId).toSet();
+        final userIds = batchQuestions.map((project) => project.userId).toSet();
+
         dynamic userMap = {};
         if (userIds.isNotEmpty) {
           final userDocs = await FirebaseFirestore.instance
@@ -1706,7 +1657,7 @@ class _ReportedPostState extends State<ReportedPost> {
           );
         }
 
-        projects.forEach((project) {
+        batchQuestions.forEach((project) {
           final userDoc = userMap[project.userId];
           final username = userDoc?['username'] as String? ?? '';
           final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
@@ -1740,17 +1691,6 @@ class _ReportedPostState extends State<ReportedPost> {
 
         projects.addAll(batchQuestions);
       }
-
-      // final projectDocs = await FirebaseFirestore.instance
-      //     .collection('Project')
-      //     .where(FieldPath.documentId, whereIn: projectIds)
-      //     .get();
-      //
-      // final projects = projectDocs.docs.map((doc) {
-      //   Map<String, dynamic> data = doc.data()!;
-      //   data['docId'] = doc.id;
-      //   return CardFT.fromJson(data);
-      // }).toList();
 
       return projects;
     });
@@ -1762,7 +1702,6 @@ class _ReportedPostState extends State<ReportedPost> {
     return FirebaseFirestore.instance
         .collection('Report')
         .where('status', isEqualTo: 'Pending') // Filter by status
-
         .orderBy('reportType', descending: true)
         .snapshots()
         .asyncMap((snapshot) async {
@@ -1776,110 +1715,65 @@ class _ReportedPostState extends State<ReportedPost> {
         return data;
       }).toList();
 
-      final AnswerIds = reportedPosts
+      final answerIds = reportedPosts
           .map((post) => post['reportedItemId'] as String)
           .toList();
 
-      List<CardAnswer> Answers = [];
+      List<CardAnswer> answers = [];
 
       // Paginate the query to avoid `whereIn` limitations
-      for (int i = 0; i < AnswerIds.length; i += 10) {
-        List<String> batchIds = AnswerIds.sublist(
-            i, (i + 10 < AnswerIds.length) ? i + 10 : AnswerIds.length);
+      for (int i = 0; i < answerIds.length; i += 10) {
+        List<String> batchIds = answerIds.sublist(
+            i, (i + 10 < answerIds.length) ? i + 10 : answerIds.length);
 
         if (batchIds.isEmpty) continue;
-        final questionDocs = await FirebaseFirestore.instance
+        final answerDocs = await FirebaseFirestore.instance
             .collection('Answer')
             .where(FieldPath.documentId, whereIn: batchIds)
             .get();
 
-        final batchQuestions = questionDocs.docs.map((doc) {
+        final batchAnswers = answerDocs.docs.map((doc) {
           Map<String, dynamic> data = doc.data()!;
           data['docId'] = doc.id;
           return CardAnswer.fromJson(data);
         }).toList();
 
-        final userIds = Answers.map((Answer) => Answer.userId).toSet();
-        dynamic userMap = {};
-        if (userIds.isNotEmpty) {
-          final userDocs = await FirebaseFirestore.instance
-              .collection('RegularUser')
-              .where('email', whereIn: userIds.toList())
-              .get();
+        final userIds = batchAnswers.map((answer) => answer.userId).toSet();
+        final userDocs = await FirebaseFirestore.instance
+            .collection('RegularUser')
+            .where('email', whereIn: userIds.toList())
+            .get();
 
-          userMap = Map<String, Map<String, dynamic>>.fromEntries(
-            userDocs.docs.map((doc) => MapEntry(
-                  doc.data()!['email'] as String,
-                  doc.data()! as Map<String, dynamic>,
-                )),
-          );
-        }
-/*
-      Answers.forEach((Answer) {
-        final userDoc = userMap[Answer.userId];
-        final username = userDoc?['username'] as String? ?? '';
-        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-
-        final reportedPost = reportedPosts.firstWhere(
-          (post) => post['reportedItemId'] == Answer.docId, //
-          orElse: () => <String, dynamic>{},
+        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+          userDocs.docs.map((doc) => MapEntry(
+                doc.data()!['email'] as String,
+                doc.data()! as Map<String, dynamic>,
+              )),
         );
-        final reason = reportedPost['reason'] as String? ?? '';
-        final reportDocid = reportedPost['reportedPostId'] as String? ?? '';
 
-        Answer.userType = userDoc?['userType'] as String? ?? "";
-        Answer.username = username;
-        Answer.userPhotoUrl = userPhotoUrl;
-        Answer.reason = reason;
-        Answer.reportDocid = reportDocid;
-      });*/
-        Answers.forEach((Answer) {
-          final userDoc = userMap[Answer.userId];
+        batchAnswers.forEach((answer) {
+          final userDoc = userMap[answer.userId];
           final username = userDoc?['username'] as String? ?? '';
           final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
 
-          final AnswerReports = reportedPosts
-              .where((post) => post['reportedItemId'] == Answer.docId)
-              .toList();
+          final reportedPost = reportedPosts.firstWhere(
+            (post) => post['reportedItemId'] == answer.docId,
+            orElse: () => <String, dynamic>{},
+          );
+          final reasons = reportedPost['reason'] as String? ?? '';
+          final reportDocid = reportedPost['reportedPostId'] as String? ?? '';
 
-          final reasons =
-              AnswerReports.map((report) => report['reason'] as String)
-                  .toList();
-          final reportIds =
-              AnswerReports.map((report) => report['reportedPostId'] as String)
-                  .toList();
-
-          final reportDate =
-              AnswerReports.map((report) => report['reportDate'] as Timestamp?)
-                  .where((date) => date != null)
-                  .toList();
-
-          Answer.reportDate = reportDate.isNotEmpty
-              ? reportDate.first!.toDate()
-              : DateTime.now();
-
-          Answer.userType = userDoc?['userType'] as String? ?? '';
-          Answer.username = username;
-          Answer.userPhotoUrl = userPhotoUrl;
-          Answer.reasons = reasons;
-          Answer.reportDocids = reportIds;
+          answer.userType = userDoc?['userType'] as String? ?? "";
+          answer.username = username;
+          answer.userPhotoUrl = userPhotoUrl;
+          answer.reason = reasons;
+          answer.reportDocid = reportDocid;
         });
 
-        Answers.addAll(batchQuestions);
+        answers.addAll(batchAnswers);
       }
 
-      // final AnswerDocs = await FirebaseFirestore.instance
-      //     .collection('Answer')
-      //     .where(FieldPath.documentId, whereIn: AnswerIds)
-      //     .get();
-      //
-      // final Answers = AnswerDocs.docs.map((doc) {
-      //   Map<String, dynamic> data = doc.data()!;
-      //   data['docId'] = doc.id;
-      //   return CardAnswer.fromJson(data);
-      // }).toList();
-
-      return Answers;
+      return answers;
     });
   }
 
@@ -2064,56 +1958,71 @@ class _ReportedPostState extends State<ReportedPost> {
               SizedBox(height: 5),
               Row(
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      if (answer.userId != null &&
-                          answer.userId.isNotEmpty &&
-                          answer.userId != "DeactivatedUser") {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                UserProfileView(userId: answer.userId),
-                          ),
-                        );
-                      }
-                    },
-                    child: Text(
-                      answer.username ?? '',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple,
-                      ),
-                    ),
-                  ),
-                  if (answer.userType == "Freelancer")
-                    Icon(
-                      Icons.verified,
-                      color: Colors.deepPurple,
-                      size: 20,
-                    ),
-                  SizedBox(
-                    width: 170,
-                  ),
-                  if (answer.reportDocids != null &&
-                      answer.reportDocids!
-                          .isNotEmpty) // Condition to check if reports exist
-                    Container(
-                        padding: EdgeInsets.all(6),
-                        margin:
-                            EdgeInsets.only(left: 5), // Adjust margin as needed
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color.fromARGB(217, 122, 1, 1),
+                  Stack(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          if (answer.userId != null &&
+                              answer.userId.isNotEmpty &&
+                              answer.userId != "DeactivatedUser") {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    UserProfileView(userId: answer.userId),
+                              ),
+                            );
+                          }
+                        },
+                        child: Row(
+                          children: [
+                            Text(
+                              answer.username ?? '', // Display the username
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color.fromARGB(255, 34, 3, 87),
+                                  fontSize: 16),
+                            ),
+                            if (answer.userType == "Freelancer")
+                              Icon(
+                                Icons.verified,
+                                color: Colors.deepPurple,
+                                size: 20,
+                              ),
+                            SizedBox(
+                              width: 160,
+                            ),
+                          ],
                         ),
-                        child: Text(
-                          '${answer.reportDocids!.length}',
-                          // Show the number of reports
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                      ),
+                      Positioned(
+                        right: 3,
+                        top: -6,
+                        child: Tooltip(
+                          child: Container(
+                            padding: EdgeInsets.all(7),
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(217, 122, 1, 1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              '${answer.reportDocids!.length}',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            ),
                           ),
-                        ))
+                          message: 'Total number of reports on this post',
+                          padding: EdgeInsets.all(10),
+                          showDuration: Duration(seconds: 3),
+                          textStyle: TextStyle(color: Colors.white),
+                          preferBelow:
+                              true, // Ensure the tooltip appears below the widget
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
               SizedBox(height: 10),

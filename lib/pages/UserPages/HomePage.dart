@@ -40,13 +40,13 @@ class __FHomePageState extends State<FHomePage> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-//search extention 
+//search extention
 
-final Algolia algolia = Algolia.init(
-  applicationId: 'PTLT3VDSB8',
-  apiKey: '6236d82b883664fa54ad458c616d39ca',
-);
-String currentTab = "None";
+  final Algolia algolia = Algolia.init(
+    applicationId: 'PTLT3VDSB8',
+    apiKey: '6236d82b883664fa54ad458c616d39ca',
+  );
+  String currentTab = "None";
 //
 // lina add
   String? selectedOption;
@@ -226,49 +226,33 @@ String currentTab = "None";
       FormWidget(),
     );
   }
-List<String> searchQuestionIds = [];
+
+  List<String> searchQuestionIds = [];
 
   Future<Stream<List<CardQuestion>>> readQuestionSearch() async {
-  if (searchController.text.isNotEmpty) {
-    
-    final String searchText = searchController.text;
+    if (searchController.text.isNotEmpty) {
+      final String searchText = searchController.text;
 
-    // Perform Algolia search for questions, searching within the postDescription field
-    final AlgoliaQuerySnapshot response = await algolia
-        .instance
-        .index('Question_index')
-        .query(searchText)
-        .getObjects();
-print("###########");
-print(response);
-    final List<AlgoliaObjectSnapshot> hits = response.hits;
-    final List<String> questionIds =
-        hits.map((snapshot) => snapshot.objectID).toList();
-searchQuestionIds.clear();
-searchQuestionIds.addAll(questionIds); // Add the IDs to the list
-print("DDDDDDDDDDDDdd");
-print(searchQuestionIds);
-    final snapshot = await FirebaseFirestore.instance
-        .collection('Question')
-        .where(FieldPath.documentId, whereIn: questionIds)
-        .get();
-print("###########");
-print(snapshot);
-    final questions = snapshot.docs.map((doc) {
-      final questionData = doc.data() as Map<String, dynamic>;
-      final question = CardQuestion.fromJson(questionData);
-      question.docId = doc.id; // Set the docId to the actual document ID
-      return question;
-    }).toList();
-
-    return Stream.value(questions);
-  } else {
-    Query<Map<String, dynamic>> query =
-        FirebaseFirestore.instance.collection('Question');
-
-    query = query.orderBy('postedDate', descending: true);
-
-    return query.snapshots().map((snapshot) {
+      // Perform Algolia search for questions, searching within the postDescription field
+      final AlgoliaQuerySnapshot response = await algolia.instance
+          .index('Question_index')
+          .query(searchText)
+          .getObjects();
+      print("###########");
+      print(response);
+      final List<AlgoliaObjectSnapshot> hits = response.hits;
+      final List<String> questionIds =
+          hits.map((snapshot) => snapshot.objectID).toList();
+      searchQuestionIds.clear();
+      searchQuestionIds.addAll(questionIds); // Add the IDs to the list
+      print("DDDDDDDDDDDDdd");
+      print(searchQuestionIds);
+      final snapshot = await FirebaseFirestore.instance
+          .collection('Question')
+          .where(FieldPath.documentId, whereIn: questionIds)
+          .get();
+      print("###########");
+      print(snapshot);
       final questions = snapshot.docs.map((doc) {
         final questionData = doc.data() as Map<String, dynamic>;
         final question = CardQuestion.fromJson(questionData);
@@ -276,15 +260,30 @@ print(snapshot);
         return question;
       }).toList();
 
-      return questions;
-    });
+      return Stream.value(questions);
+    } else {
+      Query<Map<String, dynamic>> query =
+          FirebaseFirestore.instance.collection('Question');
+
+      query = query.orderBy('postedDate', descending: true);
+
+      return query.snapshots().map((snapshot) {
+        final questions = snapshot.docs.map((doc) {
+          final questionData = doc.data() as Map<String, dynamic>;
+          final question = CardQuestion.fromJson(questionData);
+          question.docId = doc.id; // Set the docId to the actual document ID
+          return question;
+        }).toList();
+
+        return questions;
+      });
+    }
   }
-}
 
   Stream<List<CardQuestion>> readQuestion() {
-    Query<Map<String, dynamic>> query =
-        FirebaseFirestore.instance.collection('Question')
-         .orderBy('postedDate', descending: true);
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+        .collection('Question')
+        .orderBy('postedDate', descending: true);
 
     return query.snapshots().asyncMap((snapshot) async {
       final questions = snapshot.docs.map((doc) {
@@ -351,12 +350,12 @@ print(snapshot);
           .where((question) =>
               !recommendedQuestionIds.contains(question.questionDocId))
           .toList();
-      if (searchController.text.isNotEmpty ) {
+      if (searchController.text.isNotEmpty) {
         print("inside the otheeeeeeeeeeeeeeeeeeeeeer!!!!!!!!!!!");
-      filteredQuestions = filteredQuestions
-          .where((question) => searchQuestionIds.contains(question.docId))
-          .toList();
-    }
+        filteredQuestions = filteredQuestions
+            .where((question) => searchQuestionIds.contains(question.docId))
+            .toList();
+      }
       return filteredQuestions;
     });
   }
@@ -429,59 +428,43 @@ print(snapshot);
               .firstWhere((question) => question.questionDocId == id))
           .toList();
 
-    if (searchController.text.isNotEmpty ) {
-      print("2222222222222222222");
-      filteredQuestions = filteredQuestions
-          .where((question) => searchQuestionIds.contains(question.docId))
-          .toList();
-    }
+      if (searchController.text.isNotEmpty) {
+        print("2222222222222222222");
+        filteredQuestions = filteredQuestions
+            .where((question) => searchQuestionIds.contains(question.docId))
+            .toList();
+      }
 
       return filteredQuestions;
     });
   }
-List<String> searchTeamIds = [];
 
-Future<Stream<List<CardFT>>> readTeamSearch() async {
-  if (searchController.text.isNotEmpty) {
-  
-    final String searchText = searchController.text;
+  List<String> searchTeamIds = [];
 
-    // Perform Algolia search for questions, searching within the postDescription field
-    final AlgoliaQuerySnapshot response = await algolia
-        .instance
-        .index('Team_index')
-        .query(searchText)
-        .getObjects();
-print("###########");
-print(response);
-    final List<AlgoliaObjectSnapshot> hits = response.hits;
-    final List<String> questionIds =
-        hits.map((snapshot) => snapshot.objectID).toList();
-  searchTeamIds.clear();
-searchTeamIds.addAll(questionIds); // Add the IDs to the list
-print("wwwwwwwwwwwww");
-print(searchTeamIds);
-    final snapshot = await FirebaseFirestore.instance
-        .collection('Team')
-        .where(FieldPath.documentId, whereIn: questionIds)
-        .get();
-print("###########");
-print(snapshot);
-    final questions = snapshot.docs.map((doc) {
-      final questionData = doc.data() as Map<String, dynamic>;
-      final question = CardFT.fromJson(questionData);
-      question.docId = doc.id; // Set the docId to the actual document ID
-      return question;
-    }).toList();
+  Future<Stream<List<CardFT>>> readTeamSearch() async {
+    if (searchController.text.isNotEmpty) {
+      final String searchText = searchController.text;
 
-    return Stream.value(questions);
-  } else {
-    Query<Map<String, dynamic>> query =
-        FirebaseFirestore.instance.collection('Team');
-
-    query = query.orderBy('postedDate', descending: true);
-
-    return query.snapshots().map((snapshot) {
+      // Perform Algolia search for questions, searching within the postDescription field
+      final AlgoliaQuerySnapshot response = await algolia.instance
+          .index('Team_index')
+          .query(searchText)
+          .getObjects();
+      print("###########");
+      print(response);
+      final List<AlgoliaObjectSnapshot> hits = response.hits;
+      final List<String> questionIds =
+          hits.map((snapshot) => snapshot.objectID).toList();
+      searchTeamIds.clear();
+      searchTeamIds.addAll(questionIds); // Add the IDs to the list
+      print("wwwwwwwwwwwww");
+      print(searchTeamIds);
+      final snapshot = await FirebaseFirestore.instance
+          .collection('Team')
+          .where(FieldPath.documentId, whereIn: questionIds)
+          .get();
+      print("###########");
+      print(snapshot);
       final questions = snapshot.docs.map((doc) {
         final questionData = doc.data() as Map<String, dynamic>;
         final question = CardFT.fromJson(questionData);
@@ -489,16 +472,30 @@ print(snapshot);
         return question;
       }).toList();
 
-      return questions;
-    });
-  }
-}
-  Stream<List<CardFT>> readTeam() {
-    Query<Map<String, dynamic>> query =
-        FirebaseFirestore.instance.collection('Team')
-        .orderBy('postedDate', descending: true);
+      return Stream.value(questions);
+    } else {
+      Query<Map<String, dynamic>> query =
+          FirebaseFirestore.instance.collection('Team');
 
-   
+      query = query.orderBy('postedDate', descending: true);
+
+      return query.snapshots().map((snapshot) {
+        final questions = snapshot.docs.map((doc) {
+          final questionData = doc.data() as Map<String, dynamic>;
+          final question = CardFT.fromJson(questionData);
+          question.docId = doc.id; // Set the docId to the actual document ID
+          return question;
+        }).toList();
+
+        return questions;
+      });
+    }
+  }
+
+  Stream<List<CardFT>> readTeam() {
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+        .collection('Team')
+        .orderBy('postedDate', descending: true);
 
     return query.snapshots().asyncMap((snapshot) async {
       final questions = snapshot.docs.map((doc) {
@@ -556,57 +553,42 @@ print(snapshot);
       List<CardFT> filteredQuestions = questions
           .where((question) => !acceptedQuestionIds.contains(question.docId))
           .toList();
-if (searchController.text.isNotEmpty && currentTab == "Team") {
-       filteredQuestions = filteredQuestions
-          .where((question) => searchTeamIds.contains(question.docId))
-          .toList();
-    }
+      if (searchController.text.isNotEmpty && currentTab == "Team") {
+        filteredQuestions = filteredQuestions
+            .where((question) => searchTeamIds.contains(question.docId))
+            .toList();
+      }
       return filteredQuestions;
     });
   }
-List<String> searchProjectIds = [];
 
-Future<Stream<List<CardFT>>> readProjectSearch() async {
-  if (searchController.text.isNotEmpty) {
-    final String searchText = searchController.text;
+  List<String> searchProjectIds = [];
 
-    // Perform Algolia search for questions, searching within the postDescription field
-    final AlgoliaQuerySnapshot response = await algolia
-        .instance
-        .index('Project_index')
-        .query(searchText)
-        .getObjects();
-print("###########PPPPP");
-print(response);
-    final List<AlgoliaObjectSnapshot> hits = response.hits;
-    final List<String> projectIds =
-        hits.map((snapshot) => snapshot.objectID).toList();
+  Future<Stream<List<CardFT>>> readProjectSearch() async {
+    if (searchController.text.isNotEmpty) {
+      final String searchText = searchController.text;
 
- searchProjectIds.clear();
-searchProjectIds.addAll(projectIds); // Add the IDs to the list
-print("wwwwwwwwwwwwwPPPPPPPPPP");
-print(searchProjectIds);
-    final snapshot = await FirebaseFirestore.instance
-        .collection('Project')
-        .where(FieldPath.documentId, whereIn: projectIds)
-        .get();
-print("###########");
-print(snapshot);
-    final projects = snapshot.docs.map((doc) {
-      final projectData = doc.data() as Map<String, dynamic>;
-      final project = CardFT.fromJson(projectData);
-      project.docId = doc.id; // Set the docId to the actual document ID
-      return project;
-    }).toList();
+      // Perform Algolia search for questions, searching within the postDescription field
+      final AlgoliaQuerySnapshot response = await algolia.instance
+          .index('Project_index')
+          .query(searchText)
+          .getObjects();
+      print("###########PPPPP");
+      print(response);
+      final List<AlgoliaObjectSnapshot> hits = response.hits;
+      final List<String> projectIds =
+          hits.map((snapshot) => snapshot.objectID).toList();
 
-    return Stream.value(projects);
-  } else {
-    Query<Map<String, dynamic>> query =
-        FirebaseFirestore.instance.collection('Project');
-
-    query = query.orderBy('postedDate', descending: true);
-
-    return query.snapshots().map((snapshot) {
+      searchProjectIds.clear();
+      searchProjectIds.addAll(projectIds); // Add the IDs to the list
+      print("wwwwwwwwwwwwwPPPPPPPPPP");
+      print(searchProjectIds);
+      final snapshot = await FirebaseFirestore.instance
+          .collection('Project')
+          .where(FieldPath.documentId, whereIn: projectIds)
+          .get();
+      print("###########");
+      print(snapshot);
       final projects = snapshot.docs.map((doc) {
         final projectData = doc.data() as Map<String, dynamic>;
         final project = CardFT.fromJson(projectData);
@@ -614,13 +596,29 @@ print(snapshot);
         return project;
       }).toList();
 
-      return projects;
-    });
+      return Stream.value(projects);
+    } else {
+      Query<Map<String, dynamic>> query =
+          FirebaseFirestore.instance.collection('Project');
+
+      query = query.orderBy('postedDate', descending: true);
+
+      return query.snapshots().map((snapshot) {
+        final projects = snapshot.docs.map((doc) {
+          final projectData = doc.data() as Map<String, dynamic>;
+          final project = CardFT.fromJson(projectData);
+          project.docId = doc.id; // Set the docId to the actual document ID
+          return project;
+        }).toList();
+
+        return projects;
+      });
+    }
   }
-}
+
   Stream<List<CardFT>> readProjects() {
-    Query<Map<String, dynamic>> query =
-        FirebaseFirestore.instance.collection('Project')
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+        .collection('Project')
         .orderBy('postedDate', descending: true);
 
     return query.snapshots().asyncMap((snapshot) async {
@@ -675,11 +673,11 @@ print(snapshot);
       List<CardFT> filteredQuestions = questions
           .where((question) => !acceptedQuestionIds.contains(question.docId))
           .toList();
-if (searchController.text.isNotEmpty && currentTab == "Project") {
-       filteredQuestions = filteredQuestions
-          .where((question) => searchProjectIds.contains(question.docId))
-          .toList();
-    } 
+      if (searchController.text.isNotEmpty && currentTab == "Project") {
+        filteredQuestions = filteredQuestions
+            .where((question) => searchProjectIds.contains(question.docId))
+            .toList();
+      }
       return filteredQuestions;
     });
   }
@@ -1892,11 +1890,9 @@ if (searchController.text.isNotEmpty && currentTab == "Project") {
                           color: Color.fromRGBO(37, 6, 81, 0.898),
                         ),
                       ),
-                      if(!showSearchBar)
-                      const SizedBox(width: 150),
-                      if(showSearchBar)
-                      const SizedBox(width: 220),
-                       IconButton(
+                      if (!showSearchBar) const SizedBox(width: 150),
+                      if (showSearchBar) const SizedBox(width: 220),
+                      IconButton(
                         onPressed: () {
                           setState(() {
                             showSearchBar = !showSearchBar;
@@ -1907,45 +1903,41 @@ if (searchController.text.isNotEmpty && currentTab == "Project") {
                       ),
                     ],
                   ),
-                
                   if (showSearchBar)
                     Container(
-                    height: 40.0, // Adjust the height as needed
-                    child: TextField(
-                      controller: searchController,
-                      decoration: InputDecoration(
-                        hintText: 'Search...',
-                        hintStyle: TextStyle(color: Colors.grey),
-                        prefixIcon: Icon(Icons.search, color: Colors.grey),
-                        filled: true,
-                        fillColor:  Color.fromARGB(255, 242, 241, 243),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                          //borderSide: BorderSide.bottom ,
+                      height: 40.0, // Adjust the height as needed
+                      child: TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search...',
+                          hintStyle: TextStyle(color: Colors.grey),
+                          prefixIcon: Icon(Icons.search, color: Colors.grey),
+                          filled: true,
+                          fillColor: Color.fromARGB(255, 242, 241, 243),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            //borderSide: BorderSide.bottom ,
+                          ),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10.0),
+                          isDense: false,
                         ),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-                        isDense: false,
+                        style: TextStyle(color: Colors.black, fontSize: 14.0),
+                        onChanged: (text) {
+                          setState(() {
+                            if (currentTab == "Question") {
+                              print("inside the calling!!!!!!!!!!!");
+                              readQuestionSearch();
+                            }
+                            if (currentTab == "Team") {
+                              readTeamSearch();
+                            }
+                            if (currentTab == "Project") {
+                              readProjectSearch();
+                            }
+                          });
+                        },
                       ),
-                      style: TextStyle(color: Colors.black, fontSize: 14.0),
-                      onChanged: (text) {
-                        setState(() {
-                           if(currentTab =="Question") {
-                            print("inside the calling!!!!!!!!!!!");
-                            readQuestionSearch();
-                           
-                          }
-                          if(currentTab == "Team"){
-                            readTeamSearch();
-                           
-                          }
-                           if(currentTab == "Project"){
-                            readProjectSearch();
-                           
-                          }
-                        });
-                         
-                      },
-                    ),
                     ),
                 ],
               ),
@@ -2158,9 +2150,10 @@ if (searchController.text.isNotEmpty && currentTab == "Project") {
       String relevant = isThumbUp ? 'Yes' : 'No';
 
       await FirebaseFirestore.instance.collection('RecommenderMeasure').add({
-        'questionId': question.questionDocId,
+        'recommendedItemId': question.questionDocId,
         'relevant': relevant,
         'userId': email,
+        'type': "Question",
       });
       toastMessage('Feedback Send');
     } catch (error) {
