@@ -65,7 +65,8 @@ class _ReportedPostState extends State<ReportedPost> {
                         color: Color.fromRGBO(37, 6, 81, 0.898),
                       ),
                     ),
-                    const SizedBox(width: 140),
+                    Spacer(),
+                    // const SizedBox(width: 140),
                     IconButton(
                       onPressed: () {
                         setState(() {
@@ -478,6 +479,8 @@ class _ReportedPostState extends State<ReportedPost> {
 
         final userIds =
             batchQuestions.map((question) => question.userId).toSet();
+        print('userIds: ${userIds} $batchQuestions');
+        if (batchQuestions.isEmpty || userIds.isEmpty) continue;
         final userDocs = await FirebaseFirestore.instance
             .collection('RegularUser')
             .where('email', whereIn: userIds.toList())
@@ -580,8 +583,8 @@ class _ReportedPostState extends State<ReportedPost> {
                   ),
                   Positioned(
                     right: 0,
-                    top:
-                        -8, // Adjust this value to give the tooltip some extra space from the top
+                    top: -8,
+                    // Adjust this value to give the tooltip some extra space from the top
                     child: Tooltip(
                       child: Container(
                         padding: EdgeInsets.all(6),
@@ -783,6 +786,7 @@ class _ReportedPostState extends State<ReportedPost> {
 
         final userIds =
             batchQuestions.map((question) => question.userId).toSet();
+        if (batchQuestions.isEmpty || userIds.isEmpty) continue;
         final userDocs = await FirebaseFirestore.instance
             .collection('RegularUser')
             .where('email', whereIn: userIds.toList())
@@ -886,8 +890,8 @@ class _ReportedPostState extends State<ReportedPost> {
                 ),
                 Positioned(
                   right: 0,
-                  top:
-                      -8, // Adjust this value to give the tooltip some extra space from the top
+                  top: -8,
+                  // Adjust this value to give the tooltip some extra space from the top
                   child: Tooltip(
                     child: Container(
                       padding: EdgeInsets.all(6),
@@ -1710,7 +1714,7 @@ class _ReportedPostState extends State<ReportedPost> {
       }
 
       final reportedPosts = snapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data()!;
+        Map<String, dynamic> data = doc.data();
         data['reportedPostId'] = doc.id;
         return data;
       }).toList();
@@ -1733,12 +1737,13 @@ class _ReportedPostState extends State<ReportedPost> {
             .get();
 
         final batchAnswers = answerDocs.docs.map((doc) {
-          Map<String, dynamic> data = doc.data()!;
+          Map<String, dynamic> data = doc.data();
           data['docId'] = doc.id;
           return CardAnswer.fromJson(data);
         }).toList();
 
         final userIds = batchAnswers.map((answer) => answer.userId).toSet();
+        if (batchAnswers.isEmpty || userIds.isEmpty) continue;
         final userDocs = await FirebaseFirestore.instance
             .collection('RegularUser')
             .where('email', whereIn: userIds.toList())
@@ -1760,14 +1765,25 @@ class _ReportedPostState extends State<ReportedPost> {
             (post) => post['reportedItemId'] == answer.docId,
             orElse: () => <String, dynamic>{},
           );
-          final reasons = reportedPost['reason'] as String? ?? '';
+          final answerReports = reportedPosts
+              .where((post) => post['reportedItemId'] == answer.docId)
+              .toList();
+          final reportIds =
+              answerReports.map((e) => e['reportedPostId'] as String).toList();
+          final reason = reportedPost['reason'] as String? ?? '';
           final reportDocid = reportedPost['reportedPostId'] as String? ?? '';
+
+          final reasons = answerReports
+              .map((report) => report['reason'] as String)
+              .toList();
+          answer.reasons = reasons;
 
           answer.userType = userDoc?['userType'] as String? ?? "";
           answer.username = username;
           answer.userPhotoUrl = userPhotoUrl;
-          answer.reason = reasons;
+          answer.reason = reason;
           answer.reportDocid = reportDocid;
+          answer.reportDocids = reportIds;
         });
 
         answers.addAll(batchAnswers);
@@ -1947,10 +1963,11 @@ class _ReportedPostState extends State<ReportedPost> {
       child: Card(
         child: ListTile(
           leading: CircleAvatar(
-            backgroundImage: answer.userPhotoUrl != ''
-                ? NetworkImage(answer.userPhotoUrl!)
-                : AssetImage('assets/Backgrounds/defaultUserPic.png')
-                    as ImageProvider<Object>,
+            backgroundImage:
+                answer.userPhotoUrl != '' && answer.userPhotoUrl != null
+                    ? NetworkImage(answer.userPhotoUrl!)
+                    : AssetImage('assets/Backgrounds/defaultUserPic.png')
+                        as ImageProvider<Object>,
           ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1962,8 +1979,7 @@ class _ReportedPostState extends State<ReportedPost> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          if (answer.userId != null &&
-                              answer.userId.isNotEmpty &&
+                          if (answer.userId.isNotEmpty &&
                               answer.userId != "DeactivatedUser") {
                             Navigator.push(
                               context,
@@ -2006,7 +2022,7 @@ class _ReportedPostState extends State<ReportedPost> {
                               shape: BoxShape.circle,
                             ),
                             child: Text(
-                              '${answer.reportDocids!.length}',
+                              '${answer.reportDocids?.length ?? 0}',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
