@@ -53,74 +53,97 @@ class _UserExplorePageState extends State<UserExplorePage>
     super.dispose();
   }
 
-  AppBar buildAppBarWithTabs(
-      String titleText, TabController tabController, _loggedInImage) {
+ AppBar buildAppBarWithTabs(String titleText, TabController tabController) {
     return AppBar(
-      backgroundColor: Color.fromARGB(255, 242, 241, 243),
       automaticallyImplyLeading: false,
       iconTheme: IconThemeData(
-        color: Color.fromRGBO(37, 6, 81, 0.898),
-      ),
-      toolbarHeight: 80,
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
+    color: Color.fromRGBO(37, 6, 81, 0.898),
+  ),
+      backgroundColor:   Color.fromARGB(255, 242, 241, 243),
+      toolbarHeight: 90, 
+      elevation: 0, 
+       flexibleSpace: Stack(
+    children: [
+      Container(
+        width: double.infinity,
+        height: double.infinity,
+        alignment: Alignment.bottomCenter,
+        padding: EdgeInsets.only(bottom: 1),
+        child: Container(
+          height: 3,
+          color: const Color.fromARGB(60, 158, 158, 158), // Set the color of the horizontal bar
         ),
       ),
-      title: Builder(
-        builder: (context) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                if (_loggedInImage.isNotEmpty)
-                  GestureDetector(
-                    onTap: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                    child: CircleAvatar(
-                      radius: 25,
-                      backgroundImage: NetworkImage(_loggedInImage),
-                    ),
-                  ),
-                const SizedBox(width: 8),
-                const Text(
-                  'Explore',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: "Poppins",
-                    color: Color.fromRGBO(37, 6, 81, 0.898),
-                  ),
-                ),
-                const SizedBox(width: 120),
-                IconButton(
+      Container(),
+    ],
+  ),
+     /* shape: const ContinuousRectangleBorder(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(130),
+          bottomRight: Radius.circular(130),
+        ),
+      ),*/
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Builder(builder: (context) {
+                return IconButton(
                   onPressed: () {
-                    setState(() {
-                      showSearchBar = !showSearchBar;
-                    });
+                    Scaffold.of(context).openDrawer();
                   },
-                  icon: Icon(showSearchBar ? Icons.search_off : Icons.search),
+                  icon: Icon(Icons.menu),
+                );
+              }),
+              Text(
+                'Explore',
+                style: TextStyle(
+                  fontSize: 18, // Adjust the font size
+                  fontFamily: "Poppins",
+                  color:const Color.fromRGBO(0, 0, 0, 0.894),
                 ),
-              ],
+              ),
+              Spacer(),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    showSearchBar = !showSearchBar;
+                  });
+                },
+                icon: Icon(showSearchBar ? Icons.search_off : Icons.search),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 0,
+          ),
+          if (showSearchBar)
+            TextField(
+              controller: searchController,
+              decoration: const InputDecoration(
+                hintText: 'Search...',
+                prefixIcon: Icon(Icons.search),
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 0,
+                ),
+                isDense: true,
+              ),
+              onChanged: (text) {
+                setState(() {});
+              },
             ),
-          ],
-        ),
+        ],
       ),
       bottom: TabBar(
-        controller: tabController,
-        indicator: UnderlineTabIndicator(
-          borderSide: BorderSide(
-            width: 5.0,
-            color: Color.fromARGB(255, 0, 0, 0), // Set the color of the underline
-          ),
-          // Adjust the insets if needed
-        ),
-        labelColor: Color.fromARGB(255, 0, 0, 0),
+        controller: tabController, 
+        indicator: BoxDecoration(),
         tabs: [
-          Tab(
-            child: Text(
-              'Courses and Events',
+           Tab(
+            child: Text('Courses and Events',
               style: TextStyle(
                 fontSize: 16,
+                color:const Color.fromRGBO(0, 0, 0, 0.894),
               ),
             ),
           ),
@@ -129,6 +152,7 @@ class _UserExplorePageState extends State<UserExplorePage>
               'Pathways',
               style: TextStyle(
                 fontSize: 16,
+                color:const Color.fromRGBO(0, 0, 0, 0.894), 
               ),
             ),
           ),
@@ -137,10 +161,12 @@ class _UserExplorePageState extends State<UserExplorePage>
     );
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBarWithTabs('Explore', _tabController, _loggedInImage),
+      appBar: buildAppBarWithTabs('Explore', _tabController),
       drawer: NavBarUser(),
       body: TabBarView(
         controller: _tabController,

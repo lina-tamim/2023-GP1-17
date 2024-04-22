@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:algolia/algolia.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ int _currentIndex = 0;
 class _ReportedAccountsPageState extends State<ReportedAccountsPage> {
   final searchController = TextEditingController();
   bool showSearchBar = false;
-
+  String currentTab = "None";
 @override
 Widget build(BuildContext context) {
   return DefaultTabController(
@@ -90,6 +91,13 @@ Widget build(BuildContext context) {
                     onChanged: (text) {
                       setState(() {});
                       // Handle search input changes
+                      if(currentTab =="ActiveReport"){
+                          searchReportAlgolia();
+                      }
+
+                      if(currentTab =="OldReport"){
+                          searchOldReportAlgolia();
+                      }
                     },
                   ),
               ],
@@ -125,6 +133,7 @@ Widget build(BuildContext context) {
               child: StreamBuilder<List<Widget>>(
                 stream: readReportedAccounts(),
                 builder: (context, snapshot) {
+                  currentTab ="ActiveReport";
                   if (snapshot.hasData) {
                     final reportedAccounts = snapshot.data!;
                     return ListView(
@@ -145,6 +154,7 @@ Widget build(BuildContext context) {
               child: StreamBuilder<List<Widget>>(
                 stream: readOldReportedAccounts(),
                 builder: (context, snapshot) {
+                  currentTab ="OldReport";
                   if (snapshot.hasData) {
                     final oldReportedAccounts = snapshot.data!;
                     return ListView(
@@ -166,6 +176,36 @@ Widget build(BuildContext context) {
 }
 
 //
+
+//search
+final Algolia algolia = Algolia.init(
+  applicationId: 'PTLT3VDSB8',
+  apiKey: '6236d82b883664fa54ad458c616d39ca',
+);
+
+List<String> searchActiveReportIds = [];
+Future<List<String>> searchReportAlgolia() async {
+  
+  final AlgoliaQuerySnapshot response = await algolia
+      .instance
+      .index('Report_index')
+      .query(searchController.text)
+      .facetFilter('reportType:Account')
+      .facetFilter('status:Pending')
+      .getObjects();
+print("###########PPPPP");
+print(response);
+searchActiveReportIds.clear();
+  final List<AlgoliaObjectSnapshot> hits = response.hits;
+  final List<String> objectIDs =
+      hits.map((snapshot) => snapshot.objectID).toList();
+//searchActiveReportIds = objectIDs;
+ 
+searchActiveReportIds.addAll(objectIDs);
+print("22222222222222222222222222222222222222222$searchActiveReportIds");
+  return searchActiveReportIds;
+}
+
 Stream<List<Widget>> readReportedAccounts() {
   return FirebaseFirestore.instance
       .collection('Report')
@@ -220,6 +260,13 @@ Stream<List<Widget>> readReportedAccounts() {
             ],
           );
         }).toList();
+
+   if (searchController.text.isNotEmpty &&
+            !reportIds.any((id) => searchActiveReportIds.contains(id))) {
+          print("I skipped since there is no report!!!!!!!!!!!!!!!!!!!!");
+          print(reportIds);
+          continue; // Skip this iteration if none of the reportIds are found in searchActiveReportIds
+        }
 
         final card = Card(
           elevation: 4,
@@ -415,6 +462,24 @@ Stream<List<Widget>> readReportedAccounts() {
 //
 String status = 'Accepted';
 String status2 = '';
+//search
+List<String> searchOldReportIds = [];
+Future<List<String>> searchOldReportAlgolia() async {
+  final AlgoliaQuerySnapshot response = await algolia
+      .instance
+      .index('Report_index')
+      .query(searchController.text)
+      .facetFilter('reportType:Account')
+      
+      .getObjects();
+searchOldReportIds.clear();
+  final List<AlgoliaObjectSnapshot> hits = response.hits;
+  final List<String> objectIDs =
+      hits.map((snapshot) => snapshot.objectID).toList();
+searchOldReportIds.addAll(objectIDs);
+  return searchOldReportIds;
+}
+
 Stream<List<Widget>> readOldReportedAccounts() {
 
  return FirebaseFirestore.instance
@@ -481,7 +546,11 @@ final statusSnapshot = await FirebaseFirestore.instance
             ],
           );
         }).toList();
-
+ if (searchController.text.isNotEmpty && !reportIds.any((id) => searchOldReportIds.contains(id))) {
+  print("I didn't skip since there is a report!!!!!!!!!!!!!!!!!!!!");
+  print(reportIds);
+  continue; // Skip this iteration if none of the reportIds are found in searchReportIds
+}
         final card = Card(
           elevation: 4,
           shape: RoundedRectangleBorder(

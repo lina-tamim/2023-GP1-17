@@ -1,3 +1,4 @@
+import 'package:algolia/algolia.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -32,6 +33,11 @@ class _AdminCoursesAndEventsRequestsPageState
   List<String> courseType = ["Course", "Event"];
   String selectedCourseType = "Course";
   bool showSearchBar = false;
+
+  final Algolia algolia = Algolia.init(
+  applicationId: 'PTLT3VDSB8',
+  apiKey: '6236d82b883664fa54ad458c616d39ca',
+);
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +99,7 @@ class _AdminCoursesAndEventsRequestsPageState
                   onChanged: (text) {
                     setState(() {});
                     // Handle search input changes
+                    readRequestSearch();
                   },
                 ),
             ],
@@ -254,31 +261,82 @@ class _AdminCoursesAndEventsRequestsPageState
       ),
     );
   }
+List<String> searchRequestsIds =[];
+Future<Stream<List<Course>>> readRequestSearch() async {
+  if (searchController.text.isNotEmpty) {
+    //final String searchText = searchController.text;
+
+    // Perform Algolia search for questions, searching within the postDescription field
+    final AlgoliaQuerySnapshot response = await algolia
+        .instance
+        .index('Program_index')
+        .query(searchController.text)
+        .facetFilter('approval:Pending')
+        .getObjects();
+print("###########PPPPP");
+print(response);
+searchRequestsIds.clear();
+    final List<AlgoliaObjectSnapshot> hits = response.hits;
+    final List<String> projectIds =
+        hits.map((snapshot) => snapshot.objectID).toList();
+
+searchRequestsIds.addAll(projectIds); // Add the IDs to the list
+print("wwwwwwwwwwwwwPPPPPPPPPP");
+//print(searchProjectIds);
+    final snapshot = await FirebaseFirestore.instance
+        .collection('Program')
+        .where(FieldPath.documentId, whereIn: projectIds)
+        .get();
+print("###########");
+print(snapshot);
+    final projects = snapshot.docs.map((doc) {
+      final projectData = doc.data() as Map<String, dynamic>;
+      final project =  Course.fromJson(projectData);
+      project.docId = doc.id; // Set the docId to the actual document ID
+      return project;
+    }).toList();
+
+    return Stream.value(projects);
+  } else {
+    Query<Map<String, dynamic>> query =
+        FirebaseFirestore.instance.collection('Program');
+
+    query = query.orderBy('postedDate', descending: true);
+
+    return query.snapshots().map((snapshot) {
+      final projects = snapshot.docs.map((doc) {
+        final projectData = doc.data() as Map<String, dynamic>;
+        final project = Course.fromJson(projectData);
+        project.docId = doc.id; // Set the docId to the actual document ID
+        return project;
+      }).toList();
+
+      return projects;
+    });
+  }
+}
 
   Stream<List<Course>> readCourses({String type = 'Course'}) {
     Query<Map<String, dynamic>> query = FirebaseFirestore.instance
         .collection('Program')
         .where('type', isEqualTo: type)
-        .where('approval', isEqualTo: 'Pending');
+        .where('approval', isEqualTo: 'Pending')
+           .orderBy('createdAt', descending: true);
 
-    if (searchController.text.isNotEmpty) {
-      query = query
-          .where('title',
-              isGreaterThanOrEqualTo: searchController.text.toLowerCase())
-          .where('title',
-              isLessThanOrEqualTo:
-                  searchController.text.toLowerCase() + '\uf8ff');
-    } else {
-      query = query.orderBy('createdAt', descending: true);
-    }
 
+    
+List<Course> courses =[];
     return query.snapshots().asyncMap((snapshot) async {
-      final courses = snapshot.docs.map((doc) {
+       courses = snapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data();
         data['docId'] = doc.id;
         return Course.fromJson(data);
       }).toList();
-
+if (searchController.text.isNotEmpty) {
+       courses = courses
+          .where((question) => searchRequestsIds.contains(question.docId))
+          .toList();
+    } 
       return courses;
     });
   }

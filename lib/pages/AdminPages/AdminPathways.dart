@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:algolia/algolia.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path_provider/path_provider.dart';
+//import 'package:firebase_storage/firebasege.dart';
+//import 'package:path_provider/path_pr.dart';
 import 'package:flutter/services.dart' show ByteData, rootBundle;
 import 'package:path/path.dart' as path;
 import 'package:url_launcher/url_launcher.dart';
@@ -64,6 +67,11 @@ class _AdminPathwaysState extends State<AdminPathways> {
   List<String> newResources = [];
   File? newProfilePicture;
   String defaultImagePath = 'assets/Backgrounds/defaultPathwayImage.png';
+//search
+final Algolia algolia = Algolia.init(
+  applicationId: 'PTLT3VDSB8',
+  apiKey: '6236d82b883664fa54ad458c616d39ca',
+);
 
 Future<void> fetchData(PathwayContainer pathway) async {
   SharedPreferences pre = await SharedPreferences.getInstance();
@@ -491,27 +499,78 @@ Future<void> fetchData(PathwayContainer pathway) async {
   TextEditingController searchpathController = TextEditingController();
 
   //
+List<String> searchPathwayIds =[];
+Future<Stream<List<PathwayContainer>>> readPathwaySearch() async {
+  if (searchController.text.isNotEmpty) {
+    //final String searchText = searchController.text;
+
+    // Perform Algolia search for questions, searching within the postDescription field
+    final AlgoliaQuerySnapshot response = await algolia
+        .instance
+        .index('Pathway_index')
+        .query(searchController.text)
+        .getObjects();
+print("###########PPPPP");
+print(response);
+    final List<AlgoliaObjectSnapshot> hits = response.hits;
+    final List<String> pathwayIds =
+        hits.map((snapshot) => snapshot.objectID).toList();
+
+ searchPathwayIds.clear();
+searchPathwayIds.addAll(pathwayIds); // Add the IDs to the list
+print("wwwwwwwwwwwwwPPPPPPPPPP");
+//print(searchProjectIds);
+    final snapshot = await FirebaseFirestore.instance
+        .collection('Pathway')
+        .where(FieldPath.documentId, whereIn: pathwayIds)
+        .get();
+print("###########");
+print(snapshot);
+    final pathways = snapshot.docs.map((doc) {
+      final pathwayData = doc.data() as Map<String, dynamic>;
+      final pathway =  PathwayContainer.fromJson(pathwayData);
+      pathway.docIdSearch = doc.id; // Set the docId to the actual document ID
+      return pathway;
+    }).toList();
+
+    return Stream.value(pathways);
+  } else {
+    Query<Map<String, dynamic>> query =
+        FirebaseFirestore.instance.collection('Pathway');
+
+    query = query.orderBy('postedDate', descending: true);
+
+    return query.snapshots().map((snapshot) {
+      final pathways = snapshot.docs.map((doc) {
+        final pathwayData = doc.data() as Map<String, dynamic>;
+        final pathway = PathwayContainer.fromJson(pathwayData);
+        pathway.docIdSearch = doc.id; // Set the docId to the actual document ID
+        return pathway;
+      }).toList();
+
+      return pathways;
+    });
+  }
+}
 
   Stream<List<PathwayContainer>> readPathway() {
     Query<Map<String, dynamic>> query =
         FirebaseFirestore.instance.collection('Pathway');
 
-    // search
 
-    if (searchpathController.text.isNotEmpty) {
-      query = query
-          .where('title', isGreaterThanOrEqualTo: searchpathController.text)
-          .where('title',
-              isLessThanOrEqualTo: searchpathController.text + '\uf8ff');
-    }
-
+List<PathwayContainer> pathway =[];
     return query.snapshots().asyncMap((snapshot) async {
-      final pathway = snapshot.docs
+       pathway = snapshot.docs
           .map((doc) =>
               PathwayContainer.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
       if (pathway.isEmpty) return [];
-
+if (searchController.text.isNotEmpty) {
+       pathway = pathway
+          .where((path) => searchPathwayIds.contains(path.pathwayDocId))
+          .toList();
+          
+    } 
       return pathway;
     });
   }
@@ -731,6 +790,7 @@ Future<void> fetchData(PathwayContainer pathway) async {
                   onChanged: (text) {
                     setState(() {});
                     // Handle search input changes
+                    readPathwaySearch();
                   },
                 ),
             ],

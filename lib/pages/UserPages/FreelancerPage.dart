@@ -1,3 +1,4 @@
+import 'package:algolia/algolia.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -20,6 +21,13 @@ class _FreelancerPageState extends State<FreelancerPage> {
   String _loggedInImage = '';
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<Map<String, dynamic>> _freelancers = [];
+bool showSearchBar = false;
+  TextEditingController searchController = TextEditingController();
+
+ final Algolia algolia = Algolia.init(
+    applicationId: 'PTLT3VDSB8',
+    apiKey: '6236d82b883664fa54ad458c616d39ca',
+  );
 
   @override
   void initState() {
@@ -27,6 +35,16 @@ class _FreelancerPageState extends State<FreelancerPage> {
     fetchUserData();
     fetchFreelancers();
   }
+
+  @override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+  searchController.addListener(onSearchTextChanged);
+}
+
+void onSearchTextChanged() {
+  fetchFreelancers();
+}
 
   // Fetch user data for the logged-in user
   Future<void> fetchUserData() async {
@@ -48,9 +66,51 @@ class _FreelancerPageState extends State<FreelancerPage> {
       });
     }
   }
+  List<String> searchFreelancerIds = [];
+
+Future<List<String>> searchOldReportAlgolia() async {
+  final AlgoliaQuerySnapshot response = await algolia
+      .instance
+      .index('RegularUser_index')
+      .query(searchController.text)
+      .facetFilter('userType:Freelancer')
+      .getObjects();
+print("&&&&&&&&&&&&&&&&&&&&&&&&");
+print(response);
+searchFreelancerIds.clear();
+
+  final List<AlgoliaObjectSnapshot> hits = response.hits;
+  final List<String> objectIDs =
+      hits.map((snapshot) => snapshot.objectID).toList();
+
+searchFreelancerIds.addAll(objectIDs);
+
+  return searchFreelancerIds;
+}
 
   // Fetch freelancers data
-  Future<void> fetchFreelancers() async {
+Future<void> fetchFreelancers() async {
+  if (searchController.text.isNotEmpty) {
+    if (searchFreelancerIds.isNotEmpty) {
+      print("2333333333333333333333333333333");
+      final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+          .collection('RegularUser')
+          .where('userType', isEqualTo: 'Freelancer')
+          .where(FieldPath.documentId, whereIn: searchFreelancerIds)
+          .get();
+
+      final List<Map<String, dynamic>> freelancers =
+          snapshot.docs.map((doc) => doc.data()).toList();
+
+      setState(() {
+        _freelancers = freelancers;
+      });
+    } else {
+      setState(() {
+        _freelancers = []; // Clear the freelancers list when the searchFreelancerIds list is empty
+      });
+    }
+  } else {
     final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
         .collection('RegularUser')
         .where('userType', isEqualTo: 'Freelancer')
@@ -63,15 +123,120 @@ class _FreelancerPageState extends State<FreelancerPage> {
       _freelancers = freelancers;
     });
   }
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavBarUser(),
-      appBar: buildAppBarUser('Freelancers', _loggedInImage),
+      appBar:AppBar(
+  automaticallyImplyLeading: false,
+  backgroundColor: Color.fromARGB(255, 242, 241, 243),
+  elevation: 0,
+  iconTheme: IconThemeData(
+    color: Color.fromRGBO(37, 6, 81, 0.898),
+  ),
+  toolbarHeight: 90,
+  flexibleSpace: Stack(
+    children: [
+      Container(
+        width: double.infinity,
+        height: double.infinity,
+        alignment: Alignment.bottomCenter,
+        padding: EdgeInsets.only(bottom: 1),
+        child: Container(
+          height: 3,
+          color: const Color.fromARGB(60, 158, 158, 158), // Set the color of the horizontal bar
+        ),
+      ),
+      Container(),
+    ],
+  ),
+  title: Builder(
+    builder: (context) => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            if (_loggedInImage.isNotEmpty)
+              GestureDetector(
+                onTap: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                child: CircleAvatar(
+                  radius: 25,
+                  backgroundImage: NetworkImage(_loggedInImage),
+                ),
+              ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Row(
+                children: [
+                  Text(
+                    "Freelancers",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontFamily: "Poppins",
+                      color: Color.fromRGBO(0, 0, 0, 0.894),
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        showSearchBar = !showSearchBar;
+                      });
+                    },
+                    icon: Icon(
+                      showSearchBar ? Icons.search_off : Icons.search,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        if (showSearchBar)
+          Container(
+            height: 40.0, // Adjust the height as needed
+            child: TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Search...',
+                hintStyle: TextStyle(color: Colors.grey),
+                prefixIcon: Icon(Icons.search, color: Colors.grey),
+                filled: true,
+                fillColor: Color.fromARGB(255, 242, 241, 243),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                  //borderSide: BorderSide.bottom ,
+                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                isDense: false,
+              ),
+              style: TextStyle(color: Colors.black, fontSize: 14.0),
+              onChanged: (text) {
+                setState(() {
+                  // Perform search or filtering based on the entered text
+                  searchOldReportAlgolia();
+                });
+              },
+            ),
+          ),
+      ],
+    ),
+  ),
+),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: ListView.separated(
+        child:  _freelancers.isEmpty
+      ? Center(
+          child: Text(
+            'No freelancers',
+            style: TextStyle(fontSize: 16),
+          ),
+        )
+        :ListView.separated(
           itemCount: _freelancers.length,
           separatorBuilder: (context, index) => SizedBox(height: 10),
           itemBuilder: (context, index) {

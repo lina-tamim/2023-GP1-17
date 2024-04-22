@@ -11,7 +11,7 @@ class Course {
   final String? type;
   final String? attendanceType;
   final String? userId;
-  final String? docId;
+   String? docId;
   final String imageURL;
   final String? approval;
   final String? city;

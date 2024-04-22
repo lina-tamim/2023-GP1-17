@@ -10,7 +10,8 @@ class PathwayContainer extends StatelessWidget {
   final List<String> subtopics;
   final List<String> descriptions;
   final List<String> resources;
-  final String pathwayDocId;
+ final String pathwayDocId;
+ String? docIdSearch;
 
   PathwayContainer({
     required this.id,
@@ -22,6 +23,7 @@ class PathwayContainer extends StatelessWidget {
     required this.descriptions,
     required this.resources,
     required this.pathwayDocId,
+    this.docIdSearch,
   });
 
   // Additional constructor to create a PathwayContainer with a docId
@@ -35,6 +37,7 @@ class PathwayContainer extends StatelessWidget {
     required this.descriptions,
     required this.resources,
     required this.pathwayDocId ,
+    this.docIdSearch,
   }) ;
 
   Map<String, dynamic> toJson() => {
@@ -47,6 +50,7 @@ class PathwayContainer extends StatelessWidget {
         'descriptions': descriptions,
         'resources': resources,
         'pathwayDocId': pathwayDocId, // Include docId in the JSON representation
+        'docIdSearch':docIdSearch,
       };
 
   static PathwayContainer fromJson(Map<String, dynamic> json) =>
@@ -60,6 +64,7 @@ class PathwayContainer extends StatelessWidget {
         descriptions: List<String>.from(json['descriptions'] ?? []),
         resources: List<String>.from(json['resources'] ?? []),
         pathwayDocId: json['pathwayDocId'],
+        docIdSearch:json['pathwayDocId'],
       );
 
   @override
