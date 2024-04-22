@@ -60,44 +60,25 @@ class _UserExplorePageState extends State<UserExplorePage>
     color: Color.fromRGBO(37, 6, 81, 0.898),
   ),
       backgroundColor:   Color.fromARGB(255, 242, 241, 243),
-      toolbarHeight: 90, 
-      elevation: 0, 
-       flexibleSpace: Stack(
-    children: [
-      Container(
-        width: double.infinity,
-        height: double.infinity,
-        alignment: Alignment.bottomCenter,
-        padding: EdgeInsets.only(bottom: 1),
-        child: Container(
-          height: 3,
-          color: const Color.fromARGB(60, 158, 158, 158), // Set the color of the horizontal bar
-        ),
-      ),
-      Container(),
-    ],
-  ),
-     /* shape: const ContinuousRectangleBorder(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(130),
-          bottomRight: Radius.circular(130),
-        ),
-      ),*/
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Builder(builder: (context) {
-                return IconButton(
-                  onPressed: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                  icon: Icon(Icons.menu),
-                );
-              }),
+       toolbarHeight: 70,
+            title: Builder(
+              builder: (context) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      if (_loggedInImage.isNotEmpty && !showSearchBar)
+                        GestureDetector(
+                          onTap: () {
+                            Scaffold.of(context).openDrawer();
+                          },
+                          child: CircleAvatar(
+                            radius: 35,
+                            backgroundImage: NetworkImage(_loggedInImage),
+                          ),
+                        ),
               Text(
-                'Explore',
+                '   Explore',
                 style: TextStyle(
                   fontSize: 18, // Adjust the font size
                   fontFamily: "Poppins",
@@ -105,36 +86,47 @@ class _UserExplorePageState extends State<UserExplorePage>
                 ),
               ),
               Spacer(),
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    showSearchBar = !showSearchBar;
-                  });
-                },
-                icon: Icon(showSearchBar ? Icons.search_off : Icons.search),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 0,
-          ),
-          if (showSearchBar)
-            TextField(
-              controller: searchController,
-              decoration: const InputDecoration(
-                hintText: 'Search...',
-                prefixIcon: Icon(Icons.search),
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 0,
-                ),
-                isDense: true,
-              ),
+               if (!showSearchBar) const SizedBox(width: 150),
+                      if (showSearchBar) const SizedBox(width: 200),
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            showSearchBar = !showSearchBar;
+                          });
+                        },
+                        icon: Icon(
+                            showSearchBar ? Icons.search_off : Icons.search),
+                      ),
+                    ],
+                  ),
+                  if (showSearchBar)
+                    Container(
+                      height: 40.0, // Adjust the height as needed
+                      child: TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search...',
+                          hintStyle: TextStyle(color: Colors.grey),
+                          prefixIcon: Icon(Icons.search, color: Colors.grey),
+                          filled: true,
+                          fillColor: Color.fromARGB(255, 242, 241, 243),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            //borderSide: BorderSide.bottom ,
+                          ),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10.0),
+                          isDense: false,
+                        ),
+                        style: TextStyle(color: Colors.black, fontSize: 14.0),
               onChanged: (text) {
                 setState(() {});
               },
             ),
+                    ),
         ],
       ),
+            ),
       bottom: TabBar(
         controller: tabController, 
         indicator: BoxDecoration(),

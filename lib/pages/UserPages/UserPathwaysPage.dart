@@ -131,17 +131,22 @@ Future<void> addPathwayToBookmarks(PathwayContainer pathway, String email) async
           ),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Color.fromARGB(95, 92, 92, 92).withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 6,
-                  offset: Offset(0, 2), // Set shadow offset
-                ),
-              ],
-            ),
+            color:
+                 Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border:   Border.all(
+                              color: Color.fromARGB(255, 255, 113, 113)
+                                  .withOpacity(0.3),
+                            ),
+            boxShadow: [
+             BoxShadow(
+                color: Color.fromARGB(95, 108, 0, 0).withOpacity(0.5),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: Offset(0, 2), // Set shadow offset
+              ),
+            ],
+          ),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Container(

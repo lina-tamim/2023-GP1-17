@@ -751,7 +751,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
           iconTheme: IconThemeData(
             color: Color.fromRGBO(37, 6, 81, 0.898),
           ),
-          toolbarHeight: 100,
+          toolbarHeight: 70,
           title: Builder(
             builder: (context) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,

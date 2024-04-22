@@ -1864,7 +1864,7 @@ class __FHomePageState extends State<FHomePage> {
             iconTheme: IconThemeData(
               color: Color.fromRGBO(37, 6, 81, 0.898),
             ),
-            toolbarHeight: 82,
+            toolbarHeight: 70,
             title: Builder(
               builder: (context) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

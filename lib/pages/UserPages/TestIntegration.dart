@@ -113,7 +113,7 @@ class TestIntegration // extends StatefulWidget
     print('********************kokokokokokokokokokokokokokokokok\n\n');
 
     final Map<String, dynamic> requestBody = {
-      'user_Email': 'maha.ibrahimrw@gmail.com',
+      'user_Email': loggedinEmaill,
       'all_users': UsersJson,
       'all_CE': CEJson,
     };
