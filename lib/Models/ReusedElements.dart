@@ -140,25 +140,36 @@ class _NavBarUserState extends State<NavBarUser> {
             iconColor: Colors.black,
             title: const Text('Profile'),
             onTap: () {
-    final String userId = loggedInEmail; // Create a new local variable
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => UserProfileView(userId: userId)),
-    );
-  },
-          ),
-          ListTile(
-            leading: const Icon(Icons.post_add, size: 27),
-            iconColor: Colors.black,
-            title: const Text('My Interactions'),
-            onTap: () async {
-              await fetchUserData(); // Fetch user data and assign the value to 'loggedInEmail'
+              final String userId =
+                  loggedInEmail; // Create a new local variable
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => UserPostsPage()),
+                MaterialPageRoute(
+                    builder: (context) => UserProfileView(userId: userId)),
               );
             },
           ),
+          Consumer<ProfileProvider>(
+              builder: (BuildContext context, ProfileProvider profilePro, _) {
+            return ListTile(
+              leading: const Icon(Icons.post_add, size: 27),
+              iconColor: Colors.black,
+              title: const Text('My Interactions'),
+              trailing: profilePro.containsUnseenReports
+                  ? CircleAvatar(
+                      radius: 6,
+                      backgroundColor: Colors.red,
+                    )
+                  : null,
+              onTap: () async {
+                await fetchUserData(); // Fetch user data and assign the value to 'loggedInEmail'
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UserPostsPage()),
+                );
+              },
+            );
+          }),
           ListTile(
             leading: const Icon(Icons.bookmark, size: 27),
             iconColor: Colors.black,
@@ -351,7 +362,8 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
 AppBar buildAppBar(String titleText) {
   return AppBar(
     backgroundColor: Color.fromARGB(0, 0, 0, 0),
-    elevation: 0, // Set elevation to 0 to remove the shadow
+    elevation: 0,
+    // Set elevation to 0 to remove the shadow
     iconTheme: IconThemeData(
       color: Color.fromRGBO(37, 6, 81, 0.898),
     ),
@@ -383,7 +395,7 @@ void toastMessage(String message) {
 AppBar buildAppBarUser(String titleText, String loggedInImage) {
   return AppBar(
     automaticallyImplyLeading: false,
-    backgroundColor:  Color.fromARGB(255, 242, 241, 243),
+    backgroundColor: Color.fromARGB(255, 242, 241, 243),
     elevation: 0,
     iconTheme: IconThemeData(
       color: Color.fromRGBO(37, 6, 81, 0.898),
@@ -398,7 +410,8 @@ AppBar buildAppBarUser(String titleText, String loggedInImage) {
           padding: EdgeInsets.only(bottom: 1),
           child: Container(
             height: 3,
-            color: const Color.fromARGB(60, 158, 158, 158), // Set the color of the horizontal bar
+            color: const Color.fromARGB(
+                60, 158, 158, 158), // Set the color of the horizontal bar
           ),
         ),
         Container(),

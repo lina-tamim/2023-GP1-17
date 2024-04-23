@@ -1311,6 +1311,7 @@ class _AnswerPageState extends State<AnswerPage> {
       'reportType': "Question",
       'status': 'Pending',
       'reportedUserId': question.userId,
+      'seen': false,
     });
 
     // Clear the selected option after reporting
@@ -1331,6 +1332,7 @@ class _AnswerPageState extends State<AnswerPage> {
       'reportType': "Answer",
       'status': 'Pending',
       'reportedUserId': answer.userId,
+      'seen': false,
     });
     selectedOption = null;
   }

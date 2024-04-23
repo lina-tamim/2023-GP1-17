@@ -270,7 +270,7 @@ class UserInfoWidget extends StatelessWidget {
                         child: Row(
                           children: [
                             if (username.isNotEmpty)
-                              Expanded(
+                              Flexible(
                                 child: Text(
                                   username ?? '',
                                   // Display the username

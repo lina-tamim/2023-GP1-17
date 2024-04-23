@@ -264,49 +264,50 @@ class _UserProfileView extends State<UserProfileView>
                 ),
               ),
               SizedBox(height: 5),
-               Text(
+              Text(
                 question.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                 fontSize: 15.4,
+                  fontSize: 15.4,
                 ),
               ),
               SizedBox(height: 5),
-              Text(question.description, style: TextStyle(
-                 fontSize: 15,
-                )),
+              Text(question.description,
+                  style: TextStyle(
+                    fontSize: 15,
+                  )),
             ],
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-             SizedBox(height: 7,),
-             Container(
-                              width:
-                                  400, // Set a fixed width for the skills container
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: List.generate(
-                                    question.topics.length,
-                                    (intrestsIndex) {
-                                      final intrest =
-                                          question.topics[intrestsIndex] as String;
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: Chip(
-                                          label: Text(
-                                            intrest,
-                                            style: TextStyle(fontSize: 12.0),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
+              SizedBox(
+                height: 7,
+              ),
+              Container(
+                width: 400, // Set a fixed width for the skills container
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(
+                      question.topics.length,
+                      (intrestsIndex) {
+                        final intrest =
+                            question.topics[intrestsIndex] as String;
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Chip(
+                            label: Text(
+                              intrest,
+                              style: TextStyle(fontSize: 12.0),
                             ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -645,7 +646,7 @@ class _UserProfileView extends State<UserProfileView>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Wrap(
-                  spacing:  -5,
+                  spacing: -5,
                   runSpacing: -5,
                   children: team.topics
                       .map(
@@ -1253,6 +1254,7 @@ class _UserProfileView extends State<UserProfileView>
           'reportType': 'Account',
           'reportedUserId': email,
           'status': 'Pending',
+          'seen': false,
         }).catchError((error) {
           print('Error submitting report: $error');
           // Handle error, show an error dialog, or take appropriate action
@@ -1267,21 +1269,22 @@ class _UserProfileView extends State<UserProfileView>
     });
   }
 
-String _extractUsername(String githubURL) {
-  List<String> parts = githubURL.split('/');
-  if (parts.length >= 4) {
-    return parts[3];
-  } else {
-    return 'GitHub';
+  String _extractUsername(String githubURL) {
+    List<String> parts = githubURL.split('/');
+    if (parts.length >= 4) {
+      return parts[3];
+    } else {
+      return 'GitHub';
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     final TabController tabController = TabController(length: 4, vsync: this);
     int randomIndex = Random().nextInt(imageList.length);
     String randomImage = imageList[randomIndex];
-      String Githubusername = githubURL != null ? _extractUsername(githubURL!) : 'GitHub';
+    String Githubusername =
+        githubURL != null ? _extractUsername(githubURL!) : 'GitHub';
 
     return Scaffold(
       body: isLoading
@@ -1429,17 +1432,24 @@ String _extractUsername(String githubURL) {
                                       color: const Color.fromARGB(255, 0, 0, 0),
                                     ),
                                   ),
-                                 TextSpan(text:'      '),
+                                  TextSpan(text: '      '),
                                   TextSpan(
-                                    text:   githubURL != null ? '$Githubusername' : 'GitHub',
-                                    style: githubURL != null ? TextStyle(
-                                      fontSize: 15,
-                                      color: Color.fromARGB(255, 0, 49, 146),
-                                       decoration: TextDecoration.underline ,
-                                    )  : TextStyle(
-                                      fontSize: 17.5,
-                                      color: const Color.fromARGB(255, 0, 0, 0),
-                                    ), 
+                                    text: githubURL != null
+                                        ? '$Githubusername'
+                                        : 'GitHub',
+                                    style: githubURL != null
+                                        ? TextStyle(
+                                            fontSize: 15,
+                                            color:
+                                                Color.fromARGB(255, 0, 49, 146),
+                                            decoration:
+                                                TextDecoration.underline,
+                                          )
+                                        : TextStyle(
+                                            fontSize: 17.5,
+                                            color: const Color.fromARGB(
+                                                255, 0, 0, 0),
+                                          ),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
                                         // Handle the tap on the GitHub link
@@ -1487,7 +1497,9 @@ String _extractUsername(String githubURL) {
                                 ),
                               ),
                             ),
-                             SizedBox(height: 7,),
+                            SizedBox(
+                              height: 7,
+                            ),
                             Container(
                               width:
                                   400, // Set a fixed width for the skills container
@@ -1533,7 +1545,9 @@ String _extractUsername(String githubURL) {
                                   ),
                                 ),
                               ),
-                               SizedBox(height: 7,),
+                            SizedBox(
+                              height: 7,
+                            ),
                             Container(
                               width:
                                   400, // Set a fixed width for the skills container
@@ -1761,6 +1775,7 @@ String _extractUsername(String githubURL) {
       'reportType': "Question",
       'status': 'Pending',
       'reportedUserId': question.userId,
+      'seen': false,
     });
 
     // Clear the selected option after reporting
@@ -1781,6 +1796,7 @@ String _extractUsername(String githubURL) {
       'reportType': "Team",
       'status': 'Pending',
       'reportedUserId': team.userId,
+      'seen': false,
     });
     selectedOption = null;
   }
@@ -1799,6 +1815,7 @@ String _extractUsername(String githubURL) {
       'reportType': "Project",
       'status': 'Pending',
       'reportedUserId': team.userId,
+      'seen': false,
     });
     selectedOption = null;
   }

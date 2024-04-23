@@ -47,6 +47,7 @@ class __FHomePageState extends State<FHomePage> {
     apiKey: '6236d82b883664fa54ad458c616d39ca',
   );
   String currentTab = "None";
+
 //
 // lina add
   String? selectedOption;
@@ -2205,6 +2206,7 @@ class __FHomePageState extends State<FHomePage> {
       'reportType': "Question",
       'status': 'Pending',
       'reportedUserId': question.userId,
+      'seen': false,
     });
 
     // Clear the selected option after reporting
@@ -2226,6 +2228,7 @@ class __FHomePageState extends State<FHomePage> {
       'reportType': "Team",
       'status': 'Pending',
       'reportedUserId': team.userId,
+      'seen': false,
     });
 
     // Clear the selected option after reporting
@@ -2247,6 +2250,7 @@ class __FHomePageState extends State<FHomePage> {
       'reportType': "Project",
       'status': 'Pending',
       'reportedUserId': team.userId,
+      'seen': false,
     });
 
     // Clear the selected option after reporting

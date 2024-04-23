@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,6 +13,7 @@ import 'package:techxcel11/Models/PostCardView.dart';
 import 'package:techxcel11/Models/ViewQCard.dart';
 
 import '../../Models/ReportedPost.dart';
+import '../../providers/profile_provider.dart';
 
 class UserPostsPage extends StatefulWidget {
   const UserPostsPage({Key? key}) : super(key: key);
@@ -163,8 +165,9 @@ class _UserPostsPageState extends State<UserPostsPage> {
                       color: Colors.deepPurple,
                       size: 20,
                     ),
+                  Spacer(),
                   Padding(
-                    padding: const EdgeInsets.only(left: 110.0),
+                    padding: const EdgeInsets.only(left: 0),
                     child: Text(
                       DateFormat('dd/MM/yyyy').format(question.postedDate),
                       style: TextStyle(fontSize: 12),
@@ -364,7 +367,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
         return answers;
       });
 
-  Stream<List<ReportedPost>> readReportedPosts() {
+  Stream<List<ReportedPost>> readReportedPosts(bool containsUnseen) {
+    log('MK: readReportedPosts');
     return FirebaseFirestore.instance
         .collection('Report')
         .where('reportedUserId', isEqualTo: email)
@@ -373,6 +377,23 @@ class _UserPostsPageState extends State<UserPostsPage> {
         .snapshots()
         .asyncMap((snapshot) async {
       log('MK: reportedPosts length ${snapshot.docs.length}');
+
+      if (containsUnseen) {
+        QuerySnapshot snapshot = await FirebaseFirestore.instance
+            .collection('Report')
+            .where('reportedUserId', isEqualTo: email)
+            .where('status', isEqualTo: 'Accepted')
+            .where('seen', isEqualTo: false)
+            .get();
+
+        WriteBatch batch = FirebaseFirestore.instance.batch();
+
+        snapshot.docs.forEach((doc) {
+          batch.update(doc.reference, {'seen': true});
+        });
+        await batch.commit();
+        containsUnseen = false;
+      }
 
       List<ReportedPost> reportedPosts = [];
 
@@ -501,9 +522,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
                         color: Colors.deepPurple,
                         size: 20,
                       ),
-                      SizedBox(
-                          width:
-                              4), // Adjust the spacing between the icon and the date
+                      SizedBox(width: 4),
+                      // Adjust the spacing between the icon and the date
                     ],
                   ),
                 Expanded(
@@ -646,9 +666,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
                         color: Colors.deepPurple,
                         size: 20,
                       ),
-                      SizedBox(
-                          width:
-                              4), // Adjust the spacing between the icon and the date
+                      SizedBox(width: 4),
+                      // Adjust the spacing between the icon and the date
                     ],
                   ),
                 Expanded(
@@ -734,309 +753,346 @@ class _UserPostsPageState extends State<UserPostsPage> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 5,
-      child: Scaffold(
-        drawer: const NavBarUser(),
-        bottomNavigationBar: BottomNavBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-        ),
-
-        appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 242, 241, 243),
-          automaticallyImplyLeading: false,
-          iconTheme: IconThemeData(
-            color: Color.fromRGBO(37, 6, 81, 0.898),
+      child: Consumer<ProfileProvider>(
+          builder: (BuildContext context, ProfileProvider profilePro, _) {
+        return Scaffold(
+          drawer: const NavBarUser(),
+          bottomNavigationBar: BottomNavBar(
+            currentIndex: _currentIndex,
+            onTap: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
           ),
-          toolbarHeight: 70,
-          title: Builder(
-            builder: (context) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    if (loggedInImage.isNotEmpty)
-                      GestureDetector(
-                        onTap: () {
-                          Scaffold.of(context).openDrawer();
-                        },
-                        child: CircleAvatar(
-                          radius: 25,
-                          backgroundImage: NetworkImage(loggedInImage),
+
+          appBar: AppBar(
+            backgroundColor: Color.fromARGB(255, 242, 241, 243),
+            automaticallyImplyLeading: false,
+            iconTheme: IconThemeData(
+              color: Color.fromRGBO(37, 6, 81, 0.898),
+            ),
+            toolbarHeight: 70,
+            title: Builder(
+              builder: (context) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      if (loggedInImage.isNotEmpty)
+                        GestureDetector(
+                          onTap: () {
+                            Scaffold.of(context).openDrawer();
+                          },
+                          child: CircleAvatar(
+                            radius: 25,
+                            backgroundImage: NetworkImage(loggedInImage),
+                          ),
+                        ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'My Interactions',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: "Poppins",
+                          color: Color.fromRGBO(37, 6, 81, 0.898),
                         ),
                       ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'My Interactions',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontFamily: "Poppins",
-                        color: Color.fromRGBO(37, 6, 81, 0.898),
-                      ),
-                    ),
-                    const SizedBox(width: 120),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(45),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: TabBar(
-                isScrollable: true,
-                indicator: UnderlineTabIndicator(
-                  borderSide: BorderSide(
-                    width: 5.0,
-                    color: Colors.black,
-                  ),
-                ),
-                labelColor: Colors.black,
-                tabs: [
-                  Tab(
-                    child: Text(
-                      'Questions',
-                      style: TextStyle(
-                          fontSize: 13,
-                          fontWeight:
-                              FontWeight.w600), // Adjust font size as needed
-                    ),
-                  ),
-                  Tab(
-                    child: Text(
-                      'Answers',
-                      style:
-                          TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  Tab(
-                    child: Text(
-                      'Team',
-                      style:
-                          TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  Tab(
-                    child: Text(
-                      'Projects',
-                      style:
-                          TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  Tab(
-                    child: Text(
-                      'Reports',
-                      style:
-                          TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-                    ),
+                      const SizedBox(width: 120),
+                    ],
                   ),
                 ],
               ),
             ),
-          ),
-        ),
-
-        //drawer: NavBar(),
-
-        floatingActionButton: FloatingActionButton(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          onPressed: () async {
-            // _toggleFormVisibility();
-            showInputDialog();
-          },
-          backgroundColor: Color.fromARGB(255, 49, 0, 84),
-          child: const Icon(
-            Icons.add,
-            color: Color.fromARGB(255, 255, 255, 255),
-            size: 25,
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        body: TabBarView(
-          children: [
-            if (email == '')
-              SizedBox()
-            else
-              StreamBuilder<List<String>>(
-                  stream: readReportedQuestions('Question'),
-                  builder: (context, snapshotData) {
-                    List<String> list = snapshotData.data ?? [];
-                    return StreamBuilder<List<CardQview>>(
-                      stream: readQuestion(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          List<CardQview> q = snapshot.data!;
-                          q = q
-                              .where((element) =>
-                                  !list.contains(element.questionDocId))
-                              .toList();
-                          if (q.isEmpty) {
-                            return Center(
-                              child: Text('You didn’t post any questions yet'),
-                            );
-                          }
-                          return ListView(
-                            children: q.map(buildQuestionCard).toList(),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Center(
-                            child: Text('Error: ${snapshot.error}'),
-                          );
-                        } else {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      },
-                    );
-                  }),
-            if (email == '')
-              SizedBox()
-            else
-              StreamBuilder<List<String>>(
-                  stream: readReportedQuestions('Answer'),
-                  builder: (context, snapshotData) {
-                    List<String> list = snapshotData.data ?? [];
-                    return StreamBuilder<List<CardAview>>(
-                      stream: readAnswer(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          List<CardAview> p = snapshot.data!;
-
-                          p = p
-                              .where((element) => !list.contains(element.docId))
-                              .toList();
-
-                          if (p.isEmpty) {
-                            return Center(
-                              child: Text('You didn’t post any answers yet'),
-                            );
-                          }
-                          return ListView(
-                            children: p.map(buildAnswerCard).toList(),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Center(
-                            child: Text('Error: ${snapshot.error}'),
-                          );
-                        } else {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      },
-                    );
-                  }),
-            if (email == '')
-              SizedBox()
-            else
-              StreamBuilder<List<String>>(
-                  stream: readReportedQuestions('Team'),
-                  builder: (context, snapshotData) {
-                    List<String> list = snapshotData.data ?? [];
-                    return StreamBuilder<List<CardFTview>>(
-                      stream: readTeam(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          List<CardFTview> t = snapshot.data!;
-
-                          t = t
-                              .where((element) =>
-                                  !list.contains(element.teamDocId))
-                              .toList();
-
-                          if (t.isEmpty) {
-                            return Center(
-                              child: Text('You didn’t post team posts yet'),
-                            );
-                          }
-                          return ListView(
-                            children: t.map(buildTeamCard).toList(),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Center(
-                            child: Text('Error: ${snapshot.error}'),
-                          );
-                        } else {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      },
-                    );
-                  }),
-            if (email == '')
-              SizedBox()
-            else
-              StreamBuilder<List<String>>(
-                  stream: readReportedQuestions('Project'),
-                  builder: (context, snapshotData) {
-                    List<String> list = snapshotData.data ?? [];
-                    return StreamBuilder<List<CardFTview>>(
-                      stream: readProject(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          List<CardFTview> p = snapshot.data!;
-
-                          p = p
-                              .where((element) => !list.contains(element.docId))
-                              .toList();
-
-                          if (p.isEmpty) {
-                            return Center(
-                              child: Text('You didn’t post project posts yet'),
-                            );
-                          }
-                          return ListView(
-                            children: p.map(buildProjectCard).toList(),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Center(
-                            child: Text('Error: ${snapshot.error}'),
-                          );
-                        } else {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      },
-                    );
-                  }),
-            if (email == '')
-              SizedBox()
-            else
-              StreamBuilder<List<ReportedPost>>(
-                stream: readReportedPosts(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final q = snapshot.data!;
-                    if (q.isEmpty) {
-                      return Center(
-                        child: Text('No reported posts yet'),
-                      );
-                    }
-                    return ListView(
-                      children: q.map(buildReportCard).toList(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error: ${snapshot.error}'),
-                    );
-                  } else {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                },
+            bottom: PreferredSize(
+              preferredSize: Size.fromHeight(45),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: TabBar(
+                  isScrollable: true,
+                  indicator: UnderlineTabIndicator(
+                    borderSide: BorderSide(
+                      width: 5.0,
+                      color: Colors.black,
+                    ),
+                  ),
+                  labelColor: Colors.black,
+                  tabs: [
+                    Tab(
+                      child: Text(
+                        'Questions',
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight:
+                                FontWeight.w600), // Adjust font size as needed
+                      ),
+                    ),
+                    Tab(
+                      child: Text(
+                        'Answers',
+                        style: TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    Tab(
+                      child: Text(
+                        'Team',
+                        style: TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    Tab(
+                      child: Text(
+                        'Projects',
+                        style: TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    Tab(
+                      child: Row(
+                        children: [
+                          Text(
+                            'Reports',
+                            style: TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.w600),
+                          ),
+                          if (profilePro.containsUnseenReports)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 4),
+                              child: CircleAvatar(
+                                radius: 4,
+                                backgroundColor: Colors.red,
+                              ),
+                            )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-          ],
-        ),
-      ),
+            ),
+          ),
+
+          //drawer: NavBar(),
+
+          floatingActionButton: FloatingActionButton(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            onPressed: () async {
+              // _toggleFormVisibility();
+              showInputDialog();
+            },
+            backgroundColor: Color.fromARGB(255, 49, 0, 84),
+            child: const Icon(
+              Icons.add,
+              color: Color.fromARGB(255, 255, 255, 255),
+              size: 25,
+            ),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+          body: Column(
+            children: [
+              if (profilePro.containsUnseenReports)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Some of your contributions might have removed from the view because of being reported',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    if (email == '')
+                      SizedBox()
+                    else
+                      StreamBuilder<List<String>>(
+                          stream: readReportedQuestions('Question'),
+                          builder: (context, snapshotData) {
+                            List<String> list = snapshotData.data ?? [];
+                            return StreamBuilder<List<CardQview>>(
+                              stream: readQuestion(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  List<CardQview> q = snapshot.data!;
+                                  q = q
+                                      .where((element) =>
+                                          !list.contains(element.questionDocId))
+                                      .toList();
+                                  if (q.isEmpty) {
+                                    return Center(
+                                      child: Text(
+                                          'You didn’t post any questions yet'),
+                                    );
+                                  }
+                                  return ListView(
+                                    children: q.map(buildQuestionCard).toList(),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text('Error: ${snapshot.error}'),
+                                  );
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+                              },
+                            );
+                          }),
+                    if (email == '')
+                      SizedBox()
+                    else
+                      StreamBuilder<List<String>>(
+                          stream: readReportedQuestions('Answer'),
+                          builder: (context, snapshotData) {
+                            List<String> list = snapshotData.data ?? [];
+                            return StreamBuilder<List<CardAview>>(
+                              stream: readAnswer(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  List<CardAview> p = snapshot.data!;
+
+                                  p = p
+                                      .where((element) =>
+                                          !list.contains(element.docId))
+                                      .toList();
+
+                                  if (p.isEmpty) {
+                                    return Center(
+                                      child: Text(
+                                          'You didn’t post any answers yet'),
+                                    );
+                                  }
+                                  return ListView(
+                                    children: p.map(buildAnswerCard).toList(),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text('Error: ${snapshot.error}'),
+                                  );
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+                              },
+                            );
+                          }),
+                    if (email == '')
+                      SizedBox()
+                    else
+                      StreamBuilder<List<String>>(
+                          stream: readReportedQuestions('Team'),
+                          builder: (context, snapshotData) {
+                            List<String> list = snapshotData.data ?? [];
+                            return StreamBuilder<List<CardFTview>>(
+                              stream: readTeam(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  List<CardFTview> t = snapshot.data!;
+
+                                  t = t
+                                      .where((element) =>
+                                          !list.contains(element.teamDocId))
+                                      .toList();
+
+                                  if (t.isEmpty) {
+                                    return Center(
+                                      child: Text(
+                                          'You didn’t post team posts yet'),
+                                    );
+                                  }
+                                  return ListView(
+                                    children: t.map(buildTeamCard).toList(),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text('Error: ${snapshot.error}'),
+                                  );
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+                              },
+                            );
+                          }),
+                    if (email == '')
+                      SizedBox()
+                    else
+                      StreamBuilder<List<String>>(
+                          stream: readReportedQuestions('Project'),
+                          builder: (context, snapshotData) {
+                            List<String> list = snapshotData.data ?? [];
+                            return StreamBuilder<List<CardFTview>>(
+                              stream: readProject(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  List<CardFTview> p = snapshot.data!;
+
+                                  p = p
+                                      .where((element) =>
+                                          !list.contains(element.docId))
+                                      .toList();
+
+                                  if (p.isEmpty) {
+                                    return Center(
+                                      child: Text(
+                                          'You didn’t post project posts yet'),
+                                    );
+                                  }
+                                  return ListView(
+                                    children: p.map(buildProjectCard).toList(),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text('Error: ${snapshot.error}'),
+                                  );
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+                              },
+                            );
+                          }),
+                    if (email == '')
+                      SizedBox()
+                    else
+                      StreamBuilder<List<ReportedPost>>(
+                        stream:
+                            readReportedPosts(profilePro.containsUnseenReports),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final q = snapshot.data!;
+                            if (q.isEmpty) {
+                              return Center(
+                                child: Text('No reported posts yet'),
+                              );
+                            }
+                            return ListView(
+                              children: q.map(buildReportCard).toList(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 
@@ -1090,9 +1146,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
                           color: Colors.deepPurple,
                           size: 20,
                         ),
-                        SizedBox(
-                            width:
-                                4), // Adjust the spacing between the icon and the date
+                        SizedBox(width: 4),
+                        // Adjust the spacing between the icon and the date
                       ],
                     ),
                   Expanded(

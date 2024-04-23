@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../Models/user.dart';
 import '../Models/ReusedElements.dart';
 import '../Models/chat.dart';
@@ -17,9 +18,18 @@ class ProfileProvider extends ChangeNotifier {
       FirebaseFirestore.instance.collection('RegularUser');
   Map<String, User> _storedUsers = <String, User>{};
 
+  bool _containsUnseenReports = false;
+
+  bool get containsUnseenReports => _containsUnseenReports;
+
+  set containsUnseenReports(bool value) {
+    _containsUnseenReports = value;
+  }
+
   ProfileProvider() {
     log('MK: notifications count are to be fetched');
     initRealtimeListener();
+    listenToReports();
   }
 
   int _chatCount = 0;
@@ -120,6 +130,36 @@ class ProfileProvider extends ChangeNotifier {
         notifyListeners(); // Notify listeners only when the chat count changes
       }
       log('MK: notifications count: $count');
+    });
+  }
+
+  Future<void> listenToReports() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('loggedInEmail') ?? '';
+    if (email.isEmpty) {
+      return;
+    }
+    FirebaseFirestore.instance
+        .collection('Report')
+        .where('reportedUserId', isEqualTo: email)
+        .where('status', isEqualTo: 'Accepted')
+        .snapshots()
+        .listen((snapshot) {
+      bool hasUnseenReports = false;
+      bool hasReportedPosts = snapshot.docs.isNotEmpty;
+
+      // Check if there are any unseen reports
+      for (var doc in snapshot.docs) {
+        if (doc.data()['seen'] == false) {
+          hasUnseenReports = true;
+          break;
+        }
+      }
+
+      // Update the provider variables
+      _containsUnseenReports = hasUnseenReports;
+      notifyListeners();
+      log('MK: user reports: $containsUnseenReports');
     });
   }
 }

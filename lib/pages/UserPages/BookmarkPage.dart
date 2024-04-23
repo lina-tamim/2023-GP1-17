@@ -112,13 +112,19 @@ class _BookmarkPageState extends State<BookmarkPage>
           Tab(
             child: Text(
               'Questions',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black),
             ),
           ),
           Tab(
             child: Text(
               'Pathways',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black),
             ),
           ),
         ],
@@ -379,7 +385,7 @@ class _UserBookmarkedPathwaysState extends State<UserBookmarkedPathways> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Wrap(
-                            spacing:  -5,
+                            spacing: -5,
                             runSpacing: -5,
                             children: pathway.Key_topic.map(
                               (topic) => Chip(
@@ -1055,49 +1061,50 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
                 ),
               ),
               SizedBox(height: 5),
-               Text(
+              Text(
                 question.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                 fontSize: 15.4,
+                  fontSize: 15.4,
                 ),
               ),
               SizedBox(height: 5),
-              Text(question.description, style: TextStyle(
-                 fontSize: 15,
-                )),
+              Text(question.description,
+                  style: TextStyle(
+                    fontSize: 15,
+                  )),
             ],
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 7,),
+              SizedBox(
+                height: 7,
+              ),
               Container(
-                              width:
-                                  400, // Set a fixed width for the skills container
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: List.generate(
-                                    question.topics.length,
-                                    (intrestsIndex) {
-                                      final intrest =
-                                          question.topics[intrestsIndex] as String;
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: Chip(
-                                          label: Text(
-                                            intrest,
-                                            style: TextStyle(fontSize: 12.0),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
+                width: 400, // Set a fixed width for the skills container
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(
+                      question.topics.length,
+                      (intrestsIndex) {
+                        final intrest =
+                            question.topics[intrestsIndex] as String;
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Chip(
+                            label: Text(
+                              intrest,
+                              style: TextStyle(fontSize: 12.0),
                             ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -1285,6 +1292,7 @@ class _UserBookmarkedQuestionsState extends State<UserBookmarkedQuestions> {
       'reportType': "Question",
       'status': 'Pending',
       'reportedUserId': question.userId,
+      'seen': false,
     });
     selectedOption = null;
   }
