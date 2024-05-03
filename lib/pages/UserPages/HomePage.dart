@@ -424,11 +424,18 @@ class __FHomePageState extends State<FHomePage> {
           .where((question) => !acceptedQuestionIds.contains(question.docId))
           .toList();
       // Filter questions based on recommendedQuestionIds
-      filteredQuestions = recommendedQuestionIds
+      List<CardQuestion?> filteredQuestionstem = recommendedQuestionIds
           .map((id) => filteredQuestions
-              .firstWhere((question) => question.questionDocId == id))
+              .firstWhereOrNull((question) => question.questionDocId == id))
           .toList();
-
+      // filteredQuestions = filteredQuestionstem
+      //     .where((element) => element != null)
+      //     .toList() as List<CardQuestion>;
+      filteredQuestionstem.forEach((element) {
+        if (element != null) {
+          filteredQuestions.add(element);
+        }
+      });
       if (searchController.text.isNotEmpty) {
         print("2222222222222222222");
         filteredQuestions = filteredQuestions
@@ -2076,6 +2083,9 @@ class __FHomePageState extends State<FHomePage> {
                     ],
                   );
                 } else if (snapshot.hasError) {
+                  print(
+                      'MK: comment ${snapshot.error} % ${snapshot.stackTrace}');
+
                   return Center(
                     child: Text('Error: ${snapshot.error}'),
                   );
