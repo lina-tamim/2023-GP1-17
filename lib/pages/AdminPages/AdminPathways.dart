@@ -75,11 +75,10 @@ final Algolia algolia = Algolia.init(
 
 Future<void> fetchData(PathwayContainer pathway) async {
   SharedPreferences pre = await SharedPreferences.getInstance();
-  final pathwayId = pre.getString('pathwayId_${pathway.id}') ?? ''; // # Changed
-
+  final pathwayId = pre.getString('pathwayIdx') ?? ''; // # Changed
   final QuerySnapshot<Map<String, dynamic>> snapshot = await firestore
       .collection('Pathway')
-      .where('pathwayNo', isEqualTo: pathwayId)
+      .where('pathwayDocId', isEqualTo: pathwayId)
       .limit(1)
       .get();
 
