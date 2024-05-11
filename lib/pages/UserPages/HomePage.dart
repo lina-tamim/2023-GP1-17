@@ -11,14 +11,10 @@ import 'package:techxcel11/Models/PostCard.dart';
 import 'package:techxcel11/Models/QuestionCard.dart';
 import 'package:techxcel11/pages/CommonPages/misc_widgets.dart';
 import 'package:techxcel11/pages/UserPages/AnswerPage.dart';
-import 'package:techxcel11/pages/UserPages/TestIntegration.dart';
-import 'package:techxcel11/pages/UserPages/UserProfileView.dart';
-import 'dart:developer';
 import 'package:techxcel11/providers/profile_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:algolia/algolia.dart';
-import '../../widgets/misc_widgets.dart';
 
 class FHomePage extends StatefulWidget {
   const FHomePage({Key? key}) : super(key: key);
@@ -165,6 +161,7 @@ class __FHomePageState extends State<FHomePage> {
     };
 
     final response = await http.post(
+      //Uri.parse('https://flask-deploy-gp2-717dffd55916.herokuapp.com/'), 
       Uri.parse('http://10.0.2.2:5000/'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
