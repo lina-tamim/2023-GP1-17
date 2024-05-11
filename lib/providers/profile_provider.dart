@@ -129,7 +129,7 @@ class ProfileProvider extends ChangeNotifier {
         _chatCount = count;
         notifyListeners(); // Notify listeners only when the chat count changes
       }
-      log('MK: notifications count: $count');
+      log('MK: notifications count: $count in ${chats.length}');
     });
   }
 

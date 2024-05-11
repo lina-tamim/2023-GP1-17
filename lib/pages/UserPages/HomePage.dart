@@ -160,9 +160,11 @@ class __FHomePageState extends State<FHomePage> {
       'all_questions': questionsJson,
     };
 
+    print('MK: recommender:i $requestBody');
+
     final response = await http.post(
-      //Uri.parse('https://flask-deploy-gp2-717dffd55916.herokuapp.com/'), 
-      Uri.parse('http://10.0.2.2:5000/'),
+      Uri.parse('https://flask-deploy-gp2-717dffd55916.herokuapp.com/'),
+      //Uri.parse('http://10.0.2.2:5000/'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -172,6 +174,7 @@ class __FHomePageState extends State<FHomePage> {
       // Parse response body as JSON
       final List<dynamic> responseBody = json.decode(response.body);
 
+      print('MK: recommender:o $responseBody');
       // Extract question IDs from response
       final List<String> ids = responseBody.cast<String>().toList();
 
@@ -179,6 +182,10 @@ class __FHomePageState extends State<FHomePage> {
       setState(() {
         recommendedQuestionIds = ids;
       });
+      /* [fs9uvd7C5E5HLk2BD1Te, M4bPF8uE9u3osDhU5wzB, W9cZOBdAd1bBRHeUFguC, 
+      uI7fYhc2XXLlrVywBmc3, XecKKXCk2kfmqWxjN3ul, 5wNIEOgsLilZSIaFzekT, 
+      gqd8tYNUuKjBfnrdQPgk, nMo346DllNNBDUU4AxTP, vuPrnZIZxnrSTIs1PObr, 
+      c2WHhfV2K30K3bRSMATq] */
     } else {
       print('77577777777777777777777777777777777777777777777777777777777');
       throw Exception('Failed to fetch recommended questions');
@@ -421,24 +428,32 @@ class __FHomePageState extends State<FHomePage> {
           .where((question) => !acceptedQuestionIds.contains(question.docId))
           .toList();
       // Filter questions based on recommendedQuestionIds
-      List<CardQuestion?> filteredQuestionstem = recommendedQuestionIds
-          .map((id) => filteredQuestions
-              .firstWhereOrNull((question) => question.questionDocId == id))
-          .toList();
+      // List<CardQuestion?> filteredQuestionstem = recommendedQuestionIds
+      //     .map((id) => filteredQuestions
+      //         .firstWhereOrNull((question) => question.questionDocId == id))
+      //     .toList();
       // filteredQuestions = filteredQuestionstem
       //     .where((element) => element != null)
       //     .toList() as List<CardQuestion>;
-      filteredQuestionstem.forEach((element) {
-        if (element != null) {
-          filteredQuestions.add(element);
-        }
-      });
+      // filteredQuestionstem.forEach((element) {
+      //   if (element != null) {
+      //     filteredQuestions.add(element);
+      //   }
+      // });
       if (searchController.text.isNotEmpty) {
         print("2222222222222222222");
         filteredQuestions = filteredQuestions
             .where((question) => searchQuestionIds.contains(question.docId))
             .toList();
       }
+
+      filteredQuestions.sort((a, b) {
+        int indexA = recommendedQuestionIds.indexOf(a.docId);
+        int indexB = recommendedQuestionIds.indexOf(b.docId);
+        if (indexA == -1) return 1;
+        if (indexB == -1) return -1;
+        return indexA.compareTo(indexB);
+      });
 
       return filteredQuestions;
     });
