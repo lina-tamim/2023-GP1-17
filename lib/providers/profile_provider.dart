@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,6 +19,9 @@ class ProfileProvider extends ChangeNotifier {
       FirebaseFirestore.instance.collection('RegularUser');
   Map<String, User> _storedUsers = <String, User>{};
 
+  StreamSubscription<List<Chat>>? chatStream;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? reportsStream;
+
   bool _containsUnseenReports = false;
 
   bool get containsUnseenReports => _containsUnseenReports;
@@ -26,8 +30,15 @@ class ProfileProvider extends ChangeNotifier {
     _containsUnseenReports = value;
   }
 
-  ProfileProvider() {
-    log('MK: notifications count are to be fetched');
+  // ProfileProvider() {
+  //   log('MK: notifications count are to be fetched');
+  //   // init();
+  // }
+
+  init() {
+    chatStream?.cancel();
+    reportsStream?.cancel();
+    print('MK: cancelling streams in profile provider');
     initRealtimeListener();
     listenToReports();
   }
@@ -108,7 +119,7 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   void initRealtimeListener() {
-    ChatAPI().chats().listen((List<Chat> chats) {
+    chatStream = ChatAPI().chats().listen((List<Chat> chats) {
       // Calculate chat count based on the updated chat data
       int count = chats
           .where((element) => element.deletedBy != getUid())
@@ -139,7 +150,7 @@ class ProfileProvider extends ChangeNotifier {
     if (email.isEmpty) {
       return;
     }
-    FirebaseFirestore.instance
+    reportsStream = FirebaseFirestore.instance
         .collection('Report')
         .where('reportedUserId', isEqualTo: email)
         .where('status', isEqualTo: 'Accepted')
