@@ -86,8 +86,8 @@ class _UserExplorePageState extends State<UserExplorePage>
                 ),
               ),
               Spacer(),
-               if (!showSearchBar) const SizedBox(width: 150),
-                      if (showSearchBar) const SizedBox(width: 200),
+               if (!showSearchBar) const SizedBox(width: 100),
+                      if (showSearchBar) const SizedBox(width: 150),
                       IconButton(
                         onPressed: () {
                           setState(() {
@@ -129,23 +129,23 @@ class _UserExplorePageState extends State<UserExplorePage>
             ),
       bottom: TabBar(
         controller: tabController, 
-        indicator: BoxDecoration(),
         tabs: [
-           Tab(
-            child: Text('Courses and Events',
+          Tab(
+            child: Text(
+              'Courses and events',
               style: TextStyle(
-                fontSize: 16,
-                color:const Color.fromRGBO(0, 0, 0, 0.894),
-              ),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black),
             ),
           ),
           Tab(
             child: Text(
               'Pathways',
               style: TextStyle(
-                fontSize: 16,
-                color:const Color.fromRGBO(0, 0, 0, 0.894), 
-              ),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black),
             ),
           ),
         ],

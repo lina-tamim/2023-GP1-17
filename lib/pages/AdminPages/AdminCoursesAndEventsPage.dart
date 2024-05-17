@@ -76,14 +76,14 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                   ),
                   const SizedBox(width: 0),
                   const Text(
-                    'Courses & Events Management',
+                    'Courses & Events\n Management',
                     style: TextStyle(
                       fontSize: 17.5,
                       fontFamily: "Poppins",
                       color: Color.fromRGBO(37, 6, 81, 0.898),
                     ),
                   ),
-                  const SizedBox(width: 1),
+                  const SizedBox(width: 70),
                   IconButton(
                     onPressed: () {
                       setState(() {
@@ -97,23 +97,33 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
               const SizedBox(
                 height: 8,
               ),
-              if (showSearchBar)
-                TextField(
-                  controller: searchController,
-                  decoration: const InputDecoration(
-                    hintText: 'Search...',
-                    prefixIcon: Icon(Icons.search),
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 0,
+                if (showSearchBar)
+                    Container(
+                      height: 40.0, // Adjust the height as needed
+                      child: TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search...',
+                          hintStyle: TextStyle(color: Colors.grey),
+                          prefixIcon: Icon(Icons.search, color: Colors.grey),
+                          filled: true,
+                          fillColor: Color.fromARGB(255, 242, 241, 243),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            //borderSide: BorderSide.bottom ,
+                          ),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10.0),
+                          isDense: false,
+                        ),
+                        style: TextStyle(color: Colors.black, fontSize: 14.0),
+                        onChanged: (text) {
+                          setState(() {
+                         
+                          });
+                        },
+                      ),
                     ),
-                    isDense: true,
-                  ),
-                  onChanged: (text) {
-                    setState(() {});
-                    // Handle search input changes
-                    readCourseSearch();
-                  },
-                ),
             ],
           ),
         ),
@@ -449,22 +459,16 @@ Future<Stream<List<Course>>> readCourseSearch() async {
         .index('Program_index')
         .query(searchController.text)
         .getObjects();
-print("###########PPPPP");
-print(response);
     final List<AlgoliaObjectSnapshot> hits = response.hits;
     final List<String> projectIds =
         hits.map((snapshot) => snapshot.objectID).toList();
 
  searchCourseIds.clear();
 searchCourseIds.addAll(projectIds); // Add the IDs to the list
-print("wwwwwwwwwwwwwPPPPPPPPPP");
-//print(searchProjectIds);
     final snapshot = await FirebaseFirestore.instance
         .collection('Program')
         .where(FieldPath.documentId, whereIn: projectIds)
         .get();
-print("###########");
-print(snapshot);
     final projects = snapshot.docs.map((doc) {
       final projectData = doc.data() as Map<String, dynamic>;
       final project =  Course.fromJson(projectData);

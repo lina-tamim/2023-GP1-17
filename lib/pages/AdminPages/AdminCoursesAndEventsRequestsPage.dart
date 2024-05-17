@@ -64,14 +64,14 @@ class _AdminCoursesAndEventsRequestsPageState
                   ),
                   const SizedBox(width: 0),
                   const Text(
-                    'Courses & Events Requests',
+                    'Courses & Events\nRequests',
                     style: TextStyle(
                       fontSize: 17.5,
                       fontFamily: "Poppins",
                       color: Color.fromRGBO(37, 6, 81, 0.898),
                     ),
                   ),
-                  const SizedBox(width: 40),
+                  const SizedBox(width: 75),
                   IconButton(
                     onPressed: () {
                       setState(() {
@@ -85,23 +85,33 @@ class _AdminCoursesAndEventsRequestsPageState
               const SizedBox(
                 height: 8,
               ),
-              if (showSearchBar)
-                TextField(
-                  controller: searchController,
-                  decoration: const InputDecoration(
-                    hintText: 'Search...',
-                    prefixIcon: Icon(Icons.search),
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 0,
+                  if (showSearchBar)
+                    Container(
+                      height: 40.0, // Adjust the height as needed
+                      child: TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search...',
+                          hintStyle: TextStyle(color: Colors.grey),
+                          prefixIcon: Icon(Icons.search, color: Colors.grey),
+                          filled: true,
+                          fillColor: Color.fromARGB(255, 242, 241, 243),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            //borderSide: BorderSide.bottom ,
+                          ),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10.0),
+                          isDense: false,
+                        ),
+                        style: TextStyle(color: Colors.black, fontSize: 14.0),
+                        onChanged: (text) {
+                          setState(() {
+                         
+                          });
+                        },
+                      ),
                     ),
-                    isDense: true,
-                  ),
-                  onChanged: (text) {
-                    setState(() {});
-                    // Handle search input changes
-                    readRequestSearch();
-                  },
-                ),
             ],
           ),
         ),
@@ -123,7 +133,7 @@ class _AdminCoursesAndEventsRequestsPageState
                         "to review and make decisions on these requests.\nYou can either accept them, "
                         "allowing them to be published to the public,or reject them if they don't meet the criteria.\n",
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 12,
                           color: mainColor,
                           fontWeight: FontWeight.w300,
                         ),
@@ -133,7 +143,7 @@ class _AdminCoursesAndEventsRequestsPageState
                     Text(
                       "Your actions will directly impact the visibility of these requests and shape the content available to our users.",
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 13,
                         color: Colors.red,
                         fontWeight: FontWeight.w700,
                       ),
@@ -273,22 +283,18 @@ Future<Stream<List<Course>>> readRequestSearch() async {
         .query(searchController.text)
         .facetFilter('approval:Pending')
         .getObjects();
-print("###########PPPPP");
-print(response);
+
 searchRequestsIds.clear();
     final List<AlgoliaObjectSnapshot> hits = response.hits;
     final List<String> projectIds =
         hits.map((snapshot) => snapshot.objectID).toList();
 
 searchRequestsIds.addAll(projectIds); // Add the IDs to the list
-print("wwwwwwwwwwwwwPPPPPPPPPP");
-//print(searchProjectIds);
     final snapshot = await FirebaseFirestore.instance
         .collection('Program')
         .where(FieldPath.documentId, whereIn: projectIds)
         .get();
-print("###########");
-print(snapshot);
+
     final projects = snapshot.docs.map((doc) {
       final projectData = doc.data() as Map<String, dynamic>;
       final project =  Course.fromJson(projectData);

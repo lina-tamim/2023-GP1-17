@@ -108,22 +108,20 @@ class __FHomePageState extends State<FHomePage> {
 
     final QuerySnapshot<Map<String, dynamic>> snapshotQ =
         await _firestore.collection('Question').get();
-//
+
     if (snapshotQ.docs.isNotEmpty) {
       setState(() {
         allTheQuestions = snapshotQ.docs
             .map((doc) => doc.data() as Map<String, dynamic>)
             .toList();
 
-        // Convert each question to JSON object
 
         List<Map<String, dynamic>> questionsJson = [];
         allTheQuestions.forEach((question) {
           Timestamp timestamp =
-              question['postedDate']; // Get the Timestamp object
-          print('11111111111');
+              question['postedDate']; 
           DateTime dateTime =
-              timestamp.toDate(); // Convert Timestamp to DateTime
+              timestamp.toDate(); 
           Map<String, dynamic> jsonQuestion = {
             'selectedInterests': question['selectedInterests'],
             'noOfAnswers': question['noOfAnswers'],
@@ -131,40 +129,30 @@ class __FHomePageState extends State<FHomePage> {
             'totalUpvotes': question['totalUpvotes'] ?? 0,
             'postedDate': DateFormat.yMMMMd()
                 .add_jms()
-                .format(dateTime), // Format DateTime to string
+                .format(dateTime), 
           };
-          print('^^^^^^^^^^^^^^^^^^^^^^^^^^');
           print(DateFormat.yMMMMd()
               .add_jms()
-              .format(dateTime)); // Print formatted date string
+              .format(dateTime));
           questionsJson.add(jsonQuestion);
-          print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-          print(jsonQuestion);
-          print('777777777777777777');
         });
-
-        // Send the JSON object to the server
         recommendQuestions(questionsJson);
       });
     }
 
-//
   }
 
   Future<void> recommendQuestions(
       List<Map<String, dynamic>> questionsJson) async {
-    // Send user preferences and all questions to the server
     final Map<String, dynamic> requestBody = {
       'user_skills': userSkills,
       'user_interests': userInterests,
       'all_questions': questionsJson,
     };
 
-    print('MK: recommender:i $requestBody');
 
     final response = await http.post(
       Uri.parse('https://flask-deploy-gp2-717dffd55916.herokuapp.com/'),
-      //Uri.parse('http://10.0.2.2:5000/'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -174,7 +162,6 @@ class __FHomePageState extends State<FHomePage> {
       // Parse response body as JSON
       final List<dynamic> responseBody = json.decode(response.body);
 
-      print('MK: recommender:o $responseBody');
       // Extract question IDs from response
       final List<String> ids = responseBody.cast<String>().toList();
 
@@ -182,12 +169,7 @@ class __FHomePageState extends State<FHomePage> {
       setState(() {
         recommendedQuestionIds = ids;
       });
-      /* [fs9uvd7C5E5HLk2BD1Te, M4bPF8uE9u3osDhU5wzB, W9cZOBdAd1bBRHeUFguC, 
-      uI7fYhc2XXLlrVywBmc3, XecKKXCk2kfmqWxjN3ul, 5wNIEOgsLilZSIaFzekT, 
-      gqd8tYNUuKjBfnrdQPgk, nMo346DllNNBDUU4AxTP, vuPrnZIZxnrSTIs1PObr, 
-      c2WHhfV2K30K3bRSMATq] */
     } else {
-      print('77577777777777777777777777777777777777777777777777777777777');
       throw Exception('Failed to fetch recommended questions');
     }
   }
@@ -243,21 +225,15 @@ class __FHomePageState extends State<FHomePage> {
           .index('Question_index')
           .query(searchText)
           .getObjects();
-      print("###########");
-      print(response);
       final List<AlgoliaObjectSnapshot> hits = response.hits;
       final List<String> questionIds =
           hits.map((snapshot) => snapshot.objectID).toList();
       searchQuestionIds.clear();
       searchQuestionIds.addAll(questionIds); // Add the IDs to the list
-      print("DDDDDDDDDDDDdd");
-      print(searchQuestionIds);
       final snapshot = await FirebaseFirestore.instance
           .collection('Question')
           .where(FieldPath.documentId, whereIn: questionIds)
           .get();
-      print("###########");
-      print(snapshot);
       final questions = snapshot.docs.map((doc) {
         final questionData = doc.data() as Map<String, dynamic>;
         final question = CardQuestion.fromJson(questionData);
@@ -299,9 +275,6 @@ class __FHomePageState extends State<FHomePage> {
       }).toList();
       if (questions.isEmpty) return [];
 
-      // final userIds = questions.map((question) => question.userId).toList();
-
-      // log('MK: list length: ${questions.length} and ${userIds.length}');
 
       // Query the Report collection to get accepted questionIds
       QuerySnapshot<Map<String, dynamic>> reportSnapshot =
@@ -314,49 +287,15 @@ class __FHomePageState extends State<FHomePage> {
       Set<String> acceptedQuestionIds = reportSnapshot.docs
           .map((doc) => doc['reportedItemId'] as String)
           .toSet();
-      print("@@@@@@@@@$acceptedQuestionIds");
 
-      // final userDocs = await FirebaseFirestore.instance
-      //     .collection('RegularUser')
-      //     .where('email', whereIn: userIds)
-      //     .get();
-
-      // final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-      //     userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-      //         doc.data() as Map<String, dynamic>)));
-
-      // questions.forEach((question) {
-      //   final userDoc = userMap[question.userId];
-      //   final username = userDoc?['username'] as String? ?? '';
-      //   final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-      //   question.username = username;
-      //   question.userPhotoUrl = userPhotoUrl;
-      //   question.userType = userDoc?['userType'] as String? ?? "";
-      //   // question.userId = userDoc ?['userId'] as String;
-      // });
-
-      // final userIdsNotFound =
-      //     userIds.where((userId) => !userMap.containsKey(userId)).toList();
-      // userIdsNotFound.forEach((userId) {
-      //   questions.forEach((question) {
-      //     if (question.userId == userId) {
-      //       question.username = 'DeactivatedUser';
-      //       question.userPhotoUrl = '';
-      //     }
-      //   });
-      // });
-
-      // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
       List<CardQuestion> filteredQuestions = questions
           .where((question) => !acceptedQuestionIds.contains(question.docId))
           .toList();
-      // Filter questions based on recommendedQuestionIds
       filteredQuestions = filteredQuestions
           .where((question) =>
               !recommendedQuestionIds.contains(question.questionDocId))
           .toList();
       if (searchController.text.isNotEmpty) {
-        print("inside the otheeeeeeeeeeeeeeeeeeeeeer!!!!!!!!!!!");
         filteredQuestions = filteredQuestions
             .where((question) => searchQuestionIds.contains(question.docId))
             .toList();
@@ -378,9 +317,6 @@ class __FHomePageState extends State<FHomePage> {
       }).toList();
       if (questions.isEmpty) return [];
 
-      // final userIds = questions.map((question) => question.userId).toList();
-
-      // Query the Report collection to get accepted questionIds
       QuerySnapshot<Map<String, dynamic>> reportSnapshot =
           await FirebaseFirestore.instance
               .collection('Report')
@@ -391,57 +327,11 @@ class __FHomePageState extends State<FHomePage> {
       Set<String> acceptedQuestionIds = reportSnapshot.docs
           .map((doc) => doc['reportedItemId'] as String)
           .toSet();
-      print("@@@@@@@@@$acceptedQuestionIds");
-
-      // final userDocs = await FirebaseFirestore.instance
-      //     .collection('RegularUser')
-      //     .where('email', whereIn: userIds)
-      //     .get();
-      //
-      // final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-      //     userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-      //         doc.data() as Map<String, dynamic>)));
-      //
-      // questions.forEach((question) {
-      //   final userDoc = userMap[question.userId];
-      //   final username = userDoc?['username'] as String? ?? '';
-      //   final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-      //   question.username = username;
-      //   question.userPhotoUrl = userPhotoUrl;
-      //   question.userType = userDoc?['userType'] as String? ?? "";
-      //   // question.userId = userDoc ?['userId'] as String;
-      // });
-      //
-      // final userIdsNotFound =
-      //     userIds.where((userId) => !userMap.containsKey(userId)).toList();
-      // userIdsNotFound.forEach((userId) {
-      //   questions.forEach((question) {
-      //     if (question.userId == userId) {
-      //       question.username = 'DeactivatedUser';
-      //       question.userPhotoUrl = '';
-      //     }
-      //   });
-      // });
-
-      // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
       List<CardQuestion> filteredQuestions = questions
           .where((question) => !acceptedQuestionIds.contains(question.docId))
           .toList();
-      // Filter questions based on recommendedQuestionIds
-      // List<CardQuestion?> filteredQuestionstem = recommendedQuestionIds
-      //     .map((id) => filteredQuestions
-      //         .firstWhereOrNull((question) => question.questionDocId == id))
-      //     .toList();
-      // filteredQuestions = filteredQuestionstem
-      //     .where((element) => element != null)
-      //     .toList() as List<CardQuestion>;
-      // filteredQuestionstem.forEach((element) {
-      //   if (element != null) {
-      //     filteredQuestions.add(element);
-      //   }
-      // });
+     
       if (searchController.text.isNotEmpty) {
-        print("2222222222222222222");
         filteredQuestions = filteredQuestions
             .where((question) => searchQuestionIds.contains(question.docId))
             .toList();
@@ -470,21 +360,18 @@ class __FHomePageState extends State<FHomePage> {
           .index('Team_index')
           .query(searchText)
           .getObjects();
-      print("###########");
-      print(response);
+
       final List<AlgoliaObjectSnapshot> hits = response.hits;
       final List<String> questionIds =
           hits.map((snapshot) => snapshot.objectID).toList();
       searchTeamIds.clear();
       searchTeamIds.addAll(questionIds); // Add the IDs to the list
-      print("wwwwwwwwwwwww");
-      print(searchTeamIds);
+    
       final snapshot = await FirebaseFirestore.instance
           .collection('Team')
           .where(FieldPath.documentId, whereIn: questionIds)
           .get();
-      print("###########");
-      print(snapshot);
+
       final questions = snapshot.docs.map((doc) {
         final questionData = doc.data() as Map<String, dynamic>;
         final question = CardFT.fromJson(questionData);
@@ -593,22 +480,19 @@ class __FHomePageState extends State<FHomePage> {
           .index('Project_index')
           .query(searchText)
           .getObjects();
-      print("###########PPPPP");
-      print(response);
+
       final List<AlgoliaObjectSnapshot> hits = response.hits;
       final List<String> projectIds =
           hits.map((snapshot) => snapshot.objectID).toList();
 
       searchProjectIds.clear();
       searchProjectIds.addAll(projectIds); // Add the IDs to the list
-      print("wwwwwwwwwwwwwPPPPPPPPPP");
-      print(searchProjectIds);
+
       final snapshot = await FirebaseFirestore.instance
           .collection('Project')
           .where(FieldPath.documentId, whereIn: projectIds)
           .get();
-      print("###########");
-      print(snapshot);
+
       final projects = snapshot.docs.map((doc) {
         final projectData = doc.data() as Map<String, dynamic>;
         final project = CardFT.fromJson(projectData);
@@ -744,7 +628,9 @@ class __FHomePageState extends State<FHomePage> {
                 children: [
                   IconButton(
                     icon: Icon(Icons.bookmark,
-                        color: Color.fromARGB(255, 63, 63, 63)),
+                        color: Color.fromARGB(255, 63, 63, 63)
+                        ,),
+                        iconSize: 20,
                     onPressed: () {
                       addQuestionToBookmarks(loggedInEmail, question);
                     },
@@ -754,6 +640,7 @@ class __FHomePageState extends State<FHomePage> {
                       IconButton(
                         icon: Icon(Icons.comment,
                             color: Color.fromARGB(255, 63, 63, 63)),
+                            iconSize: 20,
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -763,12 +650,16 @@ class __FHomePageState extends State<FHomePage> {
                           );
                         },
                       ),
-                      Text(question.noOfAnswers.toString()),
+                      Text(
+            question.noOfAnswers.toString(),
+            style: TextStyle(fontSize: 14),
+          ),
                     ],
                   ),
                   IconButton(
                     icon: Icon(Icons.report,
                         color: Color.fromARGB(255, 63, 63, 63)),
+                        iconSize: 20,
                     onPressed: () {
                       showDialog(
                         context: context,
@@ -844,9 +735,6 @@ class __FHomePageState extends State<FHomePage> {
                                               'Your report has been sent successfully');
                                           Navigator.of(context).pop();
                                         } else {
-                                          // Show an error message or handle the case where no reason is provided
-                                          print(
-                                              'Please provide a reason for reporting.');
                                         }
                                       }
                                     },
@@ -866,240 +754,6 @@ class __FHomePageState extends State<FHomePage> {
               ),
             ],
           ),
-          // child: Card(
-          //       elevation: 0.4, // Set elevation to 0 to remove the shadow
-          //       child: ListTile(
-          //         leading: CircleAvatar(
-          //           radius: 30, // Adjust the radius to make the avatar bigger
-          //           backgroundImage: question.userPhotoUrl != '' &&
-          //                   question.userPhotoUrl != null
-          //               ? NetworkImage(question.userPhotoUrl!)
-          //               : const AssetImage('assets/Backgrounds/defaultUserPic.png')
-          //                   as ImageProvider<Object>, // Cast to ImageProvider<Object>
-          //         ),
-          //         title: Column(
-          //           crossAxisAlignment: CrossAxisAlignment.start,
-          //           children: [
-          //             GestureDetector(
-          //               onTap: () {
-          //                 if (question.userId != null &&
-          //                     question.userId.isNotEmpty &&
-          //                     question.userId != "DeactivatedUser") {
-          //                   Navigator.push(
-          //                     context,
-          //                     MaterialPageRoute(
-          //                       builder: (context) =>
-          //                           UserProfileView(userId: question.userId),
-          //                     ),
-          //                   );
-          //                 }
-          //               },
-          //               child: Row(
-          //                 children: [
-          //                   Text(
-          //                     question.username ?? '', // Display the username
-          //                     style: TextStyle(
-          //                         fontWeight: FontWeight.bold,
-          //                         color: Color.fromARGB(255, 24, 8, 53),
-          //                         fontSize: 16),
-          //                   ),
-          //                   if (question.userType == "Freelancer")
-          //                     Row(
-          //                       children: [
-          //                         Icon(
-          //                           Icons.verified,
-          //                           color: Colors.deepPurple,
-          //                           size: 20,
-          //                         ),
-          //                         SizedBox(width: 4),
-          //                       ],
-          //                     ),
-          //                   Expanded(
-          //                     child: Align(
-          //                       alignment: Alignment.centerRight,
-          //                       child: Text(
-          //                         DateFormat('dd/MM/yyyy').format(question.postedDate),
-          //                         style: TextStyle(fontSize: 12),
-          //                       ),
-          //                     ),
-          //                   ),
-          //                 ],
-          //               ),
-          //             ),
-          //             SizedBox(height: 5),
-          //             Text(
-          //               question.title,
-          //               style: TextStyle(
-          //                 fontWeight: FontWeight.bold,
-          //                 fontSize: 15.4,
-          //               ),
-          //             ),
-          //             SizedBox(height: 5),
-          //             Text(question.description,
-          //                 style: TextStyle(
-          //                   fontSize: 15,
-          //                 )),
-          //           ],
-          //         ),
-          //         subtitle: Column(
-          //           crossAxisAlignment: CrossAxisAlignment.start,
-          //           children: [
-          //             SizedBox(
-          //               height: 7,
-          //             ),
-          //             Container(
-          //               width: 400, // Set a fixed width for the skills container
-          //               child: SingleChildScrollView(
-          //                 scrollDirection: Axis.horizontal,
-          //                 child: Row(
-          //                   children: List.generate(
-          //                     question.topics.length,
-          //                     (intrestsIndex) {
-          //                       final intrest =
-          //                           question.topics[intrestsIndex] as String;
-          //                       return Padding(
-          //                         padding: const EdgeInsets.only(left: 8.0),
-          //                         child: Chip(
-          //                           label: Text(
-          //                             intrest,
-          //                             style: TextStyle(fontSize: 12.0),
-          //                           ),
-          //                         ),
-          //                       );
-          //                     },
-          //                   ),
-          //                 ),
-          //               ),
-          //             ),
-          //             Row(
-          //               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //               children: [
-          //                 IconButton(
-          //                   icon: Icon(Icons.bookmark,
-          //                       color: Color.fromARGB(255, 63, 63, 63)),
-          //                   onPressed: () {
-          //                     addQuestionToBookmarks(loggedInEmail, question);
-          //                   },
-          //                 ),
-          //                 Row(
-          //                   children: [
-          //                     IconButton(
-          //                       icon: Icon(Icons.comment,
-          //                           color: Color.fromARGB(255, 63, 63, 63)),
-          //                       onPressed: () {
-          //                         Navigator.push(
-          //                           context,
-          //                           MaterialPageRoute(
-          //                               builder: (context) => AnswerPage(
-          //                                   questionDocId: question.questionDocId)),
-          //                         );
-          //                       },
-          //                     ),
-          //                     Text(question.noOfAnswers.toString()),
-          //                   ],
-          //                 ),
-          //                 IconButton(
-          //                   icon: Icon(Icons.report,
-          //                       color: Color.fromARGB(255, 63, 63, 63)),
-          //                   onPressed: () {
-          //                     showDialog(
-          //                       context: context,
-          //                       builder: (BuildContext context) {
-          //                         return StatefulBuilder(
-          //                           builder:
-          //                               (BuildContext context, StateSetter setState) {
-          //                             String? initialOption = null;
-          //                             TextEditingController customReasonController =
-          //                                 TextEditingController();
-          //
-          //                             return AlertDialog(
-          //                               title: Text('Report Post'),
-          //                               content: Column(
-          //                                 mainAxisSize: MainAxisSize.min,
-          //                                 children: <Widget>[
-          //                                   DropdownButton<String>(
-          //                                     value: selectedOption,
-          //                                     hint: Text('Select a reason'),
-          //                                     onTap: () {
-          //                                       // Set the initialOption to the selectedOption
-          //                                       initialOption = selectedOption;
-          //                                     },
-          //                                     onChanged: (String? newValue) {
-          //                                       setState(() {
-          //                                         selectedOption = newValue!;
-          //                                       });
-          //                                     },
-          //                                     items:
-          //                                         dropDownOptions.map((String option) {
-          //                                       return DropdownMenuItem<String>(
-          //                                         value: option,
-          //                                         child: Text(option),
-          //                                       );
-          //                                     }).toList(),
-          //                                   ),
-          //                                   Visibility(
-          //                                     visible: selectedOption == 'Others',
-          //                                     child: TextFormField(
-          //                                       controller: customReasonController,
-          //                                       decoration: InputDecoration(
-          //                                           labelText: 'Enter your reason'),
-          //                                     ),
-          //                                   ),
-          //                                 ],
-          //                               ),
-          //                               actions: [
-          //                                 TextButton(
-          //                                   child: Text('Cancel'),
-          //                                   onPressed: () {
-          //                                     // Reset the selectedOption to the initialOption when canceling
-          //                                     setState(() {
-          //                                       selectedOption = initialOption;
-          //                                     });
-          //                                     Navigator.of(context).pop();
-          //                                   },
-          //                                 ),
-          //                                 TextButton(
-          //                                   child: Text('Report'),
-          //                                   onPressed: () {
-          //                                     if (selectedOption != null) {
-          //                                       String reason;
-          //                                       if (selectedOption == 'Others') {
-          //                                         reason = customReasonController.text;
-          //                                       } else {
-          //                                         reason = selectedOption!;
-          //                                       }
-          //                                       if (reason.isNotEmpty) {
-          //                                         // Check if a reason is provided
-          //                                         handleReportQuestion(
-          //                                             loggedInEmail, question, reason);
-          //                                         toastMessage(
-          //                                             'Your report has been sent successfully');
-          //                                         Navigator.of(context).pop();
-          //                                       } else {
-          //                                         // Show an error message or handle the case where no reason is provided
-          //                                         print(
-          //                                             'Please provide a reason for reporting.');
-          //                                       }
-          //                                     }
-          //                                   },
-          //                                 ),
-          //                               ],
-          //                             );
-          //                           },
-          //                         );
-          //                       },
-          //                     );
-          //                   },
-          //                 ),
-          //                 SizedBox(
-          //                   height: 60,
-          //                 )
-          //               ],
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
         ),
       );
 
@@ -1132,7 +786,7 @@ class __FHomePageState extends State<FHomePage> {
                           child: Chip(
                             label: Text(
                               intrest,
-                              style: TextStyle(fontSize: 12.0),
+                              style: TextStyle(fontSize: 9.0),
                             ),
                           ),
                         );
@@ -1147,6 +801,7 @@ class __FHomePageState extends State<FHomePage> {
                   IconButton(
                     icon: Icon(Icons.bookmark,
                         color: Color.fromARGB(255, 63, 63, 63)),
+                    iconSize: 20,
                     onPressed: () {
                       addQuestionToBookmarks(loggedInEmail, question);
                     },
@@ -1156,6 +811,7 @@ class __FHomePageState extends State<FHomePage> {
                       IconButton(
                         icon: Icon(Icons.comment,
                             color: Color.fromARGB(255, 63, 63, 63)),
+                        iconSize: 20,
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -1165,12 +821,16 @@ class __FHomePageState extends State<FHomePage> {
                           );
                         },
                       ),
-                      Text(question.noOfAnswers.toString()),
+                      Text(
+            question.noOfAnswers.toString(),
+            style: TextStyle(fontSize: 14),
+          ),
                     ],
                   ),
                   IconButton(
                     icon: Icon(Icons.report,
                         color: Color.fromARGB(255, 63, 63, 63)),
+                    iconSize: 20,
                     onPressed: () {
                       showDialog(
                         context: context,
@@ -1279,29 +939,29 @@ class __FHomePageState extends State<FHomePage> {
                     SizedBox(width: 5),
                     Text(
                       "Is this content relevant to you?",
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 10),
                     ),
-                    SizedBox(width: 15),
+                    SizedBox(width: 10),
                     GestureDetector(
                       onTap: () {
                         recordFeedback(loggedInEmail, question, true);
                       },
                       child: Image.asset(
                         'assets/icons/thumbUp.png',
-                        width: 15,
-                        height: 15,
+                        width: 12,
+                        height: 12,
                         color: Color.fromARGB(255, 116, 116, 116),
                       ),
                     ),
-                    SizedBox(width: 20),
+                    SizedBox(width: 16),
                     GestureDetector(
                       onTap: () {
                         recordFeedback(loggedInEmail, question, false);
                       },
                       child: Image.asset(
                         'assets/icons/thumbDown.png',
-                        width: 15,
-                        height: 15,
+                        width: 12,
+                        height: 12,
                         color: Color.fromARGB(255, 116, 116, 116),
                       ),
                     ),
@@ -1313,281 +973,6 @@ class __FHomePageState extends State<FHomePage> {
               ),
             ],
           ),
-          // child: ListTile(
-          //   leading: CircleAvatar(
-          //     radius: 30, // Adjust the radius to make the avatar bigger
-          //     backgroundImage: question.userPhotoUrl != ''
-          //         ? NetworkImage(question.userPhotoUrl!)
-          //         : const AssetImage('assets/Backgrounds/defaultUserPic.png')
-          //             as ImageProvider<Object>, // Cast to ImageProvider<Object>
-          //   ),
-          //   title: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       GestureDetector(
-          //         onTap: () {
-          //           if (question.userId != null &&
-          //               question.userId.isNotEmpty &&
-          //               question.userId != "DeactivatedUser") {
-          //             Navigator.push(
-          //               context,
-          //               MaterialPageRoute(
-          //                 builder: (context) =>
-          //                     UserProfileView(userId: question.userId),
-          //               ),
-          //             );
-          //           }
-          //         },
-          //         child: Row(
-          //           children: [
-          //             Text(
-          //               question.username ?? '', // Display the username
-          //               style: TextStyle(
-          //                   fontWeight: FontWeight.bold,
-          //                   color: Color.fromARGB(255, 24, 8, 53),
-          //                   fontSize: 16),
-          //             ),
-          //             if (question.userType == "Freelancer")
-          //               Row(
-          //                 children: [
-          //                   Icon(
-          //                     Icons.verified,
-          //                     color: Colors.deepPurple,
-          //                     size: 20,
-          //                   ),
-          //                   SizedBox(width: 4),
-          //                 ],
-          //               ),
-          //             Expanded(
-          //               child: Align(
-          //                 alignment: Alignment.centerRight,
-          //                 child: Text(
-          //                   DateFormat('dd/MM/yyyy').format(question.postedDate),
-          //                   style: TextStyle(fontSize: 12),
-          //                 ),
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //       SizedBox(height: 5),
-          //       Text(
-          //         question.title,
-          //         style: TextStyle(
-          //           fontWeight: FontWeight.bold,
-          //           fontSize: 15,
-          //         ),
-          //       ),
-          //       SizedBox(height: 5),
-          //       Text(question.description,
-          //           style: TextStyle(
-          //             fontSize: 13,
-          //           )),
-          //     ],
-          //   ),
-          //   subtitle: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       SizedBox(
-          //         height: 7,
-          //       ),
-          //       Container(
-          //         width: 400, // Set a fixed width for the skills container
-          //         child: SingleChildScrollView(
-          //           scrollDirection: Axis.horizontal,
-          //           child: Row(
-          //             children: List.generate(
-          //               question.topics.length,
-          //               (intrestsIndex) {
-          //                 final intrest =
-          //                     question.topics[intrestsIndex] as String;
-          //                 return Padding(
-          //                   padding: const EdgeInsets.only(left: 8.0),
-          //                   child: Chip(
-          //                     label: Text(
-          //                       intrest,
-          //                       style: TextStyle(fontSize: 12.0),
-          //                     ),
-          //                   ),
-          //                 );
-          //               },
-          //             ),
-          //           ),
-          //         ),
-          //       ),
-          //       Row(
-          //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //         children: [
-          //           IconButton(
-          //             icon: Icon(Icons.bookmark,
-          //                 color: Color.fromARGB(255, 63, 63, 63)),
-          //             onPressed: () {
-          //               addQuestionToBookmarks(loggedInEmail, question);
-          //             },
-          //           ),
-          //           Row(
-          //             children: [
-          //               IconButton(
-          //                 icon: Icon(Icons.comment,
-          //                     color: Color.fromARGB(255, 63, 63, 63)),
-          //                 onPressed: () {
-          //                   Navigator.push(
-          //                     context,
-          //                     MaterialPageRoute(
-          //                         builder: (context) => AnswerPage(
-          //                             questionDocId: question.questionDocId)),
-          //                   );
-          //                 },
-          //               ),
-          //               Text(question.noOfAnswers.toString()),
-          //             ],
-          //           ),
-          //           IconButton(
-          //             icon: Icon(Icons.report,
-          //                 color: Color.fromARGB(255, 63, 63, 63)),
-          //             onPressed: () {
-          //               showDialog(
-          //                 context: context,
-          //                 builder: (BuildContext context) {
-          //                   return StatefulBuilder(
-          //                     builder:
-          //                         (BuildContext context, StateSetter setState) {
-          //                       String? initialOption = null;
-          //                       TextEditingController customReasonController =
-          //                           TextEditingController();
-          //
-          //                       return AlertDialog(
-          //                         title: Text('Report Post'),
-          //                         content: Column(
-          //                           mainAxisSize: MainAxisSize.min,
-          //                           children: <Widget>[
-          //                             DropdownButton<String>(
-          //                               value: selectedOption,
-          //                               hint: Text('Select a reason'),
-          //                               onTap: () {
-          //                                 // Set the initialOption to the selectedOption
-          //                                 initialOption = selectedOption;
-          //                               },
-          //                               onChanged: (String? newValue) {
-          //                                 setState(() {
-          //                                   selectedOption = newValue!;
-          //                                 });
-          //                               },
-          //                               items:
-          //                                   dropDownOptions.map((String option) {
-          //                                 return DropdownMenuItem<String>(
-          //                                   value: option,
-          //                                   child: Text(option),
-          //                                 );
-          //                               }).toList(),
-          //                             ),
-          //                             Visibility(
-          //                               visible: selectedOption == 'Others',
-          //                               child: TextFormField(
-          //                                 controller: customReasonController,
-          //                                 decoration: InputDecoration(
-          //                                     labelText: 'Enter your reason'),
-          //                               ),
-          //                             ),
-          //                           ],
-          //                         ),
-          //                         actions: [
-          //                           TextButton(
-          //                             child: Text('Cancel'),
-          //                             onPressed: () {
-          //                               // Reset the selectedOption to the initialOption when canceling
-          //                               setState(() {
-          //                                 selectedOption = initialOption;
-          //                               });
-          //                               Navigator.of(context).pop();
-          //                             },
-          //                           ),
-          //                           TextButton(
-          //                             child: Text('Report'),
-          //                             onPressed: () {
-          //                               if (selectedOption != null) {
-          //                                 String reason;
-          //                                 if (selectedOption == 'Others') {
-          //                                   reason = customReasonController.text;
-          //                                 } else {
-          //                                   reason = selectedOption!;
-          //                                 }
-          //                                 if (reason.isNotEmpty) {
-          //                                   // Check if a reason is provided
-          //                                   handleReportQuestion(
-          //                                       loggedInEmail, question, reason);
-          //                                   toastMessage(
-          //                                       'Your report has been sent successfully');
-          //                                   Navigator.of(context).pop();
-          //                                 } else {
-          //                                   // Show an error message or handle the case where no reason is provided
-          //                                   print(
-          //                                       'Please provide a reason for reporting.');
-          //                                 }
-          //                               }
-          //                             },
-          //                           ),
-          //                         ],
-          //                       );
-          //                     },
-          //                   );
-          //                 },
-          //               );
-          //             },
-          //           ),
-          //         ],
-          //       ),
-          //       SizedBox(
-          //         height: 6,
-          //       ),
-          //       Align(
-          //         alignment: Alignment.bottomLeft,
-          //         child: Row(
-          //           mainAxisAlignment: MainAxisAlignment.start,
-          //           children: [
-          //             Image.asset(
-          //               'assets/icons/sparkle.png',
-          //               width: 17,
-          //               height: 17,
-          //             ),
-          //             SizedBox(width: 5),
-          //             Text(
-          //               "Is this content relevant to you?",
-          //               style: TextStyle(fontSize: 12),
-          //             ),
-          //             SizedBox(width: 15),
-          //             GestureDetector(
-          //               onTap: () {
-          //                 recordFeedback(loggedInEmail, question, true);
-          //               },
-          //               child: Image.asset(
-          //                 'assets/icons/thumbUp.png',
-          //                 width: 15,
-          //                 height: 15,
-          //                 color: Color.fromARGB(255, 116, 116, 116),
-          //               ),
-          //             ),
-          //             SizedBox(width: 20),
-          //             GestureDetector(
-          //               onTap: () {
-          //                 recordFeedback(loggedInEmail, question, false);
-          //               },
-          //               child: Image.asset(
-          //                 'assets/icons/thumbDown.png',
-          //                 width: 15,
-          //                 height: 15,
-          //                 color: Color.fromARGB(255, 116, 116, 116),
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //       SizedBox(
-          //         height: 6,
-          //       ),
-          //     ],
-          //   ),
-          // ),
         ),
       );
 
@@ -1609,14 +994,14 @@ class __FHomePageState extends State<FHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Wrap(
-                  spacing: -5,
-                  runSpacing: -5,
+                  spacing: 4,
+                  runSpacing: -12,
                   children: team.topics
                       .map(
                         (topic) => Chip(
                           label: Text(
                             topic,
-                            style: TextStyle(fontSize: 12.0),
+                            style: TextStyle(fontSize: 10.0),
                           ),
                         ),
                       )
@@ -1624,96 +1009,6 @@ class __FHomePageState extends State<FHomePage> {
                 ),
               ],
             ),
-            // child: ListTile(
-            //   leading: CircleAvatar(
-            //     backgroundImage: team.userPhotoUrl != ''
-            //         ? NetworkImage(team.userPhotoUrl!)
-            //         : const AssetImage('assets/Backgrounds/defaultUserPic.png')
-            //             as ImageProvider<Object>, // Cast to ImageProvider<Object>
-            //   ),
-            //   title: Column(
-            //     crossAxisAlignment: CrossAxisAlignment.start,
-            //     children: [
-            //       SizedBox(height: 5),
-            //       GestureDetector(
-            //         onTap: () {
-            //           if (team.userId != null &&
-            //               team.userId.isNotEmpty &&
-            //               team.userId != "DeactivatedUser") {
-            //             Navigator.push(
-            //               context,
-            //               MaterialPageRoute(
-            //                 builder: (context) =>
-            //                     UserProfileView(userId: team.userId),
-            //               ),
-            //             );
-            //           }
-            //         },
-            //         child: Row(
-            //           children: [
-            //             Text(
-            //               team.username ?? '',
-            //               style: TextStyle(
-            //                 fontWeight: FontWeight.bold,
-            //                 color: const Color.fromARGB(255, 34, 3, 87),
-            //                 fontSize: 16,
-            //               ),
-            //             ),
-            //             if (team.userType == "Freelancer")
-            //               Row(
-            //                 children: [
-            //                   Icon(
-            //                     Icons.verified,
-            //                     color: Colors.deepPurple,
-            //                     size: 20,
-            //                   ),
-            //                   SizedBox(width: 4),
-            //                   // Adjust the spacing between the icon and the date
-            //                 ],
-            //               ),
-            //             Expanded(
-            //               child: Align(
-            //                 alignment: Alignment.centerRight,
-            //                 child: Text(
-            //                   DateFormat('dd/MM/yyyy').format(team.postedDate),
-            //                   style: TextStyle(fontSize: 12),
-            //                 ),
-            //               ),
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //       SizedBox(height: 5),
-            //       Text(
-            //         team.title,
-            //         style: TextStyle(
-            //           fontWeight: FontWeight.bold,
-            //         ),
-            //       ),
-            //       SizedBox(height: 5),
-            //       Text(team.description),
-            //     ],
-            //   ),
-            //   subtitle: Column(
-            //     crossAxisAlignment: CrossAxisAlignment.start,
-            //     children: [
-            //       Wrap(
-            //         spacing: -5,
-            //         runSpacing: -5,
-            //         children: team.topics
-            //             .map(
-            //               (topic) => Chip(
-            //                 label: Text(
-            //                   topic,
-            //                   style: TextStyle(fontSize: 12.0),
-            //                 ),
-            //               ),
-            //             )
-            //             .toList(),
-            //       ),
-            //     ],
-            //   ),
-            // ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1721,19 +1016,18 @@ class __FHomePageState extends State<FHomePage> {
               IconButton(
                 icon: Icon(
                   FontAwesomeIcons.solidMessage,
-                  size: 18.5,
+                  size: 16,
                 ),
                 onPressed: () {
-                  // Add your functionality next sprints
                   context
                       .read<ProfileProvider>()
                       .gotoChat(context, team.userId);
-                  // log('MK: clicked on Message: ${team.userId}');
                 },
               ),
               IconButton(
                 icon:
                     Icon(Icons.report, color: Color.fromARGB(255, 63, 63, 63)),
+                iconSize: 20,
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -1901,9 +1195,9 @@ class __FHomePageState extends State<FHomePage> {
                             backgroundImage: NetworkImage(loggedImage),
                           ),
                         ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 3),
                       const Text(
-                        'Home           ',
+                        'Home',
                         style: TextStyle(
                           fontSize: 18,
                           fontFamily: "Poppins",
@@ -1946,7 +1240,6 @@ class __FHomePageState extends State<FHomePage> {
                         onChanged: (text) {
                           setState(() {
                             if (currentTab == "Question") {
-                              print("inside the calling!!!!!!!!!!!");
                               readQuestionSearch();
                             }
                             if (currentTab == "Team") {
@@ -1965,11 +1258,9 @@ class __FHomePageState extends State<FHomePage> {
             bottom: const TabBar(
               indicator: UnderlineTabIndicator(
                 borderSide: BorderSide(
-                  width: 5.0,
-                  color: Color.fromARGB(
-                      255, 0, 0, 0), // Set the color of the underline
+                  width: 2.0,
+                  color:  Color.fromRGBO(37, 6, 81, 0.898),
                 ),
-                // Adjust the insets if needed
               ),
               labelColor: Color.fromARGB(255, 0, 0, 0),
               // Set the color of the selected tab's text
@@ -2095,8 +1386,6 @@ class __FHomePageState extends State<FHomePage> {
                     ],
                   );
                 } else if (snapshot.hasError) {
-                  print(
-                      'MK: comment ${snapshot.error} % ${snapshot.stackTrace}');
 
                   return Center(
                     child: Text('Error: ${snapshot.error}'),
@@ -2169,7 +1458,6 @@ class __FHomePageState extends State<FHomePage> {
   Future<void> recordFeedback(
       String email, CardQuestion question, bool isThumbUp) async {
     try {
-      print(question.questionDocId);
       String relevant = isThumbUp ? 'Yes' : 'No';
 
       await FirebaseFirestore.instance.collection('RecommenderMeasure').add({
@@ -2187,9 +1475,6 @@ class __FHomePageState extends State<FHomePage> {
   Future<void> addQuestionToBookmarks(
       String email, CardQuestion question) async {
     try {
-      print("888888888888888888");
-      print(question.questionDocId);
-      print("888888888888888888");
 
       final existingBookmark = await FirebaseFirestore.instance
           .collection('Bookmark')

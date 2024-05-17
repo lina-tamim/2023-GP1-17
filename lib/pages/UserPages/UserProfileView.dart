@@ -43,7 +43,6 @@ class _UserProfileView extends State<UserProfileView>
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('loggedInEmail') ?? '';
     currentEmail = email;
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!$currentEmail");
     return email;
   }
 
@@ -218,7 +217,6 @@ class _UserProfileView extends State<UserProfileView>
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 5),
               GestureDetector(
                 onTap: () {
                   if (question.userId != null && question.userId.isNotEmpty) {
@@ -238,7 +236,7 @@ class _UserProfileView extends State<UserProfileView>
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Color.fromARGB(255, 24, 8, 53),
-                          fontSize: 16),
+                          fontSize: 14),
                     ),
                     if (question.userType == "Freelancer")
                       Row(
@@ -248,7 +246,7 @@ class _UserProfileView extends State<UserProfileView>
                             color: Colors.deepPurple,
                             size: 20,
                           ),
-                          SizedBox(width: 4),
+                          SizedBox(width: 5),
                         ],
                       ),
                     Expanded(
@@ -256,7 +254,7 @@ class _UserProfileView extends State<UserProfileView>
                         alignment: Alignment.centerRight,
                         child: Text(
                           DateFormat('dd/MM/yyyy').format(question.postedDate),
-                          style: TextStyle(fontSize: 12),
+                          style: TextStyle(fontSize: 10),
                         ),
                       ),
                     ),
@@ -268,13 +266,13 @@ class _UserProfileView extends State<UserProfileView>
                 question.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 15.4,
+                  fontSize: 12.4,
                 ),
               ),
               SizedBox(height: 5),
               Text(question.description,
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 12,
                   )),
             ],
           ),
@@ -299,7 +297,7 @@ class _UserProfileView extends State<UserProfileView>
                           child: Chip(
                             label: Text(
                               intrest,
-                              style: TextStyle(fontSize: 12.0),
+                              style: TextStyle(fontSize: 10.0),
                             ),
                           ),
                         );
@@ -323,6 +321,7 @@ class _UserProfileView extends State<UserProfileView>
                         : () {
                             addQuestionToBookmarks(email, question);
                           },
+                          iconSize: 18,
                   ),
                   Row(
                     children: [
@@ -333,6 +332,7 @@ class _UserProfileView extends State<UserProfileView>
                               ? const Color.fromARGB(24, 63, 63, 63)
                               : Color.fromARGB(255, 63, 63, 63),
                         ),
+                        iconSize: 18,
                         onPressed: currentEmail == 'texelad1@gmail.com'
                             ? null
                             : () {
@@ -345,7 +345,10 @@ class _UserProfileView extends State<UserProfileView>
                                 );
                               },
                       ),
-                      Text(question.noOfAnswers.toString()),
+                      Text(
+            question.noOfAnswers.toString(),
+            style: TextStyle(fontSize: 14),
+          ),
                     ],
                   ),
                   IconButton(
@@ -429,9 +432,6 @@ class _UserProfileView extends State<UserProfileView>
                                               'Your report has been sent successfully');
                                           Navigator.of(context).pop();
                                         } else {
-                                          // Show an error message or handle the case where no reason is provided
-                                          print(
-                                              'Please provide a reason for reporting.');
                                         }
                                       }
                                     },
@@ -442,7 +442,6 @@ class _UserProfileView extends State<UserProfileView>
                           );
                         },
                       );
-                      // Add functionality in upcoming sprints
                     },
                   ),
                 ],
@@ -625,7 +624,7 @@ class _UserProfileView extends State<UserProfileView>
                         alignment: Alignment.centerRight,
                         child: Text(
                           DateFormat('dd/MM/yyyy').format(team.postedDate),
-                          style: TextStyle(fontSize: 12),
+                          style: TextStyle(fontSize: 10),
                         ),
                       ),
                     ),
@@ -635,29 +634,42 @@ class _UserProfileView extends State<UserProfileView>
                 Text(
                   team.title,
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12.4,
+                ),
                 ),
                 SizedBox(height: 5),
-                Text(team.description),
+                Text(team.description,  style: TextStyle(
+                    fontSize: 12,
+                  )),
               ],
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Wrap(
-                  spacing: -5,
-                  runSpacing: -5,
-                  children: team.topics
-                      .map(
-                        (topic) => Chip(
-                          label: Text(
-                            topic,
-                            style: TextStyle(fontSize: 12.0),
+                Container(
+                width: 400, // Set a fixed width for the skills container
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(
+                      team.topics.length,
+                      (intrestsIndex) {
+                        final intrest =
+                            team.topics[intrestsIndex] as String;
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Chip(
+                            label: Text(
+                              intrest,
+                              style: TextStyle(fontSize: 10.0),
+                            ),
                           ),
-                        ),
-                      )
-                      .toList(),
+                        );
+                      },
+                    ),
+                  ),
+                ),
                 ),
               ],
             ),
@@ -681,7 +693,6 @@ class _UserProfileView extends State<UserProfileView>
                           context
                               .read<ProfileProvider>()
                               .gotoChat(context, team.userId);
-                          log('MK: clicked on Message: ${team.userId}' as int);
                         },
                 ),
               ),
@@ -823,8 +834,8 @@ class _UserProfileView extends State<UserProfileView>
     String x = '';
     Query<Map<String, dynamic>> query = FirebaseFirestore.instance
         .collection('Answer')
-        .where('userId', isEqualTo: email);
-    //.orderBy('postedDate', descending: true);
+        .where('userId', isEqualTo: email)
+        .orderBy('postedDate', descending: true);
 
     return query.snapshots().asyncMap((snapshot) async {
       final questions = snapshot.docs.map((doc) {
@@ -888,7 +899,7 @@ class _UserProfileView extends State<UserProfileView>
     int upvoteCount = answer.upvoteCount ?? 0;
     List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
     String doc = answer.docId;
-    print("7777777777777 $doc");
+
 
     return GestureDetector(
       onTap: () {
@@ -940,7 +951,7 @@ class _UserProfileView extends State<UserProfileView>
                       alignment: Alignment.centerRight,
                       child: Text(
                         DateFormat('dd/MM/yyyy').format(answer.postedDate),
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(fontSize: 10),
                       ),
                     ),
                   ),
@@ -948,7 +959,11 @@ class _UserProfileView extends State<UserProfileView>
               ),
               SizedBox(height: 5),
               ListTile(
-                title: Text(answer.answerText),
+                title: 
+                Text(
+            answer.answerText,
+            style: TextStyle(color: Colors.black, fontSize: 12),
+          ),
               ),
             ],
           ),
@@ -970,12 +985,12 @@ class _UserProfileView extends State<UserProfileView>
                                     : upvotedUserIds.contains(currentEmail)
                                         ? Icons.arrow_circle_down
                                         : Icons.arrow_circle_up,
-                                size: 28, // Adjust the size as needed
+                                size: 20, // Adjust the size as needed
                                 color: upvotedUserIds.contains(currentEmail)
                                     ? const Color.fromARGB(255, 49, 3,
                                         0) // Color for arrow_circle_down
                                     : const Color.fromARGB(255, 26, 33,
-                                        38), // Color for arrow_circle_up
+                                        20), // Color for arrow_circle_up
                               ),
                               onPressed: () {
                                 setState(() {
@@ -1055,7 +1070,10 @@ class _UserProfileView extends State<UserProfileView>
                                 });
                               },
                             ),
-                            Text('Upvotes: $upvoteCount'),
+                            Text(
+           'Upvotes: $upvoteCount',
+            style: TextStyle(color: Colors.black, fontSize: 12),
+          ),
                           ],
                         ),
                 ],
@@ -1102,7 +1120,6 @@ class _UserProfileView extends State<UserProfileView>
       title: Text(reason),
       onTap: () {
         showConfirmationDialog(context, reason);
-        print('Selected reason: $reason');
       },
     );
   }
@@ -1261,11 +1278,9 @@ class _UserProfileView extends State<UserProfileView>
         });
       } else {
         print('User not found');
-        // Handle the case where the user with the provided email is not found
       }
     }).catchError((error) {
       print('Error retrieving user: $error');
-      // Handle error, show an error dialog, or take appropriate action
     });
   }
 
@@ -1376,9 +1391,9 @@ class _UserProfileView extends State<UserProfileView>
                           children: [
                             const SizedBox(width: 10),
                             Text(
-                              username,
+                              '$username  ',
                               style: const TextStyle(
-                                  fontSize: 25, fontWeight: FontWeight.bold),
+                                  fontSize: 23, fontWeight: FontWeight.bold),
                             ),
                             if (usertype == 'Freelancer')
                               Icon(
@@ -1396,7 +1411,7 @@ class _UserProfileView extends State<UserProfileView>
                                 child: const Icon(
                                   Icons.star_rounded,
                                   color: Color.fromARGB(255, 209, 196, 25),
-                                  size: 19,
+                                  size: 18,
                                 ),
                                 message:
                                     'This is the total number of Upvote received \nfor positive interactions!',
@@ -1439,7 +1454,7 @@ class _UserProfileView extends State<UserProfileView>
                                         : 'GitHub',
                                     style: githubURL != null
                                         ? TextStyle(
-                                            fontSize: 15,
+                                            fontSize: 13,
                                             color:
                                                 Color.fromARGB(255, 0, 49, 146),
                                             decoration:
@@ -1480,8 +1495,8 @@ class _UserProfileView extends State<UserProfileView>
                           Text(
                             '  $country, $city',
                             style: const TextStyle(
-                                fontSize: 17,
-                                color: Color.fromARGB(255, 128, 128, 128)),
+                                fontSize: 14,
+                                color: Color.fromARGB(255, 0, 0, 0)),
                           ),
                         const SizedBox(height: 2),
                         Column(
@@ -1492,14 +1507,12 @@ class _UserProfileView extends State<UserProfileView>
                               child: Text(
                                 'Intrested In:',
                                 style: TextStyle(
-                                  fontSize: 16.0,
+                                  fontSize: 14.0,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
-                            SizedBox(
-                              height: 7,
-                            ),
+                            
                             Container(
                               width:
                                   400, // Set a fixed width for the skills container
@@ -1517,7 +1530,7 @@ class _UserProfileView extends State<UserProfileView>
                                         child: Chip(
                                           label: Text(
                                             intrest,
-                                            style: TextStyle(fontSize: 12.0),
+                                            style: TextStyle(fontSize: 10.0),
                                           ),
                                         ),
                                       );
@@ -1526,28 +1539,24 @@ class _UserProfileView extends State<UserProfileView>
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 2),
                           ],
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (skills != null && skills.isNotEmpty)
-                              SizedBox(height: 16.0),
+                              SizedBox(height: 14.0),
                             if (skills.isNotEmpty)
                               Padding(
                                 padding: const EdgeInsets.only(left: 8.0),
                                 child: Text(
                                   'Skills:',
                                   style: TextStyle(
-                                    fontSize: 16.0,
+                                    fontSize: 14.0,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
-                            SizedBox(
-                              height: 7,
-                            ),
                             Container(
                               width:
                                   400, // Set a fixed width for the skills container
@@ -1587,20 +1596,49 @@ class _UserProfileView extends State<UserProfileView>
                 ),
                 SliverToBoxAdapter(
                   child: Container(
-                      padding: const EdgeInsets.only(top: 8),
+                      padding: const EdgeInsets.only(top: 1),
                       alignment: Alignment.center,
                       child: TabBar(
                         controller: tabController,
-                        indicatorColor: Color.fromARGB(
-                            255, 0, 0, 0), // Change the underline color here
-                        labelColor: Color.fromARGB(
-                            255, 0, 0, 0), // Change the text color here
-                        tabs: [
-                          Tab(text: 'Questions'),
-                          Tab(text: 'Teams'),
-                          Tab(text: 'Projects'),
-                          Tab(text: 'Answers'),
-                        ],
+                        indicatorColor:Color.fromRGBO(37, 6, 81, 0.898), 
+                         tabs: [
+                Tab(
+                  child: Text(
+                    'Questions',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+                Tab(
+                  child: Text(
+                    'Teams',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+                Tab(
+                  child: Text(
+                    'Projects',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+                Tab(
+                  child: Text(
+                    'Answers',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
                       )),
                 ),
                 SliverFillRemaining(

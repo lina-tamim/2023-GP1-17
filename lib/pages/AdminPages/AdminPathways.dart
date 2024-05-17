@@ -509,22 +509,19 @@ Future<Stream<List<PathwayContainer>>> readPathwaySearch() async {
         .index('Pathway_index')
         .query(searchController.text)
         .getObjects();
-print("###########PPPPP");
-print(response);
+
     final List<AlgoliaObjectSnapshot> hits = response.hits;
     final List<String> pathwayIds =
         hits.map((snapshot) => snapshot.objectID).toList();
 
  searchPathwayIds.clear();
 searchPathwayIds.addAll(pathwayIds); // Add the IDs to the list
-print("wwwwwwwwwwwwwPPPPPPPPPP");
-//print(searchProjectIds);
+
     final snapshot = await FirebaseFirestore.instance
         .collection('Pathway')
         .where(FieldPath.documentId, whereIn: pathwayIds)
         .get();
-print("###########");
-print(snapshot);
+
     final pathways = snapshot.docs.map((doc) {
       final pathwayData = doc.data() as Map<String, dynamic>;
       final pathway =  PathwayContainer.fromJson(pathwayData);
@@ -761,7 +758,7 @@ if (searchController.text.isNotEmpty) {
                       color: Color.fromRGBO(37, 6, 81, 0.898),
                     ),
                   ),
-                  const SizedBox(width: 50),
+                  const SizedBox(width: 10),
                   IconButton(
                     onPressed: () {
                       setState(() {
@@ -775,23 +772,33 @@ if (searchController.text.isNotEmpty) {
               const SizedBox(
                 height: 8,
               ),
-              if (showSearchBar)
-                TextField(
-                  controller: searchController,
-                  decoration: const InputDecoration(
-                    hintText: 'Search...',
-                    prefixIcon: Icon(Icons.search),
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 0,
+                  if (showSearchBar)
+                    Container(
+                      height: 40.0, // Adjust the height as needed
+                      child: TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search...',
+                          hintStyle: TextStyle(color: Colors.grey),
+                          prefixIcon: Icon(Icons.search, color: Colors.grey),
+                          filled: true,
+                          fillColor: Color.fromARGB(255, 242, 241, 243),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            //borderSide: BorderSide.bottom ,
+                          ),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10.0),
+                          isDense: false,
+                        ),
+                        style: TextStyle(color: Colors.black, fontSize: 14.0),
+                        onChanged: (text) {
+                          setState(() {
+                         
+                          });
+                        },
+                      ),
                     ),
-                    isDense: true,
-                  ),
-                  onChanged: (text) {
-                    setState(() {});
-                    // Handle search input changes
-                    readPathwaySearch();
-                  },
-                ),
             ],
           ),
         ),

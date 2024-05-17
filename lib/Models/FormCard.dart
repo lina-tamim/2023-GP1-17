@@ -265,7 +265,7 @@ class _FormWidgetState extends State<FormWidget> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 7),
                   child: Text(
-                    'Ask, Connect, Achieve: Empowering Starts Here! ',
+                    'Ask, Connect, Achieve ',
                     textAlign: TextAlign.center,
                   ),
                 ),

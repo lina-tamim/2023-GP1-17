@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,9 +18,6 @@ class ProfileProvider extends ChangeNotifier {
       FirebaseFirestore.instance.collection('RegularUser');
   Map<String, User> _storedUsers = <String, User>{};
 
-  StreamSubscription<List<Chat>>? chatStream;
-  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? reportsStream;
-
   bool _containsUnseenReports = false;
 
   bool get containsUnseenReports => _containsUnseenReports;
@@ -30,15 +26,7 @@ class ProfileProvider extends ChangeNotifier {
     _containsUnseenReports = value;
   }
 
-  // ProfileProvider() {
-  //   log('MK: notifications count are to be fetched');
-  //   // init();
-  // }
-
-  init() {
-    chatStream?.cancel();
-    reportsStream?.cancel();
-    print('MK: cancelling streams in profile provider');
+  ProfileProvider() {
     initRealtimeListener();
     listenToReports();
   }
@@ -49,7 +37,6 @@ class ProfileProvider extends ChangeNotifier {
 
   set chatCount(int value) {
     _chatCount = value;
-    log('MK: notifications count: $_chatCount');
     notifyListeners();
   }
 
@@ -87,7 +74,6 @@ class ProfileProvider extends ChangeNotifier {
     final QuerySnapshot snapshot =
         await userReference.where('email', isEqualTo: email).limit(1).get();
 
-    log('MK: ${snapshot.docs} for ${email}');
     if (snapshot.docs.isNotEmpty) {
       final Map<String, dynamic>? userData =
           snapshot.docs[0].data() as Map<String, dynamic>?;
@@ -119,7 +105,7 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   void initRealtimeListener() {
-    chatStream = ChatAPI().chats().listen((List<Chat> chats) {
+    ChatAPI().chats().listen((List<Chat> chats) {
       // Calculate chat count based on the updated chat data
       int count = chats
           .where((element) => element.deletedBy != getUid())
@@ -140,7 +126,6 @@ class ProfileProvider extends ChangeNotifier {
         _chatCount = count;
         notifyListeners(); // Notify listeners only when the chat count changes
       }
-      log('MK: notifications count: $count in ${chats.length}');
     });
   }
 
@@ -150,7 +135,7 @@ class ProfileProvider extends ChangeNotifier {
     if (email.isEmpty) {
       return;
     }
-    reportsStream = FirebaseFirestore.instance
+    FirebaseFirestore.instance
         .collection('Report')
         .where('reportedUserId', isEqualTo: email)
         .where('status', isEqualTo: 'Accepted')
@@ -170,7 +155,6 @@ class ProfileProvider extends ChangeNotifier {
       // Update the provider variables
       _containsUnseenReports = hasUnseenReports;
       notifyListeners();
-      log('MK: user reports: $containsUnseenReports');
     });
   }
 }

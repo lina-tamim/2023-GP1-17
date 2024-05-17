@@ -32,7 +32,7 @@ Widget build(BuildContext context) {
         iconTheme: IconThemeData(
           color: Color.fromRGBO(37, 6, 81, 0.898),
         ),
-        toolbarHeight: 100,
+        toolbarHeight: 75,
         /*flexibleSpace: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -54,7 +54,6 @@ Widget build(BuildContext context) {
                       },
                       icon: const Icon(Icons.arrow_back),
                     ),
-                    const SizedBox(width: 0),
                     const Text(
                       'Reported Accounts',
                       style: TextStyle(
@@ -63,7 +62,7 @@ Widget build(BuildContext context) {
                         color: Color.fromRGBO(37, 6, 81, 0.898),
                       ),
                     ),
-                    const SizedBox(width: 100),
+                    const SizedBox(width: 50),
                     IconButton(
                       onPressed: () {
                         setState(() {
@@ -77,29 +76,33 @@ Widget build(BuildContext context) {
                 const SizedBox(
                   height: 8,
                 ),
-                if (showSearchBar)
-                  TextField(
-                    controller: searchController,
-                    decoration: const InputDecoration(
-                      hintText: 'Search...',
-                      prefixIcon: Icon(Icons.search),
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 0,
-                      ),
-                      isDense: true,
-                    ),
-                    onChanged: (text) {
-                      setState(() {});
-                      // Handle search input changes
-                      if(currentTab =="ActiveReport"){
-                          searchReportAlgolia();
-                      }
+                 if (showSearchBar)
+                    Container(
+                      height: 40.0, // Adjust the height as needed
+                      child: TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search...',
+                          hintStyle: TextStyle(color: Colors.grey),
+                          prefixIcon: Icon(Icons.search, color: Colors.grey),
+                          filled: true,
+                          fillColor: Color.fromARGB(255, 242, 241, 243),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            //borderSide: BorderSide.bottom ,
+                          ),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10.0),
+                          isDense: false,
+                        ),
+                        style: TextStyle(color: Colors.black, fontSize: 14.0),
+                        onChanged: (text) {
+                          setState(() {
 
-                      if(currentTab =="OldReport"){
-                          searchOldReportAlgolia();
-                      }
-                    },
-                  ),
+                          });
+                        },
+                      ),
+                    ),
               ],
             );
           },
@@ -193,8 +196,7 @@ Future<List<String>> searchReportAlgolia() async {
       .facetFilter('reportType:Account')
       .facetFilter('status:Pending')
       .getObjects();
-print("###########PPPPP");
-print(response);
+
 searchActiveReportIds.clear();
   final List<AlgoliaObjectSnapshot> hits = response.hits;
   final List<String> objectIDs =
@@ -202,7 +204,6 @@ searchActiveReportIds.clear();
 //searchActiveReportIds = objectIDs;
  
 searchActiveReportIds.addAll(objectIDs);
-print("22222222222222222222222222222222222222222$searchActiveReportIds");
   return searchActiveReportIds;
 }
 
@@ -263,8 +264,6 @@ Stream<List<Widget>> readReportedAccounts() {
 
    if (searchController.text.isNotEmpty &&
             !reportIds.any((id) => searchActiveReportIds.contains(id))) {
-          print("I skipped since there is no report!!!!!!!!!!!!!!!!!!!!");
-          print(reportIds);
           continue; // Skip this iteration if none of the reportIds are found in searchActiveReportIds
         }
 
@@ -547,8 +546,6 @@ final statusSnapshot = await FirebaseFirestore.instance
           );
         }).toList();
  if (searchController.text.isNotEmpty && !reportIds.any((id) => searchOldReportIds.contains(id))) {
-  print("I didn't skip since there is a report!!!!!!!!!!!!!!!!!!!!");
-  print(reportIds);
   continue; // Skip this iteration if none of the reportIds are found in searchReportIds
 }
         final card = Card(
@@ -718,7 +715,6 @@ Future<int> getAccountReportCount(String reportedItemID) async {
 
     return querySnapshot.docs.length;
   } catch (error) {
-    print('Error getting report count: $error');
     return 0;
   }
 }
@@ -753,7 +749,6 @@ Future<void> rejectReportedAccount(List<String> reportIds) async {
     toastMessage('Reports Have Been Rejected');
   } catch (error) {
     toastMessage('Error While Rejecting Reports');
-    print('Error Rejecting Reports: $error');
   }
 }
 
@@ -762,7 +757,6 @@ Future<void> rejectReportedAccount(List<String> reportIds) async {
 
 Future<void> acceptReportedAccount(List<String> reportIds, String username, List<String> reasons, String email) async {
   try {
-    print('ARRRAAAAYYYYY $reportIds');
 
     final reportId = reportIds[0];
     // Get the reportedItemId of the current report
@@ -794,7 +788,6 @@ Future<void> acceptReportedAccount(List<String> reportIds, String username, List
     toastMessage('Report Has Been Accepted');
   } catch (error) {
     toastMessage('Error While Accepting Report');
-    print('Error Accepting Reports: $error');
   }
 
   final Uri emailUri = Uri(

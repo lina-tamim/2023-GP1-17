@@ -40,7 +40,6 @@ class CardAview {
       };
 
   factory CardAview.fromJson(Map<String, dynamic> json) {
-    log('MK: json: ${json}');
     return CardAview(
       questionDocId: json['questionDocId'] ?? json['questionId'],
       userId: json['userId'] as String,

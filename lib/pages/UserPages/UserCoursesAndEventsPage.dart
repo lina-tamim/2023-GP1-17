@@ -77,7 +77,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       // Convert each question to JSON object
 
       allUsers.forEach((User) {
-        print('2222222222');
         Map<String, dynamic> jsonUsers = {
           'attendancePreference': User['attendancePreference'],
           'email': User['email'], // Accessing document ID directly from doc
@@ -112,7 +111,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
 
       // Convert each question to JSON object
       alltheCE.forEach((CE) {
-        print('2222222222');
         CEJson.add({
           'attendanceType': CE['attendanceType'],
           'CE_Id': CE['CE_Id'], // Use 'CE_Id' assigned above
@@ -121,12 +119,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
           'state': CE['state'],
           'city': CE['city'],
         });
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-        print(CEJson.last);
-        print('CCCOOOUUURRSSEESSS ANNNDDD EEEVVEEENNNTTTTSSSSSSS UUUUUPP');
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-        print(UsersJson.last);
-        print('UUSSSEEERRRSSS DDDAAATTAAA UUPPPP');
       });
 
       // Send the JSON object to the server
@@ -140,16 +132,13 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
   static Future<List<String>> recommendCE(List<Map<String, dynamic>> CEJson,
       List<Map<String, dynamic>> UsersJson) async {
     // Send user preferences and all questions to the server
-    print('********************\n\n');
-    print(loggedinEmaill);
-    print('********************kokokokokokokokokokokokokokokokok\n\n');
+
 
     final Map<String, dynamic> requestBody = {
       'user_Email': loggedinEmaill,
       'all_users': UsersJson,
       'all_CE': CEJson,
     };
-    //Uri.parse('https://flask-deploy-gp2-717dffd55916.herokuapp.com/'), 
     final response = await http.post(
       Uri.parse('https://flask-deploy-gp2-717dffd55916.herokuapp.com/recommendCE'),
       headers: <String, String>{
@@ -158,21 +147,12 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       body: jsonEncode(requestBody),
     );
     if (response.statusCode == 200) {
-      // Parse response body as JSON
       final List<dynamic> responseBody = json.decode(response.body);
-
-      // Extract question IDs from response
       final List<String> ids = responseBody.cast<String>().toList();
-
-      // Update recommendedQuestionIds state
-      // setState(() {
       recommendedCEIds = ids;
-      // });
       return recommendedCEIds;
     } else {
-      print('77577777777777777777777777777777777777777777777777777777777');
       return [];
-      // throw Exception('Failed to fetch recommended questions');
     }
   }
 
@@ -182,13 +162,11 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       try {
         recommendedObjects = await fetchUserDetails();
       } catch (e) {
-        log('MK: error occured while loading recommendedCE: $e');
       }
       setState(() {
         coursesLoading = false;
         recommendedObjects = recommendedObjects;
       });
-      log('MK: recommendedCE: ${recommendedObjects}');
     });
     super.initState();
   }
@@ -683,9 +661,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       query = query.orderBy('createdAt', descending: true);
     }
 
-    log('MK: trying to read courses: ${recommendedObjects.length}');
-
-    // Fetch all documents
     return query.snapshots().map((snapshot) {
       final courses = snapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data();
@@ -693,7 +668,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
         return Course.fromJson(data);
       }).toList();
 
-      // Sort courses into recommended and other lists
       List<Course> recommendedCourses = [];
       List<Course> otherCourses = [];
       for (Course course in courses) {
@@ -722,7 +696,6 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
           .where((element) => !finalRecommendedCE.contains(element.docId))
           .toList();
 
-      log('MK: recommendedCourses: ${recommendedCourses.map((e) => e.docId)}');
 
       // Combine recommended and other courses
       List<Course> sortedCourses = [...recommendedCourses, ...otherCourses];
@@ -1688,7 +1661,6 @@ class CoursesWidget extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: TextButton(
                           onPressed: () async {
-                            print('MK: course id: ${item.docId}');
                             if (await canLaunch(item.link!)) {
                               await launch(item.link!);
                               await addUserEmailToClickedBy(); // Call function to add email to Firestore

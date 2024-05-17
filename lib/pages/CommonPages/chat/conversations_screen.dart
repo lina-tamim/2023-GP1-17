@@ -31,22 +31,10 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
           stream: ChatAPI().chats(),
           builder: (BuildContext context, AsyncSnapshot<List<Chat>> snapchat) {
             if (snapchat.hasError) {
-              log('MK: error ${snapchat.error}');
               return Center(child: Text('Unable to load chats'));
             } else if (snapchat.hasData) {
               final List<Chat> chats = snapchat.data!
                   .where((Chat element) => element.deletedBy != getUid())
-                  // .where((chatElement) =>
-                  //     chatElement.lastMessage?.sendTo
-                  //         .firstWhere(
-                  //             (MessageReadInfo element) =>
-                  //                 element.uid == getUid() &&
-                  //                 (element.deliveryAt ?? 0) >=
-                  //                     (chatElement.continueOn?[getUid()] ?? 0),
-                  //             orElse: () =>
-                  //                 MessageReadInfo(uid: '', seen: true))
-                  //         .seen ==
-                  //     false)
                   .toList();
 
               return Column(

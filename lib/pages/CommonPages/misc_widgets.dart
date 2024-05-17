@@ -92,8 +92,6 @@ class ImageWithPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // log('MK: image url: "$prefix$image"');
-
     String tag = generateRandomTag();
     return image != null && image != ""
         ? CachedNetworkImage(
@@ -194,7 +192,6 @@ class UserInfoWidget extends StatelessWidget {
 
   Future<Map<String, dynamic>> getUserData(String userId) async {
     try {
-      // log('MK: fetching user data for ${userId}');
 
       final QuerySnapshot<Map<String, dynamic>> snapshot =
           await FirebaseFirestore.instance
@@ -213,7 +210,6 @@ class UserInfoWidget extends StatelessWidget {
       }
     } catch (e) {
       // Error fetching user data
-      print('Error fetching user data: $e');
       return {};
     }
   }
@@ -279,7 +275,7 @@ class UserInfoWidget extends StatelessWidget {
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Color.fromARGB(255, 24, 8, 53),
-                                      fontSize: 16),
+                                      fontSize: 14),
                                 ),
                               )
                             else
@@ -297,7 +293,7 @@ class UserInfoWidget extends StatelessWidget {
                                   Icon(
                                     Icons.verified,
                                     color: Colors.deepPurple,
-                                    size: 20,
+                                    size: 16,
                                   ),
                                   SizedBox(width: 4),
                                 ],
@@ -307,7 +303,7 @@ class UserInfoWidget extends StatelessWidget {
                       ),
                       Text(
                         DateFormat('dd/MM/yyyy').format(postedDate),
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(fontSize: 10),
                       ),
                     ],
                   ),
@@ -318,13 +314,13 @@ class UserInfoWidget extends StatelessWidget {
                     title!,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 15.4,
+                      fontSize: 12.4,
                     ),
                   ),
                 SizedBox(height: 5),
                 Text(description,
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 12,
                     )),
               ],
             ),

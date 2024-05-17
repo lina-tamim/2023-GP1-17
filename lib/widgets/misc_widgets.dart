@@ -86,7 +86,6 @@ class ImageWithPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // log('MK: image url: "$prefix$image"');
 
     String tag = generateRandomTag();
     return image != null && image != ""

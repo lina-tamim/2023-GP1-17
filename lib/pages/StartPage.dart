@@ -40,8 +40,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Stack(
               children: [
                 Positioned(
-                  top: 20,
-                  left: 300,
+                  top: 300,
+                  left: 50,
                   child: Image.asset(
                     txlLogo,
                     width: 250,
@@ -58,38 +58,39 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           Text(
                             "Solve, \nLearn, \nCommunicate",
                             style: TextStyle(
-                              fontSize: 45,
+                              fontSize: 40,
                               fontFamily: "Poppins",
                               height: 1.2,
                             ),
                           ),
                           SizedBox(height: 40),
-                          Text(
+                        /*  Text(
                             'Welcome to TeXel,\nYour centralized hub for technology.\n\n'
                             'Join our vibrant community to engage in community-wide discussions,find solutions to all your problem and '
                             'stay up to date with the newest technology events and courses, empowering your professional growth.',
                             style: TextStyle(
                                 fontStyle: FontStyle.italic,
                                 color: Color.fromARGB(255, 27, 27, 26)),
-                          ),
+                          ),*/
                         ],
                       ),
                     ],
                   ),
                 ),
-                Positioned(
-                  top: 550,
-                  left: 70,
+                /*Positioned(
+                  top: 450,
+                  left: 53,
                   child: Image.asset(
                     txlLogo2,
                     width: 160, 
                     height: 180, 
                   ),
-                ),
+                ),*/
+                SizedBox(width:70),
                 Positioned(
                   bottom: 70,
-                  left: 40,
-                  right: 150,
+                  left: 100,
+                  right: 100,
                   child: Container(
                     height: 64,
                     decoration: BoxDecoration(

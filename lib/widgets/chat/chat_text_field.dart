@@ -56,7 +56,6 @@ class _ChatTextFieldState extends State<ChatTextField> {
 
   @override
   void initState() {
-    // openAudio();
     _text.addListener(_onListen);
     super.initState();
   }

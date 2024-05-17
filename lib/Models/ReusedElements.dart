@@ -200,7 +200,7 @@ class _NavBarUserState extends State<NavBarUser> {
               MaterialPageRoute(builder: (context) => const AboutUsPage()),
             ),
           ),
-          SizedBox(height: 260),
+          SizedBox(height: 200),
           Divider(),
           ListTile(
             leading: Icon(Icons.logout, size: 30),
@@ -296,7 +296,7 @@ class _NavBarAdminState extends State<NavBarAdmin> {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.groups_2_rounded),
+            leading: const Icon(Icons.dashboard ),
             iconColor: Colors.black,
             title: const Text('Dashboard'),
             onTap: () => Navigator.push(
@@ -304,7 +304,7 @@ class _NavBarAdminState extends State<NavBarAdmin> {
               MaterialPageRoute(builder: (context) => const AdminHome()),
             ),
           ),
-          SizedBox(height: 430),
+          SizedBox(height: 360),
           Divider(),
           ListTile(
             leading: Icon(Icons.logout),

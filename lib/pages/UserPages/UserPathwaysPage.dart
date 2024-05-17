@@ -33,8 +33,6 @@ class _UserPathwaysPageState extends State<UserPathwaysPage> {
     firestore = FirebaseFirestore.instance;
     prefs = await SharedPreferences.getInstance();
     email = prefs.getString('loggedInEmail') ?? '';
-    print(email);
-    print("**********");
   }
   
 @override

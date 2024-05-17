@@ -58,19 +58,9 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
   }
 
-  // String? userName;
   String? selfId;
   bool loading = false;
 
-  // myName() async {
-  //   var doc = await FirebaseFirestore.instance
-  //       .collection('User')
-  //       .doc(getUid())
-  //       .get();
-  //   userName = await doc['Name'];
-  //   print(userName);
-  //   setState(() {});
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -78,10 +68,9 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         backgroundColor: Color.fromRGBO(37, 6, 81, 0.898),
         foregroundColor: Colors.white,
-        toolbarHeight: 65,
+        toolbarHeight: 70,
         automaticallyImplyLeading: false,
         title: Row(
-          //  mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -140,7 +129,6 @@ class _ChatScreenState extends State<ChatScreen> {
               builder: (BuildContext context,
                   AsyncSnapshot<List<Message>> snapshot) {
                 if (snapshot.hasError) {
-                  print(snapshot.error);
                   return const Center(child: Text('Facing some error'));
                 } else if (snapshot.hasData) {
                   final List<Message> messages = snapshot.data!;

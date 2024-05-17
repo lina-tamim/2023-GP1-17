@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +12,6 @@ import 'package:techxcel11/pages/UserPages/HomePage.dart';
 import 'package:techxcel11/pages/StartPage.dart';
 import 'package:techxcel11/pages/ForgetPasswordPage.dart';
 import 'package:techxcel11/pages/AdminPages/AdminHomePage.dart';
-import 'package:techxcel11/providers/profile_provider.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -78,7 +76,6 @@ class _Login extends State<Login> {
       if (regularUserSnapshot.exists) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('loggedInEmail', email);
-        context.read<ProfileProvider>().init();
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const FHomePage()),
@@ -167,7 +164,7 @@ class _Login extends State<Login> {
                 : MediaQuery.of(context).size.height * 0.1,
             child: SingleChildScrollView(
               child: Container(
-                width: MediaQuery.of(context).size.width * 0.7,
+                width: MediaQuery.of(context).size.width * 0.6,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(30),
@@ -189,7 +186,7 @@ class _Login extends State<Login> {
                       ),
                       child: Text(
                         'Unlock your potential with TeXel!\n',
-                        // 'Login now and embark on an exciting journey!',
+                       // 'Login now and embark on an exciting journey!',
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -284,29 +281,28 @@ class _Login extends State<Login> {
                     SizedBox(
                       height: 20,
                     ),
-                    Container(
-                      width: 180, // Set the desired width for the button
-                      child: ElevatedButton(
-                        onPressed: logUserIn,
-                        style: ElevatedButton.styleFrom(
-                          primary: Color.fromARGB(255, 54, 7, 104),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
+                       Container(
+                        width: 180, // Set the desired width for the button
+                        child: ElevatedButton(
+                          onPressed: logUserIn,
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromARGB(255, 54, 7, 104),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            elevation: 10,
+                            shadowColor: Color.fromARGB(255, 0, 0, 0).withOpacity(1),
                           ),
-                          elevation: 10,
-                          shadowColor:
-                              Color.fromARGB(255, 0, 0, 0).withOpacity(1),
-                        ),
-                        child: Text(
-                          'Login',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                          child: Text(
+                            'Login',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ),
-                    ),
                     SizedBox(
                       height: 20,
                     ),

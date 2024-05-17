@@ -722,7 +722,7 @@ class _EditProfile2State extends State<EditProfile2> {
                       alignment: Alignment.centerLeft,
                     ),
                     child: const Text('Save',
-                        style: TextStyle(fontWeight: FontWeight.w800)),
+                        style: TextStyle(fontSize:14, fontWeight: FontWeight.w800)),
                   ),
                   const SizedBox(width: 13),
                   ElevatedButton(
@@ -735,7 +735,7 @@ class _EditProfile2State extends State<EditProfile2> {
                       alignment: Alignment.centerLeft,
                     ),
                     child: const Text('Cancel',
-                        style: TextStyle(fontWeight: FontWeight.w800)),
+                        style: TextStyle(fontSize:14, fontWeight: FontWeight.w800)),
                   ),
                 ],
               ),
@@ -764,7 +764,7 @@ class _EditProfile2State extends State<EditProfile2> {
                             'Are you sure you want to delete your account?',
                             style: TextStyle(
                               color: Color.fromARGB(255, 0, 0, 0),
-                              fontSize: 16,
+                              fontSize: 14,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -840,9 +840,9 @@ class _EditProfile2State extends State<EditProfile2> {
                                 ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor:
-                                      const Color.fromARGB(255, 184, 13, 1),
+                                     Color.fromARGB(255, 125, 9, 1),
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
+                                      horizontal: 6),
                                 ),
                               ),
                               ElevatedButton(
@@ -869,12 +869,11 @@ class _EditProfile2State extends State<EditProfile2> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 193, 34,
-                    23), // Set the button's background color to red
-                padding: const EdgeInsets.symmetric(horizontal: 120),
+                backgroundColor: Color.fromARGB(255, 125, 9, 1), // Set the button's background color to red
+                padding: const EdgeInsets.symmetric(horizontal: 100),
               ),
               child: const Text('Delete My Account',
-                  style: TextStyle(fontWeight: FontWeight.w800)),
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
             ),
           ],
         ),

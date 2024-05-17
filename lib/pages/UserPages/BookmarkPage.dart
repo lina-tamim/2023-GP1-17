@@ -63,7 +63,7 @@ class _BookmarkPageState extends State<BookmarkPage>
       automaticallyImplyLeading: false,
       backgroundColor: Color.fromARGB(255, 242, 241, 243),
       iconTheme: IconThemeData(
-        color: Color.fromRGBO(37, 6, 81, 0.898),
+        color: Color.fromRGBO(0, 0, 0, 1),
       ),
       toolbarHeight: 70,
       title: Builder(
@@ -88,7 +88,7 @@ class _BookmarkPageState extends State<BookmarkPage>
                   style: TextStyle(
                     fontSize: 18,
                     fontFamily: "Poppins",
-                    color: Color.fromRGBO(37, 6, 81, 0.898),
+                    color: Color.fromRGBO(0, 0, 0, 1),
                   ),
                 ),
                 const SizedBox(width: 120),
@@ -99,21 +99,12 @@ class _BookmarkPageState extends State<BookmarkPage>
       ),
       bottom: TabBar(
         controller: tabController,
-        //indicator: UnderlineTabIndicator(
-        //borderSide: BorderSide(
-        //width: 5.0,
-        //color: Color.fromARGB(
-        //  255, 27, 5, 230), // Set the color of the underline
-        //),
-        // Adjust the insets if needed
-        //),
-        //labelColor: Color.fromARGB(255, 27, 5, 230),
         tabs: [
           Tab(
             child: Text(
               'Questions',
               style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.black),
             ),
@@ -122,7 +113,7 @@ class _BookmarkPageState extends State<BookmarkPage>
             child: Text(
               'Pathways',
               style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.black),
             ),
@@ -176,8 +167,7 @@ class _UserBookmarkedPathwaysState extends State<UserBookmarkedPathways> {
     firestore = FirebaseFirestore.instance;
     prefs = await SharedPreferences.getInstance();
     email = prefs.getString('loggedInEmail') ?? '';
-    print(email);
-    print("**********");
+
   }
 
   List<String> filteredTopics = [];
@@ -280,11 +270,9 @@ class _UserBookmarkedPathwaysState extends State<UserBookmarkedPathways> {
         .asyncMap((snapshot) async {
       final List<PathwayContainer> pathways = [];
 
-      print('Bookmark Snapshot Size: ${snapshot.size}');
 
       for (final doc in snapshot.docs) {
         final postId = doc['postId'];
-        print('Post ID: $postId');
 
         final pathwaySnapshot = await FirebaseFirestore.instance
             .collection('Pathway')

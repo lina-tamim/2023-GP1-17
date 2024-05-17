@@ -75,8 +75,7 @@ Future<List<String>> searchOldReportAlgolia() async {
       .query(searchController.text)
       .facetFilter('userType:Freelancer')
       .getObjects();
-print("&&&&&&&&&&&&&&&&&&&&&&&&");
-print(response);
+
 searchFreelancerIds.clear();
 
   final List<AlgoliaObjectSnapshot> hits = response.hits;
@@ -92,7 +91,6 @@ searchFreelancerIds.addAll(objectIDs);
 Future<void> fetchFreelancers() async {
   if (searchController.text.isNotEmpty) {
     if (searchFreelancerIds.isNotEmpty) {
-      print("2333333333333333333333333333333");
       final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
           .collection('RegularUser')
           .where('userType', isEqualTo: 'Freelancer')
@@ -136,7 +134,7 @@ Future<void> fetchFreelancers() async {
   iconTheme: IconThemeData(
     color: Color.fromRGBO(37, 6, 81, 0.898),
   ),
-  toolbarHeight: 90,
+  toolbarHeight: 100,
   flexibleSpace: Stack(
     children: [
       Container(
@@ -250,7 +248,7 @@ Future<void> fetchFreelancers() async {
             return Container(
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Color.fromARGB(114, 233, 224, 244),
+                color: Color.fromARGB(121, 235, 235, 235),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(

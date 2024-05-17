@@ -35,15 +35,7 @@ class _ReportedPostState extends State<ReportedPost> {
           iconTheme: IconThemeData(
             color: Color.fromRGBO(37, 6, 81, 0.898),
           ),
-          toolbarHeight: 100,
-          /* flexibleSpace: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/Backgrounds/bg11.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),*/
+          toolbarHeight: 75,
           title: Builder(
             builder: (context) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,7 +48,6 @@ class _ReportedPostState extends State<ReportedPost> {
                       },
                       icon: const Icon(Icons.arrow_back),
                     ),
-                    const SizedBox(width: 0),
                     const Text(
                       'Reported Posts',
                       style: TextStyle(
@@ -81,22 +72,33 @@ class _ReportedPostState extends State<ReportedPost> {
                 const SizedBox(
                   height: 8,
                 ),
-                if (showSearchBar)
-                  TextField(
-                    controller: searchController,
-                    decoration: const InputDecoration(
-                      hintText: 'Search...',
-                      prefixIcon: Icon(Icons.search),
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 0,
+                    if (showSearchBar)
+                    Container(
+                      height: 40.0, // Adjust the height as needed
+                      child: TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search...',
+                          hintStyle: TextStyle(color: Colors.grey),
+                          prefixIcon: Icon(Icons.search, color: Colors.grey),
+                          filled: true,
+                          fillColor: Color.fromARGB(255, 242, 241, 243),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            //borderSide: BorderSide.bottom ,
+                          ),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10.0),
+                          isDense: false,
+                        ),
+                        style: TextStyle(color: Colors.black, fontSize: 14.0),
+                        onChanged: (text) {
+                          setState(() {
+                          
+                          });
+                        },
                       ),
-                      isDense: true,
                     ),
-                    onChanged: (text) {
-                      setState(() {});
-                      // Handle search input changes
-                    },
-                  ),
               ],
             ),
           ),
@@ -112,10 +114,10 @@ class _ReportedPostState extends State<ReportedPost> {
             labelColor: Color.fromARGB(255, 31, 5, 67),
             tabs: [
               Tab(
-                text: 'Active Request',
+                text: 'Active Requests',
               ),
               Tab(
-                text: 'Old Request',
+                text: 'Old Requests',
               ),
             ],
           ),
@@ -479,7 +481,6 @@ class _ReportedPostState extends State<ReportedPost> {
 
         final userIds =
             batchQuestions.map((question) => question.userId).toSet();
-        print('userIds: ${userIds} $batchQuestions');
         if (batchQuestions.isEmpty || userIds.isEmpty) continue;
         final userDocs = await FirebaseFirestore.instance
             .collection('RegularUser')
@@ -576,14 +577,14 @@ class _ReportedPostState extends State<ReportedPost> {
                             size: 20,
                           ),
                         SizedBox(
-                          width: 140,
+                          width: 110,
                         ),
                       ],
                     ),
                   ),
                   Positioned(
-                    right: 0,
-                    top: -8,
+                    right: 4,
+                    top: -2,
                     // Adjust this value to give the tooltip some extra space from the top
                     child: Tooltip(
                       child: Container(
@@ -597,6 +598,7 @@ class _ReportedPostState extends State<ReportedPost> {
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
+                            fontSize: 10
                           ),
                         ),
                       ),
@@ -695,6 +697,7 @@ class _ReportedPostState extends State<ReportedPost> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
+                  fontSize: 10,
                 ),
               ),
               SizedBox(
@@ -883,14 +886,14 @@ class _ReportedPostState extends State<ReportedPost> {
                           size: 20,
                         ),
                       SizedBox(
-                        width: 140,
+                        width: 110,
                       ),
                     ],
                   ),
                 ),
                 Positioned(
-                  right: 0,
-                  top: -8,
+                  right: 3,
+                  top: -2,
                   // Adjust this value to give the tooltip some extra space from the top
                   child: Tooltip(
                     child: Container(
@@ -904,6 +907,7 @@ class _ReportedPostState extends State<ReportedPost> {
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
+                          fontSize: 10,
                         ),
                       ),
                     ),
@@ -974,6 +978,7 @@ class _ReportedPostState extends State<ReportedPost> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Color.fromARGB(255, 92, 0, 0),
+                fontSize: 10,
               ),
             ),
             SizedBox(height: 20),
@@ -1226,17 +1231,17 @@ class _ReportedPostState extends State<ReportedPost> {
                             size: 20,
                           ),
                         SizedBox(
-                          width: 160,
+                          width: 110,
                         ),
                       ],
                     ),
                   ),
                   Positioned(
-                    right: 3,
-                    top: -6,
+                    right: 4,
+                    top: -2,
                     child: Tooltip(
                       child: Container(
-                        padding: EdgeInsets.all(7),
+                        padding: EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           color: Color.fromARGB(217, 122, 1, 1),
                           shape: BoxShape.circle,
@@ -1245,7 +1250,7 @@ class _ReportedPostState extends State<ReportedPost> {
                           '${team.reportDocids!.length}',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 14,
+                            fontSize: 10,
                           ),
                         ),
                       ),
@@ -1282,7 +1287,7 @@ class _ReportedPostState extends State<ReportedPost> {
                       (topic) => Chip(
                         label: Text(
                           topic,
-                          style: TextStyle(fontSize: 12.0),
+                          style: TextStyle(fontSize: 10.0),
                         ),
                       ),
                     )
@@ -1311,6 +1316,7 @@ class _ReportedPostState extends State<ReportedPost> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
+                  fontSize: 10,
                 ),
               ),
               SizedBox(
@@ -1403,17 +1409,17 @@ class _ReportedPostState extends State<ReportedPost> {
                             size: 20,
                           ),
                         SizedBox(
-                          width: 160,
+                          width: 110,
                         ),
                       ],
                     ),
                   ),
                   Positioned(
-                    right: 3,
-                    top: -6,
+                    right: 4,
+                    top: -2,
                     child: Tooltip(
                       child: Container(
-                        padding: EdgeInsets.all(7),
+                        padding: EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           color: Color.fromARGB(217, 122, 1, 1),
                           shape: BoxShape.circle,
@@ -1422,7 +1428,7 @@ class _ReportedPostState extends State<ReportedPost> {
                           '${team.reportDocids!.length}',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 14,
+                            fontSize: 10,
                           ),
                         ),
                       ),
@@ -1488,6 +1494,7 @@ class _ReportedPostState extends State<ReportedPost> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
+                  fontSize: 10,
                 ),
               ),
               SizedBox(
@@ -1948,7 +1955,6 @@ class _ReportedPostState extends State<ReportedPost> {
     int upvoteCount = answer.upvoteCount ?? 0;
     List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
     String doc = answer.docId;
-    print("7777777777777 $doc");
 
     return GestureDetector(
       onTap: () {
@@ -2006,17 +2012,17 @@ class _ReportedPostState extends State<ReportedPost> {
                                 size: 20,
                               ),
                             SizedBox(
-                              width: 160,
+                              width: 110,
                             ),
                           ],
                         ),
                       ),
                       Positioned(
-                        right: 3,
-                        top: -6,
+                        right: 1,
+                        top: -2,
                         child: Tooltip(
                           child: Container(
-                            padding: EdgeInsets.all(7),
+                            padding: EdgeInsets.all(6),
                             decoration: BoxDecoration(
                               color: Color.fromARGB(217, 122, 1, 1),
                               shape: BoxShape.circle,
@@ -2025,7 +2031,7 @@ class _ReportedPostState extends State<ReportedPost> {
                               '${answer.reportDocids?.length ?? 0}',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 14,
+                                fontSize: 10,
                               ),
                             ),
                           ),
@@ -2086,6 +2092,7 @@ class _ReportedPostState extends State<ReportedPost> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
+                  fontSize: 10,
                 ),
               ),
               SizedBox(
@@ -2142,7 +2149,6 @@ class _ReportedPostState extends State<ReportedPost> {
     int upvoteCount = answer.upvoteCount ?? 0;
     List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
     String doc = answer.docId;
-    print("7777777777777 $doc");
 
     return GestureDetector(
       onTap: () {
@@ -2197,7 +2203,7 @@ class _ReportedPostState extends State<ReportedPost> {
                       size: 20,
                     ),
                   SizedBox(
-                    width: 170,
+                    width: 110,
                   ),
                   if (answer.reportDocids != null &&
                       answer.reportDocids!
@@ -2216,6 +2222,7 @@ class _ReportedPostState extends State<ReportedPost> {
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
+                            fontSize: 10,
                           ),
                         ))
                 ],
@@ -2265,6 +2272,7 @@ class _ReportedPostState extends State<ReportedPost> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
+                  fontSize: 10,
                 ),
               ),
               SizedBox(

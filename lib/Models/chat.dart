@@ -63,7 +63,6 @@ class Chat {
 
   // ignore: sort_constructors_first
   factory Chat.fromMap(Map<String, dynamic> map) {
-    log('MK: ${map['continueOn']}');
     return Chat(
       chatID: map['chatId'] ?? '',
       persons: List<String>.from(map['persons']),

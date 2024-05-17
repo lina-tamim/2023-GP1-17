@@ -47,7 +47,6 @@ class Message {
 
   // ignore: sort_constructors_first
   factory Message.fromMap(Map<String, dynamic> map) {
-    log('MK received message: ${map}');
     return Message(
       messageID: map['messageId'] ?? '',
       text: map['text'],

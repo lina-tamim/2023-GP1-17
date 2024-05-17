@@ -170,7 +170,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                     padding: const EdgeInsets.only(left: 0),
                     child: Text(
                       DateFormat('dd/MM/yyyy').format(question.postedDate),
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 10),
                       // Use the desired date format in the DateFormat constructor
                     ),
                   ),
@@ -181,13 +181,13 @@ class _UserPostsPageState extends State<UserPostsPage> {
                 question.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 15.4,
+                  fontSize: 14,
                 ),
               ),
               SizedBox(height: 5),
               Text(question.description,
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 12,
                   )),
             ],
           ),
@@ -208,11 +208,11 @@ class _UserPostsPageState extends State<UserPostsPage> {
                         final intrest =
                             question.topics[intrestsIndex] as String;
                         return Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
+                          padding: const EdgeInsets.only(left: 5.0),
                           child: Chip(
                             label: Text(
                               intrest,
-                              style: TextStyle(fontSize: 12.0),
+                              style: TextStyle(fontSize: 10.0),
                             ),
                           ),
                         );
@@ -228,6 +228,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                     IconButton(
                       icon: Icon(Icons.bookmark,
                           color: Color.fromARGB(255, 63, 63, 63)),
+                      iconSize: 20,
                       onPressed: () {
                         addQuestionToBookmarks(email, question);
                       },
@@ -237,6 +238,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                         IconButton(
                           icon: Icon(Icons.comment,
                               color: Color.fromARGB(255, 63, 63, 63)),
+                              iconSize: 20,
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -246,7 +248,10 @@ class _UserPostsPageState extends State<UserPostsPage> {
                             );
                           },
                         ),
-                        Text(question.noOfAnswers.toString()),
+                        Text(
+            question.noOfAnswers.toString(),
+            style: TextStyle(fontSize: 10),
+          ),
                       ],
                     ),
                     PostDeleteButton(docId: question.docId, type: 'question'),
@@ -337,6 +342,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
   Stream<List<CardAview>> readAnswer() => FirebaseFirestore.instance
           .collection('Answer')
           .where('userId', isEqualTo: email)
+          .orderBy('upvoteCount', descending: true)
           .snapshots()
           .asyncMap((snapshot) async {
         final answers = snapshot.docs.map((doc) {
@@ -368,7 +374,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
       });
 
   Stream<List<ReportedPost>> readReportedPosts(bool containsUnseen) {
-    log('MK: readReportedPosts');
     return FirebaseFirestore.instance
         .collection('Report')
         .where('reportedUserId', isEqualTo: email)
@@ -376,7 +381,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
         .orderBy("reportDate", descending: true)
         .snapshots()
         .asyncMap((snapshot) async {
-      log('MK: reportedPosts length ${snapshot.docs.length}');
 
       if (containsUnseen) {
         QuerySnapshot snapshot = await FirebaseFirestore.instance
@@ -451,9 +455,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
           reportedPosts.add(post);
         }
       }
-
-      log('MK: reportedPosts ${reportedPosts}');
-
       return reportedPosts;
     });
   }
@@ -463,7 +464,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
     data['username'] = userData['username'];
     data['userPhotoUrl'] = userData['userPhotoUrl'] ?? userData['imageURL'];
     data['userType'] = userData['userType'];
-    // log('MK: photo url ${userData['userPhotoUrl']}');
     return data;
   }
 
@@ -491,7 +491,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
     final formattedDate = DateFormat.yMMMMd().format(fandT.date);
     DateTime deadlineDate = fandT.date as DateTime;
     DateTime currentDate = DateTime.now();
-    print('User typeTeam: ${fandT.userType}');
 
     return Card(
       child: ListTile(
@@ -531,7 +530,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                     alignment: Alignment.centerRight,
                     child: Text(
                       DateFormat('dd/MM/yyyy').format(fandT.postedDate),
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 10),
                     ),
                   ),
                 ),
@@ -542,24 +541,30 @@ class _UserPostsPageState extends State<UserPostsPage> {
               fandT.title,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
             ),
             SizedBox(height: 5),
-            Text(fandT.description),
+            Text(
+              fandT.description,
+              style: TextStyle(
+                fontSize: 12,
+              ),
+            ),
           ],
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Wrap(
-              spacing: -5,
-              runSpacing: -5,
+              spacing: -2,
+              runSpacing: -2,
               children: fandT.topics
                   .map(
                     (topic) => Chip(
                       label: Text(
                         topic,
-                        style: TextStyle(fontSize: 12.0),
+                        style: TextStyle(fontSize: 10.0),
                       ),
                     ),
                   )
@@ -567,7 +572,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
             ),
             if (!isReported) ...[
               Padding(
-                padding: const EdgeInsets.only(left: 105),
+                padding: const EdgeInsets.only(left: 90),
                 child: Row(
                   children: [
                     PostDeleteButton(docId: fandT.docId, type: 'team'),
@@ -604,10 +609,6 @@ class _UserPostsPageState extends State<UserPostsPage> {
 
   Future<void> addQuestionToBookmarks(String email, CardQview question) async {
     try {
-      print("888888888888888888");
-      print(question.questionDocId);
-      print("888888888888888888");
-
       final existingBookmark = await FirebaseFirestore.instance
           .collection('Bookmark')
           .where('bookmarkType', isEqualTo: 'question')
@@ -675,7 +676,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                     alignment: Alignment.centerRight,
                     child: Text(
                       DateFormat('dd/MM/yyyy').format(fandT.postedDate),
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 10),
                     ),
                   ),
                 ),
@@ -686,11 +687,15 @@ class _UserPostsPageState extends State<UserPostsPage> {
               fandT.title,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
             ),
             SizedBox(height: 5),
             Text(
-              fandT.description,
+             fandT.description,
+              style: TextStyle(
+                fontSize: 12,
+              ),
             ),
           ],
         ),
@@ -795,7 +800,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                         style: TextStyle(
                           fontSize: 18,
                           fontFamily: "Poppins",
-                          color: Color.fromRGBO(37, 6, 81, 0.898),
+                          color: Color.fromRGBO(0, 0, 0, 0.894),
                         ),
                       ),
                       const SizedBox(width: 120),
@@ -812,8 +817,8 @@ class _UserPostsPageState extends State<UserPostsPage> {
                   isScrollable: true,
                   indicator: UnderlineTabIndicator(
                     borderSide: BorderSide(
-                      width: 5.0,
-                      color: Colors.black,
+                      width: 2.0,
+                      color:Color.fromRGBO(37, 6, 81, 0.898),
                     ),
                   ),
                   labelColor: Colors.black,
@@ -1155,7 +1160,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                       alignment: Alignment.centerRight,
                       child: Text(
                         DateFormat('dd/MM/yyyy').format(answer.postedDate),
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(fontSize: 10),
                       ),
                     ),
                   ),
@@ -1163,7 +1168,12 @@ class _UserPostsPageState extends State<UserPostsPage> {
               ),
               SizedBox(height: 5),
               ListTile(
-                title: Text(answer.answerText),
+                title: Text(
+  answer.answerText,
+  style: TextStyle(
+    fontSize: 12.0,
+  ),
+)
               ),
             ],
           ),
@@ -1193,7 +1203,7 @@ class _UserPostsPageState extends State<UserPostsPage> {
                                   upvotedUserIds.contains(currentEmail)
                                       ? Icons.arrow_circle_down
                                       : Icons.arrow_circle_up,
-                                  size: 28,
+                                  size: 20,
                                   color: upvotedUserIds.contains(currentEmail)
                                       ? const Color.fromARGB(255, 49, 3, 0)
                                       : const Color.fromARGB(255, 26, 33, 38),
@@ -1281,7 +1291,12 @@ class _UserPostsPageState extends State<UserPostsPage> {
                                   });
                                 },
                               ),
-                              Text('Upvotes: $upvoteCount'),
+                              Text(
+                              'Upvotes: $upvoteCount',
+                                style: TextStyle(
+                                  fontSize: 12.0,
+                                ),
+                              ),
                               SizedBox(
                                 width: 20,
                               ),
@@ -1348,6 +1363,7 @@ class PostDeleteButton extends StatelessWidget {
     return IconButton(
       color: const Color.fromARGB(255, 122, 1, 1),
       icon: Icon(Icons.delete),
+      iconSize: 20,
       onPressed: () {
         if (docId == null || docId == '') {
           ScaffoldMessenger.of(context).showSnackBar(

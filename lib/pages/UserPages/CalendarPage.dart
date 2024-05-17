@@ -97,7 +97,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
-                              backgroundColor: Color.fromARGB(255, 14, 1, 65),
+                              backgroundColor: Color.fromARGB(255, 28, 0, 55),
                             ),
                             backgroundColor: Colors.transparent,
                             dataSource: _getCalendarDataSource(events),
