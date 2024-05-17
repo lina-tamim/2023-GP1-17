@@ -183,6 +183,9 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
         },
         backgroundColor: Color.fromARGB(255, 49, 0, 84),
         child: const Tooltip(
+          decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
           message: '  Add a course or event now!   ',
           child: Icon(
             Icons.add,
@@ -1036,6 +1039,9 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                               isRequired: true,
                             ),
                             Tooltip(
+                             decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
                               message:
                                   'To accept your request,Add location of the course or event as country and city',
                               child: Icon(

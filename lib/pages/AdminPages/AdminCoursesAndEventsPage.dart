@@ -856,13 +856,18 @@ if (searchController.text.isNotEmpty) {
                               isRequired: true,
                             ),
                             Tooltip(
+                              
                               message:
                                   'To accept your request,Add location of the course or event as country and city',
+                              decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), // Set the desired background color
+                    ),    
                               child: Icon(
                                 Icons.live_help_rounded,
                                 size: 18,
                                 color: Color.fromARGB(255, 178, 178, 178),
                               ),
+                              
                             ),
                           ],
                         ),

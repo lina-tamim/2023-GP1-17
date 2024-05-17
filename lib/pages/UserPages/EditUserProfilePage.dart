@@ -182,6 +182,9 @@ class _EditProfile2State extends State<EditProfile2> {
                 Tooltip(
                   message:
                       'Username should be at least 6 characters long\nand No white spaces are allawed',
+                 decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
                   padding: EdgeInsets.all(20),
                   showDuration: Duration(seconds: 3),
                   textStyle: TextStyle(color: Colors.white),
@@ -247,6 +250,9 @@ class _EditProfile2State extends State<EditProfile2> {
                 Tooltip(
                   message:
                       'Email address cannot be changed after account creation',
+                decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
                   padding: EdgeInsets.all(20),
                   showDuration: Duration(seconds: 4),
                   textStyle: TextStyle(color: Colors.white),
@@ -304,6 +310,9 @@ class _EditProfile2State extends State<EditProfile2> {
                 ),
                 SizedBox(width: 5),
                 Tooltip(
+                 decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
                   message:
                       'Password must meet be at least 6 characters long\nand No white spaces are allowed',
                   padding: EdgeInsets.all(20),
@@ -418,7 +427,10 @@ class _EditProfile2State extends State<EditProfile2> {
                   width: 5,
                 ),
                 Tooltip(
-                  message:
+                 decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
+                 message:
                       'Note:\nSelecting the freelancer option unlocks additional features such as:\nJoin the dedicated freelancer page.\nTake on diverse projects, including paid opportunities.',
                   padding: EdgeInsets.all(20),
                   showDuration: Duration(seconds: 4),
@@ -469,6 +481,9 @@ class _EditProfile2State extends State<EditProfile2> {
                   width: 5,
                 ),
                 Tooltip(
+                  decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
                   message:
                       'Find the best option for courses and events that suits your preference:\n'
                       '- Physical attendance available for on-site experiences\n'
@@ -525,6 +540,9 @@ class _EditProfile2State extends State<EditProfile2> {
                   width: 5,
                 ),
                 Tooltip(
+                 decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
                   message:
                       'Share your passions with us, and we will ensure you receive the finest content recommendations!', // 'Choose What are you passionate about so we can recommend you the best content!'
                   padding: EdgeInsets.all(20),
@@ -585,6 +603,9 @@ class _EditProfile2State extends State<EditProfile2> {
                   width: 5,
                 ),
                 const Tooltip(
+                 decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
                   message:
                       'Showcase what you can do based on your acquired abilities and experience.',
                   padding: EdgeInsets.all(20),
@@ -1692,7 +1713,7 @@ class _EditProfile2State extends State<EditProfile2> {
   }
 
   void _showSnackBar2(String message) {
-    double snackBarHeight = 510; // Customize the height of the snackbar
+    double snackBarHeight = 440; // Customize the height of the snackbar
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

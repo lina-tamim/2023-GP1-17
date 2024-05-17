@@ -595,6 +595,9 @@ class _Signup extends State<Signup> {
                                   size: 18,
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
+                               decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
                                 message:
                                     'Username should be at least 6 characters long\nand No white spaces are allowed',
                                 padding: EdgeInsets.all(20),
@@ -683,6 +686,9 @@ class _Signup extends State<Signup> {
                                   size: 18,
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
+                               decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
                                 message:
                                     'Password must be at least 6 characters long\nand No white spaces are allowed',
                                 padding: EdgeInsets.all(20),
@@ -782,6 +788,9 @@ class _Signup extends State<Signup> {
                                   size: 18,
                                   color: Color.fromARGB(255, 195, 0, 0),
                                 ),
+                               decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
                                 message:
                                     'Note:\nSelecting the freelancer option unlocks additional features such as:\nJoin the dedicated freelancer page.\nTake on diverse projects, including paid opportunities.',
                                 padding: EdgeInsets.all(20),
@@ -834,6 +843,9 @@ class _Signup extends State<Signup> {
                                   size: 18,
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
+                               decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
                                 message:
                                     'Find the best option for courses and events that suits your preference:\n'
                                     '- Physical attendance available for on-site experiences\n'
@@ -894,6 +906,9 @@ class _Signup extends State<Signup> {
                                   size: 18,
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
+                              decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
                                 message:
                                     'Showcase what you can do based on your acquired abilities and experience.',
                                 padding: EdgeInsets.all(20),
@@ -964,6 +979,9 @@ class _Signup extends State<Signup> {
                                   size: 18,
                                   color: Color.fromARGB(255, 178, 178, 178),
                                 ),
+                                decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
                                 message:
                                     'Share your passions with us, and we will ensure you receive the finest content recommendations!',
                                 padding: EdgeInsets.all(20),

@@ -368,6 +368,10 @@ Stream<List<Widget>> readReportedAccounts() {
                           ),
                         ),
                       ),
+                     decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                      borderRadius: BorderRadius.circular(8.0), 
+                    ),
                       message: 'Total number of reports on this account',
                       padding: EdgeInsets.all(10),
                       showDuration: Duration(seconds: 3),
@@ -649,6 +653,10 @@ final statusSnapshot = await FirebaseFirestore.instance
                           ),
                         ),
                       ),
+                      decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                      borderRadius: BorderRadius.circular(8.0), 
+                    ),
                       message: 'Total number of reports on this account',
                       padding: EdgeInsets.all(10),
                       showDuration: Duration(seconds: 3),

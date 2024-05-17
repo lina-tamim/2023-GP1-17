@@ -11,7 +11,6 @@ import 'package:techxcel11/pages/UserPages/ChatPage.dart';
 import 'package:techxcel11/pages/UserPages/UserExplorePage.dart';
 import 'package:techxcel11/pages/UserPages/HomePage.dart';
 import 'package:techxcel11/pages/UserPages/FreelancerPage.dart';
-import 'package:techxcel11/pages/UserPages/UserProfilePage.dart';
 import 'package:techxcel11/pages/UserPages/AboutUsPage.dart';
 import 'package:techxcel11/pages/UserPages/BookmarkPage.dart';
 import 'package:techxcel11/pages/UserPages/CalendarPage.dart';

@@ -319,6 +319,10 @@ Future<void> fetchFreelancers() async {
                                 color: Color.fromARGB(255, 209, 196, 25),
                                 size: 19,
                               ),
+                              decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                      borderRadius: BorderRadius.circular(8.0), 
+                    ),
                               message:
                                   'This is the total number of Upvote received \nfor positive interactions!',
                               padding: EdgeInsets.all(10),
@@ -328,6 +332,10 @@ Future<void> fetchFreelancers() async {
                             ),
                             Tooltip(
                               child: Text(userScore.toString()),
+                             decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                      borderRadius: BorderRadius.circular(8.0), 
+                    ),
                               message:
                                   'This is the total number of Upvote received \nfor positive interactions!',
                               padding: EdgeInsets.all(10),

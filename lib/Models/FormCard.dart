@@ -296,12 +296,17 @@ class _FormWidgetState extends State<FormWidget> {
                         size: 18,
                         color: Color.fromARGB(255, 178, 178, 178),
                       ),
+                      
                       message:
-                          '\nQuestions: Ask TechXcel community.\n\nTeam collaberation: Find and build your team.\n\nProjects: Post your projects to get help from TechXcel community.',
+                          '\nQuestions: Ask TeXel community.\n\nTeam collaberation: Find and build your team.\n\nProjects: Post your projects to get help from TechXcel community.',
                       padding: EdgeInsets.all(20),
                       showDuration: Duration(seconds: 3),
                       textStyle: TextStyle(color: Colors.white),
                       preferBelow: false,
+                      decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                      borderRadius: BorderRadius.circular(8.0), 
+                    ),
                     ),
                   ],
                 ),

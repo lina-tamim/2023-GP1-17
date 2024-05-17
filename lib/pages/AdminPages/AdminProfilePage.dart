@@ -148,6 +148,10 @@ class _AdminEditProfile extends State<AdminEditProfile> {
                 ),
                 SizedBox(width: 5),
                 Tooltip(
+                 decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                      borderRadius: BorderRadius.circular(8.0), 
+                    ),
                   message: 'Email address cannot be changed',
                   padding: EdgeInsets.all(20),
                   showDuration: Duration(seconds: 4),
@@ -204,7 +208,11 @@ class _AdminEditProfile extends State<AdminEditProfile> {
                   message:
                       'Password must be at least 6 characters long\nand no white spaces are allowed',
                   padding: const EdgeInsets.all(20),
-                  showDuration: const Duration(seconds: 3),
+                 decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                      borderRadius: BorderRadius.circular(8.0), 
+                    ),
+                 showDuration: const Duration(seconds: 3),
                   textStyle: TextStyle(color: Colors.white),
                   preferBelow: false,
                   child: Icon(
@@ -357,7 +365,7 @@ class _AdminEditProfile extends State<AdminEditProfile> {
   }
 
   void _showSnackBar2(String message) {
-    double snackBarHeight = 510;
+    double snackBarHeight = 440;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

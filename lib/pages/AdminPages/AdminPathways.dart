@@ -1333,6 +1333,9 @@ if (searchController.text.isNotEmpty) {
                                                     color: Color.fromARGB(
                                                         255, 178, 178, 178),
                                                   ),
+                                                  decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), // Set the desired background color
+                    ),
                                                   message:
                                                       'Note: The resource for learning can be any of the following types:\n'
                                                       '- Online courses or websites (e.g., Coursera, Udemy)\n'
@@ -1987,6 +1990,9 @@ if (searchController.text.isNotEmpty) {
                                                                     '- Online courses or websites (e.g., Coursera, Udemy)\n'
                                                                     '- YouTube content such as playlists or channels\n'
                                                                     '- Research papers and articles',
+                                                                decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
                                                                 padding:
                                                                     EdgeInsets
                                                                         .all(
@@ -2376,6 +2382,9 @@ if (searchController.text.isNotEmpty) {
                                 '- Online courses or websites (e.g., Coursera, Udemy)\n'
                                 '- YouTube content such as playlists or channels\n'
                                 '- Research papers and articles',
+                            decoration: BoxDecoration(
+                      color: Color.fromARGB(177, 40, 0, 75), 
+                    ),
                             padding: EdgeInsets.all(20),
                             showDuration: Duration(seconds: 3),
                             textStyle: TextStyle(color: Colors.white),
