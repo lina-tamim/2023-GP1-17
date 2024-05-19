@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:algolia/algolia.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:developer';
@@ -56,6 +57,10 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
   static List<Map<String, dynamic>> alltheCE = [];
   static List<Map<String, dynamic>> allUsers = [];
 
+ final Algolia algolia = Algolia.init(
+    applicationId: 'PTLT3VDSB8',
+    apiKey: '6236d82b883664fa54ad458c616d39ca',
+  );
   bool coursesLoading = true;
   List<String> recommendedObjects = [];
     static Future<List<String>> fetchUserDetails() async {
@@ -321,7 +326,39 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
               // if (coursesLoading)
               //   CircularProgressIndicator()
               // else
-              ...[
+              if (widget.searchQuery.isNotEmpty)
+                StreamBuilder<List<Course>>(
+                  stream: readCourseSearch(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final list = snapshot.data!;
+                      return Column(
+                        children: [
+                          CoursesAndEventsBuilder(
+                            list: list.where((element) => element.type == 'Course').toList(),
+                            type: 'Searched Courses ${list.where((element) => element.type == 'Course').length}',
+                          ),
+                          EventsHeading(),
+
+                          CoursesAndEventsBuilder(
+                            list: list.where((element) => element.type == 'Event').toList(),
+                            type: 'Searched Events',
+                          ),
+
+                        ],
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text('Error:${snapshot.error}'),
+                      );
+                    } else {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                )
+              else...[
                 StreamBuilder<List<Course>>(
                   stream: readCoursesNew(type: 'Course'),
                   builder: (context, snapshot) {
@@ -705,7 +742,26 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       return sortedCourses;
     });
   }
-
+ Stream<List<Course>> readCourseSearch() async* {
+    if (widget.searchQuery.isNotEmpty) {
+      final AlgoliaQuerySnapshot response = await algolia.instance
+          .index('Program_index')
+          .query(widget.searchQuery)
+          .getObjects();
+      print(response);
+      final List<AlgoliaObjectSnapshot> hits = response.hits;
+      final projects = hits.map((AlgoliaObjectSnapshot snapshot) {
+        final projectData = snapshot.data as Map<String, dynamic>;
+        final project = Course.fromJson(projectData);
+        project.docId =
+            snapshot.objectID;
+        return project;
+      }).toList();
+      yield* Stream.value(projects);
+    } else {
+      yield* Stream.value([]);
+    }
+  }
   void showInputDialog() {
     showAlertDialog(
       context,
@@ -1367,6 +1423,69 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       dateType == "start" ? courseStartDate = pickedDate : null;
       dateType == "end" ? courseEndDate = pickedDate : null;
     }
+  }
+}
+class EventsHeading extends StatelessWidget {
+  const EventsHeading({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.only(top: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Text(
+            "Events",
+            style: TextStyle(
+                fontSize: 22,
+                fontFamily: "Poppins",
+                color: Colors.black,
+                fontWeight: FontWeight.w400),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CoursesAndEventsBuilder extends StatelessWidget {
+  const CoursesAndEventsBuilder({
+    super.key,
+    required this.list,
+    required this.type,
+  });
+
+  final List<Course> list;
+  final String type;
+
+  @override
+  Widget build(BuildContext context) {
+    if (list.isEmpty) {
+      return SizedBox(
+        height: 200,
+        child: Center(
+          child: Text('No $type'),
+        ),
+      );
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      height: 480,
+      child: ListView.builder(
+          itemCount: list.length,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              child: CoursesWidget(
+                item: list[index],
+              ),
+            );
+          }),
+    );
   }
 }
 

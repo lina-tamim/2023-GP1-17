@@ -11,7 +11,7 @@ class Course {
   final String? type;
   final String? attendanceType;
   final String? userId;
-   String? docId;
+  String? docId;
   final String imageURL;
   final String? approval;
   final String? city;
@@ -41,16 +41,22 @@ class Course {
 
   factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
-      createdAt: (json['createdAt'] as Timestamp).toDate(),
+      createdAt: json['createdAt'] is int
+          ? Timestamp.fromMillisecondsSinceEpoch(json['createdAt']).toDate()
+          : (json['createdAt'] as Timestamp).toDate(),
       description: json['description'],
       endDate: json['endDate'] == null
           ? null
-          : (json['endDate'] as Timestamp).toDate(),
+          : json['endDate'] is int
+              ? Timestamp.fromMillisecondsSinceEpoch(json['endDate']).toDate()
+              : (json['endDate'] as Timestamp).toDate(),
       link: json['link'],
       location: json['location'],
       startDate: json['startDate'] == null
           ? null
-          : (json['startDate'] as Timestamp).toDate(),
+          : json['startDate'] is int
+              ? Timestamp.fromMillisecondsSinceEpoch(json['startDate']).toDate()
+              : (json['startDate'] as Timestamp).toDate(),
       title: json['title'],
       type: json['type'],
       attendanceType: json['attendanceType'],

@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:algolia/algolia.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -42,33 +43,57 @@ void initState() {
 }
 
   List<String> filteredTopics = [];
-  bool showSearchtBarPath = false;
-  Stream<List<PathwayContainer>> readPathway() {
-    Query<Map<String, dynamic>> query =
-        FirebaseFirestore.instance.collection('Pathway');
-    if (widget.searchQuery.isNotEmpty) {
-      String searchText = widget.searchQuery;
+ bool showSearchtBarPath = false;
+  final Algolia algolia = Algolia.init(
+    applicationId: 'PTLT3VDSB8',
+    apiKey: '6236d82b883664fa54ad458c616d39ca',
+  );  
+  
+   Stream<List<PathwayContainer>> readPathway() async* {
 
-      query = query
-          .where('title',
-              isGreaterThanOrEqualTo: widget.searchQuery.toLowerCase())
-          .where('title',
-              isLessThanOrEqualTo: widget.searchQuery.toLowerCase() + '\uf8ff');
-    } else {
-      query = query.orderBy('title', descending: true);
+    if(widget.searchQuery.isNotEmpty){
+      final AlgoliaQuerySnapshot response = await algolia.instance
+          .index('Pathway_index')
+          .query(widget.searchQuery)
+          .getObjects();
+      // print("myTag: response: $response");
+      final List<AlgoliaObjectSnapshot> hits = response.hits;
+      final pathways = hits.map((AlgoliaObjectSnapshot snapshot) {
+        final data = snapshot.data as Map<String, dynamic>;
+        final pathway = PathwayContainer.fromJson(data);
+        return pathway;
+      }).toList();
+      yield* Stream.value(pathways);
+    }else{
+
+    Query<Map<String, dynamic>> query =
+          FirebaseFirestore.instance.collection('Pathway');
+      if (widget.searchQuery.isNotEmpty) {
+        String searchText = widget.searchQuery;
+
+        query = query
+            .where('title',
+                isGreaterThanOrEqualTo: widget.searchQuery.toLowerCase())
+            .where('title',
+                isLessThanOrEqualTo:
+                    widget.searchQuery.toLowerCase() + '\uf8ff');
+      } else {
+        query = query.orderBy('title', descending: true);
+      }
+
+    yield* query.snapshots().asyncMap((snapshot) async {
+        final pathway = snapshot.docs
+            .map((doc) =>
+                PathwayContainer.fromJson(doc.data() as Map<String, dynamic>))
+            .toList();
+        if (pathway.isEmpty) return [];
+
+        // topic filter
+
+        return pathway;
+      });
     }
 
-    return query.snapshots().asyncMap((snapshot) async {
-      final pathway = snapshot.docs
-          .map((doc) =>
-              PathwayContainer.fromJson(doc.data() as Map<String, dynamic>))
-          .toList();
-      if (pathway.isEmpty) return [];
-
-      // topic filter
-
-      return pathway;
-    });
   }
 
 Future<void> addPathwayToBookmarks(PathwayContainer pathway, String email) async {

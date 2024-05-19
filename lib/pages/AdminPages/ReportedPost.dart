@@ -1,3 +1,4 @@
+import 'package:algolia/algolia.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,520 +19,584 @@ class ReportedPost extends StatefulWidget {
   State<ReportedPost> createState() => _ReportedPostState();
 }
 
-class _ReportedPostState extends State<ReportedPost> {
+class _ReportedPostState extends State<ReportedPost>
+    with TickerProviderStateMixin {
   final searchController = TextEditingController();
+
+  late TabController _tabController;
+  late TabController _tabItemsController;
+  late TabController _tabItemsController2;
+
+  tabStaterefresher() {
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    _tabController = new TabController(length: 2, vsync: this)
+      ..addListener(tabStaterefresher);
+    _tabItemsController = new TabController(length: 4, vsync: this)
+      ..addListener(tabStaterefresher);
+    _tabItemsController2 = new TabController(length: 4, vsync: this)
+      ..addListener(tabStaterefresher);
+    super.initState();
+  }
+
+  final Algolia algolia = Algolia.init(
+    applicationId: 'PTLT3VDSB8',
+    apiKey: '6236d82b883664fa54ad458c616d39ca',
+  );
 
   bool showSearchBar = false;
   bool isLoading = true; // Added loading state
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 242, 241, 243),
-          automaticallyImplyLeading: false,
-          iconTheme: IconThemeData(
-            color: Color.fromRGBO(37, 6, 81, 0.898),
-          ),
-          toolbarHeight: 75,
-          title: Builder(
-            builder: (context) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.arrow_back),
-                    ),
-                    const Text(
-                      'Reported Posts',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontFamily: "Poppins",
-                        color: Color.fromRGBO(37, 6, 81, 0.898),
-                      ),
-                    ),
-                    Spacer(),
-                    // const SizedBox(width: 140),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          showSearchBar = !showSearchBar;
-                        });
-                      },
-                      icon:
-                          Icon(showSearchBar ? Icons.search_off : Icons.search),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                    if (showSearchBar)
-                    Container(
-                      height: 40.0, // Adjust the height as needed
-                      child: TextField(
-                        controller: searchController,
-                        decoration: InputDecoration(
-                          hintText: 'Search...',
-                          hintStyle: TextStyle(color: Colors.grey),
-                          prefixIcon: Icon(Icons.search, color: Colors.grey),
-                          filled: true,
-                          fillColor: Color.fromARGB(255, 242, 241, 243),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                            //borderSide: BorderSide.bottom ,
-                          ),
-                          contentPadding:
-                              EdgeInsets.symmetric(horizontal: 10.0),
-                          isDense: false,
-                        ),
-                        style: TextStyle(color: Colors.black, fontSize: 14.0),
-                        onChanged: (text) {
-                          setState(() {
-                          
-                          });
-                        },
-                      ),
-                    ),
-              ],
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 242, 241, 243),
+        automaticallyImplyLeading: false,
+        iconTheme: IconThemeData(
+          color: Color.fromRGBO(37, 6, 81, 0.898),
+        ),
+        toolbarHeight: 100,
+        /* flexibleSpace: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/Backgrounds/bg11.png'),
+              fit: BoxFit.cover,
             ),
           ),
-          bottom: TabBar(
-            indicator: UnderlineTabIndicator(
-              borderSide: BorderSide(
-                width: 3.0,
-                color: Color.fromRGBO(37, 6, 81, 0.898),
-                // Set the color of the underline
+        ),*/
+        title: Builder(
+          builder: (context) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.arrow_back),
+                  ),
+                  const SizedBox(width: 0),
+                  const Text(
+                    'Reported Posts',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: "Poppins",
+                      color: Color.fromRGBO(37, 6, 81, 0.898),
+                    ),
+                  ),
+                  Spacer(),
+                  // const SizedBox(width: 140),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        showSearchBar = !showSearchBar;
+                      });
+                    },
+                    icon: Icon(showSearchBar ? Icons.search_off : Icons.search),
+                  ),
+                ],
               ),
-              // Adjust the insets if needed
-            ),
-            labelColor: Color.fromARGB(255, 31, 5, 67),
-            tabs: [
-              Tab(
-                text: 'Active Requests',
+              const SizedBox(
+                height: 8,
               ),
-              Tab(
-                text: 'Old Requests',
-              ),
+              if (showSearchBar)
+                TextField(
+                  controller: searchController,
+                  decoration: const InputDecoration(
+                    hintText: 'Search...',
+                    prefixIcon: Icon(Icons.search),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 0,
+                    ),
+                    isDense: true,
+                  ),
+                  onChanged: (text) {
+                    setState(() {});
+                    // searchReportsByQuestionContent(searchController.text);
+                    // Handle search input changes
+                  },
+                ),
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            Scaffold(
-              body: DefaultTabController(
-                length: 4,
-                child: Column(
-                  children: [
-                    TabBar(
-                      indicator: UnderlineTabIndicator(
-                        borderSide: BorderSide(
-                          width: 3.0,
-                          color: Color.fromRGBO(37, 6, 81, 0.898),
-                          // Set the color of the underline
-                        ),
-                        // Adjust the insets if needed
-                      ),
-                      labelColor: Color.fromARGB(255, 31, 5, 67),
-                      tabs: [
-                        Tab(
-                          text: 'Question',
-                        ),
-                        Tab(
-                          text: 'Team',
-                        ),
-                        Tab(
-                          text: 'Project',
-                        ),
-                        Tab(
-                          text: 'Answer',
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: TabBarView(
-                        children: [
-                          // Active Request - Question Tab
-                          StreamBuilder<List<CardQview>>(
-                            stream: readReportedQuestion(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                final q = snapshot.data!;
-                                if (q.isEmpty) {
-                                  return Center(
-                                    child: Text('No Reported Question'),
-                                  );
-                                }
-                                return ListView(
-                                  children: q
-                                      .map((question) => buildQuestionCard(
-                                          question, question.reportedItemId))
-                                      .toList(),
-                                );
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                  child: Text('Error: ${snapshot.error}'),
-                                );
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                            },
-                          ),
-                          // Active Request - Team Tab
-                          StreamBuilder<List<CardFT>>(
-                            stream: readReportedTeam(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                final t = snapshot.data!;
-                                if (t.isEmpty) {
-                                  return Center(
-                                    child: Text('No Reported Teams Post'),
-                                  );
-                                }
-                                return ListView(
-                                  children: t
-                                      .map((team) =>
-                                          buildTeamCard(context, team))
-                                      .toList(),
-                                );
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                  child: Text('Error: ${snapshot.error}'),
-                                );
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                            },
-                          ),
-
-                          // Active Request - Project Tab
-                          StreamBuilder<List<CardFT>>(
-                            stream: readReportedProject(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                final q = snapshot.data!;
-                                if (q.isEmpty) {
-                                  return Center(
-                                    child: Text('No Reported Projects'),
-                                  );
-                                }
-                                return ListView(
-                                  children: q
-                                      .map((team) =>
-                                          buildTeamCard(context, team))
-                                      .toList(),
-                                );
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                  child: Text('Error: ${snapshot.error}'),
-                                );
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                            },
-                          ),
-                          // Active Request - Answer Tab
-
-                          StreamBuilder<List<CardAnswer>>(
-                            stream: readReportedAnswer(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                final a = snapshot.data!;
-                                if (a.isEmpty) {
-                                  return Center(
-                                    child: Text('No Answers yet'),
-                                  );
-                                }
-                                return ListView(
-                                  children: a
-                                      .map((answer) =>
-                                          buildAnswerCard(context, answer))
-                                      .toList(),
-                                );
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                  child: Text('Error: ${snapshot.error}'),
-                                );
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+        bottom: TabBar(
+          controller: _tabController,
+          indicator: UnderlineTabIndicator(
+            borderSide: BorderSide(
+              width: 3.0,
+              color: Color.fromRGBO(37, 6, 81, 0.898),
+              // Set the color of the underline
             ),
-            Scaffold(
-              body: DefaultTabController(
-                length: 4,
-                child: Column(
-                  children: [
-                    TabBar(
-                      indicator: UnderlineTabIndicator(
-                        borderSide: BorderSide(
-                            width: 3.0,
-                            color: Color.fromRGBO(37, 6, 81,
-                                0.898) // Set the color of the underline
-                            ),
-                        // Adjust the insets if needed
-                      ),
-                      labelColor: Color.fromARGB(255, 31, 5, 67),
-                      tabs: [
-                        Tab(
-                          text: 'Question',
-                        ),
-                        Tab(
-                          text: 'Team',
-                        ),
-                        Tab(
-                          text: 'Project',
-                        ),
-                        Tab(
-                          text: 'Answer',
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: TabBarView(
-                        children: [
-                          // Old Request - Question Tab
-                          StreamBuilder<List<CardQview>>(
-                            stream: readOldReportedQuestion(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                final q = snapshot.data!;
-                                if (q.isEmpty) {
-                                  return Center(
-                                    child: Text('No Reported Question'),
-                                  );
-                                }
-                                return ListView(
-                                  children: q
-                                      .map((question) => buildOldQuestionCard(
-                                          question, question.reportedItemId))
-                                      .toList(),
-                                );
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                  child: Text('Error: ${snapshot.error}'),
-                                );
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                            },
-                          ),
-                          // Old Request - Team Tab
-                          StreamBuilder<List<CardFT>>(
-                            stream: readOldReportedTeam(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                final t = snapshot.data!;
-                                if (t.isEmpty) {
-                                  return Center(
-                                    child: Text('No Reported Teams Post'),
-                                  );
-                                }
-                                return ListView(
-                                  children: t
-                                      .map((team) =>
-                                          buildOldTeamCard(context, team))
-                                      .toList(),
-                                );
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                  child: Text('Error: ${snapshot.error}'),
-                                );
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                            },
-                          ),
-
-                          // Old Request - Project Tab
-                          StreamBuilder<List<CardFT>>(
-                            stream: readOldReportedProject(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                final q = snapshot.data!;
-                                if (q.isEmpty) {
-                                  return Center(
-                                    child: Text('No Reported Projects Post'),
-                                  );
-                                }
-                                return ListView(
-                                  children: q
-                                      .map((team) =>
-                                          buildOldTeamCard(context, team))
-                                      .toList(),
-                                );
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                  child: Text('Error: ${snapshot.error}'),
-                                );
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                            },
-                          ),
-                          // Old Request - Answer Tab
-                          StreamBuilder<List<CardAnswer>>(
-                            stream: readOldReportedAnswer(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                final a = snapshot.data!;
-                                if (a.isEmpty) {
-                                  return Center(
-                                    child: Text('No Reported Answers Post'),
-                                  );
-                                }
-                                return ListView(
-                                  children: a
-                                      .map((answer) =>
-                                          buildOldAnswerCard(context, answer))
-                                      .toList(),
-                                );
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                  child: Text('Error: ${snapshot.error}'),
-                                );
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            // Adjust the insets if needed
+          ),
+          labelColor: Color.fromARGB(255, 31, 5, 67),
+          tabs: [
+            Tab(
+              text: 'Active Request',
+            ),
+            Tab(
+              text: 'Old Request',
             ),
           ],
         ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          Scaffold(
+            body: Column(
+              children: [
+                TabBar(
+                  controller: _tabItemsController,
+                  indicator: UnderlineTabIndicator(
+                    borderSide: BorderSide(
+                      width: 3.0,
+                      color: Color.fromRGBO(37, 6, 81, 0.898),
+                      // Set the color of the underline
+                    ),
+                    // Adjust the insets if needed
+                  ),
+                  labelColor: Color.fromARGB(255, 31, 5, 67),
+                  tabs: [
+                    Tab(
+                      text: 'Question',
+                    ),
+                    Tab(
+                      text: 'Team',
+                    ),
+                    Tab(
+                      text: 'Project',
+                    ),
+                    Tab(
+                      text: 'Answer',
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabItemsController,
+                    children: [
+                      // Active Request - Question Tab
+                      StreamBuilder<List<CardQview>>(
+                        stream: readReportedQuestion(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final q = snapshot.data!;
+                            if (q.isEmpty) {
+                              return Center(
+                                child: Text('No Reported Question'),
+                              );
+                            }
+                            return ListView(
+                              children: q
+                                  .map((question) => buildQuestionCard(
+                                      question, question.reportedItemId))
+                                  .toList(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+                      // Active Request - Team Tab
+                      StreamBuilder<List<CardFT>>(
+                        stream: readReportedTeam(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final t = snapshot.data!;
+                            if (t.isEmpty) {
+                              return Center(
+                                child: Text('No Reported Teams Post'),
+                              );
+                            }
+                            return ListView(
+                              children: t
+                                  .map((team) => buildTeamCard(context, team))
+                                  .toList(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+
+                      // Active Request - Project Tab
+                      StreamBuilder<List<CardFT>>(
+                        stream: readReportedProject(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final q = snapshot.data!;
+                            if (q.isEmpty) {
+                              return Center(
+                                child: Text('No Reported Projects'),
+                              );
+                            }
+                            return ListView(
+                              children: q
+                                  .map((team) => buildTeamCard(context, team))
+                                  .toList(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+                      // Active Request - Answer Tab
+
+                      StreamBuilder<List<CardAnswer>>(
+                        stream: readReportedAnswer(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final a = snapshot.data!;
+                            if (a.isEmpty) {
+                              return Center(
+                                child: Text('No Answers yet'),
+                              );
+                            }
+                            return ListView(
+                              children: a
+                                  .map((answer) =>
+                                      buildAnswerCard(context, answer))
+                                  .toList(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Scaffold(
+            body: Column(
+              children: [
+                TabBar(
+                  controller: _tabItemsController2,
+                  indicator: UnderlineTabIndicator(
+                    borderSide: BorderSide(
+                        width: 3.0,
+                        color: Color.fromRGBO(
+                            37, 6, 81, 0.898) // Set the color of the underline
+                        ),
+                    // Adjust the insets if needed
+                  ),
+                  labelColor: Color.fromARGB(255, 31, 5, 67),
+                  tabs: [
+                    Tab(
+                      text: 'Question',
+                    ),
+                    Tab(
+                      text: 'Team',
+                    ),
+                    Tab(
+                      text: 'Project',
+                    ),
+                    Tab(
+                      text: 'Answer',
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabItemsController2,
+                    children: [
+                      // Old Request - Question Tab
+                      StreamBuilder<List<CardQview>>(
+                        stream: readOldReportedQuestion(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final q = snapshot.data!;
+                            if (q.isEmpty) {
+                              return Center(
+                                child: Text('No Reported Question'),
+                              );
+                            }
+                            return ListView(
+                              children: q
+                                  .map((question) => buildOldQuestionCard(
+                                      question, question.reportedItemId))
+                                  .toList(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+                      // Old Request - Team Tab
+                      StreamBuilder<List<CardFT>>(
+                        stream: readOldReportedTeam(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final t = snapshot.data!;
+                            if (t.isEmpty) {
+                              return Center(
+                                child: Text('No Reported Teams Post'),
+                              );
+                            }
+                            return ListView(
+                              children: t
+                                  .map(
+                                      (team) => buildOldTeamCard(context, team))
+                                  .toList(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+
+                      // Old Request - Project Tab
+                      StreamBuilder<List<CardFT>>(
+                        stream: readOldReportedProject(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final q = snapshot.data!;
+                            if (q.isEmpty) {
+                              return Center(
+                                child: Text('No Reported Projects Post'),
+                              );
+                            }
+                            return ListView(
+                              children: q
+                                  .map(
+                                      (team) => buildOldTeamCard(context, team))
+                                  .toList(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+                      // Old Request - Answer Tab
+                      StreamBuilder<List<CardAnswer>>(
+                        stream: readOldReportedAnswer(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final a = snapshot.data!;
+                            if (a.isEmpty) {
+                              return Center(
+                                child: Text('No Reported Answers Post'),
+                              );
+                            }
+                            return ListView(
+                              children: a
+                                  .map((answer) =>
+                                      buildOldAnswerCard(context, answer))
+                                  .toList(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   ///Questionn +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ///
 
-  Stream<List<CardQview>> readReportedQuestion() {
-    return FirebaseFirestore.instance
-        .collection('Report')
-        .where('status', isEqualTo: 'Pending') // Filter by status
+  Future<List<Map<String, dynamic>>> searchReportsByQuestionContent(
+      String status, String indexName) async {
+    AlgoliaQuery query =
+        algolia.instance.index(indexName).query(searchController.text);
+    AlgoliaQuerySnapshot querySnapshot = await query.getObjects();
+    List<String> itemIds =
+        querySnapshot.hits.map((hit) => hit.objectID).toList();
 
-        .orderBy('reportType', descending: true)
-        .snapshots()
-        .asyncMap((snapshot) async {
-      if (snapshot.docs.isEmpty) {
-        return [];
-      }
+    if (itemIds.isEmpty) {
+      return [];
+    }
+    AlgoliaQuery reportsQuery = algolia.instance.index('Report_index');
+    List<String> filters = itemIds.map((id) => 'reportedItemId:$id').toList();
+    // print('MK: filters: ${filters.length} $filters');
+    AlgoliaQuerySnapshot reportsSnapshot = await reportsQuery
+        .facetFilter(filters)
+        .facetFilter('status:$status')
+        .getObjects();
+    List<Map<String, dynamic>> reports = reportsSnapshot.hits
+        .map((hit) => {'reportedPostId': hit.objectID, ...hit.data})
+        .toList();
 
-      final reportedPosts = snapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data()!;
-        data['reportedPostId'] = doc.id;
-        return data;
-      }).toList();
+    // for (Map<String, dynamic> report in reports) {
+    //   report['item'] = querySnapshot.hits
+    //       .firstWhere((hit) => report['reportedItemId'] == hit.objectID);
+    // }
 
-      final questionIds = reportedPosts
-          .map((post) => post['reportedItemId'] as String)
-          .toList();
+    print('MK: reports: ${reports.length} $reports');
 
-      List<CardQview> questions = [];
+    return reports;
+  }
 
-      // Paginate the query to avoid `whereIn` limitations
-      for (int i = 0; i < questionIds.length; i += 10) {
-        List<String> batchIds = questionIds.sublist(
-            i, (i + 10 < questionIds.length) ? i + 10 : questionIds.length);
+  Stream<List<CardQview>> readReportedQuestion() async* {
+    if (searchController.text.isNotEmpty) {
+      List<Map<String, dynamic>> reportedPosts =
+          await searchReportsByQuestionContent('Pending', 'Question_index');
 
-        final questionDocs = await FirebaseFirestore.instance
-            .collection('Question')
-            .where(FieldPath.documentId, whereIn: batchIds)
-            .get();
+      yield* Stream.value(await getQuestions(reportedPosts));
+    } else {
+      yield* FirebaseFirestore.instance
+          .collection('Report')
+          .where('status', isEqualTo: 'Pending') // Filter by status
 
-        final batchQuestions = questionDocs.docs.map((doc) {
-          Map<String, dynamic> data = doc.data()!;
-          data['docId'] = doc.id;
-          return CardQview.fromJson(data);
+          .orderBy('reportType', descending: true)
+          .snapshots()
+          .asyncMap((snapshot) async {
+        if (snapshot.docs.isEmpty) {
+          return [];
+        }
+
+        final reportedPosts = snapshot.docs.map((doc) {
+          Map<String, dynamic> data = doc.data();
+          data['reportedPostId'] = doc.id;
+          return data;
         }).toList();
 
-        final userIds =
-            batchQuestions.map((question) => question.userId).toSet();
-        if (batchQuestions.isEmpty || userIds.isEmpty) continue;
-        final userDocs = await FirebaseFirestore.instance
-            .collection('RegularUser')
-            .where('email', whereIn: userIds.toList())
-            .get();
+        return getQuestions(reportedPosts);
+      });
+    }
+  }
 
-        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-          userDocs.docs.map((doc) => MapEntry(
-                doc.data()!['email'] as String,
-                doc.data()! as Map<String, dynamic>,
-              )),
-        );
+  Future<List<CardQview>> getQuestions(
+      List<Map<String, dynamic>> reportedPosts) async {
+    final questionIds =
+        reportedPosts.map((post) => post['reportedItemId'] as String).toList();
 
-        batchQuestions.forEach((question) {
-          final userDoc = userMap[question.userId];
-          final username = userDoc?['username'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+    List<CardQview> questions = [];
 
-          final reportedPostsForQuestion = reportedPosts
-              .where((post) => post['reportedItemId'] == question.questionDocId)
-              .toList();
-          final reasons = reportedPostsForQuestion
-              .map((post) => post['reason'] as String)
-              .toList();
-          final reportIds = reportedPostsForQuestion
-              .map((post) => post['reportedPostId'] as String)
-              .toList();
+    // Paginate the query to avoid `whereIn` limitations
+    for (int i = 0; i < questionIds.length; i += 10) {
+      List<String> batchIds = questionIds.sublist(
+          i, (i + 10 < questionIds.length) ? i + 10 : questionIds.length);
 
-          final reportDate = reportedPostsForQuestion
-              .map((report) => report['reportDate'] as Timestamp?)
-              .where((date) => date != null)
-              .toList();
+      final questionDocs = await FirebaseFirestore.instance
+          .collection('Question')
+          .where(FieldPath.documentId, whereIn: batchIds)
+          .get();
 
-          question.reportDate = reportDate.isNotEmpty
-              ? reportDate.first!.toDate()
-              : DateTime.now();
+      final batchQuestions = questionDocs.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        data['docId'] = doc.id;
+        return CardQview.fromJson(data);
+      }).toList();
 
-          question.userType = userDoc?['userType'] as String? ?? '';
-          question.username = username;
-          question.userPhotoUrl = userPhotoUrl;
-          question.reasons =
-              reasons; // Add a list property to CardQview to hold reasons
-          question.reportIds =
-              reportIds; // Add a list property to CardQview to hold reportIds
-        });
+      final userIds = batchQuestions.map((question) => question.userId).toSet();
+      print('userIds: ${userIds} $batchQuestions');
+      if (batchQuestions.isEmpty || userIds.isEmpty) continue;
+      final userDocs = await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .where('email', whereIn: userIds.toList())
+          .get();
 
-        questions.addAll(batchQuestions);
-      }
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+        userDocs.docs.map((doc) => MapEntry(
+              doc.data()!['email'] as String,
+              doc.data()! as Map<String, dynamic>,
+            )),
+      );
 
-      return questions;
-    });
+      batchQuestions.forEach((question) {
+        final userDoc = userMap[question.userId];
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+
+        final reportedPostsForQuestion = reportedPosts
+            .where((post) => post['reportedItemId'] == question.questionDocId)
+            .toList();
+        final reasons = reportedPostsForQuestion
+            .map((post) => post['reason'] as String)
+            .toList();
+        final reportIds = reportedPostsForQuestion
+            .map((post) => post['reportedPostId'] as String)
+            .toList();
+
+        final reportDate = reportedPostsForQuestion
+            .map((report) => report['reportDate'] is int
+                ? Timestamp.fromMicrosecondsSinceEpoch(
+                    report['reportDate'] as int)
+                : report['reportDate'] as Timestamp?)
+            .where((date) => date != null)
+            .toList();
+
+        question.reportDate =
+            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+
+        question.userType = userDoc?['userType'] as String? ?? '';
+        question.username = username;
+        question.userPhotoUrl = userPhotoUrl;
+        question.reasons =
+            reasons; // Add a list property to CardQview to hold reasons
+        question.reportIds =
+            reportIds; // Add a list property to CardQview to hold reportIds
+      });
+
+      questions.addAll(batchQuestions);
+    }
+
+    return questions;
   }
 
   Widget buildQuestionCard(CardQview question, String postId) => Card(
@@ -577,14 +642,14 @@ class _ReportedPostState extends State<ReportedPost> {
                             size: 20,
                           ),
                         SizedBox(
-                          width: 110,
+                          width: 140,
                         ),
                       ],
                     ),
                   ),
                   Positioned(
-                    right: 4,
-                    top: -2,
+                    right: 0,
+                    top: -8,
                     // Adjust this value to give the tooltip some extra space from the top
                     child: Tooltip(
                       child: Container(
@@ -598,14 +663,9 @@ class _ReportedPostState extends State<ReportedPost> {
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 10
                           ),
                         ),
                       ),
-                      decoration: BoxDecoration(
-                      color: Color.fromARGB(177, 40, 0, 75), 
-                      borderRadius: BorderRadius.circular(8.0), 
-                    ),
                       message: 'Total number of reports on this post',
                       padding: EdgeInsets.all(10),
                       showDuration: Duration(seconds: 3),
@@ -701,7 +761,6 @@ class _ReportedPostState extends State<ReportedPost> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
-                  fontSize: 10,
                 ),
               ),
               SizedBox(
@@ -751,29 +810,38 @@ class _ReportedPostState extends State<ReportedPost> {
         ),
       );
 
-  Stream<List<CardQview>> readOldReportedQuestion() {
-    return FirebaseFirestore.instance
-        .collection('Report')
-        .where('status', isEqualTo: 'Accepted') // Filter by status
+  Stream<List<CardQview>> readOldReportedQuestion() async* {
+    if (searchController.text.isNotEmpty) {
+      List<Map<String, dynamic>> reportedPosts =
+          await searchReportsByQuestionContent('Accepted', 'Question_index');
 
-        .orderBy('reportType', descending: true)
-        .snapshots()
-        .asyncMap((snapshot) async {
-      if (snapshot.docs.isEmpty) {
-        return [];
-      }
+      yield* Stream.value(await getQuestions(reportedPosts));
+    } else {
+      yield* FirebaseFirestore.instance
+          .collection('Report')
+          .where('status', isEqualTo: 'Accepted') // Filter by status
 
-      final reportedPosts = snapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data()!;
-        data['reportedPostId'] = doc.id;
-        return data;
-      }).toList();
+          .orderBy('reportType', descending: true)
+          .snapshots()
+          .asyncMap((snapshot) async {
+        if (snapshot.docs.isEmpty) {
+          return [];
+        }
 
-      final questionIds = reportedPosts
-          .map((post) => post['reportedItemId'] as String)
-          .toList();
+        final reportedPosts = snapshot.docs.map((doc) {
+          Map<String, dynamic> data = doc.data()!;
+          data['reportedPostId'] = doc.id;
+          return data;
+        }).toList();
 
-      List<CardQview> questions = [];
+        // final questionIds = reportedPosts
+        //     .map((post) => post['reportedItemId'] as String)
+        //     .toList();
+
+        return getQuestions(reportedPosts);
+
+        /*
+        List<CardQview> questions = [];
 
       // Paginate the query to avoid `whereIn` limitations
       for (int i = 0; i < questionIds.length; i += 10) {
@@ -843,7 +911,9 @@ class _ReportedPostState extends State<ReportedPost> {
       }
 
       return questions;
-    });
+        * */
+      });
+    }
   }
 
   Widget buildOldQuestionCard(CardQview question, String postId) {
@@ -890,14 +960,14 @@ class _ReportedPostState extends State<ReportedPost> {
                           size: 20,
                         ),
                       SizedBox(
-                        width: 110,
+                        width: 140,
                       ),
                     ],
                   ),
                 ),
                 Positioned(
-                  right: 3,
-                  top: -2,
+                  right: 0,
+                  top: -8,
                   // Adjust this value to give the tooltip some extra space from the top
                   child: Tooltip(
                     child: Container(
@@ -911,13 +981,8 @@ class _ReportedPostState extends State<ReportedPost> {
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 10,
                         ),
                       ),
-                    ),
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(177, 40, 0, 75), 
-                      borderRadius: BorderRadius.circular(8.0), 
                     ),
                     message: 'Total number of reports on this post',
                     padding: EdgeInsets.all(10),
@@ -986,7 +1051,6 @@ class _ReportedPostState extends State<ReportedPost> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Color.fromARGB(255, 92, 0, 0),
-                fontSize: 10,
               ),
             ),
             SizedBox(height: 20),
@@ -1006,194 +1070,215 @@ class _ReportedPostState extends State<ReportedPost> {
   ////END QUESTION
   //////TEAM
   ///
-  Stream<List<CardFT>> readReportedTeam() {
-    return FirebaseFirestore.instance
-        .collection('Report')
-        .where('status', isEqualTo: 'Pending') // Filter by status
-        .orderBy('reportType', descending: true)
-        .snapshots()
-        .asyncMap((snapshot) async {
-      if (snapshot.docs.isEmpty) {
-        return []; // Return an empty list if there are no reported posts.
-      }
+  Stream<List<CardFT>> readReportedTeam() async* {
+    if (searchController.text.isNotEmpty) {
+      List<Map<String, dynamic>> reportedPosts =
+          await searchReportsByQuestionContent('Pending', 'Team_index');
 
-      final reportedPosts = snapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data()!;
-        data['reportedPostId'] = doc.id;
-        return data;
-      }).toList();
-
-      final teamIds = reportedPosts
-          .map((post) => post['reportedItemId'] as String)
-          .toList();
-
-      List<CardFT> teams = [];
-
-      // Paginate the query to avoid `whereIn` limitations
-      for (int i = 0; i < teamIds.length; i += 10) {
-        List<String> batchIds = teamIds.sublist(
-            i, (i + 10 < teamIds.length) ? i + 10 : teamIds.length);
-
-        if (batchIds.isEmpty) continue;
-        final questionDocs = await FirebaseFirestore.instance
-            .collection('Team')
-            .where(FieldPath.documentId, whereIn: batchIds)
-            .get();
-
-        final batchQuestions = questionDocs.docs.map((doc) {
-          Map<String, dynamic> data = doc.data()!;
-          data['docId'] = doc.id;
-          return CardFT.fromJson(data);
-        }).toList();
-        // Get user-related information for each question
-        final userIds = batchQuestions.map((team) => team.userId).toSet();
-
-        dynamic userMap = {};
-        if (userIds.isNotEmpty) {
-          final userDocs = await FirebaseFirestore.instance
-              .collection('RegularUser')
-              .where('email', whereIn: userIds.toList())
-              .get();
-
-          userMap = Map<String, Map<String, dynamic>>.fromEntries(
-            userDocs.docs.map((doc) => MapEntry(
-                  doc.data()!['email'] as String,
-                  doc.data()! as Map<String, dynamic>,
-                )),
-          );
+      yield* Stream.value(await getReportedTeam(reportedPosts));
+    } else {
+      yield* FirebaseFirestore.instance
+          .collection('Report')
+          .where('status', isEqualTo: 'Pending') // Filter by status
+          .orderBy('reportType', descending: true)
+          .snapshots()
+          .asyncMap((snapshot) async {
+        if (snapshot.docs.isEmpty) {
+          return []; // Return an empty list if there are no reported posts.
         }
 
-        batchQuestions.forEach((team) {
-          final userDoc = userMap[team.userId];
-          final username = userDoc?['username'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        final reportedPosts = snapshot.docs.map((doc) {
+          Map<String, dynamic> data = doc.data()!;
+          data['reportedPostId'] = doc.id;
+          return data;
+        }).toList();
 
-          final teamReports = reportedPosts
-              .where((post) => post['reportedItemId'] == team.docId)
-              .toList();
-
-          final reasons =
-              teamReports.map((report) => report['reason'] as String).toList();
-          final reportIds = teamReports
-              .map((report) => report['reportedPostId'] as String)
-              .toList();
-
-          final reportDate = teamReports
-              .map((report) => report['reportDate'] as Timestamp?)
-              .where((date) => date != null)
-              .toList();
-
-          team.reportDate = reportDate.isNotEmpty
-              ? reportDate.first!.toDate()
-              : DateTime.now();
-
-          team.userType = userDoc?['userType'] as String? ?? '';
-          team.username = username;
-          team.userPhotoUrl = userPhotoUrl;
-          team.reasons = reasons;
-          team.reportDocids = reportIds;
-        });
-
-        teams.addAll(batchQuestions);
-      }
-
-      return teams;
-    });
+        return getReportedTeam(reportedPosts);
+      });
+    }
   }
 
-  Stream<List<CardFT>> readOldReportedTeam() {
-    return FirebaseFirestore.instance
-        .collection('Report')
-        .where('status', isEqualTo: 'Accepted') // Filter by status
-        .orderBy('reportType', descending: true)
-        .snapshots()
-        .asyncMap((snapshot) async {
-      if (snapshot.docs.isEmpty) {
-        return []; // Return an empty list if there are no reported posts.
-      }
+  Future<List<CardFT>> getReportedTeam(List reportedPosts) async {
+    final teamIds =
+        reportedPosts.map((post) => post['reportedItemId'] as String).toList();
 
-      final reportedPosts = snapshot.docs.map((doc) {
+    List<CardFT> teams = [];
+
+    // Paginate the query to avoid `whereIn` limitations
+    for (int i = 0; i < teamIds.length; i += 10) {
+      List<String> batchIds = teamIds.sublist(
+          i, (i + 10 < teamIds.length) ? i + 10 : teamIds.length);
+
+      if (batchIds.isEmpty) continue;
+      final questionDocs = await FirebaseFirestore.instance
+          .collection('Team')
+          .where(FieldPath.documentId, whereIn: batchIds)
+          .get();
+
+      final batchQuestions = questionDocs.docs.map((doc) {
         Map<String, dynamic> data = doc.data()!;
-        data['reportedPostId'] = doc.id;
-        return data;
+        data['docId'] = doc.id;
+        return CardFT.fromJson(data);
       }).toList();
+      // Get user-related information for each question
+      final userIds = batchQuestions.map((team) => team.userId).toSet();
 
-      final teamIds = reportedPosts
-          .map((post) => post['reportedItemId'] as String)
-          .toList();
-
-      List<CardFT> teams = [];
-
-      // Paginate the query to avoid `whereIn` limitations
-      for (int i = 0; i < teamIds.length; i += 10) {
-        List<String> batchIds = teamIds.sublist(
-            i, (i + 10 < teamIds.length) ? i + 10 : teamIds.length);
-
-        if (batchIds.isEmpty) continue;
-        final questionDocs = await FirebaseFirestore.instance
-            .collection('Team')
-            .where(FieldPath.documentId, whereIn: batchIds)
+      dynamic userMap = {};
+      if (userIds.isNotEmpty) {
+        final userDocs = await FirebaseFirestore.instance
+            .collection('RegularUser')
+            .where('email', whereIn: userIds.toList())
             .get();
 
-        final batchQuestions = questionDocs.docs.map((doc) {
-          Map<String, dynamic> data = doc.data()!;
-          data['docId'] = doc.id;
-          return CardFT.fromJson(data);
-        }).toList();
-        // Get user-related information for each question
-        final userIds = batchQuestions.map((team) => team.userId).toSet();
-
-        dynamic userMap = {};
-        if (userIds.isNotEmpty) {
-          final userDocs = await FirebaseFirestore.instance
-              .collection('RegularUser')
-              .where('email', whereIn: userIds.toList())
-              .get();
-
-          userMap = Map<String, Map<String, dynamic>>.fromEntries(
-            userDocs.docs.map((doc) => MapEntry(
-                  doc.data()!['email'] as String,
-                  doc.data()! as Map<String, dynamic>,
-                )),
-          );
-        }
-
-        batchQuestions.forEach((team) {
-          final userDoc = userMap[team.userId];
-          final username = userDoc?['username'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-
-          final teamReports = reportedPosts
-              .where((post) => post['reportedItemId'] == team.docId)
-              .toList();
-
-          final reasons =
-              teamReports.map((report) => report['reason'] as String).toList();
-          final reportIds = teamReports
-              .map((report) => report['reportedPostId'] as String)
-              .toList();
-
-          final reportDate = teamReports
-              .map((report) => report['reportDate'] as Timestamp?)
-              .where((date) => date != null)
-              .toList();
-
-          team.reportDate = reportDate.isNotEmpty
-              ? reportDate.first!.toDate()
-              : DateTime.now();
-
-          team.userType = userDoc?['userType'] as String? ?? '';
-          team.username = username;
-          team.userPhotoUrl = userPhotoUrl;
-          team.reasons = reasons;
-          team.reportDocids = reportIds;
-        });
-
-        teams.addAll(batchQuestions);
+        userMap = Map<String, Map<String, dynamic>>.fromEntries(
+          userDocs.docs.map((doc) => MapEntry(
+                doc.data()!['email'] as String,
+                doc.data()! as Map<String, dynamic>,
+              )),
+        );
       }
 
-      return teams;
-    });
+      batchQuestions.forEach((team) {
+        final userDoc = userMap[team.userId];
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+
+        final teamReports = reportedPosts
+            .where((post) => post['reportedItemId'] == team.docId)
+            .toList();
+
+        final reasons =
+            teamReports.map((report) => report['reason'] as String).toList();
+        final reportIds = teamReports
+            .map((report) => report['reportedPostId'] as String)
+            .toList();
+
+        final reportDate = teamReports
+            .map((report) => report['reportDate'] is int
+                ? Timestamp.fromMicrosecondsSinceEpoch(
+                    report['reportDate'] as int)
+                : report['reportDate'] as Timestamp?)
+            .where((date) => date != null)
+            .toList();
+
+        team.reportDate =
+            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+
+        team.userType = userDoc?['userType'] as String? ?? '';
+        team.username = username;
+        team.userPhotoUrl = userPhotoUrl;
+        team.reasons = reasons;
+        team.reportDocids = reportIds;
+      });
+
+      teams.addAll(batchQuestions);
+    }
+
+    return teams;
+  }
+
+  Stream<List<CardFT>> readOldReportedTeam() async* {
+    if (searchController.text.isNotEmpty) {
+      List<Map<String, dynamic>> reportedPosts =
+          await searchReportsByQuestionContent('Accepted', 'Team_index');
+
+      yield* Stream.value(await getReportedTeam(reportedPosts));
+    } else {
+      yield* FirebaseFirestore.instance
+          .collection('Report')
+          .where('status', isEqualTo: 'Accepted') // Filter by status
+          .orderBy('reportType', descending: true)
+          .snapshots()
+          .asyncMap((snapshot) async {
+        if (snapshot.docs.isEmpty) {
+          return []; // Return an empty list if there are no reported posts.
+        }
+
+        final reportedPosts = snapshot.docs.map((doc) {
+          Map<String, dynamic> data = doc.data()!;
+          data['reportedPostId'] = doc.id;
+          return data;
+        }).toList();
+
+        return getReportedTeam(reportedPosts);
+
+        // final teamIds = reportedPosts
+        //     .map((post) => post['reportedItemId'] as String)
+        //     .toList();
+        //
+        // List<CardFT> teams = [];
+        //
+        // // Paginate the query to avoid `whereIn` limitations
+        // for (int i = 0; i < teamIds.length; i += 10) {
+        //   List<String> batchIds = teamIds.sublist(
+        //       i, (i + 10 < teamIds.length) ? i + 10 : teamIds.length);
+        //
+        //   if (batchIds.isEmpty) continue;
+        //   final questionDocs = await FirebaseFirestore.instance
+        //       .collection('Team')
+        //       .where(FieldPath.documentId, whereIn: batchIds)
+        //       .get();
+        //
+        //   final batchQuestions = questionDocs.docs.map((doc) {
+        //     Map<String, dynamic> data = doc.data()!;
+        //     data['docId'] = doc.id;
+        //     return CardFT.fromJson(data);
+        //   }).toList();
+        //   // Get user-related information for each question
+        //   final userIds = batchQuestions.map((team) => team.userId).toSet();
+        //
+        //   dynamic userMap = {};
+        //   if (userIds.isNotEmpty) {
+        //     final userDocs = await FirebaseFirestore.instance
+        //         .collection('RegularUser')
+        //         .where('email', whereIn: userIds.toList())
+        //         .get();
+        //
+        //     userMap = Map<String, Map<String, dynamic>>.fromEntries(
+        //       userDocs.docs.map((doc) => MapEntry(
+        //             doc.data()!['email'] as String,
+        //             doc.data()! as Map<String, dynamic>,
+        //           )),
+        //     );
+        //   }
+        //
+        //   batchQuestions.forEach((team) {
+        //     final userDoc = userMap[team.userId];
+        //     final username = userDoc?['username'] as String? ?? '';
+        //     final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        //
+        //     final teamReports = reportedPosts
+        //         .where((post) => post['reportedItemId'] == team.docId)
+        //         .toList();
+        //
+        //     final reasons =
+        //         teamReports.map((report) => report['reason'] as String).toList();
+        //     final reportIds = teamReports
+        //         .map((report) => report['reportedPostId'] as String)
+        //         .toList();
+        //
+        //     final reportDate = teamReports
+        //         .map((report) => report['reportDate'] as Timestamp?)
+        //         .where((date) => date != null)
+        //         .toList();
+        //
+        //     team.reportDate = reportDate.isNotEmpty
+        //         ? reportDate.first!.toDate()
+        //         : DateTime.now();
+        //
+        //     team.userType = userDoc?['userType'] as String? ?? '';
+        //     team.username = username;
+        //     team.userPhotoUrl = userPhotoUrl;
+        //     team.reasons = reasons;
+        //     team.reportDocids = reportIds;
+        //   });
+        //
+        //   teams.addAll(batchQuestions);
+        // }
+        //
+        // return teams;
+      });
+    }
   }
 
   Widget buildTeamCard(BuildContext context, CardFT team) => Card(
@@ -1239,17 +1324,17 @@ class _ReportedPostState extends State<ReportedPost> {
                             size: 20,
                           ),
                         SizedBox(
-                          width: 110,
+                          width: 160,
                         ),
                       ],
                     ),
                   ),
                   Positioned(
-                    right: 4,
-                    top: -2,
+                    right: 3,
+                    top: -6,
                     child: Tooltip(
                       child: Container(
-                        padding: EdgeInsets.all(6),
+                        padding: EdgeInsets.all(7),
                         decoration: BoxDecoration(
                           color: Color.fromARGB(217, 122, 1, 1),
                           shape: BoxShape.circle,
@@ -1258,14 +1343,10 @@ class _ReportedPostState extends State<ReportedPost> {
                           '${team.reportDocids!.length}',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 10,
+                            fontSize: 14,
                           ),
                         ),
                       ),
-                     decoration: BoxDecoration(
-                      color: Color.fromARGB(177, 40, 0, 75), 
-                      borderRadius: BorderRadius.circular(8.0), 
-                    ),
                       message: 'Total number of reports on this post',
                       padding: EdgeInsets.all(10),
                       showDuration: Duration(seconds: 3),
@@ -1299,7 +1380,7 @@ class _ReportedPostState extends State<ReportedPost> {
                       (topic) => Chip(
                         label: Text(
                           topic,
-                          style: TextStyle(fontSize: 10.0),
+                          style: TextStyle(fontSize: 12.0),
                         ),
                       ),
                     )
@@ -1328,7 +1409,6 @@ class _ReportedPostState extends State<ReportedPost> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
-                  fontSize: 10,
                 ),
               ),
               SizedBox(
@@ -1421,17 +1501,17 @@ class _ReportedPostState extends State<ReportedPost> {
                             size: 20,
                           ),
                         SizedBox(
-                          width: 110,
+                          width: 160,
                         ),
                       ],
                     ),
                   ),
                   Positioned(
-                    right: 4,
-                    top: -2,
+                    right: 3,
+                    top: -6,
                     child: Tooltip(
                       child: Container(
-                        padding: EdgeInsets.all(6),
+                        padding: EdgeInsets.all(7),
                         decoration: BoxDecoration(
                           color: Color.fromARGB(217, 122, 1, 1),
                           shape: BoxShape.circle,
@@ -1440,14 +1520,10 @@ class _ReportedPostState extends State<ReportedPost> {
                           '${team.reportDocids!.length}',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 10,
+                            fontSize: 14,
                           ),
                         ),
                       ),
-                     decoration: BoxDecoration(
-                      color: Color.fromARGB(177, 40, 0, 75), 
-                      borderRadius: BorderRadius.circular(8.0), 
-                    ),
                       message: 'Total number of reports on this post',
                       padding: EdgeInsets.all(10),
                       showDuration: Duration(seconds: 3),
@@ -1510,7 +1586,6 @@ class _ReportedPostState extends State<ReportedPost> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
-                  fontSize: 10,
                 ),
               ),
               SizedBox(
@@ -1531,439 +1606,479 @@ class _ReportedPostState extends State<ReportedPost> {
   /// end TEAM
   /// Start project
   ///
-  Stream<List<CardFT>> readReportedProject() {
-    return FirebaseFirestore.instance
-        .collection('Report')
-        .where('status', isEqualTo: 'Pending') // Filter by status
-        .orderBy('reportType', descending: true)
-        .snapshots()
-        .asyncMap((snapshot) async {
-      if (snapshot.docs.isEmpty) {
-        return []; // Return an empty list if there are no reported posts.
-      }
+  Stream<List<CardFT>> readReportedProject() async* {
+    if (searchController.text.isNotEmpty) {
+      List<Map<String, dynamic>> reportedPosts =
+          await searchReportsByQuestionContent('Pending', 'Project_index');
 
-      final reportedPosts = snapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data()!;
-        data['reportedPostId'] = doc.id;
-        return data;
-      }).toList();
-
-      final projectIds = reportedPosts
-          .map((post) => post['reportedItemId'] as String)
-          .toList();
-
-      List<CardFT> projects = [];
-
-      // Paginate the query to avoid `whereIn` limitations
-      for (int i = 0; i < projectIds.length; i += 10) {
-        List<String> batchIds = projectIds.sublist(
-            i, (i + 10 < projectIds.length) ? i + 10 : projectIds.length);
-
-        if (batchIds.isEmpty) continue;
-        final questionDocs = await FirebaseFirestore.instance
-            .collection('Project')
-            .where(FieldPath.documentId, whereIn: batchIds)
-            .get();
-
-        final batchQuestions = questionDocs.docs.map((doc) {
-          Map<String, dynamic> data = doc.data()!;
-          data['docId'] = doc.id;
-          return CardFT.fromJson(data);
-        }).toList();
-        // Get user-related information for each question
-        final userIds = batchQuestions.map((project) => project.userId).toSet();
-
-        dynamic userMap = {};
-        if (userIds.isNotEmpty) {
-          final userDocs = await FirebaseFirestore.instance
-              .collection('RegularUser')
-              .where('email', whereIn: userIds.toList())
-              .get();
-
-          userMap = Map<String, Map<String, dynamic>>.fromEntries(
-            userDocs.docs.map((doc) => MapEntry(
-                  doc.data()!['email'] as String,
-                  doc.data()! as Map<String, dynamic>,
-                )),
-          );
+      yield* Stream.value(await getReportedProject(reportedPosts));
+    } else {
+      yield* FirebaseFirestore.instance
+          .collection('Report')
+          .where('status', isEqualTo: 'Pending') // Filter by status
+          .orderBy('reportType', descending: true)
+          .snapshots()
+          .asyncMap((snapshot) async {
+        if (snapshot.docs.isEmpty) {
+          return []; // Return an empty list if there are no reported posts.
         }
 
-        batchQuestions.forEach((project) {
-          final userDoc = userMap[project.userId];
-          final username = userDoc?['username'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-
-          final projectReports = reportedPosts
-              .where((post) => post['reportedItemId'] == project.docId)
-              .toList();
-
-          final reasons = projectReports
-              .map((report) => report['reason'] as String)
-              .toList();
-          final reportIds = projectReports
-              .map((report) => report['reportedPostId'] as String)
-              .toList();
-
-          final reportDate = projectReports
-              .map((report) => report['reportDate'] as Timestamp?)
-              .where((date) => date != null)
-              .toList();
-
-          project.reportDate = reportDate.isNotEmpty
-              ? reportDate.first!.toDate()
-              : DateTime.now();
-
-          project.userType = userDoc?['userType'] as String? ?? '';
-          project.username = username;
-          project.userPhotoUrl = userPhotoUrl;
-          project.reasons = reasons;
-          project.reportDocids = reportIds;
-        });
-
-        projects.addAll(batchQuestions);
-      }
-
-      return projects;
-    });
-  }
-
-  Stream<List<CardFT>> readOldReportedProject() {
-    return FirebaseFirestore.instance
-        .collection('Report')
-        .where('status', isEqualTo: 'Accepted') // Filter by status
-        .orderBy('reportType', descending: true)
-        .snapshots()
-        .asyncMap((snapshot) async {
-      if (snapshot.docs.isEmpty) {
-        return []; // Return an empty list if there are no reported posts.
-      }
-
-      final reportedPosts = snapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data()!;
-        data['reportedPostId'] = doc.id;
-        return data;
-      }).toList();
-
-      final projectIds = reportedPosts
-          .map((post) => post['reportedItemId'] as String)
-          .toList();
-
-      List<CardFT> projects = [];
-
-      // Paginate the query to avoid `whereIn` limitations
-      for (int i = 0; i < projectIds.length; i += 10) {
-        List<String> batchIds = projectIds.sublist(
-            i, (i + 10 < projectIds.length) ? i + 10 : projectIds.length);
-
-        if (batchIds.isEmpty) continue;
-        final questionDocs = await FirebaseFirestore.instance
-            .collection('Project')
-            .where(FieldPath.documentId, whereIn: batchIds)
-            .get();
-
-        final batchQuestions = questionDocs.docs.map((doc) {
-          Map<String, dynamic> data = doc.data()!;
-          data['docId'] = doc.id;
-          return CardFT.fromJson(data);
-        }).toList();
-        // Get user-related information for each question
-        final userIds = batchQuestions.map((project) => project.userId).toSet();
-
-        dynamic userMap = {};
-        if (userIds.isNotEmpty) {
-          final userDocs = await FirebaseFirestore.instance
-              .collection('RegularUser')
-              .where('email', whereIn: userIds.toList())
-              .get();
-
-          userMap = Map<String, Map<String, dynamic>>.fromEntries(
-            userDocs.docs.map((doc) => MapEntry(
-                  doc.data()!['email'] as String,
-                  doc.data()! as Map<String, dynamic>,
-                )),
-          );
-        }
-
-        batchQuestions.forEach((project) {
-          final userDoc = userMap[project.userId];
-          final username = userDoc?['username'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-
-          final projectReports = reportedPosts
-              .where((post) => post['reportedItemId'] == project.docId)
-              .toList();
-
-          final reasons = projectReports
-              .map((report) => report['reason'] as String)
-              .toList();
-          final reportIds = projectReports
-              .map((report) => report['reportedPostId'] as String)
-              .toList();
-
-          final reportDate = projectReports
-              .map((report) => report['reportDate'] as Timestamp?)
-              .where((date) => date != null)
-              .toList();
-
-          project.reportDate = reportDate.isNotEmpty
-              ? reportDate.first!.toDate()
-              : DateTime.now();
-
-          project.userType = userDoc?['userType'] as String? ?? '';
-          project.username = username;
-          project.userPhotoUrl = userPhotoUrl;
-          project.reasons = reasons;
-          project.reportDocids = reportIds;
-        });
-
-        projects.addAll(batchQuestions);
-      }
-
-      return projects;
-    });
-  }
-
-  // answer
-
-  Stream<List<CardAnswer>> readReportedAnswer() {
-    return FirebaseFirestore.instance
-        .collection('Report')
-        .where('status', isEqualTo: 'Pending') // Filter by status
-        .orderBy('reportType', descending: true)
-        .snapshots()
-        .asyncMap((snapshot) async {
-      if (snapshot.docs.isEmpty) {
-        return []; // Return an empty list if there are no reported posts.
-      }
-
-      final reportedPosts = snapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data();
-        data['reportedPostId'] = doc.id;
-        return data;
-      }).toList();
-
-      final answerIds = reportedPosts
-          .map((post) => post['reportedItemId'] as String)
-          .toList();
-
-      List<CardAnswer> answers = [];
-
-      // Paginate the query to avoid `whereIn` limitations
-      for (int i = 0; i < answerIds.length; i += 10) {
-        List<String> batchIds = answerIds.sublist(
-            i, (i + 10 < answerIds.length) ? i + 10 : answerIds.length);
-
-        if (batchIds.isEmpty) continue;
-        final answerDocs = await FirebaseFirestore.instance
-            .collection('Answer')
-            .where(FieldPath.documentId, whereIn: batchIds)
-            .get();
-
-        final batchAnswers = answerDocs.docs.map((doc) {
+        final reportedPosts = snapshot.docs.map((doc) {
           Map<String, dynamic> data = doc.data();
-          data['docId'] = doc.id;
-          return CardAnswer.fromJson(data);
+          data['reportedPostId'] = doc.id;
+          return data;
         }).toList();
 
-        final userIds = batchAnswers.map((answer) => answer.userId).toSet();
-        if (batchAnswers.isEmpty || userIds.isEmpty) continue;
+        return getReportedProject(reportedPosts);
+      });
+    }
+  }
+
+  Future<List<CardFT>> getReportedProject(
+      List<Map<String, dynamic>> reportedPosts) async {
+    final projectIds =
+        reportedPosts.map((post) => post['reportedItemId'] as String).toList();
+
+    List<CardFT> projects = [];
+
+    // Paginate the query to avoid `whereIn` limitations
+    for (int i = 0; i < projectIds.length; i += 10) {
+      List<String> batchIds = projectIds.sublist(
+          i, (i + 10 < projectIds.length) ? i + 10 : projectIds.length);
+
+      if (batchIds.isEmpty) continue;
+      final questionDocs = await FirebaseFirestore.instance
+          .collection('Project')
+          .where(FieldPath.documentId, whereIn: batchIds)
+          .get();
+
+      final batchQuestions = questionDocs.docs.map((doc) {
+        Map<String, dynamic> data = doc.data()!;
+        data['docId'] = doc.id;
+        return CardFT.fromJson(data);
+      }).toList();
+      // Get user-related information for each question
+      final userIds = batchQuestions.map((project) => project.userId).toSet();
+
+      dynamic userMap = {};
+      if (userIds.isNotEmpty) {
         final userDocs = await FirebaseFirestore.instance
             .collection('RegularUser')
             .where('email', whereIn: userIds.toList())
             .get();
 
-        final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+        userMap = Map<String, Map<String, dynamic>>.fromEntries(
           userDocs.docs.map((doc) => MapEntry(
                 doc.data()!['email'] as String,
                 doc.data()! as Map<String, dynamic>,
               )),
         );
-
-        batchAnswers.forEach((answer) {
-          final userDoc = userMap[answer.userId];
-          final username = userDoc?['username'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-
-          final reportedPost = reportedPosts.firstWhere(
-            (post) => post['reportedItemId'] == answer.docId,
-            orElse: () => <String, dynamic>{},
-          );
-          final answerReports = reportedPosts
-              .where((post) => post['reportedItemId'] == answer.docId)
-              .toList();
-          final reportIds =
-              answerReports.map((e) => e['reportedPostId'] as String).toList();
-          final reason = reportedPost['reason'] as String? ?? '';
-          final reportDocid = reportedPost['reportedPostId'] as String? ?? '';
-
-          final reasons = answerReports
-              .map((report) => report['reason'] as String)
-              .toList();
-          answer.reasons = reasons;
-
-          answer.userType = userDoc?['userType'] as String? ?? "";
-          answer.username = username;
-          answer.userPhotoUrl = userPhotoUrl;
-          answer.reason = reason;
-          answer.reportDocid = reportDocid;
-          answer.reportDocids = reportIds;
-        });
-
-        answers.addAll(batchAnswers);
       }
 
-      return answers;
-    });
+      batchQuestions.forEach((project) {
+        final userDoc = userMap[project.userId];
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+
+        final projectReports = reportedPosts
+            .where((post) => post['reportedItemId'] == project.docId)
+            .toList();
+
+        final reasons =
+            projectReports.map((report) => report['reason'] as String).toList();
+        final reportIds = projectReports
+            .map((report) => report['reportedPostId'] as String)
+            .toList();
+
+        final reportDate = projectReports
+            .map((report) => report['reportDate'] is int
+                ? Timestamp.fromMicrosecondsSinceEpoch(
+                    report['reportDate'] as int)
+                : report['reportDate'] as Timestamp?)
+            .where((date) => date != null)
+            .toList();
+
+        project.reportDate =
+            reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+
+        project.userType = userDoc?['userType'] as String? ?? '';
+        project.username = username;
+        project.userPhotoUrl = userPhotoUrl;
+        project.reasons = reasons;
+        project.reportDocids = reportIds;
+      });
+
+      projects.addAll(batchQuestions);
+    }
+
+    return projects;
   }
 
-  Stream<List<CardAnswer>> readOldReportedAnswer() {
-    return FirebaseFirestore.instance
-        .collection('Report')
-        .where('status', isEqualTo: 'Accepted') // Filter by status
+  Stream<List<CardFT>> readOldReportedProject() async* {
+    if (searchController.text.isNotEmpty) {
+      List<Map<String, dynamic>> reportedPosts =
+          await searchReportsByQuestionContent('Accepted', 'Project_index');
 
-        .orderBy('reportType', descending: true)
-        .snapshots()
-        .asyncMap((snapshot) async {
-      if (snapshot.docs.isEmpty) {
-        return []; // Return an empty list if there are no reported posts.
-      }
-
-      final reportedPosts = snapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data()!;
-        data['reportedPostId'] = doc.id;
-        return data;
-      }).toList();
-
-      final AnswerIds = reportedPosts
-          .map((post) => post['reportedItemId'] as String)
-          .toList();
-
-      // final AnswerDocs = await FirebaseFirestore.instance
-      //     .collection('Answer')
-      //     .where(FieldPath.documentId, whereIn: AnswerIds)
-      //     .get();
-
-      // final Answers = AnswerDocs.docs.map((doc) {
-      //   Map<String, dynamic> data = doc.data()!;
-      //   data['docId'] = doc.id;
-      //   return CardAnswer.fromJson(data);
-      // }).toList();
-
-      List<CardAnswer> Answers = [];
-
-      // Paginate the query to avoid `whereIn` limitations
-      for (int i = 0; i < AnswerIds.length; i += 10) {
-        List<String> batchIds = AnswerIds.sublist(
-            i, (i + 10 < AnswerIds.length) ? i + 10 : AnswerIds.length);
-
-        if (batchIds.isEmpty) continue;
-        final questionDocs = await FirebaseFirestore.instance
-            .collection('Answer')
-            .where(FieldPath.documentId, whereIn: batchIds)
-            .get();
-
-        final batchQuestions = questionDocs.docs.map((doc) {
-          Map<String, dynamic> data = doc.data()!;
-          data['docId'] = doc.id;
-          return CardAnswer.fromJson(data);
-        }).toList();
-        // Get user-related information for each question
-        final userIds = batchQuestions.map((team) => team.userId).toSet();
-        dynamic userMap = {};
-        if (userIds.isNotEmpty) {
-          final userDocs = await FirebaseFirestore.instance
-              .collection('RegularUser')
-              .where('email', whereIn: userIds.toList())
-              .get();
-
-          userMap = Map<String, Map<String, dynamic>>.fromEntries(
-            userDocs.docs.map((doc) => MapEntry(
-                  doc.data()!['email'] as String,
-                  doc.data()! as Map<String, dynamic>,
-                )),
-          );
+      yield* Stream.value(await getReportedProject(reportedPosts));
+    } else {
+      yield* FirebaseFirestore.instance
+          .collection('Report')
+          .where('status', isEqualTo: 'Accepted') // Filter by status
+          .orderBy('reportType', descending: true)
+          .snapshots()
+          .asyncMap((snapshot) async {
+        if (snapshot.docs.isEmpty) {
+          return []; // Return an empty list if there are no reported posts.
         }
 
-        batchQuestions.forEach((team) {
-          final userDoc = userMap[team.userId];
-          final username = userDoc?['username'] as String? ?? '';
-          final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        final reportedPosts = snapshot.docs.map((doc) {
+          Map<String, dynamic> data = doc.data()!;
+          data['reportedPostId'] = doc.id;
+          return data;
+        }).toList();
 
-          final teamReports = reportedPosts
-              .where((post) => post['reportedItemId'] == team.docId)
-              .toList();
+        return getReportedProject(reportedPosts);
 
-          final reasons =
-              teamReports.map((report) => report['reason'] as String).toList();
-          final reportIds = teamReports
-              .map((report) => report['reportedPostId'] as String)
-              .toList();
+        // final projectIds = reportedPosts
+        //     .map((post) => post['reportedItemId'] as String)
+        //     .toList();
+        //
+        // List<CardFT> projects = [];
+        //
+        // // Paginate the query to avoid `whereIn` limitations
+        // for (int i = 0; i < projectIds.length; i += 10) {
+        //   List<String> batchIds = projectIds.sublist(
+        //       i, (i + 10 < projectIds.length) ? i + 10 : projectIds.length);
+        //
+        //   if (batchIds.isEmpty) continue;
+        //   final questionDocs = await FirebaseFirestore.instance
+        //       .collection('Project')
+        //       .where(FieldPath.documentId, whereIn: batchIds)
+        //       .get();
+        //
+        //   final batchQuestions = questionDocs.docs.map((doc) {
+        //     Map<String, dynamic> data = doc.data()!;
+        //     data['docId'] = doc.id;
+        //     return CardFT.fromJson(data);
+        //   }).toList();
+        //   // Get user-related information for each question
+        //   final userIds = batchQuestions.map((project) => project.userId).toSet();
+        //
+        //   dynamic userMap = {};
+        //   if (userIds.isNotEmpty) {
+        //     final userDocs = await FirebaseFirestore.instance
+        //         .collection('RegularUser')
+        //         .where('email', whereIn: userIds.toList())
+        //         .get();
+        //
+        //     userMap = Map<String, Map<String, dynamic>>.fromEntries(
+        //       userDocs.docs.map((doc) => MapEntry(
+        //             doc.data()!['email'] as String,
+        //             doc.data()! as Map<String, dynamic>,
+        //           )),
+        //     );
+        //   }
+        //
+        //   batchQuestions.forEach((project) {
+        //     final userDoc = userMap[project.userId];
+        //     final username = userDoc?['username'] as String? ?? '';
+        //     final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        //
+        //     final projectReports = reportedPosts
+        //         .where((post) => post['reportedItemId'] == project.docId)
+        //         .toList();
+        //
+        //     final reasons = projectReports
+        //         .map((report) => report['reason'] as String)
+        //         .toList();
+        //     final reportIds = projectReports
+        //         .map((report) => report['reportedPostId'] as String)
+        //         .toList();
+        //
+        //     final reportDate = projectReports
+        //         .map((report) => report['reportDate'] as Timestamp?)
+        //         .where((date) => date != null)
+        //         .toList();
+        //
+        //     project.reportDate = reportDate.isNotEmpty
+        //         ? reportDate.first!.toDate()
+        //         : DateTime.now();
+        //
+        //     project.userType = userDoc?['userType'] as String? ?? '';
+        //     project.username = username;
+        //     project.userPhotoUrl = userPhotoUrl;
+        //     project.reasons = reasons;
+        //     project.reportDocids = reportIds;
+        //   });
+        //
+        //   projects.addAll(batchQuestions);
+        // }
+        //
+        // return projects;
+      });
+    }
+  }
 
-          final reportDate = teamReports
-              .map((report) => report['reportDate'] as Timestamp?)
-              .where((date) => date != null)
-              .toList();
+  // answer
 
-          team.reportDate = reportDate.isNotEmpty
-              ? reportDate.first!.toDate()
-              : DateTime.now();
+  Stream<List<CardAnswer>> readReportedAnswer() async* {
+    if (searchController.text.isNotEmpty) {
+      List<Map<String, dynamic>> reportedPosts =
+          await searchReportsByQuestionContent('Pending', 'Answer_index');
 
-          team.userType = userDoc?['userType'] as String? ?? '';
-          team.username = username;
-          team.userPhotoUrl = userPhotoUrl;
-          team.reasons = reasons;
-          team.reportDocids = reportIds;
-        });
+      yield* Stream.value(await getReportedAnswers(reportedPosts));
+    } else {
+      yield* FirebaseFirestore.instance
+          .collection('Report')
+          .where('status', isEqualTo: 'Pending') // Filter by status
+          .orderBy('reportType', descending: true)
+          .snapshots()
+          .asyncMap((snapshot) async {
+        if (snapshot.docs.isEmpty) {
+          return []; // Return an empty list if there are no reported posts.
+        }
 
-        Answers.addAll(batchQuestions);
-      }
+        final reportedPosts = snapshot.docs.map((doc) {
+          Map<String, dynamic> data = doc.data();
+          data['reportedPostId'] = doc.id;
+          return data;
+        }).toList();
 
-      // Get user-related information for each question
-      // final userIds = Answers.map((Answer) => Answer.userId).toSet();
-      // final userDocs = await FirebaseFirestore.instance
-      //     .collection('RegularUser')
-      //     .where('email', whereIn: userIds.toList())
-      //     .get();
-      //
-      // final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-      //   userDocs.docs.map((doc) => MapEntry(
-      //         doc.data()!['email'] as String,
-      //         doc.data()! as Map<String, dynamic>,
-      //       )),
-      // );
-      //
-      // Answers.forEach((Answer) {
-      //   final userDoc = userMap[Answer.userId];
-      //   final username = userDoc?['username'] as String? ?? '';
-      //   final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-      //
-      //   final AnswerReports = reportedPosts
-      //       .where((post) => post['reportedItemId'] == Answer.docId)
-      //       .toList();
-      //
-      //   final reasons =
-      //       AnswerReports.map((report) => report['reason'] as String).toList();
-      //   final reportIds =
-      //       AnswerReports.map((report) => report['reportedPostId'] as String)
-      //           .toList();
-      //
-      //   final reportDate =
-      //       AnswerReports.map((report) => report['reportDate'] as Timestamp?)
-      //           .where((date) => date != null)
-      //           .toList();
-      //
-      //   Answer.reportDate =
-      //       reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
-      //
-      //   Answer.userType = userDoc?['userType'] as String? ?? '';
-      //   Answer.username = username;
-      //   Answer.userPhotoUrl = userPhotoUrl;
-      //   Answer.reasons = reasons;
-      //   Answer.reportDocids = reportIds;
-      // });
+        return getReportedAnswers(reportedPosts);
+      });
+    }
+  }
 
-      return Answers;
-    });
+  Future<List<CardAnswer>> getReportedAnswers(
+      List<Map<String, dynamic>> reportedPosts) async {
+    final answerIds =
+        reportedPosts.map((post) => post['reportedItemId'] as String).toList();
+
+    List<CardAnswer> answers = [];
+
+    // Paginate the query to avoid `whereIn` limitations
+    for (int i = 0; i < answerIds.length; i += 10) {
+      List<String> batchIds = answerIds.sublist(
+          i, (i + 10 < answerIds.length) ? i + 10 : answerIds.length);
+
+      if (batchIds.isEmpty) continue;
+      final answerDocs = await FirebaseFirestore.instance
+          .collection('Answer')
+          .where(FieldPath.documentId, whereIn: batchIds)
+          .get();
+
+      final batchAnswers = answerDocs.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        data['docId'] = doc.id;
+        return CardAnswer.fromJson(data);
+      }).toList();
+
+      final userIds = batchAnswers.map((answer) => answer.userId).toSet();
+      if (batchAnswers.isEmpty || userIds.isEmpty) continue;
+      final userDocs = await FirebaseFirestore.instance
+          .collection('RegularUser')
+          .where('email', whereIn: userIds.toList())
+          .get();
+
+      final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+        userDocs.docs.map((doc) => MapEntry(
+              doc.data()!['email'] as String,
+              doc.data()! as Map<String, dynamic>,
+            )),
+      );
+
+      batchAnswers.forEach((answer) {
+        final userDoc = userMap[answer.userId];
+        final username = userDoc?['username'] as String? ?? '';
+        final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+
+        final reportedPost = reportedPosts.firstWhere(
+          (post) => post['reportedItemId'] == answer.docId,
+          orElse: () => <String, dynamic>{},
+        );
+        final answerReports = reportedPosts
+            .where((post) => post['reportedItemId'] == answer.docId)
+            .toList();
+        final reportIds =
+            answerReports.map((e) => e['reportedPostId'] as String).toList();
+        final reason = reportedPost['reason'] as String? ?? '';
+        final reportDocid = reportedPost['reportedPostId'] as String? ?? '';
+
+        final reasons =
+            answerReports.map((report) => report['reason'] as String).toList();
+        answer.reasons = reasons;
+
+        answer.userType = userDoc?['userType'] as String? ?? "";
+        answer.username = username;
+        answer.userPhotoUrl = userPhotoUrl;
+        answer.reason = reason;
+        answer.reportDocid = reportDocid;
+        answer.reportDocids = reportIds;
+      });
+
+      answers.addAll(batchAnswers);
+    }
+
+    return answers;
+  }
+
+  Stream<List<CardAnswer>> readOldReportedAnswer() async* {
+    if (searchController.text.isNotEmpty) {
+      List<Map<String, dynamic>> reportedPosts =
+          await searchReportsByQuestionContent('Accepted', 'Answer_index');
+
+      yield* Stream.value(await getReportedAnswers(reportedPosts));
+    } else {
+      yield* FirebaseFirestore.instance
+          .collection('Report')
+          .where('status', isEqualTo: 'Accepted') // Filter by status
+
+          .orderBy('reportType', descending: true)
+          .snapshots()
+          .asyncMap((snapshot) async {
+        if (snapshot.docs.isEmpty) {
+          return []; // Return an empty list if there are no reported posts.
+        }
+
+        final reportedPosts = snapshot.docs.map((doc) {
+          Map<String, dynamic> data = doc.data();
+          data['reportedPostId'] = doc.id;
+          return data;
+        }).toList();
+
+        return getReportedAnswers(reportedPosts);
+
+        // final AnswerIds = reportedPosts
+        //     .map((post) => post['reportedItemId'] as String)
+        //     .toList();
+        //
+        // // final AnswerDocs = await FirebaseFirestore.instance
+        // //     .collection('Answer')
+        // //     .where(FieldPath.documentId, whereIn: AnswerIds)
+        // //     .get();
+        //
+        // // final Answers = AnswerDocs.docs.map((doc) {
+        // //   Map<String, dynamic> data = doc.data()!;
+        // //   data['docId'] = doc.id;
+        // //   return CardAnswer.fromJson(data);
+        // // }).toList();
+        //
+        // List<CardAnswer> Answers = [];
+        //
+        // // Paginate the query to avoid `whereIn` limitations
+        // for (int i = 0; i < AnswerIds.length; i += 10) {
+        //   List<String> batchIds = AnswerIds.sublist(
+        //       i, (i + 10 < AnswerIds.length) ? i + 10 : AnswerIds.length);
+        //
+        //   if (batchIds.isEmpty) continue;
+        //   final questionDocs = await FirebaseFirestore.instance
+        //       .collection('Answer')
+        //       .where(FieldPath.documentId, whereIn: batchIds)
+        //       .get();
+        //
+        //   final batchQuestions = questionDocs.docs.map((doc) {
+        //     Map<String, dynamic> data = doc.data()!;
+        //     data['docId'] = doc.id;
+        //     return CardAnswer.fromJson(data);
+        //   }).toList();
+        //   // Get user-related information for each question
+        //   final userIds = batchQuestions.map((team) => team.userId).toSet();
+        //   dynamic userMap = {};
+        //   if (userIds.isNotEmpty) {
+        //     final userDocs = await FirebaseFirestore.instance
+        //         .collection('RegularUser')
+        //         .where('email', whereIn: userIds.toList())
+        //         .get();
+        //
+        //     userMap = Map<String, Map<String, dynamic>>.fromEntries(
+        //       userDocs.docs.map((doc) => MapEntry(
+        //             doc.data()!['email'] as String,
+        //             doc.data()! as Map<String, dynamic>,
+        //           )),
+        //     );
+        //   }
+        //
+        //   batchQuestions.forEach((team) {
+        //     final userDoc = userMap[team.userId];
+        //     final username = userDoc?['username'] as String? ?? '';
+        //     final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        //
+        //     final teamReports = reportedPosts
+        //         .where((post) => post['reportedItemId'] == team.docId)
+        //         .toList();
+        //
+        //     final reasons =
+        //         teamReports.map((report) => report['reason'] as String).toList();
+        //     final reportIds = teamReports
+        //         .map((report) => report['reportedPostId'] as String)
+        //         .toList();
+        //
+        //     final reportDate = teamReports
+        //         .map((report) => report['reportDate'] as Timestamp?)
+        //         .where((date) => date != null)
+        //         .toList();
+        //
+        //     team.reportDate = reportDate.isNotEmpty
+        //         ? reportDate.first!.toDate()
+        //         : DateTime.now();
+        //
+        //     team.userType = userDoc?['userType'] as String? ?? '';
+        //     team.username = username;
+        //     team.userPhotoUrl = userPhotoUrl;
+        //     team.reasons = reasons;
+        //     team.reportDocids = reportIds;
+        //   });
+        //
+        //   Answers.addAll(batchQuestions);
+        // }
+        //
+        // // Get user-related information for each question
+        // // final userIds = Answers.map((Answer) => Answer.userId).toSet();
+        // // final userDocs = await FirebaseFirestore.instance
+        // //     .collection('RegularUser')
+        // //     .where('email', whereIn: userIds.toList())
+        // //     .get();
+        // //
+        // // final userMap = Map<String, Map<String, dynamic>>.fromEntries(
+        // //   userDocs.docs.map((doc) => MapEntry(
+        // //         doc.data()!['email'] as String,
+        // //         doc.data()! as Map<String, dynamic>,
+        // //       )),
+        // // );
+        // //
+        // // Answers.forEach((Answer) {
+        // //   final userDoc = userMap[Answer.userId];
+        // //   final username = userDoc?['username'] as String? ?? '';
+        // //   final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
+        // //
+        // //   final AnswerReports = reportedPosts
+        // //       .where((post) => post['reportedItemId'] == Answer.docId)
+        // //       .toList();
+        // //
+        // //   final reasons =
+        // //       AnswerReports.map((report) => report['reason'] as String).toList();
+        // //   final reportIds =
+        // //       AnswerReports.map((report) => report['reportedPostId'] as String)
+        // //           .toList();
+        // //
+        // //   final reportDate =
+        // //       AnswerReports.map((report) => report['reportDate'] as Timestamp?)
+        // //           .where((date) => date != null)
+        // //           .toList();
+        // //
+        // //   Answer.reportDate =
+        // //       reportDate.isNotEmpty ? reportDate.first!.toDate() : DateTime.now();
+        // //
+        // //   Answer.userType = userDoc?['userType'] as String? ?? '';
+        // //   Answer.username = username;
+        // //   Answer.userPhotoUrl = userPhotoUrl;
+        // //   Answer.reasons = reasons;
+        // //   Answer.reportDocids = reportIds;
+        // // });
+        //
+        // return Answers;
+      });
+    }
   }
 
   Widget buildAnswerCard(BuildContext context, CardAnswer answer) {
@@ -1971,6 +2086,7 @@ class _ReportedPostState extends State<ReportedPost> {
     int upvoteCount = answer.upvoteCount ?? 0;
     List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
     String doc = answer.docId;
+    print("7777777777777 $doc");
 
     return GestureDetector(
       onTap: () {
@@ -2028,17 +2144,17 @@ class _ReportedPostState extends State<ReportedPost> {
                                 size: 20,
                               ),
                             SizedBox(
-                              width: 110,
+                              width: 160,
                             ),
                           ],
                         ),
                       ),
                       Positioned(
-                        right: 1,
-                        top: -2,
+                        right: 3,
+                        top: -6,
                         child: Tooltip(
                           child: Container(
-                            padding: EdgeInsets.all(6),
+                            padding: EdgeInsets.all(7),
                             decoration: BoxDecoration(
                               color: Color.fromARGB(217, 122, 1, 1),
                               shape: BoxShape.circle,
@@ -2047,14 +2163,10 @@ class _ReportedPostState extends State<ReportedPost> {
                               '${answer.reportDocids?.length ?? 0}',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 10,
+                                fontSize: 14,
                               ),
                             ),
                           ),
-                         decoration: BoxDecoration(
-                      color: Color.fromARGB(177, 40, 0, 75), 
-                      borderRadius: BorderRadius.circular(8.0), 
-                    ),
                           message: 'Total number of reports on this post',
                           padding: EdgeInsets.all(10),
                           showDuration: Duration(seconds: 3),
@@ -2112,7 +2224,6 @@ class _ReportedPostState extends State<ReportedPost> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
-                  fontSize: 10,
                 ),
               ),
               SizedBox(
@@ -2169,6 +2280,7 @@ class _ReportedPostState extends State<ReportedPost> {
     int upvoteCount = answer.upvoteCount ?? 0;
     List<String> upvotedUserIds = answer.upvotedUserIds ?? [];
     String doc = answer.docId;
+    print("7777777777777 $doc");
 
     return GestureDetector(
       onTap: () {
@@ -2223,7 +2335,7 @@ class _ReportedPostState extends State<ReportedPost> {
                       size: 20,
                     ),
                   SizedBox(
-                    width: 110,
+                    width: 170,
                   ),
                   if (answer.reportDocids != null &&
                       answer.reportDocids!
@@ -2242,7 +2354,6 @@ class _ReportedPostState extends State<ReportedPost> {
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 10,
                           ),
                         ))
                 ],
@@ -2292,7 +2403,6 @@ class _ReportedPostState extends State<ReportedPost> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 92, 0, 0),
-                  fontSize: 10,
                 ),
               ),
               SizedBox(

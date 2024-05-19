@@ -119,7 +119,7 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                         style: TextStyle(color: Colors.black, fontSize: 14.0),
                         onChanged: (text) {
                           setState(() {
-                         
+                         readCourseSearch();
                           });
                         },
                       ),

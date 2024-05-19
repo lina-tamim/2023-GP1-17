@@ -18,6 +18,7 @@ class _ChatPageState extends State<ChatPage> {
   String _loggedInImage = '';
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   @override
   void initState() {
     super.initState();
@@ -44,39 +45,81 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  bool showSearchBar = false;
+  final _searchTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    Widget searchField = TextField(
+      controller: _searchTextController,
+      onChanged: (_) {
+        setState(() {});
+      },
+      decoration: InputDecoration(
+        // border: InputBorder.none,
+        hintText: 'Search users',
+        prefixIcon: Icon(Icons.search)
+      ),
+    );
+    Widget searchButton = IconButton(
+      onPressed: () {
+        setState(() {
+          showSearchBar = !showSearchBar;
+        });
+        _searchTextController.clear();
+      },
+      icon: Icon(showSearchBar ? Icons.search_off : Icons.search),
+    );
     return Scaffold(
       drawer: const NavBarUser(),
-      appBar: buildAppBarUser('Chat', _loggedInImage),
+      appBar: buildAppBarUser(
+        'Chat',
+        _loggedInImage,
+        actionWidget: showSearchBar ? SizedBox() : searchButton,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(0),
-        child: true
-            ? ConversationsScreen()
-            : Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'TeXel',
-                      style: GoogleFonts.orbitron(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+        child: Column(
+          children: [
+            if (showSearchBar)
+              Row(
+                children: [
+                  Expanded(child: searchField),
+                  searchButton,
+                ],
+              ),
+            Expanded(
+              child: true
+                  ? ConversationsScreen(
+                      searchTextController: _searchTextController,
+                    )
+                  : Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'TeXel',
+                            style: GoogleFonts.orbitron(
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          Image.asset('assets/Backgrounds/XlogoSmall.png'),
+                          const SizedBox(height: 30),
+                          Text(
+                            'Coming soon !',
+                            style: TextStyle(
+                                fontFamily: AutofillHints.familyName,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          )
+                        ],
                       ),
                     ),
-                    Image.asset('assets/Backgrounds/XlogoSmall.png'),
-                    const SizedBox(height: 30),
-                    Text(
-                      'Coming soon !',
-                      style: TextStyle(
-                          fontFamily: AutofillHints.familyName,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
-                    )
-                  ],
-                ),
-              ),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,

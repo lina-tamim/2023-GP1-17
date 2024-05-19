@@ -83,8 +83,10 @@ class TimeFunctions {
       double temp = (diff.inDays.abs() / 365);
       if (temp < 1.5) {
         time = temp.toStringAsFixed(0) + ' year ago';
-      } else {
+      } else if(temp < 10){
         time = temp.toStringAsFixed(0) + ' years ago';
+      }else{
+        time = '-';
       }
     }
     return time;

@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:algolia/algolia.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:techxcel11/Models/ReusedElements.dart';
@@ -12,6 +13,11 @@ class ChatAPI {
   static final FirebaseFirestore _instance = FirebaseFirestore.instance;
   static const String _collection = 'Chat';
   static const String _subCollection = 'Message';
+
+  final Algolia algolia = Algolia.init(
+    applicationId: 'PTLT3VDSB8',
+    apiKey: '6236d82b883664fa54ad458c616d39ca',
+  );
 
   Stream<List<Message>> messages(String chatID, {int? showAfterTimestamp}) {
     CollectionReference<Map<String, dynamic>> ref = _instance
@@ -33,20 +39,78 @@ class ChatAPI {
     });
   }
 
-  Stream<List<Chat>> chats() {
-    return _instance
-        .collection(_collection)
-        .where('persons', arrayContains: getUid())
-        .orderBy('timestamp', descending: true)
-        .snapshots()
-        .asyncMap((QuerySnapshot<Map<String, dynamic>> event) {
-      List<Chat> chats = <Chat>[];
-      for (DocumentSnapshot<Map<String, dynamic>> element in event.docs) {
-        final Chat temp = Chat.fromMap(element.data()!);
-        chats.add(temp);
+  Stream<List<Chat>> chats({String searchText = ''}) async* {
+    if (searchText.isNotEmpty) {
+      final AlgoliaQuerySnapshot response = await algolia.instance
+          .index('RegularUser_index')
+          .query(searchText)
+          .getObjects();
+      // print('myTag: response: $response');
+      final List<AlgoliaObjectSnapshot> hits = response.hits;
+      final List<Map<String, dynamic>> data = hits
+          .map((snapshot) => {
+                'id': snapshot.objectID,
+                'username': snapshot.data['username'],
+                'imageURL': snapshot.data['imageURL']
+              })
+          .toList();
+      List<String> ids =
+          data.map((datum) => datum['id'].toString() ?? '').toList();
+      // print('myTag: ids: $data');
+      final snapshot = await _instance
+          .collection(_collection)
+          .where('persons', arrayContains: getUid())
+          .orderBy('timestamp', descending: true)
+          .get();
+      // print('myTag: snapshot: $snapshot');
+      List<Chat> chats = [];
+
+      for (var doc in snapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final Chat chat = Chat.fromMap(data);
+        if (ids.contains(
+            chat.persons.firstWhere((element) => element != getUid()))) {
+          chats.add(chat);
+        }
       }
-      return chats;
-    });
+
+      if (chats.isEmpty) {
+        for (var datum in data) {
+          final id = datum['id'] ?? '';
+          final username = datum['username'] ?? '';
+          final imageURL = datum['imageURL'] ?? '';
+
+          if (id != getUid()) {
+            chats.add(
+              Chat(
+                chatID: ChatAPI.personalChatID(chatWith: id, selfId: getUid()),
+                persons: <String>[getUid(), id],
+                unseenMessages: <Message>[],
+                name: username,
+                imageURL: imageURL,
+              ),
+            );
+          }
+        }
+      }
+
+      yield* Stream.value(chats);
+    } else {
+      yield* _instance
+          .collection(_collection)
+          .where('persons', arrayContains: getUid())
+          .orderBy('timestamp', descending: true)
+          .snapshots()
+          .asyncMap((QuerySnapshot<Map<String, dynamic>> event) {
+        List<Chat> chats = <Chat>[];
+        for (DocumentSnapshot<Map<String, dynamic>> element in event.docs) {
+          log('MK: here in chats: ${element.data()?['continueOn']}');
+          final Chat temp = Chat.fromMap(element.data()!);
+          chats.add(temp);
+        }
+        return chats;
+      });
+    }
   }
 
   Future<Chat?> getSingleChat(String chatId) async {
@@ -79,7 +143,8 @@ class ChatAPI {
           .doc(chat.chatID)
           .set(chat.toMap());
     } catch (e) {
-
+      // CustomToast.errorToast(message: e.toString());
+      // print('CHAT API -> ISSUE -> SEND MESSAGE -> ${e.toString()}');
     }
   }
 
@@ -121,7 +186,11 @@ class ChatAPI {
           'deletedBy': chat.deletedBy,
           'continueOn': chat.continueOn,
         });
+        log('MK: chat will be deleted for you ${chat.chatID}');
       } else if (chat.deletedBy != getUid()) {
+        /////chat is deleted by other personn so now you can delete entirely
+
+        log('MK: chat will be deleted completely ${chat.chatID}');
         await deleteChatWithMessages(chat: chat);
       }
     }

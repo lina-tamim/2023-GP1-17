@@ -12,6 +12,7 @@ import '../../Models/message_attachment.dart';
 import '../../Models/message_read_info.dart';
 import '../../Models/user.dart';
 import '../../pages/CommonPages/chat/chat_screen.dart';
+import '../../pages/UserPages/UserProfileView.dart';
 import '../../providers/profile_provider.dart';
 import '../../utils/app_images.dart';
 import '../../utils/functions/public_methods.dart';
@@ -77,7 +78,20 @@ class ChatDashboardTile extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  _CircularImage(imageURL: image, radius: 26),
+                  InkWell(
+                      onTap: () {
+                        print('MK: user email: ${_user?.email}');
+                        if (_user?.email != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  UserProfileView(userId: _user!.email!),
+                            ),
+                          );
+                        }
+                      },
+                      child: _CircularImage(imageURL: image, radius: 26)),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -96,15 +110,16 @@ class ChatDashboardTile extends StatelessWidget {
                               if (chat.lastMessage != null &&
                                   chat.lastMessage!.sendTo.isNotEmpty &&
                                   chat.lastMessage!.sendBy == getUid())
-                                SizedBox(
+                                Container(
                                   height: 8,
+                                  padding: EdgeInsets.only(right: 4),
                                   child: Image.asset(
                                     chat.lastMessage?.sendTo[0].seen ?? false
                                         ? AppImages.doubleTickBlue
                                         : AppImages.doubleTickGrey,
                                   ),
                                 ),
-                              const SizedBox(width: 4),
+                              // const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   _subtitle ?? '',
@@ -176,7 +191,7 @@ class ChatDashboardTile extends StatelessWidget {
         return 'Check the message...';
       }
     } else {
-      return 'Check the message...';
+      return 'Start the conversation...';
     }
   }
 }

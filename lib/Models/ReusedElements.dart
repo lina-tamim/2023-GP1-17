@@ -391,7 +391,7 @@ void toastMessage(String message) {
 
 /////
 
-AppBar buildAppBarUser(String titleText, String loggedInImage) {
+AppBar buildAppBarUser(String titleText, String loggedInImage, {Widget? actionWidget}) {
   return AppBar(
     automaticallyImplyLeading: false,
     backgroundColor: Color.fromARGB(255, 242, 241, 243),
@@ -441,7 +441,8 @@ AppBar buildAppBarUser(String titleText, String loggedInImage) {
                   color: Color.fromRGBO(0, 0, 0, 0.894),
                 ),
               ),
-              const SizedBox(width: 120),
+              const Spacer(),
+              actionWidget ?? Container(),
             ],
           ),
         ],
