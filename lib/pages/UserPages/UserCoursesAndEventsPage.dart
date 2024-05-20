@@ -57,13 +57,14 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
   static List<Map<String, dynamic>> alltheCE = [];
   static List<Map<String, dynamic>> allUsers = [];
 
- final Algolia algolia = Algolia.init(
+  final Algolia algolia = Algolia.init(
     applicationId: 'PTLT3VDSB8',
     apiKey: '6236d82b883664fa54ad458c616d39ca',
   );
   bool coursesLoading = true;
   List<String> recommendedObjects = [];
-    static Future<List<String>> fetchUserDetails() async {
+
+  static Future<List<String>> fetchUserDetails() async {
     List<Map<String, dynamic>> UsersJson = [];
     List<Map<String, dynamic>> CEJson = [];
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -134,10 +135,10 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
   }
 
   bool isMenuOpen = false;
+
   static Future<List<String>> recommendCE(List<Map<String, dynamic>> CEJson,
       List<Map<String, dynamic>> UsersJson) async {
     // Send user preferences and all questions to the server
-
 
     final Map<String, dynamic> requestBody = {
       'user_Email': loggedinEmaill,
@@ -145,7 +146,8 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       'all_CE': CEJson,
     };
     final response = await http.post(
-      Uri.parse('https://flask-deploy-gp2-717dffd55916.herokuapp.com/recommendCE'),
+      Uri.parse(
+          'https://flask-deploy-gp2-717dffd55916.herokuapp.com/recommendCE'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -166,8 +168,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
         recommendedObjects = await fetchUserDetails();
-      } catch (e) {
-      }
+      } catch (e) {}
       setState(() {
         coursesLoading = false;
         recommendedObjects = recommendedObjects;
@@ -189,8 +190,8 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
         backgroundColor: Color.fromARGB(255, 49, 0, 84),
         child: const Tooltip(
           decoration: BoxDecoration(
-                      color: Color.fromARGB(177, 40, 0, 75), 
-                    ),
+            color: Color.fromARGB(177, 40, 0, 75),
+          ),
           message: '  Add a course or event now!   ',
           child: Icon(
             Icons.add,
@@ -220,89 +221,96 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                       ),
                     ),
                     PopupMenuTheme(
-                    data: PopupMenuThemeData(
-                      elevation: 10, // Change the elevation of the drop-down menu
-                      color: Color.fromARGB(255, 255, 255, 255), // Change the background color
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), // Change the shape of the menu
-                    ),
-                    child: StatefulBuilder(
-                      builder: (BuildContext context, StateSetter setState) {
-                        return PopupMenuButton<String>(
-                          onSelected: (value) {
-                            if (value == 'my_requests') {
-                              checkRequests();
-                            } else if (value == 'submit_request') {
-                              showInputDialog();
-                            }
-                          },
-                          onOpened: () {
-                            setState(() {
-                              isMenuOpen = true;
-                            });
-                          },
-                          onCanceled: () {
-                            setState(() {
-                              isMenuOpen = false;
-                            });
-                          },
-                          offset: Offset(-6, 22),
-                          itemBuilder: (BuildContext context) => [
-                            const PopupMenuItem<String>(
-                              value: 'my_requests',
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'My Requests',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Color.fromARGB(255, 0, 0, 2),
-                                      fontWeight: FontWeight.w600,
+                      data: PopupMenuThemeData(
+                        elevation: 10,
+                        // Change the elevation of the drop-down menu
+                        color: Color.fromARGB(255, 255, 255, 255),
+                        // Change the background color
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                10)), // Change the shape of the menu
+                      ),
+                      child: StatefulBuilder(
+                        builder: (BuildContext context, StateSetter setState) {
+                          return PopupMenuButton<String>(
+                            onSelected: (value) {
+                              if (value == 'my_requests') {
+                                checkRequests();
+                              } else if (value == 'submit_request') {
+                                showInputDialog();
+                              }
+                            },
+                            onOpened: () {
+                              setState(() {
+                                isMenuOpen = true;
+                              });
+                            },
+                            onCanceled: () {
+                              setState(() {
+                                isMenuOpen = false;
+                              });
+                            },
+                            offset: Offset(-6, 22),
+                            itemBuilder: (BuildContext context) => [
+                              const PopupMenuItem<String>(
+                                value: 'my_requests',
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'My Requests',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Color.fromARGB(255, 0, 0, 2),
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const PopupMenuDivider(height: 10),
-                            const PopupMenuItem<String>(
-                              value: 'submit_request',
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Add Request',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Color.fromARGB(255, 0, 0, 2),
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                          child: SizedBox(
-                            width: 125,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  'My Requests  ',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontFamily: 'Poppins',
-                                    color: Color.fromARGB(255, 7, 0, 101),
-                                    fontWeight: FontWeight.w100,
-                                  ),
+                                  ],
                                 ),
-                                Icon(isMenuOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down), // Change the icon based on the menu's state
-                              ],
+                              ),
+                              const PopupMenuDivider(height: 10),
+                              const PopupMenuItem<String>(
+                                value: 'submit_request',
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Add Request',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Color.fromARGB(255, 0, 0, 2),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                            child: SizedBox(
+                              width: 125,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    'My Requests  ',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontFamily: 'Poppins',
+                                      color: Color.fromARGB(255, 7, 0, 101),
+                                      fontWeight: FontWeight.w100,
+                                    ),
+                                  ),
+                                  Icon(isMenuOpen
+                                      ? Icons.arrow_drop_up
+                                      : Icons.arrow_drop_down),
+                                  // Change the icon based on the menu's state
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
-                  ),
                   ],
                 ),
               ),
@@ -335,16 +343,19 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                       return Column(
                         children: [
                           CoursesAndEventsBuilder(
-                            list: list.where((element) => element.type == 'Course').toList(),
-                            type: 'Searched Courses ${list.where((element) => element.type == 'Course').length}',
+                            list: list
+                                .where((element) => element.type == 'Course')
+                                .toList(),
+                            type:
+                                'Searched Courses ${list.where((element) => element.type == 'Course').length}',
                           ),
                           EventsHeading(),
-
                           CoursesAndEventsBuilder(
-                            list: list.where((element) => element.type == 'Event').toList(),
+                            list: list
+                                .where((element) => element.type == 'Event')
+                                .toList(),
                             type: 'Searched Events',
                           ),
-
                         ],
                       );
                     } else if (snapshot.hasError) {
@@ -358,7 +369,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                     }
                   },
                 )
-              else...[
+              else ...[
                 StreamBuilder<List<Course>>(
                   stream: readCoursesNew(type: 'Course'),
                   builder: (context, snapshot) {
@@ -710,39 +721,51 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
 
       List<Course> recommendedCourses = [];
       List<Course> otherCourses = [];
+      List<Course> activeCourrses = [];
       for (Course course in courses) {
-        otherCourses.add(course);
         if (recommendedObjects.contains(course.docId)) {
           course.isRecommended = true;
           recommendedCourses.add(course);
+        } else {
+          if (course.endDate != null) {
+            if (course.endDate!.isBefore(DateTime.now())) {
+              otherCourses.add(course);
+            } else {
+              activeCourrses.add(course);
+            }
+          }
         }
       }
 
-      recommendedCourses.sort((a, b) {
-        int indexA =
-            recommendedObjects.indexWhere((element) => element == a.docId);
-        int indexB =
-            recommendedObjects.indexWhere((element) => element == b.docId);
-        return indexA.compareTo(indexB);
-      });
+      // otherCourses.sort((a, b) {
+      //   int indexA =
+      //       recommendedObjects.indexWhere((element) => element == a.docId);
+      //   int indexB =
+      //       recommendedObjects.indexWhere((element) => element == b.docId);
+      //   return indexA.compareTo(indexB);
+      // });
 
       if (recommendedCourses.length > 5)
         recommendedCourses = recommendedCourses.sublist(0, 4);
 
-      List<String?> finalRecommendedCE =
-          recommendedCourses.map((element) => element.docId).toList();
-
-      otherCourses = otherCourses
-          .where((element) => !finalRecommendedCE.contains(element.docId))
-          .toList();
-
+      // List<String?> finalRecommendedCE =
+      //     recommendedCourses.map((element) => element.docId).toList();
+      //
+      // otherCourses = otherCourses
+      //     .where((element) => !finalRecommendedCE.contains(element.docId))
+      //     .toList();
 
       // Combine recommended and other courses
-      List<Course> sortedCourses = [...recommendedCourses, ...otherCourses];
+      List<Course> sortedCourses = [
+        ...recommendedCourses,
+        ...activeCourrses,
+        ...otherCourses
+      ];
       return sortedCourses;
     });
   }
- Stream<List<Course>> readCourseSearch() async* {
+
+  Stream<List<Course>> readCourseSearch() async* {
     if (widget.searchQuery.isNotEmpty) {
       final AlgoliaQuerySnapshot response = await algolia.instance
           .index('Program_index')
@@ -753,8 +776,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       final projects = hits.map((AlgoliaObjectSnapshot snapshot) {
         final projectData = snapshot.data as Map<String, dynamic>;
         final project = Course.fromJson(projectData);
-        project.docId =
-            snapshot.objectID;
+        project.docId = snapshot.objectID;
         return project;
       }).toList();
       yield* Stream.value(projects);
@@ -762,6 +784,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       yield* Stream.value([]);
     }
   }
+
   void showInputDialog() {
     showAlertDialog(
       context,
@@ -1095,9 +1118,9 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                               isRequired: true,
                             ),
                             Tooltip(
-                             decoration: BoxDecoration(
-                      color: Color.fromARGB(177, 40, 0, 75), 
-                    ),
+                              decoration: BoxDecoration(
+                                color: Color.fromARGB(177, 40, 0, 75),
+                              ),
                               message:
                                   'To accept your request,Add location of the course or event as country and city',
                               child: Icon(
@@ -1425,6 +1448,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
     }
   }
 }
+
 class EventsHeading extends StatelessWidget {
   const EventsHeading({
     super.key,
@@ -1535,7 +1559,8 @@ class CoursesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     bool isExpired = item.endDate != null && item.endDate!.isBefore(DateTime.now());
+    bool isExpired =
+        item.endDate != null && item.endDate!.isBefore(DateTime.now());
 
     return Padding(
       padding: const EdgeInsets.only(top: 0, bottom: 5),
@@ -1543,317 +1568,318 @@ class CoursesWidget extends StatelessWidget {
         opacity: isExpired ? 0.3 : 1.0, // Reduce opacity if item is expired
         child: Container(
           padding: const EdgeInsets.only(top: 0, bottom: 0),
-        width: MediaQuery.of(context).size.width * 0.8,
-        decoration: BoxDecoration(
-            color:
-                 Colors.white,
+          width: MediaQuery.of(context).size.width * 0.8,
+          decoration: BoxDecoration(
+            color: Colors.white,
             borderRadius: BorderRadius.circular(10),
-            border:  item.isRecommended ? Border.all(
-                              color: Color.fromARGB(255, 10, 0, 195)
-                                  .withOpacity(0.5),
-                            ) : Border.all(
-                              color: Color.fromARGB(255, 95, 1, 162)
-                                  .withOpacity(0.5),
-                            ),
+            border: item.isRecommended
+                ? Border.all(
+                    color: Color.fromARGB(255, 10, 0, 195).withOpacity(0.5),
+                  )
+                : Border.all(
+                    color: Color.fromARGB(255, 95, 1, 162).withOpacity(0.5),
+                  ),
             boxShadow: [
-             item.isRecommended?  BoxShadow(
-                color: Color.fromARGB(255, 25, 65, 243).withOpacity(0.7),
-                spreadRadius: 2,
-                blurRadius: 7,
-                offset: Offset(2, 2), // Set shadow offset
-              ) :  BoxShadow(
-                color: Color.fromARGB(95, 92, 92, 92).withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 6,
-                offset: Offset(0, 2), // Set shadow offset
-              ),
+              item.isRecommended
+                  ? BoxShadow(
+                      color: Color.fromARGB(255, 25, 65, 243).withOpacity(0.7),
+                      spreadRadius: 2,
+                      blurRadius: 7,
+                      offset: Offset(2, 2), // Set shadow offset
+                    )
+                  : BoxShadow(
+                      color: Color.fromARGB(95, 92, 92, 92).withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 6,
+                      offset: Offset(0, 2), // Set shadow offset
+                    ),
             ],
           ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Center(
-                child: Stack(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Center(
+                  child: Stack(
+                    children: [
+                      Center(
+                        child: Container(
+                          width: double.infinity,
+                          height: 200,
+                        ),
+                      ),
+                      Container(
+                        height: 260,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                          ),
+                          image: DecorationImage(
+                            image: NetworkImage(item.imageURL),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 5),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    item.title ?? '--',
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                SizedBox(height: 5),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Container(
+                    width: double.infinity,
+                    child: Text(
+                      '${item.description}',
+                      style: const TextStyle(
+                          fontSize: 16,
+                          color: const Color.fromARGB(255, 81, 81, 81)),
+                      softWrap: true,
+                      maxLines: null,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Visibility(
+                  visible: item.attendanceType == 'Onsite',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Expanded(
+                          child: Text(
+                            '${item.country ?? ''}, ${item.city ?? ''}',
+                            // Concatenate country and city with comma
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: "Poppins",
+                              color: mainColor.withOpacity(0.6),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 5),
+                Visibility(
+                  visible: item.attendanceType == 'Onsite',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.location_on_outlined,
+                          color: mainColor.withOpacity(0.6),
+                          size: 25,
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Expanded(
+                          child: Text(
+                            item.location,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: "Poppins",
+                              color: mainColor.withOpacity(0.6),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: item.attendanceType == 'Online',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.computer,
+                          color: mainColor.withOpacity(0.6),
+                          size: 25,
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Expanded(
+                          child: Text(
+                            'Online',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: "Poppins",
+                              color: mainColor.withOpacity(0.6),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Row(
                   children: [
-                    Center(
-                      child: Container(
-                        width: double.infinity,
-                        height: 200,
-                      ),
-                    ),
-                    Container(
-                      height: 260,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
+                    if (item.startDate != null || item.endDate != null)
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 20, left: 10),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.access_time,
+                                color: mainColor.withOpacity(0.5),
+                                size: 25,
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (item.startDate != null)
+                                    Text(
+                                      DateFormat('MMM dd, yy')
+                                          .format(item.startDate!),
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontFamily: "Poppins",
+                                        color: mainColor,
+                                      ),
+                                    ),
+                                  if (item.endDate != null)
+                                    Text(
+                                      DateFormat('MMM dd, yy')
+                                          .format(item.endDate!),
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontFamily: "Poppins",
+                                        color: mainColor,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                        image: DecorationImage(
-                          image: NetworkImage(item.imageURL),
-                          fit: BoxFit.cover,
-                        ),
                       ),
-                    ),
                   ],
                 ),
-              ),
-              SizedBox(height: 5),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  item.title ?? '--',
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
+                SizedBox(
+                  height: 10,
                 ),
-              ),
-              SizedBox(height: 5),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Container(
-                  width: double.infinity,
-                  child: Text(
-                    '${item.description}',
-                    style: const TextStyle(
-                        fontSize: 16,
-                        color: const Color.fromARGB(255, 81, 81, 81)),
-                    softWrap: true,
-                    maxLines: null,
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              Visibility(
-                visible: item.attendanceType == 'Onsite',
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const SizedBox(
-                        width: 5,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        _UserCoursesAndEventsPageState().saveToCalendar(item);
+                      },
+                      icon: Icon(
+                        Icons.edit_calendar,
+                        size: 28,
+                        color: Color.fromARGB(255, 63, 63, 63),
                       ),
-                      Expanded(
-                        child: Text(
-                          '${item.country ?? ''}, ${item.city ?? ''}',
-                          // Concatenate country and city with comma
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontFamily: "Poppins",
-                            color: mainColor.withOpacity(0.6),
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 5),
-              Visibility(
-                visible: item.attendanceType == 'Onsite',
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.location_on_outlined,
-                        color: mainColor.withOpacity(0.6),
-                        size: 25,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Expanded(
-                        child: Text(
-                          item.location,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontFamily: "Poppins",
-                            color: mainColor.withOpacity(0.6),
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Visibility(
-                visible: item.attendanceType == 'Online',
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.computer,
-                        color: mainColor.withOpacity(0.6),
-                        size: 25,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Expanded(
-                        child: Text(
-                          'Online',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontFamily: "Poppins",
-                            color: mainColor.withOpacity(0.6),
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Row(
-                children: [
-                  if (item.startDate != null || item.endDate != null)
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 20, left: 10),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.access_time,
-                              color: mainColor.withOpacity(0.5),
-                              size: 25,
-                            ),
-                            const SizedBox(
-                              width: 8,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (item.startDate != null)
-                                  Text(
-                                    DateFormat('MMM dd, yy')
-                                        .format(item.startDate!),
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontFamily: "Poppins",
-                                      color: mainColor,
-                                    ),
-                                  ),
-                                if (item.endDate != null)
-                                  Text(
-                                    DateFormat('MMM dd, yy')
-                                        .format(item.endDate!),
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontFamily: "Poppins",
-                                      color: mainColor,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+                      tooltip: 'Save to Calendar',
                     ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      _UserCoursesAndEventsPageState().saveToCalendar(item);
-                    },
-                    icon: Icon(
-                      Icons.edit_calendar,
-                      size: 28,
-                      color: Color.fromARGB(255, 63, 63, 63),
-                    ),
-                    tooltip: 'Save to Calendar',
-                  ),
-                  if (item.link != null)
-                    Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: TextButton(
-                          onPressed: () async {
-                            if (await canLaunch(item.link!)) {
-                              await launch(item.link!);
-                              await addUserEmailToClickedBy(); // Call function to add email to Firestore
-                            } else {
-                              toastMessage('Unable to show details');
-                            }
+                    if (item.link != null)
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: TextButton(
+                            onPressed: () async {
+                              if (await canLaunch(item.link!)) {
+                                await launch(item.link!);
+                                await addUserEmailToClickedBy(); // Call function to add email to Firestore
+                              } else {
+                                toastMessage('Unable to show details');
+                              }
+                            },
+                            child: Text(
+                              'More Details ->',
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 63, 63, 63),
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          )),
+                  ],
+                ),
+                if (item.isRecommended)
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/icons/sparkle.png',
+                          width: 17,
+                          height: 17,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          "Is this content relevant to you?",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        SizedBox(width: 15),
+                        GestureDetector(
+                          onTap: () {
+                            recordFeedback(item, true); // Pass item directly
                           },
-                          child: Text(
-                            'More Details ->',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 63, 63, 63),
-                              fontWeight: FontWeight.bold,
-                              decoration: TextDecoration.underline,
-                            ),
+                          child: Image.asset(
+                            'assets/icons/thumbUp.png',
+                            width: 15,
+                            height: 15,
+                            color: Color.fromARGB(255, 116, 116, 116),
                           ),
-                        )),
-                ],
-              ),
-              if (item.isRecommended)
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/icons/sparkle.png',
-                        width: 17,
-                        height: 17,
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        "Is this content relevant to you?",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      SizedBox(width: 15),
-                      GestureDetector(
-                        onTap: () {
-                          recordFeedback(item, true); // Pass item directly
-                        },
-                        child: Image.asset(
-                          'assets/icons/thumbUp.png',
-                          width: 15,
-                          height: 15,
-                          color: Color.fromARGB(255, 116, 116, 116),
                         ),
-                      ),
-                      SizedBox(width: 20),
-                      GestureDetector(
-                        onTap: () {
-                          recordFeedback(item, false); // Pass item directly
-                        },
-                        child: Image.asset(
-                          'assets/icons/thumbDown.png',
-                          width: 15,
-                          height: 15,
-                          color: Color.fromARGB(255, 116, 116, 116),
+                        SizedBox(width: 20),
+                        GestureDetector(
+                          onTap: () {
+                            recordFeedback(item, false); // Pass item directly
+                          },
+                          child: Image.asset(
+                            'assets/icons/thumbDown.png',
+                            width: 15,
+                            height: 15,
+                            color: Color.fromARGB(255, 116, 116, 116),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              SizedBox(
-                height: 10,
-              )
-            ],
+                SizedBox(
+                  height: 10,
+                )
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }
