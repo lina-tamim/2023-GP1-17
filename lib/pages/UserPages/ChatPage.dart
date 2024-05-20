@@ -48,6 +48,82 @@ class _ChatPageState extends State<ChatPage> {
   bool showSearchBar = false;
   final _searchTextController = TextEditingController();
 
+  AppBar buildAppBarSearch(String titleText) {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      iconTheme: IconThemeData(
+        color: Color.fromRGBO(37, 6, 81, 0.898),
+      ),
+      backgroundColor: Color.fromARGB(255, 242, 241, 243),
+      toolbarHeight: 90,
+      title: Builder(
+        builder: (context) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                if (_loggedInImage.isNotEmpty && !showSearchBar)
+                  GestureDetector(
+                    onTap: () {
+                      Scaffold.of(context).openDrawer();
+                    },
+                    child: CircleAvatar(
+                      radius: 35,
+                      backgroundImage: NetworkImage(_loggedInImage),
+                    ),
+                  ),
+                Text(
+                  '   $titleText',
+                  style: TextStyle(
+                    fontSize: 18, // Adjust the font size
+                    fontFamily: "Poppins",
+                    color: const Color.fromRGBO(0, 0, 0, 0.894),
+                  ),
+                ),
+                Spacer(),
+                if (!showSearchBar) const SizedBox(width: 150),
+                if (showSearchBar) const SizedBox(width: 200),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      showSearchBar = !showSearchBar;
+                    });
+                    _searchTextController.clear();
+                  },
+                  icon: Icon(showSearchBar ? Icons.search_off : Icons.search),
+                ),
+              ],
+            ),
+            if (showSearchBar)
+              Container(
+                height: 40.0, // Adjust the height as needed
+                child: TextField(
+                  controller: _searchTextController,
+                  decoration: InputDecoration(
+                    hintText: 'Search...',
+                    hintStyle: TextStyle(color: Colors.grey),
+                    prefixIcon: Icon(Icons.search, color: Colors.grey),
+                    filled: true,
+                    fillColor: Color.fromARGB(255, 242, 241, 243),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      //borderSide: BorderSide.bottom ,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                    isDense: false,
+                  ),
+                  style: TextStyle(color: Colors.black, fontSize: 14.0),
+                  onChanged: (text) {
+                    setState(() {});
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget searchField = TextField(
@@ -56,10 +132,9 @@ class _ChatPageState extends State<ChatPage> {
         setState(() {});
       },
       decoration: InputDecoration(
-        // border: InputBorder.none,
-        hintText: 'Search users',
-        prefixIcon: Icon(Icons.search)
-      ),
+          // border: InputBorder.none,
+          hintText: 'Search users',
+          prefixIcon: Icon(Icons.search)),
     );
     Widget searchButton = IconButton(
       onPressed: () {
@@ -72,22 +147,24 @@ class _ChatPageState extends State<ChatPage> {
     );
     return Scaffold(
       drawer: const NavBarUser(),
-      appBar: buildAppBarUser(
-        'Chat',
-        _loggedInImage,
-        actionWidget: showSearchBar ? SizedBox() : searchButton,
-      ),
+      appBar: buildAppBarSearch('Chat'),
+      // buildAppBarUser(
+      //   'Chat',
+      //   _loggedInImage,
+      //   actionWidget: showSearchBar ? SizedBox() : searchButton,
+      //   flexibleWidget: (!showSearchBar)
+      //       ? SizedBox()
+      //       : Row(
+      //           children: [
+      //             Expanded(child: searchField),
+      //             searchButton,
+      //           ],
+      //         ),
+      // ),
       body: Padding(
         padding: const EdgeInsets.all(0),
         child: Column(
           children: [
-            if (showSearchBar)
-              Row(
-                children: [
-                  Expanded(child: searchField),
-                  searchButton,
-                ],
-              ),
             Expanded(
               child: true
                   ? ConversationsScreen(
