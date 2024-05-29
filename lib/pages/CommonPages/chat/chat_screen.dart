@@ -98,7 +98,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             Expanded(
               child: Text(
-                widget.chatWith?.name ?? 'Anonymous',
+                widget.chatWith?.name ?? 'ymous',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 15,

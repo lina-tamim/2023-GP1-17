@@ -157,6 +157,8 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
       final List<dynamic> responseBody = json.decode(response.body);
       final List<String> ids = responseBody.cast<String>().toList();
       recommendedCEIds = ids;
+      log('888888');
+      log('$recommendedCEIds');
       return recommendedCEIds;
     } else {
       return [];
@@ -314,26 +316,7 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
                   ],
                 ),
               ),
-              // Row(
-              //   children: [
-              //     ElevatedButton.icon(
-              //       onPressed: () {
-              //         Navigator.push(
-              //           context,
-              //           MaterialPageRoute(
-              //               builder: (context) => TestIntegration()),
-              //         );
-              //       },
-              //       icon: Icon(Icons.person_pin_circle),
-              //       // Use Icon widget instead of Icons.
-              //       label: Text(
-              //           'TEST INTEGRATION'), // Wrap label text with Text widget.
-              //     )
-              //   ],
-              // ),
-              // if (coursesLoading)
-              //   CircularProgressIndicator()
-              // else
+          
               if (widget.searchQuery.isNotEmpty)
                 StreamBuilder<List<Course>>(
                   stream: readCourseSearch(),
@@ -736,26 +719,8 @@ class _UserCoursesAndEventsPageState extends State<UserCoursesAndEventsPage> {
           }
         }
       }
-
-      // otherCourses.sort((a, b) {
-      //   int indexA =
-      //       recommendedObjects.indexWhere((element) => element == a.docId);
-      //   int indexB =
-      //       recommendedObjects.indexWhere((element) => element == b.docId);
-      //   return indexA.compareTo(indexB);
-      // });
-
-      if (recommendedCourses.length > 5)
+      if (recommendedCourses.length > 11)
         recommendedCourses = recommendedCourses.sublist(0, 4);
-
-      // List<String?> finalRecommendedCE =
-      //     recommendedCourses.map((element) => element.docId).toList();
-      //
-      // otherCourses = otherCourses
-      //     .where((element) => !finalRecommendedCE.contains(element.docId))
-      //     .toList();
-
-      // Combine recommended and other courses
       List<Course> sortedCourses = [
         ...recommendedCourses,
         ...activeCourrses,

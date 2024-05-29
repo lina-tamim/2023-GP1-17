@@ -186,7 +186,6 @@ class _Login extends State<Login> {
                       ),
                       child: Text(
                         'Unlock your potential with TeXel!\n',
-                       // 'Login now and embark on an exciting journey!',
                         textAlign: TextAlign.center,
                       ),
                     ),

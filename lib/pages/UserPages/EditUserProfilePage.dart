@@ -23,7 +23,6 @@ class EditProfile2 extends StatefulWidget {
 }
 
 class _EditProfile2State extends State<EditProfile2> {
-/////////// RETRIVED FROM DATABASE:
   String _loggedInUID = '';
   String _loggedInUsername = '';
   String _loggedInPassword = '';

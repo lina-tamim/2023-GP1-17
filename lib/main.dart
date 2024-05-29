@@ -4,8 +4,6 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:techxcel11/pages/StartPage.dart';
 import 'providers/profile_provider.dart';
-
-//Gp2 (main updates search in homepage and recommender for Courses and events)
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -13,7 +11,6 @@ void main() async {
   );
   runApp(const MainApp());
 }
-
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
   @override

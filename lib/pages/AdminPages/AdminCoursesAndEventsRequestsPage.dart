@@ -98,7 +98,6 @@ class _AdminCoursesAndEventsRequestsPageState
                           fillColor: Color.fromARGB(255, 242, 241, 243),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0),
-                            //borderSide: BorderSide.bottom ,
                           ),
                           contentPadding:
                               EdgeInsets.symmetric(horizontal: 10.0),
@@ -274,9 +273,7 @@ class _AdminCoursesAndEventsRequestsPageState
 List<String> searchRequestsIds =[];
 Future<Stream<List<Course>>> readRequestSearch() async {
   if (searchController.text.isNotEmpty) {
-    //final String searchText = searchController.text;
 
-    // Perform Algolia search for questions, searching within the postDescription field
     final AlgoliaQuerySnapshot response = await algolia
         .instance
         .index('Program_index')

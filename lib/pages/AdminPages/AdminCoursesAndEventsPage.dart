@@ -110,7 +110,6 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
                           fillColor: Color.fromARGB(255, 242, 241, 243),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0),
-                            //borderSide: BorderSide.bottom ,
                           ),
                           contentPadding:
                               EdgeInsets.symmetric(horizontal: 10.0),
@@ -367,11 +366,9 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
     String? imageURL = item?.imageURL;
 
     if (_selectedImage == null && (imageURL == null || imageURL == '')) {
-      // Load the default image from assets
       final byteData = await rootBundle.load(defaultImagePath);
       final bytes = byteData.buffer.asUint8List();
 
-      // Save the default image to a temporary file
       final tempDir = await getTemporaryDirectory();
       final tempPath = path.join(tempDir.path, 'default_image.png');
       await File(tempPath).writeAsBytes(bytes);
@@ -451,9 +448,6 @@ class _AdminCoursesAndEventsPageState extends State<AdminCoursesAndEventsPage> {
 List<String> searchCourseIds =[];
 Future<Stream<List<Course>>> readCourseSearch() async {
   if (searchController.text.isNotEmpty) {
-    //final String searchText = searchController.text;
-
-    // Perform Algolia search for questions, searching within the postDescription field
     final AlgoliaQuerySnapshot response = await algolia
         .instance
         .index('Program_index')
@@ -517,7 +511,6 @@ if (searchController.text.isNotEmpty) {
        courses = courses
           .where((question) => searchCourseIds.contains(question.docId))
           .toList();
-          //return courseSearch;
     } 
       return courses;
     });

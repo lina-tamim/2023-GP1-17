@@ -40,7 +40,7 @@ class ChatDashboardTile extends StatelessWidget {
             return Container();
           }
           final String? image = _user?.profileUrl;
-          final String name = _user?.name ?? 'Anonymous';
+          final String name = _user?.name ?? 'Deactivated User';
           final Message? _msg = chat.lastMessage;
 
           chat.name = name;

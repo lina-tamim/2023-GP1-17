@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-//import 'package:firebase_storage/firebasege.dart';
-//import 'package:path_provider/path_pr.dart';
 import 'package:flutter/services.dart' show ByteData, rootBundle;
 import 'package:path/path.dart' as path;
 import 'package:url_launcher/url_launcher.dart';
@@ -26,11 +24,8 @@ class AdminPathways extends StatefulWidget {
 
 class _AdminPathwaysState extends State<AdminPathways> {
   bool _isLoading = false;
-  //EDIT
   int x = 0;
-  //to hold values of key topics selected
   List<String> _editSelectTopic = [];
-  //hold values retrived from DB
   List<String> subtopicControllers = [];
   List<String> subtopicDescriptionControllers = [];
   List<String> subtopicresourseControllers = [];
@@ -44,7 +39,6 @@ class _AdminPathwaysState extends State<AdminPathways> {
   final searchController = TextEditingController();
   bool showSearchBar = false;
 
-  //Retrived Values From DB
   String dbimage_url = '';
   String dbtitle = '';
   String dbpath_description = '';
@@ -67,7 +61,6 @@ class _AdminPathwaysState extends State<AdminPathways> {
   List<String> newResources = [];
   File? newProfilePicture;
   String defaultImagePath = 'assets/Backgrounds/defaultPathwayImage.png';
-//search
 final Algolia algolia = Algolia.init(
   applicationId: 'PTLT3VDSB8',
   apiKey: '6236d82b883664fa54ad458c616d39ca',
@@ -261,13 +254,11 @@ Future<void> fetchData(PathwayContainer pathway) async {
   }
 
   bool showEditBox = false;
-//EDIT PART END
   int id = 0;
 
-  //firebase++
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  bool showWhiteBox = false; // Track whether to show the white box
+  bool showWhiteBox = false; 
   bool _isHidden = true;
 
   final TextEditingController _pathTitle = TextEditingController();
@@ -418,9 +409,7 @@ Future<void> fetchData(PathwayContainer pathway) async {
     }
   }
 
-//EDIT
   void clear() {
-    ///SOMETHING IS BEING WROTE AGAIN
     if (topics2.length > 1) {
       topics2.removeRange(1, topics2.length);
       descriptions2.removeRange(1, descriptions2.length);
@@ -441,7 +430,6 @@ Future<void> fetchData(PathwayContainer pathway) async {
     x = 0;
   }
 
-  //EDIT
   Future<Map<String, dynamic>> fetchContainerData() async {
     final DocumentSnapshot snapshot =
         await firestore.collection('Pathway').doc('title').get();
@@ -456,13 +444,11 @@ Future<void> fetchData(PathwayContainer pathway) async {
       _addField();
       fetchContainerData().then((data) {
         setState(() {
-          // Update the container data once retrieved from the database
         });
       });
     });
   }
 
-  //edit
   _addfieldsub() {
     setState(() {
       topics2.add(TextEditingController());
@@ -472,7 +458,6 @@ Future<void> fetchData(PathwayContainer pathway) async {
     });
   }
 
-  //edit
 
   _addField() {
     setState(() {
@@ -492,18 +477,14 @@ Future<void> fetchData(PathwayContainer pathway) async {
     });
   }
 
-  // new
   bool showSearchtBarPath = false;
 
   TextEditingController searchpathController = TextEditingController();
 
-  //
 List<String> searchPathwayIds =[];
 Future<Stream<List<PathwayContainer>>> readPathwaySearch() async {
   if (searchController.text.isNotEmpty) {
-    //final String searchText = searchController.text;
 
-    // Perform Algolia search for questions, searching within the postDescription field
     final AlgoliaQuerySnapshot response = await algolia
         .instance
         .index('Pathway_index')
@@ -582,7 +563,6 @@ if (searchController.text.isNotEmpty) {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Container(
-            //width: 200, // Adjust the width of the card as per your requirement
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -664,7 +644,6 @@ if (searchController.text.isNotEmpty) {
                         children: [
                           IconButton(
                             onPressed: () {
-                              // Delete button logic
                               deletePathway(context, pathway.title)
                                   .then((deletionConfirmed) {
                                 if (deletionConfirmed) {
@@ -694,7 +673,6 @@ if (searchController.text.isNotEmpty) {
                       ),
                       TextButton.icon(
                         onPressed: () {
-                          // Call the more info method to show a dialog
                           moreInfo(pathway);
                         },
                         label: const Row(
@@ -785,7 +763,6 @@ if (searchController.text.isNotEmpty) {
                           fillColor: Color.fromARGB(255, 242, 241, 243),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0),
-                            //borderSide: BorderSide.bottom ,
                           ),
                           contentPadding:
                               EdgeInsets.symmetric(horizontal: 10.0),
@@ -864,8 +841,6 @@ if (searchController.text.isNotEmpty) {
               ],
             ),
 
-          // SHOW FROM
-
           if (showWhiteBox)
             Positioned.fill(
               child: BackdropFilter(
@@ -940,7 +915,6 @@ if (searchController.text.isNotEmpty) {
                       SizedBox(
                         height: 10,
                       ),
-                      //image++
                       PathwayImagePicker(
                         onPickImage: (pickedImage) {
                           _selectedImage = pickedImage;
@@ -1078,7 +1052,6 @@ if (searchController.text.isNotEmpty) {
                               child: const Text('Select Topics'),
                             ),
 
-                            // Display the selected items
                             Wrap(
                               children: _SelectTopic // Updated variable name
                                   .map((e) => Chip(
@@ -1099,7 +1072,7 @@ if (searchController.text.isNotEmpty) {
                             onPressed: () {
                               setState(() {
                                 _isHidden =
-                                    false; // Show the hidden part when the button is clicked
+                                    false; 
                               });
                             },
                             style: ElevatedButton.styleFrom(
@@ -1122,8 +1095,6 @@ if (searchController.text.isNotEmpty) {
                           ),
                         ),
                       ),
-
-                      // Move the ListView here inside the white box
                       Visibility(
                         visible: !_isHidden,
                         child: Column(
@@ -1153,13 +1124,11 @@ if (searchController.text.isNotEmpty) {
                                 itemCount: _topics.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   final isRemovable = index >
-                                      0; // Check if the field is removable
+                                      0; 
 
                                   return Column(
                                     children: [
                                       Row(
-                                        //mainAxisAlignment:
-                                        // MainAxisAlignment.end,
                                         children: [
                                           Padding(
                                             padding: const EdgeInsets.only(
@@ -1203,7 +1172,7 @@ if (searchController.text.isNotEmpty) {
                                                 Text(
                                                   'SubTopic Title',
                                                   style: TextStyle(
-                                                    fontSize: 16, // add
+                                                    fontSize: 16,  
                                                   ),
                                                 ),
                                                 SizedBox(
@@ -1231,9 +1200,6 @@ if (searchController.text.isNotEmpty) {
                                         ),
                                       ),
                                       const SizedBox(height: 8),
-                                      //descriptionlarger
-
-                                      //description
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 20),
@@ -1299,7 +1265,6 @@ if (searchController.text.isNotEmpty) {
                                         height: 10,
                                       ),
                                       const SizedBox(height: 0),
-                                      ////
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 20),
@@ -1396,7 +1361,6 @@ if (searchController.text.isNotEmpty) {
                                       _isLoading, // Ignore pointer events if _loading is true
                                   child: ElevatedButton(
                                     onPressed: () async {
-//firebase++
                                       if (await _validateFields()) {
                                         if (await saveDataToFirestore()) {
                                           _showSnackBar(
@@ -1520,7 +1484,6 @@ if (searchController.text.isNotEmpty) {
                     SizedBox(
                       height: 10,
                     ),
-                    //image++
                     PathwayImagePicker(
                       onPickImage: (pickedImage) {
                         newProfilePicture = pickedImage;
@@ -1590,10 +1553,10 @@ if (searchController.text.isNotEmpty) {
                                   readOnly: false,
                                   controller: TextEditingController(
                                       text:
-                                          dbtitle), // Use newUsername variable as the initial value
+                                          dbtitle),
                                   onChanged: (value) {
                                     newtitle =
-                                        value; // Update newUsername when the value changes
+                                        value; 
                                   },
                                 ),
                               ),
@@ -1628,10 +1591,10 @@ if (searchController.text.isNotEmpty) {
                             enabled: true,
                             controller: TextEditingController(
                                 text:
-                                    dbpath_description), // Use newUsername variable as the initial value
+                                    dbpath_description), 
                             onChanged: (value) {
                               newpath_description =
-                                  value; // Update newUsername when the value changes
+                                  value; 
                             },
                             maxLines: 4,
                             cursorColor: const Color.fromARGB(255, 43, 3, 101),
@@ -1693,8 +1656,6 @@ if (searchController.text.isNotEmpty) {
                             onPressed: _showMultiSelectTopicedit,
                             child: const Text('Select Topics'),
                           ),
-
-                          // Display the selected items
                           Wrap(
                             children: _editSelectTopic // Updated variable name
                                 .map((e) => Chip(
@@ -1706,9 +1667,6 @@ if (searchController.text.isNotEmpty) {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    ///////////
-                    ///
-                    ///
                     Column(
                       children: [
                         SizedBox(
@@ -1737,7 +1695,6 @@ if (searchController.text.isNotEmpty) {
                               final isRemovable =
                                   indexx > 0; // Check if the field is removable
                               int x = 0;
-                              // Check if index is within the range of subtopicControllers length
                               if (indexx < subtopicControllers.length) {
                                 return Column(
                                   children: [
@@ -1939,7 +1896,6 @@ if (searchController.text.isNotEmpty) {
                                                       },
                                                     ),
                                                     const SizedBox(height: 15),
-                                                    ////
 
                                                     Padding(
                                                       padding: const EdgeInsets
@@ -2613,8 +2569,6 @@ if (searchController.text.isNotEmpty) {
 
         return false;
       } else {
-        // Username is valid and not already taken, perform the save operation
-
         return true;
       }
     }
@@ -2782,7 +2736,6 @@ if (searchController.text.isNotEmpty) {
     }
 
     for (int i = 0; i < mergedList.length; i++) {
-      //String value = list2[i].text;
       if (mergedList[i].isEmpty) {
         _showSnackBar('Please fill all subtopic title');
         return false;

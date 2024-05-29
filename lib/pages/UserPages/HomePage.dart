@@ -426,37 +426,6 @@ class __FHomePageState extends State<FHomePage> {
       Set<String> acceptedQuestionIds = reportSnapshot.docs
           .map((doc) => doc['reportedItemId'] as String)
           .toSet();
-
-      // final userDocs = await FirebaseFirestore.instance
-      //     .collection('RegularUser')
-      //     .where('email', whereIn: userIds)
-      //     .get();
-
-      // final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-      //     userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-      //         doc.data() as Map<String, dynamic>)));
-      //
-      // questions.forEach((question) {
-      //   final userDoc = userMap[question.userId];
-      //   final username = userDoc?['username'] as String? ?? '';
-      //   final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-      //   question.username = username;
-      //   question.userPhotoUrl = userPhotoUrl;
-      //   question.userType = userDoc?['userType'] as String? ?? '';
-      // });
-      //
-      // final userIdsNotFound =
-      //     userIds.where((userId) => !userMap.containsKey(userId)).toList();
-      // userIdsNotFound.forEach((userId) {
-      //   questions.forEach((question) {
-      //     if (question.userId == userId) {
-      //       question.username = 'DeactivatedUser';
-      //       question.userPhotoUrl = '';
-      //     }
-      //   });
-      // });
-
-      // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
       List<CardFT> filteredQuestions = questions
           .where((question) => !acceptedQuestionIds.contains(question.docId))
           .toList();
@@ -542,38 +511,9 @@ class __FHomePageState extends State<FHomePage> {
               .where('reportType', isEqualTo: 'Project')
               .where('status', isEqualTo: 'Accepted')
               .get();
-      // final userDocs = await FirebaseFirestore.instance
-      //     .collection('RegularUser')
-      //     .where('email', whereIn: userIds)
-      //     .get();
       Set<String> acceptedQuestionIds = reportSnapshot.docs
           .map((doc) => doc['reportedItemId'] as String)
           .toSet();
-
-      // final userMap = Map<String, Map<String, dynamic>>.fromEntries(
-      //     userDocs.docs.map((doc) => MapEntry(doc.data()['email'] as String,
-      //         doc.data() as Map<String, dynamic>)));
-
-      // questions.forEach((question) {
-      //   final userDoc = userMap[question.userId];
-      //   final username = userDoc?['username'] as String? ?? '';
-      //   final userPhotoUrl = userDoc?['imageURL'] as String? ?? '';
-      //   question.username = username;
-      //   question.userPhotoUrl = userPhotoUrl;
-      //   question.userType = userDoc?['userType'] as String? ?? '';
-      // });
-
-      // final userIdsNotFound =
-      //     userIds.where((userId) => !userMap.containsKey(userId)).toList();
-      // userIdsNotFound.forEach((userId) {
-      //   questions.forEach((question) {
-      //     if (question.userId == userId) {
-      //       question.username = 'DeactivatedUser';
-      //       question.userPhotoUrl = '';
-      //     }
-      //   });
-      // });
-      // Filter out questions with docId present in the Report collection with reportType = "Question" and status = "Accepted"
       List<CardFT> filteredQuestions = questions
           .where((question) => !acceptedQuestionIds.contains(question.docId))
           .toList();
@@ -1300,43 +1240,8 @@ class __FHomePageState extends State<FHomePage> {
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        //CARDS DISPLAY
-
         body: TabBarView(
           children: [
-            // Display Question Cards
-
-            /////below is temporary for the case when fetching recommendations are not feasible
-            // true
-            //     ? StreamBuilder<List<CardQuestion>>(
-            //         stream: readQuestion(),
-            //         builder: (context, secondSnapshot) {
-            //           if (secondSnapshot.hasData) {
-            //             final secondQ = secondSnapshot.data!;
-            //
-            //             if (secondQ.isEmpty) {
-            //               return Center(
-            //                 child: Text('No Second Stream Data'),
-            //               );
-            //             }
-            //
-            //             return ListView(
-            //               shrinkWrap: true,
-            //               // physics: NeverScrollableScrollPhysics(),
-            //               children: secondQ.map(buildQuestionCard).toList(),
-            //             );
-            //           } else if (secondSnapshot.hasError) {
-            //             return Center(
-            //               child: Text('Error: ${secondSnapshot.error}'),
-            //             );
-            //           } else {
-            //             return Center(
-            //               child: CircularProgressIndicator(),
-            //             );
-            //           }
-            //         },
-            //       )
-            //     :
             StreamBuilder<List<CardQuestion>>(
               stream: readQuestionRecommended(),
               builder: (context, snapshot) {

@@ -104,7 +104,6 @@ class ChatAPI {
           .asyncMap((QuerySnapshot<Map<String, dynamic>> event) {
         List<Chat> chats = <Chat>[];
         for (DocumentSnapshot<Map<String, dynamic>> element in event.docs) {
-          log('MK: here in chats: ${element.data()?['continueOn']}');
           final Chat temp = Chat.fromMap(element.data()!);
           chats.add(temp);
         }
@@ -186,11 +185,7 @@ class ChatAPI {
           'deletedBy': chat.deletedBy,
           'continueOn': chat.continueOn,
         });
-        log('MK: chat will be deleted for you ${chat.chatID}');
       } else if (chat.deletedBy != getUid()) {
-        /////chat is deleted by other personn so now you can delete entirely
-
-        log('MK: chat will be deleted completely ${chat.chatID}');
         await deleteChatWithMessages(chat: chat);
       }
     }
